@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　工具、沙箱與規則檔｜AI 輔助寫程式與模型營運安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Secure Coding with AI 的第 4–6 節：把助理能碰到的工具、指令、檔案與網路收窄；規則檔為什麼是會跟著倉庫走、每次工作階段自動載入的持久化指示來源。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="secure-coding-with-ai" data-page="03-tools-sandbox-rules.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　工具、沙箱與規則檔</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-dev-loop-trust.html">第 2 章</a></li>
+</ul>
+<p class="lead">上一章說的是「什麼會進到助理的腦袋」。這一章換成「助理拿到之後能做什麼」。文件的第 4、5、6 節分別收窄三樣東西：助理接上的工具、助理執行的環境，以及悄悄規定助理行為的規則檔。前兩者是常見的收窄權限問題；第三者比較特別，它會跟著倉庫走，並在之後每一次工作階段自動生效。</p>
+
+<h2 id="ts-narrow">3.1 把助理能碰到的東西一項項收窄</h2>
+<p>第 4 節（MCP 與工具）和第 5 節（執行期沙箱）的 Do 項目，其實是在回答同一個問題：<strong>如果助理被帶偏了，最壞能碰到什麼？</strong>表 3-1 依「助理能碰到的東西」重排兩節的建議。</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　助理能碰到的東西與文件的收窄建議（依第 4、5 節重排；排法為作者整理，非官方）</caption>
+<thead><tr><th scope="col">能碰到的東西</th><th scope="col">文件的建議</th><th scope="col">出處</th></tr></thead>
+<tbody>
+<tr><th scope="row">接哪些 MCP 伺服器</th><td>盤點開發環境連到的所有伺服器並維護核准清單；不要讓助理自動探索並連線；不要連來源不明且未審查的伺服器</td><td>第 4 節</td></tr>
+<tr><th scope="row">用哪些工具</th><td>限制助理可呼叫的工具，套用最小權限 (Least Privilege)：編碼助理不需要電子郵件、付款或管理類工具（這與 <a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026 過度授權 (Excessive Agency)</a> 的概念相近，文件未引用該條目，對應為作者整理，非官方）</td><td>第 4 節</td></tr>
+<tr><th scope="row">工具定義與描述</th><td>固定工具定義並偵測變更（快照加比對），抓出核准後才改變行為的抽換 (Rug Pull)；檢查描述中的隱藏指示，因為描述本身就是助理的脈絡；監看工具名稱遮蔽 (Tool Shadowing)，即惡意伺服器註冊與正牌工具同名的工具來攔截呼叫</td><td>第 4 節</td></tr>
+<tr><th scope="row">工具參數</th><td>執行前驗證參數：助理可能把憑證、檔案內容或環境變數當參數傳出去，卻不知道這些資料的敏感等級</td><td>第 4 節</td></tr>
+<tr><th scope="row">可執行的指令與敏感目錄</th><td>以工具允許清單 (Allowlist) 限制指令；封鎖憑證儲存位置、SSH 金鑰、雲端 CLI 設定與其他敏感目錄</td><td>第 5 節</td></tr>
+<tr><th scope="row">執行環境</th><td>放進沙箱 (Sandbox)：開發容器、受限 shell、虛擬機或短命的雲端工作空間；設定 CPU、記憶體、磁碟與程序數上限</td><td>第 5 節</td></tr>
+<tr><th scope="row">網路出口</th><td>施加出口控制 (Egress Control)：這次任務用不到對外連線就封鎖</td><td>第 5 節</td></tr>
+<tr><th scope="row">憑證</th><td>用綁定當次任務的短效憑證 (Ephemeral Credentials)，不用長效的開發者憑證；不讓助理取得正式環境憑證、部署金鑰或組織層級機密</td><td>第 5 節</td></tr>
+<tr><th scope="row">確認提示</th><td>評估 <code>--dangerously-skip-permissions</code> 這類旗標與自動接受模式的風險，它們會略過確認提示、給助理不受限的執行權；不要在不熟悉或不可信的程式庫上啟用自動接受</td><td>第 5 節</td></tr>
+</tbody></table></div>
+<p>第 4 節還附了一個例子：CVE-2026-39313，npm 套件 mcp-framework 0.2.22 之前的版本，HTTP 請求本文的記憶體配置沒有上限，讓未驗證者就能造成阻斷服務（作者讀取 GitHub 公告時看到公告日為 2026-04-16；該漏洞已在 0.2.22 修正）。文件把它當作「AI 框架程式碼本身也會有漏洞，需要依賴稽核與執行期限制」的例子。這和第 2 章的弱點審計是同一個道理，只是對象換成你接上的工具框架。</p>
+<p>工具投毒與抽換的細節、受信任登錄與雙簽核流程，在 MCP 安全主題已經講過：見<a href="../../04-agentic-and-mcp/mcp-security/02-top10-groups.html#c-poison">工具投毒與抽換</a>與<a href="../../04-agentic-and-mcp/mcp-security/04-third-party-user.html#u-gov">受信任登錄與五步驟治理</a>。本章不重講，只提醒：Secure Coding with AI 是從「我是開發者、我的助理接了哪些工具」的角度寫，MCP 主題是從「我要審查一個 MCP 伺服器」的角度寫。</p>
+
+<h2 id="ts-rules">3.2 第 6 節：規則檔是什麼</h2>
+<p>文件把下列這些檔案稱為「規則檔」並歸在同一節：<code>.cursorrules</code> 與 <code>.cursor/rules/</code>、<code>CLAUDE.md</code> 與 <code>.claude/</code>、<code>AGENTS.md</code>、<code>.github/copilot-instructions.md</code>、<code>.windsurfrules</code>、<code>.aider.conf.yml</code>，以及任何工具所引用的自訂系統提示詞檔。它們是工具在<strong>之後所有互動</strong>中都會讀進去的設定；文件稱之為一種持久化機制 (Persistence)：能改這些檔案的人，控制之後每一次生成。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="規則檔的持久化路徑：外部貢獻者的 PR 或助理自己修改規則檔；變更被合併進倉庫；之後每一位開發者的每一次工作階段都載入該規則檔；規則檔悄悄影響所有生成的程式碼與動作。四個控制點：規則檔納入必經的程式碼審查、CODEOWNERS 或 CI 檢查在每個 PR 標示規則檔變動、監控助理自己修改規則檔需要明確核准、定期稽核現有規則檔是否削弱安全控制。">
+flowchart TB
+  A["修改來源<br>外部 PR 或助理自己"] --> B["合併進倉庫"]
+  B --> C["之後每次工作階段<br>自動載入規則檔"]
+  C --> D["悄悄影響<br>所有生成與動作"]
+  K1["控制 1：納入必經審查"] -.-> B
+  K2["控制 2：CI 或掛鉤標示變動"] -.-> A
+  K3["控制 3：助理改規則檔須核准"] -.-> A
+  K4["控制 4：定期稽核現有內容"] -.-> C
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class K1,K2,K3,K4 author
+</pre>
+<figcaption><strong>圖 3-1　規則檔變更如何持久化，以及控制點。</strong>修改路徑與四項控制取自第 6 節的 Do／Don't；把控制點對到流程節點上的排法是<strong>作者整理，非官方</strong>（虛線框）。</figcaption>
+</figure>
+
+<h2 id="ts-concept">3.3 核心概念：規則檔是一種「每次都會被讀」的輸入</h2>
+<div class="concept">
+<h3 id="c-rules">規則檔與持久化指示</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>規則檔是寫給助理看的純文字：程式碼風格、專案慣例、要避開的事。文件把它定性為安全關鍵的設定，並說它是一個「具工作階段層級持久化 (Persistence) 效果的指示注入面」，即不必每次再注入，一次放進去之後都會生效。</dd>
+  <dt data-n="2">為什麼說它像供應鏈問題</dt>
+  <dd><span class="tag author">作者整理，非官方</span> 文件沒有用「供應鏈」這個詞談規則檔，供應鏈是第 10 節另一個主題。本教材把它歸為供應鏈 (Supply Chain) 同一類，是因為它具備相依套件的三個性質：跟著倉庫一起被複製；每次建置（這裡是每次工作階段）自動載入；任何能合併變更的人都能改。差別在於相依套件有鎖定檔與審計工具，規則檔通常什麼都沒有，審查者還容易把它當文件略過。文件在第 3 節也提醒，複製來的倉庫與相依套件裡的文件可能含有人類看不見、助理卻解析得到的指示。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>文件列了兩條路：惡意 PR 加進或修改規則檔；或助理自己改了自己的規則檔。文件特別點出的內容風險是「削弱安全控制、關閉安全功能、或叫助理忽略某些檔案類型或樣式」。文件沒有再往下解釋，以下是 <span class="tag author">作者整理，非官方</span>：規則檔不是程式碼，通常不會讓測試失敗，變更可以安靜地存在很久。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>文件的五項：把規則檔當成安全關鍵設定，審查嚴格度比照 CI/CD 管線的變更；納入程式碼審查要求並要求明確核准；監控規則檔的非預期新增或修改，包含助理自己做的；用 git 掛鉤或 CI 檢查在每個 PR 標示對已知規則檔的變更；稽核現有規則檔裡有沒有削弱控制的內容。反面三條：外部貢獻者的 PR 不經安全審查就加入或修改規則檔、助理未經開發者明確核准就改自己的規則檔、以為純文字就無害。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「規則檔只影響風格，不是安全問題。」文件的立場正相反。另一個誤解：「只有外部 PR 要擋。」文件把「助理自己改」列為同等重要的路徑，因為助理本身可能已被第 2 章的管道帶偏。</dd>
+</dl>
+</div>
+
+<h2 id="ts-scn">3.4 情境範例 A：評估陌生程式庫的下午</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：大坪林數位的函式庫評估</h3>
+<p><span class="tag fiction">虛構</span> 大坪林數位是虛構的軟體公司。一位開發者想評估一個來源不熟的開源函式庫，把它複製到自己的筆電上，讓助理「讀一讀並跑跑範例」。筆電上有長效的雲端 CLI 設定與 SSH 金鑰，助理開著自動接受。以下細節停在概念層級。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>函式庫裡有一個助理規則檔與看似普通的文件，其中藏有針對助理的指示，要它「先完成環境準備」。助理照做：讀取筆電上的設定檔，並嘗試把內容當作某個工具的參數送往外部位址。這次剛好被公司的網路出口規則擋下，開發者事後從日誌才發現。</li>
+  <li><strong>哪一環出問題：</strong>(a) 在不熟悉的程式庫上開啟自動接受（第 5 節 Don't）；(b) 助理沒有放進沙箱，能讀到憑證儲存位置與 SSH 金鑰（第 5 節）；(c) 複製進來的規則檔在第一個工作階段就被載入（第 6 節與第 3 節的 README 指示）；(d) 工具參數沒有在執行前驗證（第 4 節）。</li>
+  <li><strong>對應條目：</strong>Secure Coding with AI 第 3、4、5、6 節。這次僥倖沒外洩的原因不是助理的判斷，而是網路出口這一層（第 5 節的出口控制）。</li>
+  <li><strong>該採什麼控制：</strong>評估陌生程式庫改在拋棄式的開發容器或雲端工作空間；不掛載憑證與金鑰目錄；任務不需要對外連線就封鎖出口；不開自動接受；先人工讀過規則檔再讓助理載入。</li>
+  <li><strong>學到什麼：</strong>四層控制各自有缺口，最後靠一層救回。這是縱深防禦 (Defense in Depth) 的實例，但「這次被擋下」不等於「設計正確」：下一次出口規則可能剛好放行。</li>
+</ol>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>助理被帶偏時，最壞能碰到的就是它的工具、指令、檔案、網路與憑證；第 4、5 節逐項收窄。</li>
+  <li>工具定義要固定並比對，核准清單要維護，不讓助理自動探索連線；沙箱加出口控制加短效憑證，並謹慎對待自動接受與略過確認的旗標。</li>
+  <li>規則檔是持久化的指示來源：跟著倉庫走、每次自動載入；審查比照 CI/CD 管線，助理自己改也要核准。</li>
+  <li>把規則檔歸為供應鏈類問題是本教材的整理，文件的原話是「持久化機制」與「安全關鍵設定」。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能對自己用的助理，列出它能碰到的工具、指令、檔案、網路與憑證。</li>
+  <li>我能說明為什麼規則檔的變更要比照 CI/CD 管線審查。</li>
+  <li>我知道哪些說法是文件原話，哪些是本教材的整理。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-model-ops.html">第 4 章　模型營運的九節</a>：換到營運面，依訓練、成品、推論 API、部署、執行期的順序讀 Secure AI/ML Model Ops。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series, <em>Secure Coding with AI Cheat Sheet</em>（Section 3 的 README 與文件段落、Section 4–6）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_Coding_with_AI_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；2026-10-26 讀取；GitHub 首次提交 2026-05-05、最後修改 2026-10-04；CC BY-SA 4.0。</li>
+    <li>CVE-2026-39313 的 GitHub 安全公告，編號 GHSA-353c-v8x9-v7c3：<a href="https://github.com/advisories/GHSA-353c-v8x9-v7c3">github.com/advisories/GHSA-353c-v8x9-v7c3</a>；2026-10-26 讀取；僅用於核對文件所引用的版本與描述。</li>
+    <li>OWASP Top 10 for LLM Applications 2026（LLM03 條目的概念對照）：見 <a href="../../02-llm-applications/llm-top-10/index.html">LLM Top 10 2026 主題</a>；CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series — CC BY-SA 4.0；OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。GitHub 安全公告僅用於核對版本與描述。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'sca-ch3', topic: 'secure-coding-with-ai', mode: 'chapter',
+  questions: [
+    { id: 's3q1', type: 'mc', lo: [3], refs: [{label: '3.3 核心概念', href: '03-tools-sandbox-rules.html#ts-concept'}],
+      stem: '依第 6 節，下列哪一個做法最符合對規則檔的建議？',
+      options: [
+        { text: '把規則檔納入必經的程式碼審查，用 git 掛鉤或 CI 檢查在每個 PR 標示規則檔的變更，並且助理要改自己的規則檔時需要開發者明確核准。', correct: true, why: '符合 3.3 節的 Do：審查比照 CI/CD 管線、標示變更、助理自改須核准。' },
+        { text: '規則檔只是風格設定，讓外部貢獻者的 PR 直接修改即可。', why: '第 6 節明說不要讓外部 PR 未經安全審查就加入或修改規則檔。' },
+        { text: '助理自己修改規則檔是為了更貼近專案，應該自動允許。', why: '第 6 節明說助理未經明確核准不應改自己的規則檔。' },
+        { text: '規則檔是純文字，所以不會有安全影響，不必監控。', why: '文件稱它是具工作階段層級持久化效果的指示注入面。' }
+      ],
+      summary: '規則檔：比照 CI/CD 審查、CI 標示變更、助理自改須核准。' },
+    { id: 's3q2', type: 'scn', lo: [3], refs: [{label: '3.2 規則檔', href: '03-tools-sandbox-rules.html#ts-rules'}, {label: '3.3 核心概念', href: '03-tools-sandbox-rules.html#ts-concept'}],
+      stem: '依本章，這個團隊的流程缺了什麼，哪裡出了問題？',
+      scenario: '白河網路（虛構）的開源專案收到外部貢獻者的 PR：表面上是改文件錯字，但同時在 AGENTS.md 加了一行，要求助理「略過某些目錄的檢查以加快速度」。維護者只看了錯字修改就合併。之後團隊每個人的助理都不再檢查那些目錄，直到數週後才有人發現。',
+      options: [
+        { text: '問題只在於維護者粗心，與助理或規則檔無關。', why: '粗心是表象；缺的是把規則檔當安全關鍵設定來審查的流程。' },
+        { text: '規則檔沒有被當成安全關鍵設定：沒有必經審查或 CODEOWNERS，也沒有 CI／掛鉤標示規則檔變動；變更因為持久化而影響每個人之後的每次工作階段。補救：納入審查、標示變更、稽核現有規則檔是否削弱控制。', correct: true, why: '符合 3.3 節：持久化加上缺少審查，是文件列的情境。' },
+        { text: '問題在於不該使用任何助理規則檔。', why: '文件並未建議禁用規則檔，而是要管控它。' },
+        { text: '問題在於 PR 描述沒寫清楚。', why: '即使描述寫清楚，沒有標示變更的機制，審查者仍可能略過。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 規則檔會在之後每次工作階段被載入，所以一行變更的影響是持久而廣泛的。(2) 第 6 節建議審查比照 CI/CD 管線、納入程式碼審查要求、用掛鉤或 CI 標示變更。(3) 內容風險是「削弱安全控制或叫助理忽略某些檔案樣式」，正是這個案例。</p><p><strong>結論：</strong>立即還原並稽核所有現有規則檔；之後把規則檔納入必經審查並以 CI 標示。對應教材：<a href="03-tools-sandbox-rules.html#ts-concept">3.3 節</a>。</p>' },
+    { id: 's3q3', type: 'match', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-tools-sandbox-rules.html#ts-narrow'}, {label: '3.2 規則檔', href: '03-tools-sandbox-rules.html#ts-rules'}],
+      stem: '把下列控制配對到它主要收窄的對象。',
+      cats: [
+        { id: 'tool', label: '工具與 MCP 伺服器' },
+        { id: 'env', label: '執行環境與憑證' },
+        { id: 'rules', label: '規則檔' }
+      ],
+      items: [
+        { text: '快照工具定義並比對，抓出核准後才改變行為的更新', answer: 'tool', why: '第 4 節：固定工具定義、偵測抽換。' },
+        { text: '封鎖 SSH 金鑰與雲端 CLI 設定所在的目錄，並用短效憑證', answer: 'env', why: '第 5 節：工具允許清單、封鎖敏感目錄、短效憑證。' },
+        { text: '在每個 PR 用 CI 檢查標示規則檔的變更', answer: 'rules', why: '第 6 節：git 掛鉤或 CI 檢查標示已知規則檔的變更。' },
+        { text: '不讓助理自動探索並連上 MCP 伺服器', answer: 'tool', why: '第 4 節：不要讓助理未經核准自動探索並連線。' },
+        { text: '任務不需要對外連線時封鎖網路出口', answer: 'env', why: '第 5 節：出口控制。' }
+      ],
+      summary: '工具層、環境層、規則檔各有自己的收窄手段。' },
+    { id: 's3q4', type: 'mc', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-tools-sandbox-rules.html#ts-narrow'}],
+      stem: '一位開發者想為了省去反覆確認，在剛複製下來、來源不熟的程式庫上開啟自動接受。依第 5 節，最恰當的看法是？',
+      options: [
+        { text: '沒問題，助理只會碰與任務相關的檔案。', why: '第 5 節明確警告不要假設助理只會碰與任務相關的檔案。' },
+        { text: '不要在不熟悉或不可信的程式庫上啟用自動接受；若要用，先放進沙箱、封鎖敏感目錄與不需要的網路出口，並使用短效憑證。', correct: true, why: '符合 3.1 節表 3-1的「確認提示」與「執行環境」列。' },
+        { text: '只要把旗標名稱改掉就能避開風險。', why: '風險來自略過確認，與旗標名稱無關。' },
+        { text: '只要開發者的機器裝了防毒軟體就可以。', why: '文件談的是限制助理的權限與可碰到的範圍，不是防毒。' }
+      ],
+      summary: '自動接受：不要用在不熟的程式庫；要用就先沙箱化。' }
+  ]
+});
+</script>
+</body>
+</html>

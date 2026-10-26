@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜AIVSS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AIVSS 主題總測驗：12 題，涵蓋四個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="aivss" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：AIVSS</h1>
+<ul class="meta-row">
+  <li>12 題（選擇題 4、情境判斷題 4、配對題 4）</li>
+  <li>預估時間：約 15 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO4</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–3 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>為什麼與三層版本：</strong>說明為什麼 CVSS 不足以評 agentic AI 的弱點，並分辨目前並存的三套 AIVSS 說法。</li>
+  <li><strong>v0.8 計分結構：</strong>寫出算式，並說明因子、係數與級別的作用。</li>
+  <li><strong>1.0 查表模型：</strong>說明五個 Agentic 指標、Effect Class 與 Table 6，以及它與 v0.8 的差異。</li>
+  <li><strong>套用、限制與解讀：</strong>正確解讀順序尺度，知道補救重點在限縮 agent 的部署脈絡。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：aivss.owasp.org 網站 — CC BY-SA 4.0（除非另有說明）；v0.8 PDF 內文未標示授權；AIVSS 1.0 候選儲存庫 — Apache-2.0；GenAI Red Teaming Manual、AI Testing Guide — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-why-aivss.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-scoring.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-applying.html', a, '第 3 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 為什麼與三層版本 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('c-amplify', '1.1')],
+    stem: '同一個提示詞注入弱點，部署在「只能讀知識庫、人工審核每個動作」的助理，與「能自主在正式環境提交動作、有長期記憶」的 agent。依 AIVSS 的放大原則，兩者的評分應如何看待？',
+    options: [
+      { text: '兩者的技術弱點相同，所以嚴重度必然相同。', why: '這正是 AIVSS 要補的缺口：CVSS 看技術弱點，AIVSS 加入 agent 能力造成的放大。' },
+      { text: '部署在 agent 上的嚴重度可能更高，因為自主性、工具與記憶會把同一個弱點的後果放大。', correct: true, why: '1.1 節的放大原則（Force Multiplier）。' },
+      { text: '部署在唯讀助理上的嚴重度一定更高，因為它面對的使用者更多。', why: '教材沒有這樣的說法；放大來自 agent 的能力，而非使用者數量。' },
+      { text: '兩者都只能用 CVSS 評，AIVSS 不適用 AI 系統。', why: 'AIVSS 正是為 AI 系統（特別是 agentic AI）設計的評分延伸。' }
+    ],
+    summary: 'agent 能力是弱點的放大器。' },
+
+  { id: 'q02', type: 'match', lo: [1], refs: [C1('three-layers', '1.2 表 1-1')],
+    stem: '把下列描述配對到它所屬的 AIVSS 說法。',
+    cats: [
+      { id: 'a', label: '甲：儲存庫 README 的通用框架' },
+      { id: 'b', label: '乙：v0.8 規格（PDF）' },
+      { id: 'c', label: '丙：1.0 參考計算器' }
+    ],
+    items: [
+      { text: '用 CVSS 級別與 Effect Class 查表，不對 agentic 指標做算術', answer: 'c', why: '1.0 是查表模型。' },
+      { text: '用九個 0–1 的 AI 特有指標連乘，再與基礎、影響、時間、緩解加權相加', answer: 'a', why: '儲存庫 README 的通用框架。' },
+      { text: '以 (CVSS 基礎分 + 放大量) × 緩解係數計算，放大量由十個因子加總而來', answer: 'b', why: 'v0.8 規格的算式。' }
+    ],
+    summary: '三套說法算法不同，不能混比。' },
+
+  { id: 'q03', type: 'scn', lo: [1], refs: [C1('which', '1.3 圖 1-1'), C1('three-layers', '1.2'), C3('ap-a', '3.1 情境 A 的 v0.8 與 1.0 數字對照')],
+    stem: '依圖 1-1，兩個團隊該怎麼處理這場爭論？',
+    scenario: '青松物流（虛構）的兩個團隊對同一個 agent 弱點各自評出分數：甲團隊的報告寫 7.7，他們用十個放大因子與 ThM、緩解係數算出；乙團隊的報告寫 7.5，他們用 LC、CP、AP、RH、ES 五個類別指標加查表得出。兩邊都說對方「算錯了」，要求對方改成自己的數字。',
+    options: [
+      { text: '取兩個分數的平均 7.6，當作折衷。', why: '兩套的算法與輸入不同，平均沒有意義。' },
+      { text: '以甲團隊為準，因為十個因子比較完整。', why: '教材沒有判斷哪一套是現行；完整與否不是判斷依據。' },
+      { text: '這是兩套不同的說法（乙：v0.8 與丙：1.0），分數不能互相比較；各自標明版本與輸入，不要要求對方改數字。', correct: true, why: '符合圖 1-1：看分數附了什麼，再決定讀哪一份；不同版本不比較。' },
+      { text: '以乙團隊為準，因為 1.0 是比較新的版本。', why: '1.0 自述未驗證、OWASP 不背書；教材不宣稱哪一套是正式現行。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 甲團隊用十個放大因子，是 v0.8 的算式；乙團隊用五個類別指標加查表，是 1.0 的模型。(2) 兩套的輸入與算法都不同，所以 7.7 與 7.5 無法互相比較。(3) 教材不判斷哪一套是現行，也不能因為 1.0 較新就取代 v0.8。</p><p><strong>結論：</strong>各自標明版本與輸入，分開記錄。對應教材：<a href="01-why-aivss.html#three-layers">1.2 節</a>、<a href="01-why-aivss.html#which">1.3 節</a>。</p>' },
+
+  /* ================= LO2 v0.8 計分結構 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C2('sc-flow', '2.1 算式')],
+    stem: '依 v0.8 的算式，下列哪一個敘述正確？',
+    options: [
+      { text: 'AIVSS ＝ CVSS_Base ＋ Factor_Sum，不需要其他係數。', why: '還有威脅係數與緩解係數；算式是 AARS 先算出、再加基礎分、再乘緩解係數。' },
+      { text: 'AARS 與基礎分無關，只由十個因子決定。', why: 'AARS 以 (10 − CVSS_Base) 為缺口縮放，所以與基礎分有關。' },
+      { text: '緩解係數越高，分數越低。', why: '方向相反：1.00 代表無或弱緩解，0.67 代表強緩解，係數越高分數越高。' },
+      { text: '放大量 AARS 以「10 減基礎分」的缺口為上限來縮放，所以基礎分越高，可被放大的空間越小。', correct: true, why: '2.1 節。' }
+    ],
+    summary: 'AARS ＝ 缺口 × Factor_Sum/10 × ThM。' },
+
+  { id: 'q05', type: 'match', lo: [2], refs: [C2('sc-thm-mit', '2.3 表 2-2')],
+    stem: '把下列 v0.8 的數值配對到它的意義。',
+    cats: [
+      { id: 'thm', label: '威脅係數 ThM 的預設' },
+      { id: 'mit', label: '緩解係數的預設' },
+      { id: 'floor', label: '緩解係數的下限（強緩解）' },
+      { id: 'high', label: 'Critical 級別的下界' }
+    ],
+    items: [
+      { text: '0.97', answer: 'thm', why: 'ThM 預設為 Proof-of-Concept 的 0.97。' },
+      { text: '1.0（假設緩解不足，除非能證明）', answer: 'mit', why: '預設為 No／Weak。' },
+      { text: '0.67（暫定錨點，即使緩解再強也無法消除殘餘風險）', answer: 'floor', why: '強緩解的係數。' },
+      { text: '9.0', answer: 'high', why: 'Critical 為 9.0–10.0。' }
+    ],
+    summary: 'ThM 預設 0.97；緩解預設 1.0、下限 0.67；Critical 從 9.0 起。' },
+
+  { id: 'q06', type: 'mc', lo: [2], refs: [C2('sc-ordinal', '2.4')],
+    stem: '依 v0.8 對解讀的提醒，下列哪一個做法正確？',
+    options: [
+      { text: '把同一系統的所有發現平均成一個分數，作為整體風險。', why: '規格明說不要跨發現平均。' },
+      { text: '用小數位把 9.7 排在 9.4 前面，因為差了 0.3。', why: '同級視為等價，不應用小數位排名。' },
+      { text: '以單一發現與其嚴重度級別為分析單位；同級視為等價，跨過級別界線（如 6.8 與 7.2）才有意義。', correct: true, why: '2.4 節。' },
+      { text: '因為分數是等距的，5 到 6 的差距等於 9 到 10 的差距。', why: '規格說分數是順序尺度，不是等距。' }
+    ],
+    summary: '順序尺度：用級別，不用小數位，不平均。' },
+
+  /* ================= LO3 1.0 查表模型 ================= */
+  { id: 'q07', type: 'mc', lo: [3], refs: [C3('ap-v10', '3.3 表 3-2')],
+    stem: '在 1.0 的查表模型下，一個弱點的 CVSS-BTE 是 Critical（9.8），Effect Class 是 A1。AIVSS 會是多少？',
+    options: [
+      { text: '9.7，因為 Table 6 的 Critical 與 A1 格子是 9.7。', why: '規則是取格值與 CVSS-BTE 的較大者；9.8 比 9.7 大，所以不會降到 9.7。' },
+      { text: '9.8：A1 取表格值與 CVSS-BTE 的較大者，所以 AIVSS 永不低於 CVSS-BTE。', correct: true, why: '3.3 節規則；表格值 9.7 < 9.8，取 9.8。' },
+      { text: '10.0，因為 Critical 一律升到滿分。', why: '10.0 是 Critical 對 A2 的格值，不是 A1。' },
+      { text: '無法計算，因為 Critical 沒有對應的欄位。', why: 'Table 6 有 Critical 這一列。' }
+    ],
+    summary: 'A1／A2：取格值與 CVSS-BTE 的較大者；永不低於 CVSS-BTE。' },
+
+  { id: 'q08', type: 'scn', lo: [3], refs: [C3('ap-v10', '3.3 表 3-1'), C3('ap-v10', '3.3 Table 6')],
+    stem: '依 1.0 查表模型的規則，這份評分有哪個地方需要修正？',
+    scenario: '白楊科技（虛構）用 1.0 計算器評一個 agent 弱點：CVSS-BTE ＝ 6.0（Medium）。評分者對 LC（語言控制）填 I（間接）、AP（傳播）填 L（橫向，已跨租戶），CP 與 RH 因為還沒測，直接填 N，理由是先當作沒有。結果他得出 Effect Class A2，AIVSS ＝ 8.9。另一位同事說：「CP 與 RH 不能填 N，應該填 X。」',
+    options: [
+      { text: '需要修正：沒有證據時應填 X（證據不足）而不是 N；X 讓結果標為暫定，而不是預設為無風險。不過本例因為 AP＝L 已經可歸 A2，Effect Class 與分數不變。', correct: true, why: '3.3 節：X 代表證據不足，結果暫定，不是無風險；規則是先符合先用，AP＝L 即歸 A2。' },
+      { text: '需要修正：應該填 X，而且只要有一個 X 結果就是 AX，分數維持 6.0。', why: 'X 的子句只在其他子句都不成立時才歸 AX；本例 AP＝L 已經先符合 A2。' },
+      { text: '不需要修正，因為沒有證據就等於沒有風險。', why: '1.0 的設計是 X ≠ 無風險；以 N 代替會讓結果看起來比證據所能支持的更確定。' },
+      { text: '需要修正：AIVSS 應是 10.0，因為 AP＝L 一律滿分。', why: 'Medium 對 A2 的格值是 8.9，不是 10.0。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 1.0 規定證據不足填 X；X 使結果標為暫定，而不是預設為無風險。以 N 代替會讓人誤以為「已確認沒有」。(2) 但 Effect Class 是依有順序的規則判定：AP＝L 先符合 A2，其他指標是 X 或 N 都不會改變這個結果。(3) 查表：Medium、A2 → 8.9，與 CVSS-BTE 6.0 取較大者是 8.9。</p><p><strong>結論：</strong>CP 與 RH 應記為 X（結果暫定），分數仍是 8.9；重點是證據的誠實標示。對應教材：<a href="03-applying.html#ap-v10">3.3 節</a>。</p>' },
+
+  { id: 'q09', type: 'match', lo: [3], refs: [C3('ap-v10', '3.3 表 3-1')],
+    stem: '把 1.0 的指標配對到它的特性。',
+    cats: [
+      { id: 'cls', label: '分類指標：決定 Effect Class' },
+      { id: 'up', label: '資訊性指標：只影響 Uplift U，不改分數' }
+    ],
+    items: [
+      { text: 'LC（Language-Mediated Control）', answer: 'cls', why: 'LC、CP、AP、RH 是分類指標。' },
+      { text: 'ES（Extension Binding Surface）', answer: 'up', why: 'ES 只進 Uplift U，不改變 Effect Class 或 AIVSS。' },
+      { text: 'AP（Agentic Control Propagation）', answer: 'cls', why: '分類指標。' },
+      { text: 'RH（Reward Hacking）', answer: 'cls', why: '分類指標。' }
+    ],
+    summary: '四個分類指標決定 Effect Class；ES 只影響 Uplift U。' },
+
+  /* ================= LO4 套用、限制與解讀 ================= */
+  { id: 'q10', type: 'mc', lo: [4], refs: [C3('ap-a', '3.1 情境 A')],
+    stem: '依情境 A，當放大量（AARS）遠大於基礎分時，哪個補救方向最符合規格的建議？',
+    options: [
+      { text: '只修底層弱點，因為那是唯一能降低風險的方式。', why: '情境 A 的計算顯示，只降基礎分並不會明顯降低 AIVSS。' },
+      { text: '提高 ThM，讓分數更保守。', why: 'ThM 是評分輸入，調它不改變實際風險。' },
+      { text: '不處理，因為 AIVSS 只是參考。', why: '規格說要依分數與因子拆解決定補救；不處理不是它的建議。' },
+      { text: '限縮 agent 的部署脈絡：降低自主性、限縮工具、縮短記憶保留、增加人工監督。', correct: true, why: '3.1 節步驟 5 與規格 3.5.2 的官方提醒。' }
+    ],
+    summary: '放大主導時，限縮 agent 比只修弱點更有效。' },
+
+  { id: 'q11', type: 'scn', lo: [4], refs: [C3('ap-b', '3.2 情境 B'), C2('sc-ordinal', '2.4')],
+    stem: '依本教材，這份季報的呈現方式有哪些問題？該怎麼改？',
+    scenario: '銀杏醫療（虛構）的季報寫：「本季 AIVSS 平均 5.3，屬 Medium，風險可控。」附表列出六個發現：9.6、9.5、3.9、3.4、2.9、2.7。報告又寫：「9.6 的 A 案優先於 9.5 的 B 案，因為分數較高。」另有一項分數的備註寫它出自 v0.8，其中另一項備註寫它出自 1.0 計算器。',
+    options: [
+      { text: '沒有問題，平均值 5.4 能反映整體狀況。', why: '平均會把兩個 Critical 稀釋成 Medium，掩蓋最需要處理的問題。' },
+      { text: '只要把平均改成中位數就可以。', why: '中位數仍是對順序值做統計；規格要求以單一發現與級別為分析單位。' },
+      { text: '有三個問題：平均稀釋了兩個 Critical；9.6 與 9.5 同級不應以小數位排序；混用 v0.8 與 1.0 的分數不能比較。應顯示各級別數量，並分開標示版本。', correct: true, why: '2.4 節與 3.2 節的原則。' },
+      { text: '只有版本需要標示，其他做法都正確。', why: '平均與以小數位排序也都違反規格的提醒。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 六個分數平均約 5.3，屬 Medium，但實際是兩個 Critical 與四個 Low，沒有任何 Medium，平均掩蓋風險。(2) 9.6 與 9.5 同屬 Critical，規格要求視為等價，不依小數位排序。(3) v0.8 與 1.0 是不同說法，不能比較。</p><p><strong>結論：</strong>以級別數量呈現（Critical 2、Low 4），同級內用其他資訊排序，並分開標示各分數的版本。對應教材：<a href="02-scoring.html#sc-ordinal">2.4 節</a>、<a href="03-applying.html#ap-b">3.2 節</a>。</p>' },
+
+  { id: 'q12', type: 'mc', lo: [4], refs: [C3('ap-limits', '3.4 表 3-3')],
+    stem: '依第 3 章，AIVSS 在「找出弱點到決定補救順序」的工作中，最恰當的角色是？',
+    options: [
+      { text: '取代紅隊與測試，直接證明系統安全。', why: 'AIVSS 是評分，不是測試；紅隊與測試負責找出並重現弱點。' },
+      { text: '取代 AISVS 這類驗證標準，作為需求清單。', why: 'AISVS 是驗證需求，AIVSS 是弱點評分，角色不同。' },
+      { text: '排優先順序：與紅隊（找出並重現）和驗證標準（檢查需求）搭配使用，且分數要與 OWASP 分類標籤分開記錄。', correct: true, why: '3.4 節；分開記錄來自紅隊 Manual 的建議；串接流程是作者整理。' },
+      { text: '作為唯一的決策依據，不需其他資訊。', why: '1.0 自述未驗證，v0.8 的緩解下限也是暫定錨點；分數只是輸入之一。' }
+    ],
+    summary: 'AIVSS 負責排優先順序，與紅隊、測試、驗證標準各司其職。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'aivss', mode: 'final',
+    los: [
+      { n: 1, text: '為什麼與三層版本：說明為什麼 CVSS 不足以評 agentic AI 的弱點，並分辨三套 AIVSS 說法。' },
+      { n: 2, text: 'v0.8 計分結構：寫出算式，並說明因子、係數與級別的作用。' },
+      { n: 3, text: '1.0 查表模型：說明五個 Agentic 指標、Effect Class 與 Table 6，以及與 v0.8 的差異。' },
+      { n: 4, text: '套用、限制與解讀：正確解讀順序尺度，知道補救重點在限縮 agent 的部署脈絡。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

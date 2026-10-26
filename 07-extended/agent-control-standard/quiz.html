@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜Agent Control Standard｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Agent Control Standard 主題總測驗：12 題，涵蓋三個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="agent-control-standard" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：Agent Control Standard</h1>
+<ul class="meta-row">
+  <li>12 題（選擇題 6、情境判斷題 3、配對題 3）</li>
+  <li>預估時間：約 15 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO3</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–3 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位與成熟度：</strong>說明 ACS 是什麼、解決什麼問題、現行版本與成熟度，以及「自行宣告、無人驗證」的限制。</li>
+  <li><strong>核心設計：</strong>說明 Guardian 與 Observed Agent 的分工、鉤子、五種處置，以及三支柱與設定檔的關係。</li>
+  <li><strong>失敗姿態與取捨：</strong>解釋 fail-open 與 fail-closed 的差別、ACS 的預設值與理由，並判斷一個部署該怎麼設定。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：ACS 儲存庫的規格 — Apache-2.0；說明文件（docs 與 README）— CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-position.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-guardian-and-hooks.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-failure-posture.html', a, '第 3 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位與成熟度 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('acs-claim', '1.3 自行宣告，無人驗證')],
+    stem: '依規格 v0.1.0，誰來驗證一個部署宣稱的「ACS-Core 符合」？',
+    options: [
+      { text: 'OWASP 的符合性測試套件。', why: 'v0.1.0 沒有符合性測試套件。' },
+      { text: '第三方稽核公司，由 OWASP 認可。', why: '規格沒有這樣的機制。' },
+      { text: '沒有人：profiles_supported 與 profiles_accepted 是線路上的自我宣告；沒有測試套件、沒有符合實作登記冊、沒有仲裁單位。', correct: true, why: '規格 conformance 文件的明文。' },
+      { text: 'Guardian 會在握手時自動驗證。', why: '握手是協商宣告，並不驗證宣告是否屬實。' }
+    ],
+    summary: 'v0.1.0 的符合性是自我宣告，無人驗證。' },
+
+  { id: 'q02', type: 'scn', lo: [1], refs: [C1('acs-versions', '1.2 表 1-2'), C1('acs-claim', '1.3')],
+    stem: '依本章，這份採購需求的措辭有什麼問題？',
+    scenario: '南灣銀行（虛構）的採購需求寫：「供應商須通過 ACS 認證，並符合 ACS v0.1.0 的 Trace 設定檔。」兩家供應商回覆「已符合」，但日誌欄位不同。資安長問：「認證是誰發的？同一個版本為什麼差這麼多？」',
+    options: [
+      { text: '兩處問題：v0.1.0 沒有認證機制（符合性是自行宣告），不能要求「通過認證」；也不能只寫規格版本，因為 0.1.4 對 ACS-Trace 做了破壞性變更而規格版本不變，應指名發行版本或提交，並要求供應商說明其依據。', correct: true, why: '符合 1.2 與 1.3 節。' },
+      { text: '沒有問題，供應商之一一定在說謊。', why: '兩家可能依據不同時間點的檔案；規格版本沒變但內容就地更改。' },
+      { text: '只要把需求改成 v1.0 即可。', why: 'v1.0 尚未訂日期，無法要求。' },
+      { text: '需求應改成「OWASP 認證的 ACS」。', why: '沒有這樣的認證。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) v0.1.0 沒有符合性驗證者，「認證」無從要求。(2) 規格版本 v0.1.0 沒變，但 0.1.4 對 ACS-Trace 做了破壞性變更，檔案就地更改，握手無法分辨。</p><p><strong>結論：</strong>改為要求「宣告符合」並指名發行版本或提交，要求供應商說明依據。對應教材：<a href="01-position.html#acs-versions">1.2 節</a>、<a href="01-position.html#acs-claim">1.3 節</a>。</p>' },
+
+  { id: 'q03', type: 'match', lo: [1], refs: [C1('acs-onepage', '1.1 表 1-1')],
+    stem: '把下列 ACS 的內容配對到適用的授權（依儲存庫 LICENSING.md）。',
+    cats: [
+      { id: 'apache', label: 'Apache-2.0' },
+      { id: 'ccbysa', label: 'CC BY-SA 4.0' }
+    ],
+    items: [
+      { text: '規格與 JSON Schema', answer: 'apache', why: 'LICENSING.md：specification 目錄為 Apache-2.0。' },
+      { text: '說明文件（docs 目錄、README）', answer: 'ccbysa', why: 'LICENSING.md：docs 與 README 為 CC BY-SA 4.0。' },
+      { text: '嵌在 Markdown 裡的程式碼範例', answer: 'apache', why: 'LICENSING.md：文件中的程式碼範例為 Apache-2.0。' }
+    ],
+    summary: '引用規格與引用說明文件，適用授權不同。' },
+
+  { id: 'q04', type: 'mc', lo: [1], refs: [C1('acs-concept', '1.4 核心概念')],
+    stem: '「有了 Guardian，Agent 就安全了。」依本章，最恰當的回應是？',
+    options: [
+      { text: '正確，Guardian 取代了所有其他控制。', why: 'ACS 是增加一道閘門，不是取代其他控制。' },
+      { text: '不正確，因為 Guardian 只能在使用者輸入階段運作。', why: 'ACS 的鉤子涵蓋工具呼叫、記憶、技能等多個階段。' },
+      { text: '不正確，因為 ACS 只用來記錄日誌，不能阻擋任何動作。', why: 'ACS 的 Guardian 可以拒絕、修改、要求核准；它能阻擋。' },
+      { text: '不完全：Guardian 本身是新的信任點，必須可用、被認證、政策寫得對；規格承認 Guardian 不可達時預設放行，參考實作也還沒做到線路認證。', correct: true, why: '符合 1.4 節第 5 點。' }
+    ],
+    summary: 'Guardian 增加一道閘門，同時成為新的信任點。' },
+
+  /* ================= LO2 核心設計 ================= */
+  { id: 'q05', type: 'scn', lo: [2], refs: [C2('gh-roles', '2.1'), C3('fp-scn-a', '第 3 章 3.5 情境 A')],
+    stem: '依本章，這個設計有什麼問題？ACS 的做法是什麼？',
+    scenario: '龍川電商（虛構）設計 Guardian：把整份政策文件放進一個 LLM 的提示詞，讓 LLM 讀政策後，直接決定每個工具呼叫要不要放行，「這樣最靈活」。資安顧問擔心攻擊者可以透過輸入說服這個 LLM。',
+    options: [
+      { text: '沒有問題，LLM 比規則聰明，一定更安全。', why: 'LLM 可以被輸入說服；這正是顧問擔心的。' },
+      { text: '應該完全不使用 LLM，ACS 禁止 LLM 層。', why: 'LLM 層是選擇性的委派，不是禁止。' },
+      { text: '問題：LLM 看得到政策，也可能被說服。ACS 的做法是確定性層（Cedar／Rego）永遠先跑，只有灰色地帶才委派給 LLM 層；LLM 層只看到中間輸出、看不到政策原始碼，答案還要回到確定性層通過。', correct: true, why: '符合 2.1 節與 3.5 節。' },
+      { text: 'ACS 要求 Guardian 必須只有 LLM 層。', why: '規格相反：確定性層先跑，只用確定性層的部署完全符合規格。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) LLM 能被輸入說服，把全部判斷交給它等於讓攻擊者有機會繞過政策。(2) ACS 讓確定性層先跑，LLM 層可選且看不到政策原始碼，答案要回確定性層。</p><p><strong>結論：</strong>把一定要擋的寫進確定性政策，LLM 僅處理灰色地帶。對應教材：<a href="02-guardian-and-hooks.html#gh-roles">2.1 節</a>、<a href="03-failure-posture.html#fp-scn-a">3.5 節</a>。</p>' },
+
+  { id: 'q06', type: 'match', lo: [2], refs: [C2('gh-disp', '2.3 表 2-2')],
+    stem: '把下列情況配對到 Guardian 最貼近的處置。',
+    cats: [
+      { id: 'allow', label: 'ALLOW 允許' },
+      { id: 'deny', label: 'DENY 拒絕' },
+      { id: 'modify', label: 'MODIFY 修改' },
+      { id: 'ask', label: 'ASK 詢問' },
+      { id: 'defer', label: 'DEFER 延後' }
+    ],
+    items: [
+      { text: '查詢符合政策，直接放行', answer: 'allow', why: 'ALLOW：繼續。' },
+      { text: '指令被判定為破壞性操作，阻擋並附上理由', answer: 'deny', why: 'DENY：阻擋，需附理由。' },
+      { text: '輸出含有一段需遮蔽的個資，Guardian 把它遮掉再放行', answer: 'modify', why: 'MODIFY：含遮蔽，改過後繼續。' },
+      { text: '金額超過門檻，需要人工核准才能繼續', answer: 'ask', why: 'ASK：暫停並請求核准。' },
+      { text: '證據不足，暫時下不了結論，約定時間內沒解決就拒絕', answer: 'defer', why: 'DEFER：目前還下不了結論，過期預設拒絕。' }
+    ],
+    summary: '五種處置：前三種立即結案；ASK 與 DEFER 暫停。' },
+
+  { id: 'q07', type: 'mc', lo: [2], refs: [C2('gh-hooks', '2.2 鉤子')],
+    stem: '依本章，關於 ACS 的 19 個原生鉤子，下列哪一項是正確的？',
+    options: [
+      { text: '19 個鉤子全部都必須實作，才算符合 ACS-Core。', why: 'ACS-Core 只強制最低限度的 7 個，其餘「應該實作」。' },
+      { text: 'ACS-Core 強制最低限度的鉤子（含 toolCallRequest 與 toolCallResult 等），其餘如記憶、脈絡壓縮、技能生命週期的鉤子「應該實作」，條件是框架觀察得到對應事件。', correct: true, why: '符合 2.2 節。' },
+      { text: '所有鉤子都是決策點，Guardian 都可以拒絕。', why: 'postCompact、subagentStop、skillUnload、turnEnd、sessionEnd 只做稽核，不是決定點。' },
+      { text: '鉤子只有工具呼叫前後兩個。', why: '共 19 個，涵蓋工作階段、訊息、記憶、脈絡壓縮、子 Agent、技能等。' }
+    ],
+    summary: '19 個原生鉤子，ACS-Core 只強制最低限度；部分只做稽核。' },
+
+  /* ================= LO3 失敗姿態與取捨 ================= */
+  { id: 'q08', type: 'mc', lo: [3], refs: [C3('fp-tradeoff', '3.2 為什麼預設是放行')],
+    stem: '「fail-open 讓攻擊者能把控制變成稽核」這句話，最貼近下列哪個意思？',
+    options: [
+      { text: '攻擊者必須先說服 Guardian 放行。', why: '攻擊者不需要說服 Guardian；只要讓它聯絡不上。' },
+      { text: 'fail-open 只在使用者關閉 Guardian 時發生。', why: '它在 Guardian 沉默、傳輸失敗或出錯時發生，不需要使用者關閉。' },
+      { text: 'fail-open 會讓稽核日誌自動被刪除。', why: '規格要求放行時必須記稽核事件，留痕。' },
+      { text: '攻擊者只要擾亂通道、讓 Guardian 聯絡不上，Agent 就會照常執行，只留下稽核紀錄，而不是被攔下。', correct: true, why: '符合 3.2 節的說明。' }
+    ],
+    summary: 'fail-open：擾亂通道即可繞過；放行必須留痕，但留痕只是偵測。' },
+
+  { id: 'q09', type: 'match', lo: [3], refs: [C3('fp-two', '3.1 表 3-1'), C3('fp-defer', '3.3')],
+    stem: '把下列情況配對到規格規定的處理。',
+    cats: [
+      { id: 'startup', label: '看啟動姿態（預設 proceed）' },
+      { id: 'fail', label: '看 on_decision_failure（預設 proceed）' },
+      { id: 'defer', label: '看 timeout_decision（預設 deny）' },
+      { id: 'honor', label: '無論姿態，必須照做' }
+    ],
+    items: [
+      { text: '工作階段一開始，握手送出後 Guardian 逾時沒回', answer: 'startup', why: '握手失敗，適用啟動姿態。' },
+      { text: '工作階段中，某步在逾時內沒收到任何決定', answer: 'fail', why: '決策失敗：看 on_decision_failure。' },
+      { text: 'Guardian 的 DEFER 過期仍未解決', answer: 'defer', why: '看 timeout_decision，預設 deny。' },
+      { text: 'Guardian 在逾時內回了 DENY', answer: 'honor', why: '決定在時限內到了，不論姿態都必須照做。' }
+    ],
+    summary: '啟動姿態、決策失敗姿態、DEFER 逾時各管一種情況。' },
+
+  { id: 'q10', type: 'scn', lo: [3], refs: [C3('fp-scn-b', '3.6 情境 B'), C3('fp-tradeoff', '3.2')],
+    stem: '依本章，團隊最合理的處理是什麼？',
+    scenario: '玉井物流（虛構）的 Agent 可以自動取消出貨單，這個動作很難回復。Guardian 以預設設定運作。一次機房切換讓 Guardian 不可達三十分鐘，期間 Agent 取消了一批出貨單。事後，團隊在稽核日誌裡看到許多「無決定而放行」的事件，但沒有人收到通知。',
+    options: [
+      { text: '什麼都不用改，預設值是安全的。', why: '預設放行是為了可用性，規格明說代價是強制力。' },
+      { text: '把 Guardian 的逾時設得更短。', why: '逾時短只會更快進入失敗姿態，姿態本身仍是放行。' },
+      { text: '對這類難以回復的動作改用 fail-closed (deny)，並監看「無決定而放行」的稽核事件、設定告警；是否能針對個別動作設定，要查所用實作（教材未能確認）。', correct: true, why: '符合 3.6 節。' },
+      { text: '停用稽核日誌以減少雜訊。', why: '稽核日誌是放行時唯一的留痕，停用會讓繞過變成無聲。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) Guardian 不可達屬決策失敗，預設放行。(2) 取消出貨單難以回復，不適合 fail-open。(3) 日誌有留痕卻沒人看，等於沒有偵測。</p><p><strong>結論：</strong>改 fail-closed 並對放行事件設告警；個別動作設定能否做到，未能確認。對應教材：<a href="03-failure-posture.html#fp-scn-b">3.6 節</a>。</p>' },
+
+  { id: 'q11', type: 'mc', lo: [3], refs: [C3('fp-defer', '3.3 一個刻意相反的預設')],
+    stem: '規格為什麼讓 DEFER 過期的預設處置是 deny，卻讓決策失敗的預設是 proceed？',
+    options: [
+      { text: '決策失敗是從未回答的 Guardian；過期的 DEFER 是已經標記疑慮、卻沒能解決的 Guardian。後者疑慮明確存在，所以失效即拒絕 (fail-closed)。', correct: true, why: '符合 3.3 節。' },
+      { text: '這是規格的筆誤，兩者應該一致。', why: '規格明說這是刻意的。' },
+      { text: '因為 DEFER 比 ALLOW 更危險。', why: '兩者比較的是 Guardian 的狀態，不是處置的危險程度。' },
+      { text: '因為 deny 比 proceed 更快。', why: '速度不是規格的理由。' }
+    ],
+    summary: '已標記疑慮卻沒解決 ≠ 完全沉默。' },
+
+  { id: 'q12', type: 'mc', lo: [3], refs: [C3('fp-gaps', '3.4 表 3-2')],
+    stem: '依儲存庫 README，下列哪一項是參考實作自述的缺口之一？',
+    options: [
+      { text: '參考實作已完成所有 19 個鉤子的即時評估。', why: '實際上只有 toolCallRequest 與 toolCallResult 兩個被即時評估。' },
+      { text: '參考實作預設就是 fail-closed。', why: '參考 Guardian 預設是 proceed（fail-open）。' },
+      { text: '參考實作已通過第三方符合性認證。', why: 'v0.1.0 沒有認證機制。' },
+      { text: '參考 Guardian 沒有實作規格要求的基線簽章，線路未認證，連得到連接埠的東西都能讀取或造成決策。', correct: true, why: '符合 3.4 節表 3-2。' }
+    ],
+    summary: '缺口：線路未認證、預設放行、只有 2 個鉤子被即時評估。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'agent-control-standard', mode: 'final',
+    los: [
+      { n: 1, text: '定位與成熟度：說明 ACS 是什麼、現行版本與成熟度，以及「自行宣告、無人驗證」的限制。' },
+      { n: 2, text: '核心設計：說明 Guardian 與 Observed Agent 的分工、鉤子、五種處置，以及三支柱與設定檔。' },
+      { n: 3, text: '失敗姿態與取捨：解釋 fail-open 與 fail-closed、ACS 的預設值與理由，並判斷部署該怎麼設定。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

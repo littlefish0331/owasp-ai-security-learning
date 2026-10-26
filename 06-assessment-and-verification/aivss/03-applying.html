@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　套用與限制｜AIVSS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="用兩個虛構情境套用 AIVSS v0.8 算式，說明 1.0 參考計算器的查表模型與五個 Agentic 指標，並整理使用限制，以及與 Agentic Top 10、紅隊、AISVS、AI Testing Guide 的關係。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="aivss" data-page="03-applying.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　套用與限制</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3、LO4</li>
+  <li>前置：<a href="02-scoring.html">第 2 章</a></li>
+</ul>
+<p class="lead">這一章把前兩章的東西用起來：先用兩個<strong>虛構</strong>情境實際算分、看分數怎麼被誤用，再介紹更新的方向（1.0 的查表模型），最後整理使用限制與跨文件關係。所有由作者自己算出來的數字，都標「作者計算，非官方範例」，並附上輸入，讓你可以重算。</p>
+
+<h2 id="ap-a">3.1 情境 A：同一個弱點，兩種部署</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：杉林網路的客服系統</h3>
+<p><span class="tag fiction">虛構</span> 杉林網路是虛構的公司。資安團隊發現客服 LLM 存在間接提示詞注入弱點：攻擊者可以把指令藏在客戶上傳的文件裡。底層弱點相同，他們用 CVSS v4.0 評出基礎分 <strong>6.0</strong>（Medium）。但公司有兩種部署，要各自評分。<span class="tag author">作者整理，非官方</span>（基礎分 6.0 是作者為了教學假設的）</p>
+<ol class="steps">
+  <li><strong>部署一：唯讀問答助理。</strong>只能讀知識庫、人工審核每個動作，沒有跨工作階段記憶。因子評分：Language 0.5、Context 0.5、Non-Determinism 0.5、Opacity 0.5，其餘 0。Factor_Sum ＝ 2.0。代入算式（ThM 0.97、緩解係數 1.0）：AARS ＝ (10 − 6.0) × 0.2 × 0.97 ≈ 0.78；AIVSS ＝ 6.0 + 0.78 ≈ <strong>6.8（Medium）</strong>。</li>
+  <li><strong>部署二：可寫入正式環境的 agent。</strong>同一個 LLM 與弱點，但這個 agent 能自主在正式系統提交動作、用高權限工具、有長期記憶。因子評分：Autonomy 1.0、Tools 1.0、Language 1.0、Context 0.5、Non-Determinism 1.0、Opacity 0.5、Persistence 1.0、Identity 0.5，其餘 0。Factor_Sum ＝ 6.5。AARS ＝ 4.0 × 0.65 × 0.97 ≈ 2.52；AIVSS ＝ 6.0 + 2.52 ≈ <strong>8.5（High）</strong>。</li>
+  <li><strong>比較。</strong>兩者的 CVSS 基礎分完全相同，AIVSS 級別卻從 Medium 變成 High。差別完全來自部署脈絡。這就是第 1 章「放大原則」的具體樣子。</li>
+  <li><strong>補救該做什麼？</strong>作者另外算了兩種補救（同樣是作者計算）。只修底層弱點，把基礎分從 6.0 降到 3.0、agent 因子不變：AIVSS ≈ 7.4，<strong>仍是 High</strong>。若改為限縮部署（取消自主提交，Autonomy 改 0；工具改為受限允許清單，Tools 0.5；記憶改為工作階段內，Persistence 0.5），基礎分仍是 6.0：Factor_Sum 變 4.5，AIVSS ≈ 7.7，<strong>仍是 High，但下降 0.8</strong>；若部署不變、只補上經驗證的部分緩解（係數 0.83），原本的 8.5 會降到約 7.1。</li>
+  <li><strong>這個情境的提醒：</strong>v0.8 規格自己也說，當放大量遠大於基礎分時，主要風險來源是部署脈絡，補救重點應是限縮 agent（降低自主性、限縮工具、縮短記憶保留、增加人工監督），只修底層弱點不會明顯降低風險。<span class="tag official">官方</span></li>
+</ol>
+<p class="arch"><span class="tag author">作者計算，非官方範例</span>：以上數字用 Python 以規格公式計算，輸入已完整列出；因子評分是作者為了教學做的主觀選擇，不是官方範例。規格自己的範例用不同的弱點與評分，細節請看 PDF 的 3.6 節。</p>
+</div>
+
+<h2 id="ap-b">3.2 情境 B：把分數平均成儀表板</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：星橋金融的月報</h3>
+<p><span class="tag fiction">虛構</span> 星橋金融是虛構的公司。安全主管要求把本月所有 AIVSS 分數平均，做成一個「AI 風險指數」放在儀表板上，並用小數位排序修補順序。本月六個發現：9.7、9.4、3.5、3.2、2.8、2.5。</p>
+<ol class="steps">
+  <li><strong>平均的結果。</strong>六個分數的平均是 5.18，四捨五入為 <strong>5.2，落在 Medium</strong>。<span class="tag author">作者計算，非官方範例</span></li>
+  <li><strong>問題在哪裡？</strong>原始六個發現中有<strong>兩個 Critical</strong>、四個 Low，沒有任何一個是 Medium。平均把兩個最需要立刻處理的問題，稀釋成一個看起來「還好」的 Medium。規格明說：分數是順序尺度，不要跨發現平均，因為平均順序值沒有意義；分析單位是單一發現與其嚴重度級別。<span class="tag official">官方</span></li>
+  <li><strong>小數位排序的問題。</strong>9.7 與 9.4 同屬 Critical，視為等價；用 0.3 的差距決定先後，是在「解讀雜訊」。更合理的排序是：先依級別，同級內再看其他風險資訊（可被利用性、影響範圍、補救成本）。<span class="tag author">作者整理，非官方</span></li>
+  <li><strong>比較好的儀表板。</strong>顯示各級別的<strong>數量與未結案件</strong>（例如 Critical 2、High 0、Medium 0、Low 4），並標註每個分數所用的 AIVSS 版本；不提供單一指數。<span class="tag author">作者整理，非官方</span></li>
+</ol>
+</div>
+
+<h2 id="ap-v10">3.3 更新的方向：1.0 的查表模型</h2>
+<p>丙：<strong>AIVSS 1.0 參考計算器</strong>把做法改了。它是 CVSS v4.0 的擴充：保留原本的 CVSS-BTE 分數與向量不動，另外用一組五個「類別式」的 Agentic 指標描述弱點所在的利用路徑，再<strong>查表</strong>得到 AIVSS。<strong>不對 agentic 指標做任何算術。</strong>（資料來自計算器頁面、候選儲存庫的 README 與其參考計算器原始碼。）</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　AIVSS 1.0 的五個 Agentic 指標，合稱 Agentic AI Profile</caption>
+<thead><tr><th scope="col">指標</th><th scope="col">全名</th><th scope="col">問的是什麼（用作者自己的話）</th><th scope="col">值</th></tr></thead>
+<tbody>
+<tr><th scope="row">LC</th><td>Language-Mediated Control</td><td>攻擊者控制的自然語言多直接地影響安全相關的決策或工具呼叫</td><td>D 直接、I 間接（藉由檢索或匯入的內容）、M 受獨立強制的結構化轉換中介、N 無、X 證據不足</td></tr>
+<tr><th scope="row">CP</th><td>Context Persistence</td><td>攻擊者控制的脈絡或記憶能存活多久，是否超出原工作階段</td><td>C 跨工作階段記憶、S 僅工作階段、N 無、X 證據不足</td></tr>
+<tr><th scope="row">AP</th><td>Agentic Control Propagation</td><td>被入侵的意圖或權限是否跨過信任邊界到另一個 agent、租戶、主體或政策領域</td><td>L 橫向（跨邊界）、C 受限（同主體同政策領域內）、N 無、X 證據不足</td></tr>
+<tr><th scope="row">RH</th><td>Reward Hacking</td><td>agent 為了滿足代理目標、評估器或獎勵訊號，自己越過安全邊界（不需要攻擊者輸入）</td><td>D 已證實、P 可能、N 無（且隔離經測試）、X 證據不足</td></tr>
+<tr><th scope="row">ES</th><td>Extension Binding Surface</td><td>路徑上可達的工具、技能、MCP server、外掛綁定得多緊；只影響資訊性的「Agentic Uplift U」，不影響分數</td><td>W 寬、M 受管、N 無或窄、X 證據不足</td></tr>
+</tbody></table></div>
+<p>LC、CP、AP、RH 四個指標依一組<strong>有順序的規則</strong>決定 <strong>Agentic Effect Class</strong>（A0 無、A1 存在、A2 顯著、AX 證據不足），先符合先用。依參考計算器的原始碼，規則大致是：AP 為 L，或 LC 為 D／I 且 CP 為 C，或 LC 為 D／I 且 RH 為 D，歸 A2；LC 為 D／I，或 CP 為 S／C，或 AP 為 C，或 RH 為 D，歸 A1；其餘若有 X 歸 AX，否則 A0。（以原始碼為準，細節請看規格 5.6 節；本教材沒有讀到完整規格文字。）<span class="tag author">作者整理，非官方</span></p>
+<div class="table-wrap"><table>
+<caption>表 3-2　Lookup Table AIVSS（Table 6）：CVSS-BTE 級別 × Effect Class</caption>
+<thead><tr><th scope="col">CVSS 級別</th><th scope="col">A0 或 AX</th><th scope="col">A1</th><th scope="col">A2</th></tr></thead>
+<tbody>
+<tr><th scope="row">None</th><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><th scope="row">Low</th><td>CVSS-BTE</td><td>5.5</td><td>7.1</td></tr>
+<tr><th scope="row">Medium</th><td>CVSS-BTE</td><td>7.5</td><td>8.9</td></tr>
+<tr><th scope="row">High</th><td>CVSS-BTE</td><td>8.7</td><td>9.5</td></tr>
+<tr><th scope="row">Critical</th><td>CVSS-BTE</td><td>9.7</td><td>10.0</td></tr>
+</tbody></table></div>
+<p>規則：A0 與 AX 維持 CVSS-BTE 不變（AX 的結果標為暫定 provisional）；A1 與 A2 取「表格值」與 CVSS-BTE 的較大者，所以 <strong>AIVSS 永不低於 CVSS-BTE</strong>。任何分類指標（LC、CP、AP、RH）為 X，代表證據不足，結果被標為暫定，而不是預設為無風險。所以「還沒測就先填 N」是錯的：N 的意思是已確認沒有，沒看到證據應該填 X。<span class="tag official">官方</span>（X 的定義）；對填寫習慣的提醒為<span class="tag author">作者整理，非官方</span></p>
+<p><span class="tag author">作者計算，非官方範例</span>：沿用情境 A 的基礎分 6.0（Medium）。唯讀問答助理若 LC＝I、其餘 N，歸 A1，AIVSS ＝ 7.5；可寫入正式環境的 agent 若 LC＝I、CP＝C，歸 A2，AIVSS ＝ 8.9。注意：<strong>同一個弱點，用 v0.8 算是 6.8 與 8.5，用 1.0 查表是 7.5 與 8.9。</strong>這正是第 1 章說「不同版本的分數不能比較」的原因：即使兩份報告剛好寫出 7.7 與 7.5 這樣相近的數字，也可能一份來自 v0.8 的十因子算式、另一份來自 1.0 的查表，輸入與意義都不同。</p>
+<div class="callout warn unsure">
+  <p class="callout-title">1.0 的自我聲明：請當作草案看待</p>
+  <p>計算器頁面與候選儲存庫自己寫明：Table 6 的格值是<strong>尚未對獨立評分的發現驗證的政策設定</strong>；Effect Class 未經驗證；補救時間線（SSVC／BOD 26-04）是「實驗性、未校準」；FIRST 沒有驗證或背書；範例是合成的測試資料，不是真實事件；並明寫「OWASP does not endorse AIVSS v1」。程式碼授權是 Apache-2.0。因此本教材<strong>不把 1.0 說成現行標準</strong>，只把它當作「官方網站目前展示的方向」來教。</p>
+</div>
+
+<h2 id="ap-limits">3.4 使用限制與跨文件整合</h2>
+<div class="table-wrap"><table>
+<caption>表 3-3　使用 AIVSS 前要知道的限制，與它和其他 OWASP 文件的關係</caption>
+<thead><tr><th scope="col">面向</th><th scope="col">內容</th><th scope="col">依據</th></tr></thead>
+<tbody>
+<tr><th scope="row">版本並存</th><td>三套說法的關係未確認；不同版本的分數不能比較；記錄分數時一併記錄版本與輸入</td><td><span class="tag official">官方</span>（現象）；處理方式為<span class="tag author">作者整理，非官方</span></td></tr>
+<tr><th scope="row">序數尺度</th><td>不平均、不用小數位排名、跨級才有意義</td><td><span class="tag official">官方</span>（v0.8 3.2 節）</td></tr>
+<tr><th scope="row">驗證不足</th><td>v0.8 的緩解下限 0.67 是暫定錨點；1.0 的 Table 6 與 Effect Class 自述未驗證</td><td><span class="tag official">官方</span>（自述）</td></tr>
+<tr><th scope="row">授權</th><td>主儲存庫授權檔只寫「TODO」，未能確認；v0.8 PDF 內文沒有授權文字；網站頁尾為 CC BY-SA 4.0</td><td>2026-10-26 讀取</td></tr>
+<tr><th scope="row">與 Agentic Top 10 2026 的關係</th><td>v0.8 附錄 B 把 ASI01–ASI10 對照到 AIVSS 的十項核心風險，並說明「不是一對一」：Agentic Top 10 偏攻擊技術與失效模式，AIVSS 偏風險分類；許多 ASI 條目對應多個 AIVSS 風險</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">與紅隊演練的關係</th><td>GenAI Red Teaming Manual 建議依本地風險排序，並提到若組織使用 AIVSS 或其他評分系統，要把分數與 OWASP 分類標籤<strong>分開記錄</strong>。Manual 自己的嚴重度量表則是 Critical／High／Medium／Low 的質性評分，並未要求 AIVSS</td><td><span class="tag official">官方</span>；延伸閱讀：<a href="../genai-red-teaming/index.html">GenAI 紅隊演練主題</a></td></tr>
+<tr><th scope="row">與 AI Testing Guide、AISVS 的關係</th><td>AI Testing Guide 的 README 把 AIVSS 列為相關資源（調整 CVSS 原則到 AI 領域的評分框架）；AISVS 是驗證需求，AIVSS 是弱點評分，兩者角色不同</td><td><span class="tag official">官方</span>（出自該 README）；對角色的區分為<span class="tag author">作者整理，非官方</span>；延伸閱讀：<a href="../ai-testing-guide/index.html">AI Testing Guide</a>、<a href="../aisvs-and-llmsvs/index.html">AISVS 與 LLMSVS</a></td></tr>
+</tbody></table></div>
+<p>把這些放在一起，從找出弱點到決定補救順序，一個合理的工作流程是：用測試或紅隊<strong>找出並重現</strong>弱點，用驗證標準<strong>檢查要求是否達成</strong>，再用評分<strong>排優先順序</strong>。這是作者的串接，不是官方流程。<span class="tag author">作者整理，非官方</span></p>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>同一個技術弱點，因部署脈絡不同，AIVSS 級別可以不同；只修底層弱點不一定降級，限縮 agent 的自主性、工具與記憶往往更有效。</li>
+  <li>不要平均 AIVSS 分數，也不要用小數位排名；儀表板用各級別的數量與未結案件。</li>
+  <li>1.0 是查表模型：五個類別式指標 → Effect Class → Table 6；AIVSS 永不低於 CVSS-BTE；X 代表證據不足，結果暫定。</li>
+  <li>1.0 自述未驗證、OWASP 不背書；三套版本的分數不能比較。</li>
+  <li>AIVSS 是評分，不是測試，也不是驗證標準；它與紅隊、測試、驗證標準組合使用。</li>
+</ul></div>
+<ul class="checklist">
+  <li>給我兩個部署脈絡不同的相同弱點，我能解釋為什麼 AIVSS 級別可以不同。</li>
+  <li>我能指出「把分數平均成指數」的問題，並提出替代的呈現方式。</li>
+  <li>我能說出 1.0 五個指標中至少四個的意思，與 AIVSS 為什麼「永不低於 CVSS-BTE」。</li>
+  <li>我知道為什麼本教材不宣稱 1.0 是現行標準。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3、LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p>做這個主題的 <a href="quiz.html">總測驗</a>（12 題）。想把評分接到前面的工作，可以回到 <a href="../genai-red-teaming/index.html">GenAI 紅隊演練</a> 與 <a href="../ai-testing-guide/index.html">AI Testing Guide</a>；需要驗證要求的清單，看 <a href="../aisvs-and-llmsvs/index.html">AISVS 與 LLMSVS</a>。核對來源與版本，看 <a href="references.html">參考資料與來源核對</a>。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>AIVSS v0.8 規格：Part 2 第 3.2–3.5 節、4.1–4.2（生命週期與發布閘門）、5（與風險管理框架整合）、Appendix B（對照 Agentic Top 10 2026）；<a href="https://aivss.owasp.org/">aivss.owasp.org</a>；發布日未能確認。</li>
+    <li>AIVSS 1.0 參考計算器：<a href="https://aivss.owasp.org/calculator/">aivss.owasp.org/calculator/</a>；候選儲存庫 README 與原始碼（<code>aivss_calc/ai_metrics.py</code>、<code>aivss_calc/lookup.py</code>）：<a href="https://github.com/kenhuangus/aivss-v1-candidate">github.com/kenhuangus/aivss-v1-candidate</a>；Apache-2.0；2026-10-26 讀取。</li>
+    <li>OWASP GenAI Red Teaming Manual Version 1.0（2026-10），第 3.3.3 節 Prioritization &amp; Output（關於分數與分類標籤分開記錄）與第 6.5 節（嚴重度量表）：<a href="https://genai.owasp.org/resource/genai-red-teaming-manual-version-1-0/">genai.owasp.org/resource/genai-red-teaming-manual-version-1-0/</a>；CC BY-SA 4.0。</li>
+    <li>OWASP AI Testing Guide README（Existing Resources and Initiatives 列出 AIVSS）：<a href="https://github.com/OWASP/www-project-ai-testing-guide">github.com/OWASP/www-project-ai-testing-guide</a>；授權 CC BY-SA 4.0（儲存庫 LICENSE.md 標示）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：aivss.owasp.org 網站 — CC BY-SA 4.0（除非另有說明）；v0.8 PDF 內文未標示授權；AIVSS 1.0 候選儲存庫 — Apache-2.0；GenAI Red Teaming Manual — CC BY-SA 4.0；AI Testing Guide — CC BY-SA 4.0。本頁僅引用名稱、結構與數值並以自己的話重述。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'v-ch3', topic: 'aivss', mode: 'chapter',
+  questions: [
+    { id: 'v3q1', type: 'scn', lo: [4], refs: [{label: '3.1 情境 A', href: '03-applying.html#ap-a'}],
+      stem: '依情境 A 與規格的提醒，這個團隊的決策有什麼問題？',
+      scenario: '松岩零售（虛構）發現其採購 agent 的提示詞注入弱點，在可自主提交訂單、擁有高權限工具與長期記憶的部署下，AIVSS 為 High。團隊決定：「把底層弱點修好就行，agent 的權限與記憶維持不變，這樣業務不受影響。」修完後底層基礎分明顯降低，但 agent 部署沒變。',
+      options: [
+        { text: '沒有問題，底層弱點修好之後風險一定降到 Low。', why: '情境 A 的計算顯示，基礎分降一半，只把 AIVSS 從 8.5 降到約 7.4，仍是 High。' },
+        { text: '有問題：規格指出當放大量遠大於基礎分時，風險主要來自部署脈絡；只修底層弱點而不限縮自主性、工具與記憶，不會明顯降低 AIVSS。', correct: true, why: '3.1 節步驟 4 與 3.3 的官方提醒。' },
+        { text: '有問題，因為底層弱點本來就不該修。', why: '修底層弱點仍然有益；問題在於只修它並不足夠。' },
+        { text: '沒有問題，因為 AIVSS 分數只能升不能降。', why: '分數可以下降；情境 A 示範了限縮部署後的下降。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 官方說，放大量遠大於基礎分時，主要風險來源是部署脈絡。(2) 情境 A 的作者計算：基礎分 6.0→3.0、agent 因子不變，AIVSS 約 8.5→7.4，仍 High。(3) 限縮部署（自主性、工具、記憶）與經驗證的緩解，下降更明顯。</p><p><strong>結論：</strong>兩者並行：修弱點，同時限縮 agent。對應教材：<a href="03-applying.html#ap-a">3.1 節</a>。</p>' },
+    { id: 'v3q2', type: 'mc', lo: [4], refs: [{label: '3.2 情境 B', href: '03-applying.html#ap-b'}],
+      stem: '主管想把本月 AIVSS 分數平均成一個「AI 風險指數」。依本章，下列哪一個替代做法最合適？',
+      options: [
+        { text: '顯示各嚴重度級別的數量與未結案件，並標註每個分數用的版本。', correct: true, why: '3.2 節情境 B 的建議；級別是官方建議的解讀單位。' },
+        { text: '把分數改成百分比再平均。', why: '換單位不改變「平均順序值沒有意義」。' },
+        { text: '只顯示最低分，因為它代表整體。', why: '最低分掩蓋了最嚴重的問題，比平均更糟。' },
+        { text: '用小數位把分數排成一條線，最上面是最危險。', why: '同級內小數位差距視為等價，不應用小數位排名。' }
+      ],
+      summary: '分數是順序尺度：用級別與數量，不用平均。' },
+    { id: 'v3q3', type: 'mc', lo: [3], refs: [{label: '3.3 表 3-2', href: '03-applying.html#ap-v10'}],
+      stem: '依 1.0 查表模型，下列哪個說法是對的？',
+      options: [
+        { text: 'AIVSS 可以低於 CVSS-BTE，因為緩解會降低分數。', why: '1.0 的表格規則是 A1／A2 取表格值與 CVSS-BTE 的較大者，所以永不低於。' },
+        { text: '五個 Agentic 指標先轉成數字，再相乘得到分數。', why: '1.0 明說不對 agentic 指標做算術，而是歸入 Effect Class 後查表。' },
+        { text: '有任一分類指標是 X，代表風險為零。', why: 'X 代表證據不足，結果標為暫定，而不是無風險。' },
+        { text: '當 Effect Class 是 A0 或 AX 時，AIVSS 等於 CVSS-BTE；A1 或 A2 時取表格值與 CVSS-BTE 的較大者。', correct: true, why: '3.3 節規則。' }
+      ],
+      summary: '查表：A0／AX 不變，A1／A2 取較大者；永不低於 CVSS-BTE。' },
+    { id: 'v3q4', type: 'match', lo: [3], refs: [{label: '3.3 表 3-1', href: '03-applying.html#ap-v10'}],
+      stem: '把 1.0 的指標配對到它問的問題。',
+      cats: [
+        { id: 'lc', label: 'LC' },
+        { id: 'cp', label: 'CP' },
+        { id: 'ap', label: 'AP' },
+        { id: 'rh', label: 'RH' },
+        { id: 'es', label: 'ES' }
+      ],
+      items: [
+        { text: '被入侵的意圖或權限是否跨過信任邊界到另一個 agent 或租戶', answer: 'ap', why: 'Agentic Control Propagation。' },
+        { text: 'agent 為了滿足代理目標或評估器，自己越過安全邊界', answer: 'rh', why: 'Reward Hacking。' },
+        { text: '攻擊者控制的自然語言多直接地影響安全相關決策', answer: 'lc', why: 'Language-Mediated Control。' },
+        { text: '攻擊者控制的脈絡或記憶是否在工作階段結束後仍存在', answer: 'cp', why: 'Context Persistence。' },
+        { text: '工具、技能、MCP server 與外掛綁定得多緊（只影響 Uplift U）', answer: 'es', why: 'Extension Binding Surface；不影響分數。' }
+      ],
+      summary: '五個指標：LC、CP、AP、RH 決定 Effect Class；ES 只影響資訊性的 U。' }
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　威脅地圖｜OWASP AI Exchange｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AI Exchange 的威脅模型：三種威脅時機、六種影響、AI 資產，以及如何讀懂多步驟攻擊鏈。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="01-overview" data-topic="ai-exchange" data-page="02-threat-map.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　威脅地圖</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position.html">第 1 章</a>；<a href="../../primer-security-for-developers.html#p-cia">CIA 三要素</a>、<a href="../../primer-security-for-developers.html#p-tm">攻擊鏈</a></li>
+</ul>
+<p class="lead">AI Exchange 最核心的一張圖，是一張「AI 系統上的威脅都從哪裡來」的地圖。學會這張圖，後面的控制、風險分析都有地方掛。</p>
+
+<h2 id="tm-scope">2.1 先劃範圍：AI 資安 = AI 專屬資產的威脅 + 其他資產的威脅</h2>
+<p>AI Exchange 的範圍刻意收窄：它專注於<strong>針對 AI 專屬資產</strong>（例如訓練資料）的威脅。至於使用者資料庫這種一般資產，已有很多其他資源涵蓋。所以它在總覽頁給了一個等式：</p>
+<p><strong>AI 資安 = 對 AI 專屬資產的威脅（AI Exchange）+ 對其他資產的威脅（其他資源）</strong></p>
+<p>換句話說，AI Exchange 是現有資安計畫的<em>延伸</em>，不是取代。AI 系統首先是 IT 系統，一般的應用程式與營運安全仍然要做。官方在風險分析最後也強調：「AI 系統是軟體系統，除了 AI 專屬的威脅與控制，還需要適當的傳統應用安全與營運安全。」</p>
+
+<h3 id="tm-assets">AI 專屬資產有哪些？</h3>
+<p>官方在安全計畫 (SEC PROGRAM) 控制中列出需要納入的 AI 資產：訓練資料、驗證資料、測試資料、模型本身（模型參數）、超參數、模型與開發過程的文件、模型輸入、<strong>增補資料 (augmentation data)</strong>（自動插入模型輸入的內容，例如文件、system prompt）、模型輸出、預期的模型行為，以及從外部取得的資料與模型。</p>
+<p>其中「增補資料」對 LLM 開發者最重要：RAG 檢索回來的片段、system prompt、agent 的記憶，都屬於它。</p>
+
+<h2 id="tm-three">2.2 三種威脅：依「發生的時機」分</h2>
+<div class="table-wrap"><table>
+<caption>表 2-1　AI Exchange 的三種威脅類型</caption>
+<thead><tr><th scope="col">類型</th><th scope="col">什麼時候</th><th scope="col">攻擊者怎麼做</th><th scope="col">例子（官方）</th></tr></thead>
+<tbody>
+<tr><th scope="row">開發期威脅<br>(development-time)</th><td>資料被取得與整理、模型被訓練或取得時</td><td>攻擊開發環境或供應鏈</td><td>資料投毒 (data poisoning)</td></tr>
+<tr><th scope="row">輸入威脅<br>(input threats)</th><td>系統運作中，透過「使用模型」（提供輸入、讀取輸出）</td><td>只需要能對模型下輸入</td><td>提示詞注入 (Prompt Injection)、規避 (evasion)</td></tr>
+<tr><th scope="row">執行期的其他威脅<br>(runtime conventional)</th><td>系統運作中，但<em>不是</em>透過推論</td><td>攻擊應用、基礎設施、儲存</td><td>竊取模型輸入</td></tr>
+</tbody></table></div>
+<p>為什麼這樣分？因為<strong>每一類需要的防守者與手段不同</strong>：開發期威脅靠開發環境安全與供應鏈管理；輸入威脅靠對模型使用的控管與模型本身的強化；執行期的其他威脅主要是傳統資安。第 3 章會看到，控制措施正是依這個軸線組織的。</p>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="威脅地圖示意圖：上方是開發期，包含訓練資料、機器學習與 AI 模型；下方是執行期，包含增補資料、輸入、應用與基礎設施、輸出。三類威脅分別指向各元件。">
+flowchart TB
+  subgraph DEV["開發期 (development-time)"]
+    TRN["訓練資料"] -->|"資料投毒（直接或經供應鏈）"| M
+    TRN -.->|"直接外洩"| X1(("外洩"))
+    M["AI 模型"]
+    M -.->|"開發期模型外洩"| X2(("外洩"))
+  end
+  subgraph RUN["執行期 (runtime)"]
+    AD["增補資料<br>RAG 文件、system prompt、記憶"] --> I
+    I["輸入"] --> APP["應用程式與基礎設施"] --> O["輸出"]
+    M --> APP
+  end
+  IT["輸入威脅<br>規避、提示詞注入、模型竊取、<br>揭露敏感資料、資源耗盡"] ==> I
+  RT["執行期的傳統資安威脅<br>執行期模型投毒或外洩、<br>輸入外洩、輸出含傳統注入、<br>增補資料外洩或遭竄改"] ==> APP
+  RT ==> AD
+  O -->|"輸出含傳統注入"| DS["下游系統、瀏覽器"]
+</pre>
+<figcaption><strong>圖 2-1　AI 威脅地圖（根據官方 Threat map 重新繪製的簡化版）。</strong>官方原圖由 Software Improvement Group 捐贈給 AI Exchange，可免費使用；原圖用箭頭標出每個威脅，並用字母標示它造成哪一種影響（見表 2-2）。這張簡化圖只保留三類威脅與主要元件，細節請看官方原圖。</figcaption>
+</figure>
+
+<h2 id="tm-impact">2.3 六種影響與三種攻擊者目標</h2>
+<p>官方把威脅造成的結果分成六種，並對應到三種攻擊者目標：揭露 (disclose)、欺騙 (deceive)、破壞 (disrupt)。這和你已熟悉的 <a href="../../primer-security-for-developers.html#p-cia">CIA 三要素</a>是同一件事換個說法。</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　六種影響與攻擊者目標</caption>
+<thead><tr><th scope="col">目標</th><th scope="col">影響</th><th scope="col">對應 CIA</th><th scope="col">通俗說法</th></tr></thead>
+<tbody>
+<tr><th scope="row" rowspan="3">揭露<br>(disclose)</th><td>訓練／測試資料的機密性受損</td><td>C</td><td>訓練資料被看到</td></tr>
+<tr><td>模型智慧財產（參數、或產生它們的過程與資料）的機密性受損</td><td>C</td><td>模型被偷</td></tr>
+<tr><td>輸入或增補資料的機密性受損</td><td>C</td><td>prompt 或檢索內容被看到</td></tr>
+<tr><th scope="row">欺騙<br>(deceive)</th><td>模型行為的完整性受損：模型被操縱而做出非預期行為，進而欺騙使用者</td><td>I</td><td>模型被騙、被帶歪</td></tr>
+<tr><th scope="row">破壞<br>(disrupt)</th><td>模型可用性受損：模型不能用，或行為異常，但目的不是欺騙使用者而是擾亂營運</td><td>A</td><td>模型被打爆</td></tr>
+<tr><th scope="row">破壞／揭露</th><td>非 AI 專屬資產的 CIA</td><td>C、I、A</td><td>一般的資安問題</td></tr>
+</tbody></table></div>
+<p>官方還提醒：造成同一種影響的威脅，可能走完全不同的攻擊面 (Attack Surface)。例如訓練資料的機密性，可以被「駭進開發期資料庫」破壞，也可以被<strong>成員推論 (membership inference)</strong> 破壞：把某人的資料餵給模型、觀察輸出細節，就能推斷此人是否在訓練資料中。第 3 章的週期表會把「資產與影響、攻擊面、威脅」三者一起列出。</p>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：為什麼要特別強調「模型行為的完整性」？</p>
+  <p>對一般軟體工程師來說，「完整性」通常指資料沒被改。但 AI 系統特有的一點是：<strong>模型的「行為」本身就是一項需要保護完整性的資產</strong>。資料沒被動過，模型一樣可能因為一段輸入而做出與設計不符的事。這是 AI 威脅和傳統威脅的關鍵差別，也是為什麼提示詞注入被放在「模型行為完整性」這一格。</p>
+</div>
+
+<h2 id="tm-chain">2.4 攻擊鏈：一個威脅常常是好幾步</h2>
+<p>官方提醒，地圖上的某些威脅其實是「多步驟攻擊」，在圖上被壓縮成一個箭頭。它舉了兩個例子（概念層級，沒有操作細節）：</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="兩條攻擊鏈。鏈一：闖入訓練資料庫、放入毒樣本、模型用該資料訓練、攻擊者送出特定輸入利用被污染的行為。鏈二：闖入開發環境、偷走模型、離線研究如何騙過它、對線上系統送出製作好的輸入。">
+flowchart LR
+  subgraph C1["鏈一：先投毒，後利用"]
+    direction LR
+    A1["闖入訓練資料庫"] --> A2["放入毒樣本"] --> A3["資料被用於訓練"] --> A4["送出特定輸入，<br>觸發被污染的行為"]
+  end
+  subgraph C2["鏈二：先偷模型，後離線準備輸入攻擊"]
+    direction LR
+    B1["闖入開發環境"] --> B2["偷走模型"] --> B3["離線實驗<br>研究如何騙過它"] --> B4["對線上系統<br>送出製作好的輸入"]
+  end
+</pre>
+<figcaption><strong>圖 2-2　官方舉的兩條攻擊鏈。</strong>鏈上每一環都是一個可以設關卡的機會：鏈一可以在「闖入資料庫」或「放入毒樣本」就擋下；鏈二可以在「闖入開發環境」阻止模型外洩。這就是第 3 章要談的縱深防禦 (Defense in Depth)。</figcaption>
+</figure>
+<div class="callout official">
+  <p class="callout-title">為什麼「偷到模型」本身就是個風險？</p>
+  <p>官方在地圖後附註：取得模型（或類似模型）的攻擊者，可以<strong>有效率且不被發現地</strong>執行或準備輸入攻擊。你不給對方線上嘗試的機會，對方就不會留下可觀察的痕跡。因此模型的機密性，不只是保護智慧財產，也是保護你的偵測能力。</p>
+</div>
+
+<h2 id="tm-concept">2.5 核心概念：資料投毒</h2>
+<p>本章以最典型的開發期威脅為例，用統一格式講解。其他威脅會在對應章節展開：提示詞注入在第 4–5 章，增補資料（RAG、記憶）在第 6 章。</p>
+
+<div class="concept">
+<h3 id="c-poison">資料投毒</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>攻擊者操縱訓練資料，或用於 in-context learning 的資料，使模型行為偏離預期。屬「開發期威脅」，影響模型行為完整性。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>資料來源多、規模大、常含公開資料，難以逐筆驗證。官方指出，生成式 AI 的訓練集規模大且來自公開資料，所以投毒更容易；攻擊者可以劫持網域並放上被操縱的資訊。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>在資料進入訓練流程之前（取得、整理階段）或在供應鏈上動手，等模型訓練完成後，再用特定輸入觸發被污染的行為（見圖 2-2 鏈一）。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>以開發環境安全、資料隔離、供應鏈管理為基礎，再加上資料品質控制（偵測可疑樣本）等 AI 專屬措施（細節在第 3 章）。若風險仍不可接受，且你有模型參數（如開放權重），官方也提到可考慮訓練後的對策。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「我們用現成的託管模型，所以不用擔心投毒。」官方說法是：投毒風險轉移成「供應鏈模型投毒」，你要透過供應商管理去取得保證，而不是假設沒有。</dd>
+</dl>
+</div>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>AI 資安 = 對 AI 專屬資產的威脅 + 對其他資產的威脅。AI Exchange 管前者，要與既有資安計畫並用。</li>
+  <li>威脅依時機分三類：開發期、輸入、執行期的其他威脅。每類的防守者與手段不同。</li>
+  <li>影響分六種，可對應 CIA；<strong>模型行為本身就是需要保護完整性的資產</strong>。</li>
+  <li>許多威脅是多步驟攻擊鏈，鏈上每一環都能設關卡。</li>
+  <li>增補資料（RAG 文件、system prompt、記憶）是 LLM 開發者最需要特別留意的 AI 資產，第 6 章會專門處理。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能把一個具體攻擊，歸入開發期、輸入或執行期其他威脅其中之一。</li>
+  <li>我能說出威脅影響的是哪種資產、哪種 CIA 性質。</li>
+  <li>我能說明為什麼偷到模型會讓輸入攻擊更難被發現。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-control-map.html">第 3 章　控制地圖</a>：看四大控制類別如何對應這張威脅地圖，用週期表由威脅找到控制，並在情境中練習選控制。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Exchange，0. AI Security Overview：Threats overview（Scope of Threats、Threat map）、How to select relevant threats（決策樹）、How about Generative AI?（資料投毒的 GenAI 特性）；<a href="https://owaspai.org/go/threatsoverview">owaspai.org/go/threatsoverview</a>、2026-10-25 快照；CC0 1.0。</li>
+    <li>OWASP AI Exchange，SEC PROGRAM 控制（AI 資產清單）：<a href="https://owaspai.org/go/secprogram">owaspai.org/go/secprogram</a>。</li>
+    <li>官方威脅地圖原圖：<a href="https://owaspai.org/images/threats.png">owaspai.org/images/threats.png</a>（圖中註明「AI threat model by Software Improvement Group, donated to AI Exchange, free of copyright and attribution」）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AI Exchange（owaspai.org）— CC0 1.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch2', topic: 'ai-exchange', mode: 'chapter',
+  questions: [
+    { id: 'c2q1', type: 'mc', lo: [2], refs: [{label: '2.2 三種威脅', href: '02-threat-map.html#tm-three'}],
+      stem: '某個攻擊者只需要能對線上模型送出輸入、讀取輸出，就能嘗試誘導它做出非預期行為。依 AI Exchange 的分類，這屬於哪一類威脅？',
+      options: [
+        { text: '供應鏈威脅，因為模型來自第三方。', why: '供應鏈是開發期威脅的一種攻擊面，指的是取得的資料、模型或託管有問題；這裡攻擊者只是在使用模型。' },
+        { text: '開發期威脅，因為模型是在開發期被訓練的。', why: '開發期威脅指攻擊發生在資料被取得、模型被訓練或取得的階段。這裡的攻擊發生在系統運作時。' },
+        { text: '執行期的傳統資安威脅，因為模型此時正在運作。', why: '這一類指系統運作中、但「不是」透過推論發生的威脅，例如竊取模型輸入。是否透過推論是關鍵區別。' },
+        { text: '輸入威脅，因為攻擊是透過「使用模型」（推論）發生的。', correct: true, why: '輸入威脅的定義就是攻擊者透過使用模型（提供輸入、取得輸出）發動。提示詞注入與規避都屬此類。' }
+      ],
+      summary: '分類看「何時」與「怎麼發動」：透過推論＝輸入威脅；不透過推論的執行期＝傳統威脅；資料／模型形成階段＝開發期。' },
+    { id: 'c2q2', type: 'mc', lo: [2], refs: [{label: '2.3 六種影響', href: '02-threat-map.html#tm-impact'}, {label: '2.1 AI 專屬資產', href: '02-threat-map.html#tm-assets'}],
+      stem: '一次攻擊中，RAG 知識庫裡的文件被悄悄改寫，模型因此對使用者給出錯誤建議，但模型參數完全沒被動過。這主要傷害了哪一項？',
+      options: [
+        { text: '模型的可用性，因為使用者拿到錯誤答案就等於模型壞了。', why: '可用性指模型不能用、或被用來擾亂營運。這裡模型是「可用但被誘導」，目的是欺騙，不是破壞可用性。' },
+        { text: '模型智慧財產的機密性，因為攻擊者接觸了模型。', why: '情境裡沒有人取得模型，被動的是知識庫文件，不是模型參數的外洩。' },
+        { text: '訓練資料的機密性，因為文件裡可能有敏感資料。', why: '被改寫的是檢索用的增補資料，不是訓練資料，而且重點是「被竄改」而非「被讀取」。' },
+        { text: '模型行為的完整性，攻擊面是增補資料。', correct: true, why: '增補資料被竄改，會在不改動模型參數的情況下改變模型行為，屬「模型行為完整性」。' }
+      ],
+      summary: '模型沒壞、餵給它的內容壞了，行為一樣會變。' },
+    { id: 'c2q3', type: 'match', lo: [2], refs: [{label: '2.2 三種威脅', href: '02-threat-map.html#tm-three'}],
+      stem: '把下列每個威脅，配對到它所屬的 AI Exchange 威脅類型。',
+      cats: [
+        { id: 'dev', label: '開發期威脅', desc: '資料取得、模型訓練或取得階段' },
+        { id: 'input', label: '輸入威脅', desc: '透過使用模型（提供輸入、讀取輸出）' },
+        { id: 'rt', label: '執行期的傳統資安威脅', desc: '運作中，但不是透過推論' }
+      ],
+      items: [
+        { text: '攻擊者在訓練資料中植入毒樣本', answer: 'dev', why: '資料投毒發生在資料被取得與整理的階段，屬開發期。' },
+        { text: '攻擊者大量查詢模型，蒐集輸入輸出配對以複製其行為（模型竊取）', answer: 'input', why: '模型竊取（輸入輸出收割）是透過使用模型進行，屬輸入威脅。' },
+        { text: '提示詞在傳輸途中被攔截而外洩', answer: 'rt', why: '輸入資料外洩是對資料在傳輸或儲存時的傳統攻擊，不是透過推論，屬執行期傳統威脅。' },
+        { text: '供應商提供的預訓練模型在出貨前就被動過手腳', answer: 'dev', why: '供應鏈模型投毒屬開發期威脅（供應鏈是開發期的攻擊面之一）。' }
+      ],
+      summary: '判斷關鍵：攻擊是發生在「形成資料／模型」、「透過推論」還是「運作中但不透過推論」。' },
+    { id: 'c2q4', type: 'scn', lo: [2], refs: [{label: '2.4 攻擊鏈與圖 2-2', href: '02-threat-map.html#tm-chain'}],
+      stem: '依據本章，這起事件最合理的描述是什麼？該在哪一環最先補強？',
+      scenario: '星河保險是虛構的公司，內部有一個詐欺偵測模型。某天資安團隊發現：研發部門的一台訓練伺服器曾遭未授權登入，模型檔案可能被複製。兩個月後，詐欺案件的漏報率逐漸升高，但線上系統的日誌看不出明顯的異常請求，也沒有大量重複的探測行為。',
+      options: [
+        { text: '這是供應商模型投毒，應更換供應商。', why: '情境中是自己訓練的模型，且有未授權登入的證據；沒有證據指向供應商。' },
+        { text: '這是提示詞注入，應加入輸入過濾。', why: '詐欺偵測是分類型模型，不是由提示詞控制的生成式模型。這裡更像是規避類攻擊；而且問題根源在於模型外洩。' },
+        { text: '可能是攻擊鏈：先偷走模型，離線準備能騙過它的輸入，再送到線上。最先該補強的是開發環境的存取控制與模型保護。', correct: true, why: '模型外洩（開發環境）→ 離線研究 → 線上送出製作好的輸入，正是圖 2-2 的鏈二。因為攻擊者離線實驗，線上不會留下大量探測痕跡。' },
+        { text: '這是單純的資源耗盡攻擊，應加強 rate limit。', why: '資源耗盡是破壞可用性；情境中是漏報增加（行為被繞過），而且日誌沒有大量請求。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 起點是訓練伺服器被未授權登入、模型可能被複製，這是「開發期」的模型外洩（Direct development-time model leak）。(2) 線上系統日誌「看不出大量探測」，吻合官方的提醒：取得模型的攻擊者可以離線有效率地準備輸入攻擊，不被發現。(3) 漏報升高代表模型行為被繞過，屬規避類的完整性影響。</p><p><strong>結論：</strong>這是鏈二型態的可能情境（證據不足，故說「可能」）。最先該補的是開發環境安全與資料／模型隔離，使模型不易外洩；之後才是線上的偵測與輸入處理。對應教材：<a href="02-threat-map.html#tm-chain">2.4 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 7 章　風險分析｜OWASP AI Exchange｜OWASP AI 資安學習教材</title>
+<meta name="description" content="G.U.A.R.D. 五步驟、威脅建模決策樹、風險處理的四種策略，以及責任歸屬：如何從一長串威脅挑出對你的系統真正相關的那一小份。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="01-overview" data-topic="ai-exchange" data-page="07-risk-analysis.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 7 章　風險分析</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="03-control-map.html">第 3 章</a>、<a href="05-agentic-genai.html">第 5 章</a>；<a href="../../primer-security-for-developers.html#p-risk">資產、威脅、漏洞與風險</a></li>
+</ul>
+<p class="lead">前面幾章列了很多威脅與控制。官方的態度很務實：<strong>你不需要全部處理</strong>。風險分析就是把一長串「理論上可能」，縮成一份對你的系統真正有意義的短清單，再決定誰負責、做到什麼程度。</p>
+
+<h2 id="ra-guard">7.1 組織層的起點：G.U.A.R.D.</h2>
+<p>在談單一系統的威脅建模 (Threat Modeling) 之前，官方先給組織一個五步驟骨架，取英文首字母稱為 G.U.A.R.D.：</p>
+<div class="table-wrap"><table>
+<caption>表 7-1　G.U.A.R.D. 五步驟（官方「How to organize AI security」）</caption>
+<thead><tr><th scope="col">步驟</th><th scope="col">要做什麼</th><th scope="col">本教材對應</th></tr></thead>
+<tbody>
+<tr><th scope="row">G　Govern<br>治理</th><td>先建立一般的 AI 治理：知道 AI 用在哪、誰負責什麼、訂政策、做影響評估、安排合規與教育（對應 <code class="ctl">AI PROGRAM</code>）。這是一般性的 AI 管理，不只是資安</td><td>第 3 章 Manage</td></tr>
+<tr><th scope="row">U　Understand<br>理解</th><td>以 AI 應用清單為基礎，用風險分析的決策樹弄清楚哪些威脅適用；讓工程師與資安人員理解這些威脅與控制；分清哪些控制由你實作、哪些屬供應商責任</td><td>本章 7.2、7.5</td></tr>
+<tr><th scope="row">A　Adapt<br>調整</th><td>把 AI 資產、威脅與控制納入既有的資安實務：威脅建模、測試、供應鏈管理、開發流程；並記錄風險評估、控制選擇、理由與證據（歐盟 AI Act 要求這點）</td><td>本章 7.4</td></tr>
+<tr><th scope="row">R　Reduce<br>降低</th><td>用最小化或模糊化敏感資料、限制非預期行為的衝擊（權限、護欄、人工監督）來縮小影響，「基本上就是套用墨菲定律」。因為 AI 模型永遠可能出錯或被操縱</td><td>第 3–4 章 Limit</td></tr>
+<tr><th scope="row">D　Demonstrate<br>證明</th><td>透過透明、測試、文件與溝通，證明你的 AI 系統在控制之中、防護措施如預期運作</td><td>（本主題不展開）</td></tr>
+</tbody></table></div>
+<div class="callout official">
+  <p class="callout-title">官方的第一個建議：先想要不要用 AI</p>
+  <p>官方在 G.U.A.R.D. 後面寫道：「移除一個不必要的 AI 元件，就消除了與它相關的所有 AI 風險。」它還指出，LLM 本質上提供的是「一個不穩定、沒有文件、政策不明確的介面」，所以套在 AI 上的安全措施，往往無法提供你在其他軟體上習慣的那種安全性質。</p>
+</div>
+
+<h2 id="ra-tree">7.2 威脅建模：從長清單到短清單</h2>
+<p>官方的「識別風險」就是一份威脅建模流程。它要回答三個問題：<strong>哪些威脅理論上適用於這個系統？它們實際上怎麼可能發生？衝擊會是什麼？</strong>做法是逐一走過各種衝擊類型，問系統是否符合某條件，符合才把該威脅留在名單上。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="威脅建模檢查序列：依序檢查是否為生成式模型、誰訓練、是否插入增補資料、誰執行、是否用於分類、模型能否觸發動作、動作能否送出資料、輸出是否被渲染，每一關回答為是時就把對應威脅加入候選清單，最後一定要做資源耗盡防護與傳統資安。">
+flowchart TD
+  S["描述你的系統"] --> Q1["1 是 GenAI，且攻擊者能提供輸入或系統會插入不可信資料？<br>是 → 加入：直接／間接提示詞注入"]
+  Q1 --> Q2["2 誰訓練或微調模型？<br>供應商 → 加入：供應鏈模型投毒（走供應商管理）<br>你自己 → 加入：資料投毒、開發期模型投毒"]
+  Q2 --> Q3["3 是否插入增補資料（RAG、記憶、system prompt）？<br>是 → 加入：增補資料遭竄改；存在資料庫則加：直接外洩"]
+  Q3 --> Q4["4 誰執行模型？<br>供應商 → 執行期模型投毒（走供應商管理）<br>你自己 → 加入：執行期模型投毒"]
+  Q4 --> Q5["5 用於分類任務？<br>是 → 加入：規避（先評估攻擊者動機）"]
+  Q5 --> Q6["6 模型能觸發動作？<br>是 → 以上各項的衝擊被放大"]
+  Q6 --> Q7["7 動作能把資料送給攻擊者，且碰得到敏感資料？<br>是 → 致命三要素，資料外洩<br>否 → 外洩停留在理論層級，可不處理"]
+  Q7 --> Q8["8 輸出是文字且會被渲染？<br>是 → 加入：輸出含傳統注入"]
+  Q8 --> END["永遠要做：防 AI 資源耗盡 + 傳統應用與營運安全"]
+  END --> NEXT["再依衝擊與機率排序，選處理策略"]
+</pre>
+<figcaption><strong>圖 7-1　威脅建模檢查序列（簡化）。</strong>問題與條件取自官方「Identifying Risks」，圖形為重新繪製，把官方的分支改成依序檢查；省略了訓練資料外洩、模型竊取、輸入資料外洩等分支（見表 7-2 說明）。「加入」只是進入下一步評估的候選名單，不代表一定要處理。</figcaption>
+</figure>
+<p>官方給了兩個例子，說明為什麼候選不等於必處理：</p>
+<ul>
+  <li>你不必防範想偷訓練資料的模型反推攻擊，<strong>如果那份資料本來就不敏感</strong>。官方說「這聽起來很明顯，但我看過很多保護措施，防的是實際上不重要的威脅」。</li>
+  <li>agentic 系統用了 LLM，理論上有間接提示詞注入 (Indirect Prompt Injection)；但若你唯一的顧慮是公司敏感資料外洩，而系統<strong>沒有任何途徑把資料送給攻擊者</strong>，這個威脅就停留在理論，不需要處理。</li>
+</ul>
+
+<h2 id="ra-impact">7.3 圖 7-1 沒畫出的幾個分支</h2>
+<p>官方的決策樹還依「衝擊型別」處理另外三類，這裡以文字說明，避免圖形過於複雜：</p>
+<ul>
+  <li><strong>訓練資料外洩：</strong>你自己訓練或微調，且訓練資料敏感？考慮輸出中的揭露、模型反推、開發環境的直接外洩；成員推論只有在「某人是否在訓練集中」本身就是敏感資訊時才需要。若插入增補資料 (augmentation data)，把它當成訓練集一樣看待。</li>
+  <li><strong>模型竊取：</strong>你自己訓練，且模型是智慧財產或容易被規避？考慮模型外洩（透過輸入輸出收割）、開發期與執行期的直接外洩、原始碼與設定外洩。</li>
+  <li><strong>輸入資料外洩：</strong>輸入資料敏感？特別是模型由供應商執行時，要確認資料最小化、傳輸與儲存安全、是否可關閉記錄；RAG 取回的資料也算輸入資料。</li>
+</ul>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：一個容易漏掉的點</p>
+  <p>官方原文是：如果你不自己訓練或微調，模型供應商對訓練資料中不想要的內容（投毒、機密、有著作權的資料）是 responsible, but not accountable per se。本教材把它理解為：供應商有「執行面的責任」，但對你而言它不見得要為結果「負起法律或合約責任」，所以你仍然要檢查授權條款、保證與合約，或依自身情況接受風險。這個中文解讀是作者整理；原文的字面意思請以官方為準。</p>
+</div>
+
+<h2 id="ra-eval">7.4 評估、處理與持續管理</h2>
+<p>決策樹之後，官方沿用 ISO 31000 一類的風險管理四步驟：識別、評估、處理、溝通與監控，並加入 AI 特有的幾件事。</p>
+<div class="table-wrap"><table>
+<caption>表 7-3　風險處理的四種策略（官方 Risk Treatment）</caption>
+<thead><tr><th scope="col">策略</th><th scope="col">意思</th><th scope="col">官方範例</th></tr></thead>
+<tbody>
+<tr><th scope="row">降低 (Mitigation)</th><td>實作控制，降低發生機率或衝擊</td><td>加強資料驗證以防資料投毒</td></tr>
+<tr><th scope="row">轉移 (Transfer)</th><td>把風險轉給第三方，例如保險、外包、雲端服務</td><td>用安全措施完善的第三方雲端服務做訓練、託管與儲存</td></tr>
+<tr><th scope="row">避免 (Avoidance)</th><td>改變計畫，完全消除風險；可能是風險太高就不在該領域用 AI</td><td>決定不用 AI 處理風險無法充分降低的高敏感個資</td></tr>
+<tr><th scope="row">接受 (Acceptance)</th><td>承認風險並承擔，不採取行動；成本大於衝擊時選用</td><td>在衝擊低的非敏感應用中，接受模型反推的低風險</td></tr>
+</tbody></table></div>
+<p>評估階段的機率因素：攻擊者的機會、被抓到的風險、能力與預算、系統的易受攻擊程度、動機、潛在攻擊者數量、事件資料。官方特別指出，要想一想動機：規避垃圾郵件過濾對攻擊者有利，但病患幾乎沒有理由騙過皮膚診斷。同一個理論威脅，要看情境才知道是不是真的威脅。</p>
+<p>另外三件事與 AI 特別有關：</p>
+<ul>
+  <li>把 AI 風險放進企業既有的<strong>風險登記冊 (risk register)</strong>，沿用企業風險管理的詞彙。</li>
+  <li>選控制時要權衡成本與效果，<strong>先處理最高風險的威脅，優先採低成本、見效快的控制</strong>；控制常有品質參數（例如異常偵測門檻），要在模擬環境測試調校，並持續依回饋調整。</li>
+  <li><strong>何時算做夠了？</strong>官方的說法：當所有已識別的風險都能被處理（轉移、避免、接受；其中「接受」有時需要先實作控制，把風險降到可接受）時，系統就算足夠安全。</li>
+</ul>
+
+<h2 id="ra-resp">7.5 責任歸屬：誰負責哪一段</h2>
+<p>決策樹裡有幾次出現「供應商」。官方在第 5、6 步專門處理這件事：</p>
+<ol>
+  <li><strong>安排責任：</strong>預設是建置並部署 AI 系統的組織負責；但建置與部署可能由不同組織完成，託管、雲端也可能外包。有託管元件時，與託管供應商對相關威脅的控制是<strong>共同責任</strong>，要用「責任矩陣」之類的工具釐清。</li>
+  <li><strong>驗證外部責任：</strong>對由其他組織負責的威脅，要取得它們確實處理的保證（例如定期稽核與評估）。</li>
+  <li>如果外部方不願說明如何降低某風險，官方給三條路：(1) 接受風險；(2) 自己提供降低措施；(3) 避免風險，也就是不和那個第三方往來。</li>
+</ol>
+<p>官方的「AI engineering primer」把交付模式分成三種，你擁有的責任依序增加：</p>
+<ul>
+  <li><strong>使用託管模型或 AI 服務：</strong>供應商營運模型與基礎設施；你仍擁有自己的應用、提示詞、被檢索的資料、身分、工具權限、輸出處理與監控。</li>
+  <li><strong>自行執行外部取得的模型：</strong>另外還擁有模型選擇、artifact 完整性、部署強化、隔離、修補與容量；模型的來源與維護仍是供應鏈問題。</li>
+  <li><strong>自行訓練或調整模型：</strong>再加上訓練／微調資料與管線、評估流程、產出的 artifact 與發布決策。</li>
+</ul>
+<p>官方補充：真實系統常三種混用，所以要<strong>逐元件記錄責任</strong>，而不是替整個產品貼一個標籤。對託管模型尤其要問清楚：模型跑在哪裡？資料保存規則？實際記錄什麼？你的輸入會不會被拿去訓練？並且要明白：託管模型需要明文讀取你的輸入，所以你的敏感資料會以未加密的形式離開你的環境；公平比較時，也要想到供應商可能比你更能保護那個環境。</p>
+
+<h2 id="ra-scenario">7.6 範例走法：用決策樹過一遍旅行社行程助理（虛構）</h2>
+<p><span class="tag fiction">虛構</span> 這是一段簡短的示範，不是完整情境。北辰旅行社（虛構）的行程助理使用外部託管 LLM，檢索內部行程手冊與供應商合約，並能呼叫訂位 API 為客戶保留機位（不含付款）；回覆顯示在網站聊天視窗，視窗會把 Markdown 連結渲染成可點擊連結。</p>
+<ol>
+  <li><strong>走圖 7-1：</strong>是 GenAI → 加入提示詞注入；模型由供應商訓練與執行 → 供應鏈與執行期模型投毒走供應商管理；有插入增補資料（手冊與合約）→ 加入增補資料遭竄改；沒有分類任務 → 規避略過；能呼叫訂位 API → 衝擊被放大；輸出文字被渲染 → 加入輸出含傳統注入；永遠要做資源耗盡防護。</li>
+  <li><strong>致命三要素檢查：</strong>Data＝使用者問題與檢索內容；Access＝供應商合約（含價格）屬商業敏感；Send＝訂位 API 看似不對外送資料，但<strong>被渲染的 Markdown 連結</strong>是一條可帶資料的對外路徑，所以 Send 成立。</li>
+  <li><strong>處理：</strong>降低（<code class="ctl">ENCODE MODEL OUTPUT</code>、限制可渲染的連結網域、檢索階段以提問者權限過濾合約、訂位 API 的 <code class="ctl">LEAST MODEL PRIVILEGE</code>）；轉移／驗證（託管 LLM 的資料保存、記錄與是否用於訓練，透過責任矩陣與合約取得保證）；接受（規避與模型反推，記入風險登記冊並註明理由）。</li>
+</ol>
+<p>注意 Send 這一項：它不在 API 裡，而在輸出的呈現方式裡。這份名單是「走一遍決策樹」的產物，而不是「把整份威脅清單都處理」。</p>
+
+<h2 id="ch7-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>先 G.U.A.R.D.，再對單一系統走決策樹；威脅清單不等於待辦清單。</li>
+  <li>「理論上適用」要再看衝擊與動機；沒有途徑把資料送出去，外洩就停留在理論。</li>
+  <li>風險處理有四種：降低、轉移、避免、接受；接受也要記錄理由，有時要先降低才能接受。</li>
+  <li>責任：建置並部署的組織預設負責；託管元件是共同責任，要逐元件記錄並取得外部保證。</li>
+  <li>先處理最高風險，優先低成本、見效快的控制；持續調校與持續評估。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能對一個系統走完決策樹，列出候選威脅並說明哪些可略過。</li>
+  <li>我能為一項風險選擇處理策略，並說出理由。</li>
+  <li>我能指出一個託管元件裡，哪些責任仍然在我這邊。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch7-next">接下來讀什麼</h2>
+<p><a href="08-integration.html">第 8 章　跨文件整合與收尾</a>：把前面學到的概念對照到 LLM Top 10 2026、Agentic Top 10 與其他 OWASP 文件，並標出哪些是官方有寫、哪些是作者整理。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Exchange，0. AI Security Overview：How to organize AI Security（G.U.A.R.D.）、How to select relevant threats and controls? risk analysis（含 1. Identifying Risks 決策樹、2–10 各步）、AI engineering primer for security professionals、Threat map with controls - ready-made model；<a href="https://owaspai.org/go/organize">owaspai.org/go/organize</a>、<a href="https://owaspai.org/go/riskanalysis">…/riskanalysis</a>、<a href="https://owaspai.org/go/threatmodel">…/threatmodel</a>、<a href="https://owaspai.org/go/aiengineeringprimer">…/aiengineeringprimer</a>、<a href="https://owaspai.org/go/readymademodel">…/readymademodel</a>；2026-10-25 快照；CC0 1.0。</li>
+    <li>官方「威脅建模一頁圖」與「Threat map with controls」圖片：<a href="https://owaspai.org/images/threatscontrols.png">threatscontrols.png</a>、<a href="https://owaspai.org/images/threatscontrols-readymodel-hosted.png">…readymodel-hosted.png</a>。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AI Exchange（owaspai.org）— CC0 1.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch7', topic: 'ai-exchange', mode: 'chapter',
+  questions: [
+    { id: 'c7q1', type: 'mc', lo: [4], refs: [{label: '7.2 決策樹', href: '07-risk-analysis.html#ra-tree'}],
+      stem: '一份威脅清單上有 40 項威脅，團隊打算「全部都做控制」。依官方的風險分析方式，下列哪個回應最恰當？',
+      options: [
+        { text: '只處理排名前三的威脅，其餘一律忽略。', why: '官方不是要你忽略，而是依適用性與風險決定處理方式（降低、轉移、避免或接受）；接受也要記錄理由。' },
+        { text: '等發生事件後再處理，因為威脅無法預測。', why: '風險分析的目的就是事前決定；官方還要求持續評估與調整。' },
+        { text: '先用決策樹找出對該系統適用的威脅，再依衝擊與機率排序，只對值得處理的做控制。', correct: true, why: '官方原話之意：你可以從很大的清單開始，最終得到一份相對小的風險清單。' },
+        { text: '全部做是最安全的，只要預算夠就應該這樣。', why: '官方強調控制有成本與副作用，且許多威脅對特定系統只是理論上存在，全做反而分散資源。' }
+      ],
+      summary: '先縮小清單（適用性），再排序（機率 × 衝擊），最後選處理策略。' },
+    { id: 'c7q2', type: 'mc', lo: [4], refs: [{label: '7.4 表 7-3', href: '07-risk-analysis.html#ra-eval'}],
+      stem: '某團隊評估後發現：其內部非敏感文件分類模型被模型反推攻擊的衝擊極低，而防護成本很高。他們決定記入風險登記冊並不做額外控制。這屬於哪種風險處理策略？',
+      options: [
+        { text: '降低 (Mitigation)', why: '降低是實作控制以減少機率或衝擊；此處選擇不做控制。' },
+        { text: '避免 (Avoidance)', why: '避免是改變計畫以完全消除風險，例如不使用 AI；此處系統照常運作。' },
+        { text: '轉移 (Transfer)', why: '轉移是把風險交給第三方（保險、外包、雲端），此處並沒有轉出去。' },
+        { text: '接受 (Acceptance)', correct: true, why: '官方範例就是在衝擊低的非敏感應用中，接受模型反推的低風險；成本高於衝擊時選用。要記錄理由。' }
+      ],
+      summary: '接受不是忽略：要評估、要記錄、要有人簽收。' },
+    { id: 'c7q3', type: 'match', lo: [4], refs: [{label: '7.2 威脅建模', href: '07-risk-analysis.html#ra-tree'}],
+      stem: '把下列情況配對到「應該先考慮的候選威脅」。',
+      cats: [
+        { id: 'inj', label: '間接提示詞注入' },
+        { id: 'sc', label: '供應鏈模型投毒（走供應商管理）' },
+        { id: 'aug', label: '增補資料遭竄改' },
+        { id: 'evade', label: '規避攻擊' },
+        { id: 'oci', label: '輸出含傳統注入' }
+      ],
+      items: [
+        { text: '你直接使用供應商訓練、託管的 LLM，沒有自行微調', answer: 'sc', why: '模型由供應商訓練，威脅是取得被動過手腳的模型；要透過供應商管理取得保證。' },
+        { text: '系統把使用者上傳的履歷文字放進提示詞', answer: 'inj', why: '系統插入不可信資料到提示詞，要考慮間接提示詞注入。' },
+        { text: '系統用 RAG 取得內部手冊內容放進提示詞', answer: 'aug', why: '增補資料影響模型行為，所以要考慮增補資料遭竄改。' },
+        { text: '你有一個垃圾郵件分類模型，攻擊者有動機繞過它', answer: 'evade', why: '用於分類任務時要考慮規避；且要評估攻擊者動機。' },
+        { text: '模型輸出的文字會直接顯示在網頁上', answer: 'oci', why: '文字輸出會被渲染時，要考慮輸出含傳統注入（如 XSS）。' }
+      ],
+      summary: '決策樹的每一條線，對應到系統的一個事實。' },
+    { id: 'c7q4', type: 'scn', lo: [4], refs: [{label: '7.5 責任歸屬', href: '07-risk-analysis.html#ra-resp'}, {label: '7.4 處理策略', href: '07-risk-analysis.html#ra-eval'}],
+      stem: '依官方的風險分析，團隊接下來該怎麼做？',
+      scenario: '晴川健康（虛構）打算用外部託管的 LLM 協助客服處理含病歷摘要的來信。團隊問供應商：「我們送進去的資料會被記錄或拿去訓練嗎？有沒有可關閉記錄的方案？」供應商只回覆「我們非常重視安全」，不願提供細節。團隊的時程很緊，有人建議「先上線再說」。',
+      options: [
+        { text: '把它當成未解的外部風險：要求供應商提供資料保存、記錄與是否用於訓練的書面保證；若仍不明確，在「接受風險、自行降低（如資料最小化、改用自架較小模型）、或避免（不送病歷）」中擇一。', correct: true, why: '符合官方第 5、6 步：責任要安排，外部責任要驗證；供應商不願說明時，只有接受、自行降低或避免三條路。' },
+        { text: '改用另一家供應商，因為任何供應商都不會回答這類問題。', why: '換供應商本身是一個選項，但前提是新供應商能提供保證；「任何供應商都不會回答」並不是官方說法。' },
+        { text: '直接上線，因為供應商一定有做好安全。', why: '官方要求取得保證；對外部不願說明的風險，有明確的三條路可選，不是預設相信。' },
+        { text: '在提示詞中要求模型不要保存資料。', why: '資料是否被保存是供應商基礎設施的事，不是提示詞可以決定；而且託管模型需要明文讀取輸入。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 資料屬輸入資料，且含敏感個資，威脅是輸入資料外洩；託管模型需要明文讀取，所以你的敏感資料會離開你的環境。(2) 責任由共同承擔，官方第 5 步要求安排責任，第 6 步要求對外部責任取得保證。(3) 供應商不願透明時，官方給出三條路：接受風險、提供自己的降低措施、或避免（不和第三方往來）。</p><p><strong>結論：</strong>先取得書面保證；若不可得，優先考慮「資料最小化」與「不送病歷」或自架較小模型，並把殘餘風險記入風險登記冊由有權者簽收。對應教材：<a href="07-risk-analysis.html#ra-resp">7.5 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

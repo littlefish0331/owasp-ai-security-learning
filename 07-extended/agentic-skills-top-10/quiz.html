@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜Agentic Skills Top 10｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Agentic Skills Top 10 主題總測驗：14 題，涵蓋四個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="agentic-skills-top-10" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：Agentic Skills Top 10</h1>
+<ul class="meta-row">
+  <li>14 題（選擇題 6、情境判斷題 4、配對題 4）</li>
+  <li>預估時間：約 18 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO4</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–4 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位與版本：</strong>說明 AST10 是什麼、與 MCP Top 10 及 Agentic Top 10 的分工、現行版本與成熟度，以及它在嚴重度與外部編號上的不一致。</li>
+  <li><strong>風險分辨：</strong>依官方的四個生態面向分辨 AST01–AST10，並用官方決策樹為一個發現選出主要條目。</li>
+  <li><strong>防禦選擇：</strong>面對技能相關情境，指出涉及哪些條目，並選出官方建議中對應的控制。</li>
+  <li><strong>跨文件整合：</strong>正確處理 AST、ASI、MCP、LLM 的編號與年份，知道哪些對應是官方明載、哪些不能照用。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：OWASP Agentic Skills Top 10 — CC BY-SA 4.0；OWASP Top 10 for LLM Applications、Top 10 for Agentic Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-position.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-ten-risks.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-controls-and-scenarios.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-integration.html', a, '第 4 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位與版本 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('sk-compare', '1.3 表 1-2'), C1('sk-layer', '1.2')],
+    stem: '依官方的說法，AST10 與 MCP Top 10 的分工，最貼近下列哪一項？',
+    options: [
+      { text: 'AST10 取代了 MCP Top 10。', why: '沒有任何官方文字說取代；兩者談不同層。' },
+      { text: 'MCP 談模型如何與工具溝通；AST10 談那些工具（技能）實際做什麼；MCP 伺服器本身由 MCP Top 10 涵蓋。', correct: true, why: '官方的口訣與範圍說明。' },
+      { text: 'MCP Top 10 談風險，AST10 談防禦。', why: 'AST10 本身也是風險清單，兩者都有風險與緩解。' },
+      { text: '兩者是同一份文件的 2025 與 2026 版。', why: '它們是不同專案、不同編號格式的清單。' }
+    ],
+    summary: 'MCP = 溝通方式；AST10 = 技能實際做什麼。' },
+
+  { id: 'q02', type: 'scn', lo: [1], refs: [C1('sk-onepage', '1.1 表 1-1'), C1('sk-conflict', '1.5')],
+    stem: '依本教材，這份採購條款的引用有哪些地方要修正？',
+    scenario: '赤楊科技（虛構）的採購條款寫：「供應商須符合 OWASP Agentic Skills Top 10 2026 定稿標準，依其 Critical 等級的 AST01 與 AST02 優先處理，並對應 LLM Top 10 的 LLM09。」審查人員查到：專案頁是 Incubator、1.0-2026；專案網站寫白皮書 V1 公開審查中；白皮書不指派嚴重度；白皮書的 LLM 編號沒有年份。',
+    options: [
+      { text: '條款沒有問題，標準本來就是定稿。', why: '專案網站寫 V1 公開審查中，專案頁是 Incubator。' },
+      { text: '只有「LLM09」需要改。', why: '「定稿標準」與依 Critical 排序也沒有依據。' },
+      { text: '要修三處：改成「Incubator、1.0-2026、白皮書 V1 公開審查中」而非「定稿標準」；刪除依嚴重度排序（白皮書不指派嚴重度）；LLM 對應改用條目名稱查 LLM Top 10 2026，寫帶年份的編號。', correct: true, why: '符合 1.1 與 1.5 節。' },
+      { text: '要把 AST10 換成 MCP Top 10。', why: '兩者談不同層，換掉會漏掉技能層。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 專案頁標示 Incubator、1.0-2026，且網站寫白皮書 V1 公開審查中，所以不是定稿。(2) GitHub 條目檔有嚴重度，但較新的白皮書明說不指派，不應依此排序。(3) LLM 編號沒有年份且不一致，應該用名稱重查。</p><p><strong>結論：</strong>三處都要改。對應教材：<a href="01-position.html#sk-onepage">1.1 節</a>、<a href="01-position.html#sk-conflict">1.5 節</a>。</p>' },
+
+  { id: 'q03', type: 'mc', lo: [1], refs: [C1('sk-concept', '1.4 核心概念')],
+    stem: '下列哪一項最能說明「技能為什麼不是又一種套件」？',
+    options: [
+      { text: '技能一定比套件小。', why: '大小不是官方談的重點。' },
+      { text: '技能只能用在 Claude Code。', why: '官方涵蓋四類技能格式（OpenClaw、Claude Code、Cursor／Codex、VS Code）。' },
+      { text: '技能同時攜帶程式碼層與自然語言指令層，後者沒有現成的簽章、釘選或特徵掃描機制可套用。', correct: true, why: '1.4 節的核心。' },
+      { text: '技能不需要權限，所以不會有風險。', why: '官方正好相反：技能以宿主 Agent 的權限執行或影響執行。' }
+    ],
+    summary: '指令與程式住在同一個製品，套件生態的控制不一定管得到。' },
+
+  /* ================= LO2 風險分辨 ================= */
+  { id: 'q04', type: 'match', lo: [2], refs: [C2('tr-list', '2.1 表 2-1'), C2('tr-map', '2.2 圖 2-1')],
+    stem: '把下列條目配對到官方白皮書的面向。',
+    cats: [
+      { id: 'src', label: '來源與登錄信任' },
+      { id: 'exec', label: '執行邊界' },
+      { id: 'life', label: '生命週期治理' },
+      { id: 'cross', label: '跨平台重用' }
+    ],
+    items: [
+      { text: 'AST01 Malicious Skills', answer: 'src', why: '來源與登錄信任包含 AST01、AST02、AST04。' },
+      { text: 'AST03 Over-Privileged Skills', answer: 'exec', why: '執行邊界包含 AST03、AST05、AST06。' },
+      { text: 'AST07 Update Drift', answer: 'life', why: '生命週期治理包含 AST07、AST08、AST09。' },
+      { text: 'AST10 Cross-Platform Reuse', answer: 'cross', why: '官方單獨列為跨平台重用。' }
+    ],
+    summary: '四個面向是官方分組。' },
+
+  { id: 'q05', type: 'scn', lo: [2], refs: [C2('tr-tree', '2.3 表 2-2'), C2('tr-concept', '2.4')],
+    stem: '依官方決策樹，這個發現應記為哪一條？',
+    scenario: '玉山旅行社（虛構）審查一個技能時發現：技能的 frontmatter 把自己宣告成「唯讀」、風險等級「L0」，但實際會寫入使用者目錄；載入器還用不安全的方式解析這份 frontmatter。技能是剛由內部開發者貼進登錄庫的，沒有簽章問題；掃描器也沒有被繞過。',
+    options: [
+      { text: 'AST01：技能一定是惡意的。', why: '情境沒有顯示發佈時就含惡意負載；問題在中繼資料的誤導與不安全解析。' },
+      { text: 'AST02：它進入了登錄庫。', why: '情境沒有談如何進入管線；簽章與來源沒有問題。' },
+      { text: 'AST08：掃描器出問題。', why: '情境明說掃描器沒有被繞過。' },
+      { text: 'AST04：發現出在中繼資料本身（低報權限、偽造風險等級、不安全的反序列化）。', correct: true, why: '決策樹第 3 步。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 第 1 步：沒有證據顯示發佈時就含惡意負載。(2) 第 2 步：簽章與來源沒有問題。(3) 第 3 步：問題在 frontmatter 的低報權限、偽造風險等級與不安全解析，符合 AST04。(4) 第 4 步：掃描器沒有被繞過。</p><p><strong>結論：</strong>記為 AST04。對應教材：<a href="02-ten-risks.html#tr-tree">2.3 節</a>。</p>' },
+
+  { id: 'q06', type: 'mc', lo: [2], refs: [C2('tr-concept', '2.4 AST02 與 AST05 的邊界')],
+    stem: '官方為什麼說簽章並釘住技能，仍管不到 AST05？',
+    options: [
+      { text: '因為簽章在技術上不可能做到。', why: '簽章可以做到，只是它的範圍是技能這包檔案。' },
+      { text: '因為 AST05 只發生在沒有簽章的技能。', why: '官方的重點正是：已簽章的技能仍會受影響。' },
+      { text: '因為 AST05 是中繼資料解析問題，與外部內容無關。', why: '那是 AST04；AST05 談的是外部引用的內容。' },
+      { text: '因為技能執行時才讀取的外部內容在簽章與釘選之外，沒有欄位可以釘住文件的雜湊值，也沒有「散文的鎖定檔」。', correct: true, why: '2.4 節的說法。' }
+    ],
+    summary: '簽章與釘選管技能包，管不到執行時才讀取的外部內容。' },
+
+  { id: 'q07', type: 'match', lo: [2], refs: [C2('tr-tree', '2.3 表 2-2')],
+    stem: '依官方四步決策樹，把下列發現配對到應記錄的主要條目。',
+    cats: [
+      { id: 'ast01', label: 'AST01 惡意技能' },
+      { id: 'ast02', label: 'AST02 供應鏈' },
+      { id: 'ast04', label: 'AST04 中繼資料' },
+      { id: 'ast08', label: 'AST08 掃描不足' }
+    ],
+    items: [
+      { text: '技能在發佈當時就含有隱藏的憑證竊取指令', answer: 'ast01', why: '決策樹第 1 步。' },
+      { text: '發佈者帳號被接管，用仿冒名稱上傳技能', answer: 'ast02', why: '決策樹第 2 步：技能如何進入登錄庫。' },
+      { text: 'SKILL.md 的描述誤導，且權限宣告低報', answer: 'ast04', why: '決策樹第 3 步。' },
+      { text: '掃描器對一段全以自然語言寫成的惡意指令完全沒有反應', answer: 'ast08', why: '決策樹第 4 步：掃描控制本該攔下卻沒攔下。' }
+    ],
+    summary: '官方決策樹的四步；多個同時成立時記主要根因。' },
+
+  /* ================= LO3 防禦選擇 ================= */
+  { id: 'q08', type: 'mc', lo: [3], refs: [C3('ct-themes', '3.1 表 3-1')],
+    stem: '官方在 AST08 特別強調的一句警語，是下列哪一項？',
+    options: [
+      { text: '掃描器永遠能偵測自然語言寫成的惡意指令。', why: '官方 AST08 的重點正好相反：傳統掃描對混合自然語言的技能效果差。' },
+      { text: '掃描器結果只當參考 (advisory)，不當唯一關卡；掃描器自己的 LLM 也可能被注入。', correct: true, why: 'AST08 的緩解項。' },
+      { text: '只要掃描過一次，之後就不需要再掃描。', why: '官方建議持續重新掃描。' },
+      { text: '掃描只需要看 SKILL.md，不用看其他檔案。', why: '官方建議掃描整個技能目錄，每個檔案。' }
+    ],
+    summary: '掃描器結果只當參考；有掃描 ≠ 安全。' },
+
+  { id: 'q09', type: 'scn', lo: [3], refs: [C3('ct-scn-a', '3.3 情境 A'), C3('ct-flow', '3.2 圖 3-1')],
+    stem: '依本章，團隊最該先補的是什麼？',
+    scenario: '香山製造（虛構）的 Agent 技能都已簽章、以雜湊釘選、通過掃描。最近發現某技能的行為偶爾和審查時不同。技能包的雜湊與上線時完全一致。調查發現技能說明裡有一行，指示 Agent 讀取一個外部網址的 API 說明。',
+    options: [
+      { text: '記錄外部內容的雜湊並每次驗證，或把內容內嵌進簽章過的技能包；用網域允許清單限制來源。', correct: true, why: '符合 AST05 的官方緩解。' },
+      { text: '換掉掃描器。', why: '問題不在掃描器，而在掃描器與簽章都管不到執行時的外部內容。' },
+      { text: '重新簽章該技能。', why: '技能包沒有變，重新簽章不會解決外部內容的問題。' },
+      { text: '停止使用所有外部網址以外的技能。', why: '這句話不構成有意義的控制，也不是官方建議。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 技能包雜湊一致，行為卻變了，對照圖 3-1 指向 AST05。(2) 簽章、釘選、掃描都不涵蓋執行時才讀取的外部內容。</p><p><strong>結論：</strong>補上外部內容的雜湊驗證或內嵌，並限制可抓取的網域。對應教材：<a href="03-controls-and-scenarios.html#ct-scn-a">3.3 節</a>。</p>' },
+
+  { id: 'q10', type: 'match', lo: [3], refs: [C3('ct-themes', '3.1 表 3-1')],
+    stem: '把下列官方建議的控制，配對到它所屬的主題（作者整理的歸類）。',
+    cats: [
+      { id: 'sign', label: '來源與簽章' },
+      { id: 'perm', label: '權限宣告與強制' },
+      { id: 'iso', label: '隔離' },
+      { id: 'gov', label: '清單、審批與稽核' }
+    ],
+    items: [
+      { text: '每個技能使用範圍有限的憑證，而不是共用的 Agent 層 API 金鑰', answer: 'perm', why: 'AST03 的第二項。' },
+      { text: '每個技能在自己的命名空間獨立行程執行', answer: 'iso', why: 'AST06 的第四項。' },
+      { text: '每次更新都驗證簽章，拒絕未簽章的更新', answer: 'sign', why: 'AST07 的第二項。' },
+      { text: '技能安裝需經審批流程，並視為需要資安審查的軟體', answer: 'gov', why: 'AST09 的第二項。' }
+    ],
+    summary: '六類主題是作者整理，每項控制都對應官方的具體條目。' },
+
+  { id: 'q11', type: 'mc', lo: [3], refs: [C3('ct-scn-b', '3.4 情境 B')],
+    stem: '某公司答不出「全公司裝了哪些 Agent 技能」。依本章，它應該先補哪一類控制？',
+    options: [
+      { text: '建立集中的技能清單（名稱、版本、雜湊、安裝者、最近掃描狀態），再接審批、稽核與撤銷。', correct: true, why: '符合 3.4 節與 AST09 的第一項控制。' },
+      { text: '直接買最貴的掃描器。', why: '沒有清單，連掃描對象都不完整。' },
+      { text: '禁止所有技能。', why: '官方沒有這樣建議；要的是治理。' },
+      { text: '只靠開發者的自律。', why: '官方把「個別開發者各自安裝、沒有 SOC 可見度」視為風險本身。' }
+    ],
+    summary: '先有清單，才有後續控制。' },
+
+  /* ================= LO4 跨文件整合 ================= */
+  { id: 'q12', type: 'mc', lo: [4], refs: [C4('in-trap', '4.2 表 4-2')],
+    stem: '白皮書在 AST06 寫「LLM08 (Excessive Agency)」。依本章，應該怎麼處理？',
+    options: [
+      { text: '照抄 LLM08，因為是官方寫的。', why: '官方明載不等於編號正確：LLM08 在 2025 版是 Vector and Embedding Weaknesses，2026 版是 Hidden Context Exposure。' },
+      { text: '改成 LLM09，因為 AST03 寫的是 LLM09。', why: 'AST03 的 LLM09 同樣兩版皆不符，兩者不能互相更正。' },
+      { text: '用名稱「Excessive Agency」去查 LLM Top 10 2026，寫成 LLM03:2026，並註明白皮書的編號對不上。', correct: true, why: '符合 4.2 節的做法。' },
+      { text: '把 AST06 整條刪掉。', why: '編號對不上不影響 AST06 本身的內容。' }
+    ],
+    summary: '用名稱重查，寫帶年份的編號。' },
+
+  { id: 'q13', type: 'scn', lo: [4], refs: [C4('in-flow', '4.3 圖 4-1'), C4('in-table', '4.1 表 4-1')],
+    stem: '依圖 4-1，這份評估該怎麼選文件？',
+    scenario: '烏石金融（虛構）有三個系統：甲是客服 LLM，沒有載入技能、沒有 MCP；乙是內部開發 Agent，會載入公司維護的技能並使用 MCP 伺服器；丙是批次作業的傳統 ML 模型。資安負責人想「三個系統都用 AST10」。',
+    options: [
+      { text: '三個都用 AST10。', why: '甲與丙沒有技能層，AST10 不適用。' },
+      { text: '甲用 LLM Top 10 2026；乙用 AST10，加看 MCP Top 10 與 Agentic Top 10 2026；丙用 ML Top 10；最後都回到 AI Exchange 做威脅建模。', correct: true, why: '符合圖 4-1（分流為作者整理），並接上 ML 主題。' },
+      { text: '三個都只用 AI Exchange。', why: 'AI Exchange 用於威脅建模；各清單提供條目語言與引用，互補。' },
+      { text: '甲與乙用 LLM Top 10，丙不需要任何清單。', why: '丙是傳統 ML 系統，ML Top 10 適用；乙的技能層需要 AST10。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 甲沒有載入技能、沒有 MCP，屬 LLM 應用，走 LLM Top 10 2026。(2) 乙會載入技能、用 MCP、能自主行動，走 AST10 加 MCP Top 10 與 Agentic Top 10 2026。(3) 丙是傳統 ML，走 ML Top 10。(4) 最後都回到 AI Exchange。</p><p><strong>結論：</strong>依系統特徵分流，而非一刀切。對應教材：<a href="04-integration.html#in-flow">4.3 節</a>。</p>' },
+
+  { id: 'q14', type: 'match', lo: [4], refs: [C4('in-table', '4.1 表 4-1')],
+    stem: '依表 4-1（白皮書各條 OWASP Mapping 所列的 ASI 對應），判斷下列「AST 條目 ↔ ASI 條目」的配對，白皮書有沒有列為對應。',
+    cats: [
+      { id: 'on', label: '白皮書有列為對應' },
+      { id: 'off', label: '白皮書沒有列為對應' }
+    ],
+    items: [
+      { text: 'AST02 Supply Chain Compromise ↔ ASI04 Agentic Supply Chain Vulnerabilities', answer: 'on', why: '表 4-1：AST02 的 ASI 對應是 ASI04、ASI05、ASI03。' },
+      { text: 'AST03 Over-Privileged Skills ↔ ASI02 Tool Misuse &amp; Exploitation', answer: 'on', why: '表 4-1：AST03 的 ASI 對應是 ASI03、ASI02、ASI05。' },
+      { text: 'AST05 Untrusted External Instructions ↔ ASI06 Memory &amp; Context Poisoning', answer: 'on', why: '表 4-1：AST05 的 ASI 對應是 ASI01、ASI06、ASI04。' },
+      { text: 'AST09 No Governance ↔ ASI03 Identity &amp; Privilege Abuse', answer: 'off', why: '表 4-1：AST09 的 ASI 對應是 ASI08、ASI09、ASI10，沒有 ASI03。' },
+      { text: 'AST02 Supply Chain Compromise ↔ ASI09 Human-Agent Trust Exploitation', answer: 'off', why: '表 4-1：AST02 的 ASI 對應是 ASI04、ASI05、ASI03，沒有 ASI09。' }
+    ],
+    summary: '白皮書明載的 ASI 對應以表 4-1 為準；LLM 編號則不能照抄。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'agentic-skills-top-10', mode: 'final',
+    los: [
+      { n: 1, text: '定位與版本：說明 AST10 是什麼、與 MCP Top 10 及 Agentic Top 10 的分工、現行版本與成熟度，以及它的不一致。' },
+      { n: 2, text: '風險分辨：依官方四個面向分辨 AST01–AST10，並用官方決策樹選出主要條目。' },
+      { n: 3, text: '防禦選擇：面對技能相關情境，指出涉及哪些條目，並選出官方建議中對應的控制。' },
+      { n: 4, text: '跨文件整合：正確處理 AST、ASI、MCP、LLM 的編號與年份，知道哪些對應不能照用。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

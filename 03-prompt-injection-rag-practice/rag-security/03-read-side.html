@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　讀取端：存取控制繼承與隔離｜RAG 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="RAG 讀取端的實作控制：每個區塊帶存取控制中繼資料、檢索前過濾與檢索後過濾的差別、租戶隔離、快取與刪除連鎖，以及為什麼只有嵌入外洩也不是安全豁免。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="rag-security" data-page="03-read-side.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　讀取端：存取控制繼承與隔離</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-write-side.html">第 2 章</a>；<a href="../../01-overview/ai-exchange/06-rag.html#rag-concept">AI Exchange 第 6 章 6.4（存取控制與檢索範圍脫節）</a>；<a href="../../primer-security-for-developers.html#p-lp">最小權限 (Least Privilege)</a></li>
+</ul>
+<p class="lead">AI Exchange 第 6 章已經告訴你「檢索範圍會和原始存取控制脫節」。這一章往下一層：<strong>具體該把存取控制放在哪裡、什麼時候檢查、哪些地方會悄悄繞過它</strong>。答案的共同原則只有一句：授權要在內容到達模型之前、在索引層就做完，不能交給模型，也不能事後補。</p>
+
+<h2 id="rs-concept">3.1 核心概念：存取控制繼承與租戶隔離</h2>
+<div class="concept">
+<h3 id="c-acl-impl">讓每個區塊帶著自己的存取規則</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>來源文件有分類、擁有者、允許的角色與租戶 (Tenant)。文件被切成區塊 (Chunk)、嵌入並放進向量資料庫 (Vector Database) 後，這些規則必須<strong>跟著每一個區塊走</strong>。Cheat Sheet 稱這個概念為存取控制繼承 (Access Control Inheritance)，並說它是企業 RAG 最常見的合規失誤。<span class="tag official">官方</span></dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>向量資料庫的設計目標是「找最相近的內容」，不是逐文件授權；切塊與嵌入的流程也常常只保留文字，不保留中繼資料。結果是檢索時只比相似度，原始系統的權限被留在上游。LLM09:2026 補了一個更隱蔽的原因：在多租戶部署中，相似度搜尋常常先對整個索引執行，之後才由應用程式層套用存取控制。<span class="tag official">官方</span></dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>最直接的是一般使用者問到受限文件的主題，系統就把它取回。較不直觀的是 LLM09:2026 描述的跨租戶推論：即使每份文件都標記正確、每次呼叫都通過驗證，攻擊者仍可從結果數量、分數分布與回應時間，推測其他租戶文件的存在、主題與大致數量，而不需要看到任何文件。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>(1) 每個區塊都帶存取控制中繼資料（分類、擁有者、允許的角色與租戶），而不只在來源文件上。(2) 在<strong>檢索時</strong>再檢查，而不是只在攝入時檢查；權限可能已經改變。(3) 租戶與分類用獨立的命名空間、集合或索引隔離，並在索引查詢內強制範圍。(4) 每次檢索記錄提問者身分與被取回區塊的存取控制中繼資料，供稽核。(5) 來源權限變動時，定期重新評估已儲存區塊的權限。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「在 system prompt 寫『只回答該使用者所屬專案』就夠了。」Cheat Sheet 把「依賴語言模型來執行存取控制」明列為不要做的事：存取控制必須在內容到達模型之前執行。另一個誤解是「範圍參數由前端傳來就好」；LLM09:2026 的說法是：用戶端提供的範圍只是建議，不是控制，必須在伺服器端驗證。</dd>
+</dl>
+</div>
+
+<h2 id="rs-pre-post">3.2 檢索前過濾與檢索後過濾</h2>
+<p>「過濾」可以發生在兩個時間點，差別直接決定攻擊者能不能從側面看到東西。</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　檢索前過濾 (Pre-retrieval Filtering) 與檢索後過濾 (Post-retrieval Filtering)（兩者的利弊取自 Cheat Sheet Section 6 與 LLM09:2026 緩解 #1；整理成對照表是作者的編排）</caption>
+<thead><tr><th scope="col">面向</th><th scope="col">檢索前過濾</th><th scope="col">檢索後過濾</th></tr></thead>
+<tbody>
+<tr><th scope="row">做法</th><td>相似度搜尋<strong>之前</strong>，就把候選範圍限制在提問者可存取的命名空間或條件內</td><td>先對整個索引取回結果，再把使用者無權看的剔除</td></tr>
+<tr><th scope="row">受限內容的相似度分數</th><td>不會被計算到提問者面前，因此無從觀察</td><td>搜尋已經在受限內容上運行，分數、數量與耗時的差異可能從別的管道被觀察到</td></tr>
+<tr><th scope="row">官方立場</th><td>Cheat Sheet：更安全，因為能防止受限文件的相似度分數被觀察。LLM09:2026：租戶範圍應放在索引查詢內，而不是檢索後過濾</td><td>Cheat Sheet 的「不要做」：不要<strong>只</strong>依賴檢索後過濾</td></tr>
+<tr><th scope="row">常見用途</th><td>基本隔離機制</td><td>可作為額外一層（例如再檢查區塊權限），但不是唯一的一層</td></tr>
+</tbody></table></div>
+<p>後者並不是完全禁止，而是不要單獨依賴。這與<a href="../prompt-injection/03-architectural-defense.html">提示詞注入主題的架構式防禦</a>是同一種思路：把權限放在資料取回的路徑上，而不是放在事後的「補救」。（這個類比是作者整理，非官方。）</p>
+
+<h2 id="rs-leaks">3.3 讀取端的洩漏路徑與控制</h2>
+<p>除了「直接取回受限區塊」，Cheat Sheet 與 LLM09:2026 還列出幾條容易被忽略的路徑，每一條都有對應的控制。</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　讀取端的洩漏路徑與控制（內容取自 Cheat Sheet Section 2、4、6、7、8、11 與 LLM09:2026；表格編排為作者整理）</caption>
+<thead><tr><th scope="col">洩漏路徑</th><th scope="col">為什麼會洩漏</th><th scope="col">控制</th></tr></thead>
+<tbody>
+<tr><th scope="row">跨租戶或跨分類</th><td>共用單一平面命名空間，或只靠後過濾</td><td>每個租戶或分類使用獨立命名空間、集合或索引；索引查詢內強制範圍；定期用跨租戶測試查詢確認沒有跨界結果；需要時用各租戶專屬金鑰加密</td></tr>
+<tr><th scope="row">查詢枚舉與相似度分數</th><td>有人以系統性的查詢探測語料；相似度分數讓人透過差異分析推出語料結構</td><td>查詢正規化與濫用偵測（但不能單靠清理）；依身分限制查詢頻率；監控偵察行為；<strong>不要把相似度分數回傳給使用者或 agent</strong></td></tr>
+<tr><th scope="row">回應快取與語意快取 <br>(Semantic Cache)</th><td>快取沒有依使用者與權限分範圍；權限撤銷後仍提供舊回應；曾經乾淨的內容後來被發現是投毒</td><td>快取依使用者、租戶與權限層級分範圍；來源文件更新、刪除或改權限時使該快取失效；依資料敏感度設定 TTL，高敏感資料不快取；快取命中也要和新檢索一樣詳細記錄</td></tr>
+<tr><th scope="row">刪除未連鎖</th><td>來源文件已刪除或降權，區塊、嵌入與快取回應仍可被檢索</td><td>連鎖刪除（來源文件、區塊、嵌入、快取回應一起刪）；保留刪除記錄；定期稽核「來源已不存在的孤兒區塊」</td></tr>
+<tr><th scope="row">嵌入被讀取與反推</th><td>嵌入不是匿名資料，可被反推回原文；備份、第三方服務與錯誤設定的雲端儲存都可能暴露</td><td>嵌入適用與來源文件相同的存取控制；靜態加密；限制相似度查詢的 top-k 與相關性門檻；高風險資料集可考慮加入校準過的噪聲；向量庫備份與來源文件同一敏感等級</td></tr>
+<tr><th scope="row">索引被直接改寫</th><td>預設安全設定薄弱；應用程式或 agent 端點直接擁有索引寫入權</td><td>索引寫入權限僅限攝入管線；開啟驗證、網路隔離與強密碼；記錄所有修改的身分與時間；快照以便回滾；對索引大小的異常變化警示</td></tr>
+</tbody></table></div>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="讀取端的檢查順序：先在伺服器端確認提問者身分與範圍，再做查詢正規化與頻率限制，接著在索引內以租戶與分類範圍做檢索前過濾，取回後再檢查區塊權限與快取範圍，結果不附相似度分數並記錄；任何一步檢查失敗都直接拒絕。">
+flowchart LR
+  Q["查詢"] --> ID["1 伺服器端確認身分與範圍<br>用戶端傳來的範圍不算數"]
+  ID --> RL["2 查詢正規化與頻率限制"]
+  RL --> PF["3 索引內檢索前過濾<br>租戶、分類命名空間"]
+  PF --> RC["4 檢索時再檢查區塊權限"]
+  RC --> CA["5 快取依使用者與權限分範圍"]
+  CA --> OUT["6 回傳內容，不附相似度分數<br>並記錄"]
+  ID -.->|失敗| DENY["拒絕，不回傳子集"]
+  PF -.->|失敗| DENY
+  RC -.->|失敗| DENY
+</pre>
+<figcaption><strong>圖 3-1　讀取端的檢查順序（作者整理，非官方）。</strong>每一步都可在 Cheat Sheet 或 LLM09:2026 找到對應控制，但官方沒有給出這樣的串接順序，這是作者為了幫你記憶畫的。重點是兩條虛線：任何一步失敗都應<strong>拒絕</strong>，而不是回傳「過濾後的子集」。</figcaption>
+</figure>
+
+<h2 id="rs-official-scn">3.4 官方的兩個例子：「只有嵌入外洩」不是安全豁免</h2>
+<p>LLM09:2026 用了兩個官方情境來說明讀取端的失敗方式，這一節只轉述結構，不補充額外細節。<span class="tag official">官方</span></p>
+<ul>
+  <li><strong>共用索引上的跨租戶推論（官方情境 #2）：</strong>一個多租戶 SaaS 使用單一共用向量索引，租戶過濾在應用程式層做。租戶 A 送出探測查詢，相似度搜尋先在所有嵌入（包含租戶 B 的）上運行才套用過濾。A 從來沒看到 B 的文件，但時間差、結果數量與分數分布的差異，洩漏了 B 內容的存在與大致主題。</li>
+  <li><strong>洩漏的向量庫備份（官方情境 #3）：</strong>雲端設定錯誤讓向量資料庫的備份外洩；原始文件（含個資的客服對話紀錄）另外加密、沒有外洩，事件因此一開始被判為低嚴重度：「只有嵌入外洩」。攻擊者對被盜嵌入執行零樣本 (zero-shot) 反推攻擊，重建出相當比例的原文，事件重新被歸類為與原始文件外洩相當。官方的結論是：<strong>「只有嵌入」不是安全豁免的分類。</strong></li>
+</ul>
+<p>兩個例子對應表 3-2 的兩列：第一個說明為什麼要用檢索前過濾與獨立索引，第二個說明為什麼向量庫備份與嵌入要和來源文件同一敏感等級。LLM09:2026 也要求事件應變手冊把「只有嵌入」的外洩當成來源資料外洩來評估通報義務（官方舉 GDPR 第 33 條與類似規範）。</p>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：反推的實際難度與比例</p>
+  <p>LLM09:2026 引用多項研究，說明嵌入可被反推回原文的比例與不同方法（依 OWASP 文件轉述）。本教材沒有回到原論文核對，也沒有判斷這些數字在你的嵌入模型上是否成立。實務上建議採「官方的保守處理」：把嵌入視為與來源同敏感等級，而不是先算出能還原多少再決定。</p>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>每個區塊都要帶存取控制中繼資料，檢索時再檢查，不只在攝入時檢查。</li>
+  <li>租戶範圍要在索引查詢內強制（檢索前過濾），不要只靠檢索後過濾；用戶端傳來的範圍只是建議。</li>
+  <li>相似度分數、結果數量與耗時都可能成為旁路；不要回傳相似度分數。</li>
+  <li>快取要依使用者與權限分範圍，來源改動要使其失效；刪除要連鎖到區塊、嵌入與快取。</li>
+  <li>嵌入可被反推，「只有嵌入外洩」不是低風險分類；備份與來源同一敏感等級。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能解釋為什麼「檢索後才過濾」可能仍然洩漏資訊。</li>
+  <li>我能對一個多租戶 RAG 列出三項隔離與稽核控制。</li>
+  <li>我能對「來源文件刪除了，助理卻還能回答」指出缺少的連鎖刪除步驟。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-generate-and-integrate.html">第 4 章　生成端、失效安全與整合</a>：內容已經取回、也已經過授權，最後要處理的是「這些內容怎麼變成輸出與動作」，以及任何一站失敗時系統的預設行為。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series，RAG Security Cheat Sheet：Section 2（含 Embedding Privacy）、4（含 Data Deletion and Retention）、6 Chunk Isolation、7 Index Integrity、8 Query Injection via Retrieval、11 Caching Risks（頁面無版本與日期；GitHub 歷史：2026-05-06 建立，2026-10-04 最後修改）；<a href="https://cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html</a>；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026，LLM09:2026 Vector and Embedding Weaknesses（Version 2026，發布日採 2026-08-04）：常見風險 #1、#2、#5，緩解 #1、#3、#5、#6，情境 #2、#3；<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM09_VectorAndEmbeddingWeaknesses.md">GenAI-LLM-Top10 2026/final</a>；CC BY-SA 4.0。</li>
+    <li>OWASP AI Exchange，RAG systems overview（2026-10-25 快照）；<a href="https://owaspai.org/go/ragoverview">owaspai.org/go/ragoverview</a>；CC0 1.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series 與 OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch3', topic: 'rag-security', mode: 'chapter',
+  questions: [
+    { id: 'c3q1', type: 'mc', lo: [3], refs: [{label: '3.2 表 3-1', href: '03-read-side.html#rs-pre-post'}],
+      stem: '一個多租戶 RAG 先對整個共用索引做相似度搜尋，取回結果後，再在應用程式層把其他租戶的區塊剔除，最後只回傳該租戶自己的內容。依教材，這個設計的主要問題是？',
+      options: [
+        { text: '沒有問題，因為使用者最終只看到自己的內容。', why: '最終回傳的內容正確，不代表沒有旁路：搜尋已在其他租戶的內容上運行，結果數量、分數分布與耗時差異可能被觀察到。' },
+        { text: '搜尋已經在其他租戶的內容上運行，分數、數量與耗時的差異可能洩漏其存在與主題；範圍應在索引查詢內強制。', correct: true, why: '這是 Cheat Sheet 與 LLM09:2026 對檢索後過濾的共同警告。' },
+        { text: '問題只在效能，因為取回的結果太多。', why: '兩份文件關心的是資訊洩漏，不是效能。' },
+        { text: '只要把相似度門檻調高，就能解決這個問題。', why: '門檻是相關性調整，不是授權；其他租戶的內容仍在搜尋範圍內。' }
+      ],
+      summary: '檢索後過濾不能單獨依賴：搜尋已經在受限內容上運行了。' },
+    { id: 'c3q2', type: 'match', lo: [3], refs: [{label: '3.3 表 3-2', href: '03-read-side.html#rs-leaks'}],
+      stem: '把下列讀取端的問題配對到最直接的控制。',
+      cats: [
+        { id: 'ns', label: '獨立命名空間或索引，並在索引查詢內強制範圍' },
+        { id: 'noscore', label: '不回傳相似度分數，並限制查詢頻率' },
+        { id: 'cache', label: '快取依使用者與權限分範圍，來源改動時使其失效' },
+        { id: 'cascade', label: '連鎖刪除與孤兒區塊稽核' }
+      ],
+      items: [
+        { text: '租戶 A 的探測查詢，能從結果差異推測租戶 B 的資料存在', answer: 'ns', why: '跨租戶推論要用獨立命名空間與索引內的範圍強制處理。' },
+        { text: '有人系統性地變換查詢字詞來描繪語料的內容分布', answer: 'noscore', why: '查詢枚舉與相似度分數的旁路：不回傳分數並限制頻率、監控偵察行為。' },
+        { text: '使用者 A 看到了本來是為使用者 B 產生的快取答案', answer: 'cache', why: '快取沒有依使用者、租戶與權限分範圍。' },
+        { text: '員工離職、文件已刪除，助理卻仍能引用其內容', answer: 'cascade', why: '刪除沒有傳遞到區塊、嵌入與快取回應；需要連鎖刪除與孤兒區塊稽核。' }
+      ],
+      summary: '一種洩漏路徑對應一種控制，別用同一招處理所有問題。' },
+    { id: 'c3q3', type: 'scn', lo: [3], refs: [{label: '3.4 官方兩個例子', href: '03-read-side.html#rs-official-scn'}, {label: '3.3 表 3-2', href: '03-read-side.html#rs-leaks'}],
+      stem: '依教材，這起事件的處理方式有什麼問題？',
+      scenario: '遠山保險（虛構）的雲端儲存設定錯誤，使一份 RAG 向量資料庫的備份被外部讀取。原始的客服對話文件另外加密，並沒有外洩。資安主管在事件單上寫：「只有嵌入外洩，不含原文，判定為低嚴重度，不需通報。」',
+      options: [
+        { text: '沒有問題，因為嵌入只是數字，無法還原。', why: 'LLM09:2026 的情境 #3 明確指出嵌入可被反推重建原文；「只有嵌入」不是安全豁免。' },
+        { text: '問題在於把備份當作低風險：依官方，嵌入可被反推回原文，事件應視為與來源資料外洩相當，並重新評估通報義務。', correct: true, why: '對應 3.4 節的官方情境 #3。' },
+        { text: '問題在於備份沒有壓縮。', why: '壓縮與機密性無關。' },
+        { text: '問題在於應該改用更小的嵌入維度。', why: '維度與外洩事件的分級無關；而且官方的處理是把備份當作與來源同敏感等級。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 外洩的是向量資料庫備份，內含嵌入。(2) LLM09:2026 指出，嵌入可被反推重建原文，所以備份應與來源文件同一敏感等級。(3) 官方的情境 #3 說明「只有嵌入」的低嚴重度分類被推翻，事件被重新歸類，並重新評估通報義務。</p><p><strong>結論：</strong>把此事件視為客服對話資料外洩評估，重新判定嚴重度與通報責任。對應教材：<a href="03-read-side.html#rs-official-scn">3.4 節</a>。</p>' },
+    { id: 'c3q4', type: 'mc', lo: [3], refs: [{label: '3.1 核心概念', href: '03-read-side.html#rs-concept'}],
+      stem: '依教材，下列哪一個做法最能體現「存取控制繼承」？',
+      options: [
+        { text: '在 system prompt 加上一條「不得洩漏使用者無權查看的內容」。', why: 'Cheat Sheet 把依賴語言模型來執行存取控制列為不要做；控制要在內容到達模型之前。' },
+        { text: '只在攝入文件時檢查一次權限，之後不再檢查。', why: '權限可能在攝入之後改變，官方要求在檢索時再檢查。' },
+        { text: '每個區塊都帶著分類、擁有者、允許的角色與租戶等中繼資料，並在檢索時依提問者身分再檢查。', correct: true, why: '這正是官方做法：中繼資料跟著區塊走，並在檢索時強制。' },
+        { text: '由前端傳來使用者的租戶 ID，後端直接信任。', why: 'LLM09:2026：用戶端提供的範圍只是建議，不是控制，必須在伺服器端驗證。' }
+      ],
+      summary: '規則跟著區塊走，並在檢索時依伺服器端確認的身分強制。' }
+  ]
+});
+</script>
+</body>
+</html>

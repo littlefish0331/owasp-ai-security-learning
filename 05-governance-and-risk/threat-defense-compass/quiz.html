@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜Threat Defense COMPASS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Threat Defense COMPASS 主題總測驗：13 題，涵蓋五個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="threat-defense-compass" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：Threat Defense COMPASS</h1>
+<ul class="meta-row">
+  <li>13 題（選擇題 4、情境判斷題 5、配對題 4）</li>
+  <li>預估時間：約 18 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO5</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–4 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位：</strong>說明 COMPASS 是什麼、版本與日期，以及它不適合拿來做什麼。</li>
+  <li><strong>觀察與定位：</strong>說明 Observe 與 Orient 各階段做什麼。</li>
+  <li><strong>決策與行動：</strong>把威脅對映到防禦、建立路線圖，並走完範例。</li>
+  <li><strong>評分：</strong>用「可能性 × 衝擊」算出分數與等級，並辨認範例與試算表分級的不一致。</li>
+  <li><strong>整合：</strong>知道 COMPASS 與其他文件如何接，以及何時換別的工具。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：COMPASS RunBook 與試算表、genai.owasp.org 網站 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-position-and-ooda.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-observe-orient.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-decide-act.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-integration.html', a, '第 4 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('pos-limit', '1.4'), C1('pos-misc', '1.5')],
+    stem: '一位同事說：「我們用 COMPASS 跑完一輪，就等於完成了精確的 AI 威脅建模。」依本教材，下列哪一項是最合適的回應？',
+    options: [
+      { text: '沒問題，COMPASS 就是為威脅建模設計的官方工具。', why: '官方 FAQ 明說 COMPASS 是快速評估，需要精確結果要用其他工具與專家。' },
+      { text: '不對，因為 COMPASS 只是一份白皮書，沒有任何工具。', why: '它的核心是可操作的試算表。' },
+      { text: '不對，因為 COMPASS 只適用於模型提供者。', why: 'Profile 3（模型提供者）反而是它處理得最少的部分。' },
+      { text: '不太對：COMPASS 的定位是快速排序優先順序，需要精確結果時要搭配其他工具與專家。', correct: true, why: '1.4 節：FAQ 說明它設計用於快速評估與快速答案。' }
+    ],
+    summary: 'COMPASS = 快速排序工具，不是精確的威脅建模。' },
+
+  { id: 'q02', type: 'scn', lo: [1], refs: [C1('pos-sources', '1.2 表 1-2')],
+    stem: '依本教材，簡報上的日期說法有什麼問題？',
+    scenario: '朝陽能源（虛構）的簡報寫：「Threat Defense COMPASS 於 2025 年 7 月 4 日發布，RunBook 與試算表在同一天上架。」審查人員查到資源頁寫的是 2025-09-10，而 RunBook PDF 封面才是 July 4, 2025。',
+    options: [
+      { text: '沒有問題，7 月 4 日就是官方日期。', why: '那是 RunBook PDF 封面的日期；資源頁（工具與 RunBook 兩筆）寫 2025-09-10。' },
+      { text: '應該改成 2025-09-10，因為資源頁較新，並註明 RunBook 封面為 2025-07-04；「同一天上架」沒有依據，兩個日期不同。', correct: true, why: '依「版本或日期衝突時以最新者為準」，同時如實說明另一個日期。' },
+      { text: '應該改成 2025-09-11，因為 PDF 的建立時間是那天。', why: 'PDF 檔案建立時間只是中繼資料，不是發布日。' },
+      { text: '日期不重要，刪掉即可。', why: '引用時日期是讓讀者能核對的資訊，不該省略。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 資源頁（Threat Defense COMPASS 1.0 與 RunBook 兩筆）日期都是 2025-09-10；(2) RunBook PDF 封面是 Version 1.0、July 4, 2025；(3) 官方沒有說明為何不同，調查筆記說「同日」並不正確。</p><p><strong>結論：</strong>採較新的 2025-09-10 為發布日並註明封面日期，不擅自說明原因。對應教材：<a href="01-position-and-ooda.html#pos-sources">1.2 節</a>。</p>' },
+
+  { id: 'q03', type: 'match', lo: [1], refs: [C1('pos-ooda', '1.3 圖 1-1')],
+    stem: '把下列試算表分頁配對到它所屬的 OODA 階段。',
+    cats: [
+      { id: 'o', label: '觀察 Observe' },
+      { id: 'r', label: '定位 Orient' },
+      { id: 'd', label: '決策 Decide' },
+      { id: 'a', label: '行動 Act' }
+    ],
+    items: [
+      { text: '2a 威脅檔案', answer: 'o', why: '2、2a、2b 屬觀察階段。' },
+      { text: '3b 已知 AI 事件', answer: 'r', why: '3、3a 到 3e 屬定位階段。' },
+      { text: '4 紅隊或弱點對防禦與緩解', answer: 'd', why: '分頁 4 是決策階段。' },
+      { text: '5 策略與路線圖', answer: 'a', why: '分頁 5 是行動階段。' }
+    ],
+    summary: '觀察 2/2a/2b；定位 3/3a–3e；決策 4；行動 5。' },
+
+  /* ================= LO2 觀察與定位 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C2('oo-profiles', '2.1 表 2-1')],
+    stem: '一家公司向供應商採購 AI 助理，供自己的員工使用，不轉售。依 RunBook 的三種組織視角，這家公司最接近哪一個？',
+    options: [
+      { text: 'Profile 2：部署者（模型使用者），負責應用層風險與對使用者的影響。', correct: true, why: '在自己營運中使用 AI 系統、不改名轉售者屬部署者。' },
+      { text: 'Profile 3：模型提供者，負責核心模型行為。', why: '它沒有開發並以自己名義提供模型。' },
+      { text: 'Profile 1：外部攻擊者使用 AI。', why: 'Profile 1 是對手，不是你自己的導入。' },
+      { text: '三種都不是，COMPASS 不適用。', why: '部署者正是 COMPASS 處理最多的視角。' }
+    ],
+    summary: 'Profile 2 部署者：應用層風險與對使用者的影響。' },
+
+  { id: 'q05', type: 'scn', lo: [2, 4], refs: [C2('c-score', '2.2'), C2('oo-disaster', '2.3')],
+    stem: '依本章，這個團隊的評分流程缺了什麼？',
+    scenario: '玉蘭藥業（虛構）的團隊對一個威脅直接寫「可能性 4、衝擊 3」就開始排序。另一位成員問：「我們公司的『重大損失』是多少錢？這個 3 代表什麼？」沒有人答得出來。團隊也沒有任何「最糟情境」的紀錄。',
+    options: [
+      { text: '缺了一個更精確的模型，建議改用 100 分制。', why: 'RunBook 的方法是簡單快速的 5 分制；缺的是基準，不是精度。' },
+      { text: '缺了基準：應先把衝擊等級換成公司自己的金額區間，並寫下三個以上的核毀滅級 AI 災難情境，分數才有可比較的依據。', correct: true, why: '對應 2.3 節：2b 分頁的步驟一與二。' },
+      { text: '缺了紅隊報告，沒有報告就不能評分。', why: '紅隊結果是 Orient 的證據來源之一，不是評分的前提。' },
+      { text: '沒有缺任何東西，分數寫下來就算完成。', why: '沒有基準，分數無法跨系統比較。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 2b 分頁的步驟一要求把衝擊的五個等級對到組織自己的金額區間；(2) 步驟二要求寫下三個以上「核毀滅級 AI 災難」；(3) 沒有這兩項，「衝擊 3」就沒有意義，也無法與其他系統比較。</p><p><strong>結論：</strong>先校準衝擊尺度並寫下最糟情境。對應教材：<a href="02-observe-orient.html#oo-disaster">2.3 節</a>。</p>' },
+
+  { id: 'q06', type: 'match', lo: [2], refs: [C2('oo-orient', '2.4 圖 2-1')],
+    stem: '把下列做法配對到 Orient 階段中它所屬的證據來源。',
+    cats: [
+      { id: 'vuln', label: '已知弱點（3a）' },
+      { id: 'inc', label: '已知事件（3b）' },
+      { id: 'rt', label: '紅隊（3d、3e）' }
+    ],
+    items: [
+      { text: '把提示詞注入對映到 CWE，並用 CVSS 打分', answer: 'vuln', why: '3a 以 CVE／CWE／CVSS 處理已知弱點。' },
+      { text: '研究公開的 AI 事件報告，更新可能性與衝擊', answer: 'inc', why: '3b 以已知事件估計可能性與衝擊。' },
+      { text: '完成審查問題並建立紅隊演練計畫，記錄發現的弱點', answer: 'rt', why: '3d 審查問題與 3e 紅隊結果。' }
+    ],
+    summary: 'Orient 的三條證據來源最後都回到 2b 更新分數。' },
+
+  /* ================= LO3 決策與行動 ================= */
+  { id: 'q07', type: 'mc', lo: [3], refs: [C3('da-act', '3.2')],
+    stem: '依 RunBook 的 Step 7，一份合格的路線圖項目應該長什麼樣子？',
+    options: [
+      { text: '寫明任務、負責人與期限，例如「實作提示詞清洗控制、由資安團隊負責、第二季底前」。', correct: true, why: 'RunBook 的範例：Task、Owner、Timeline。' },
+      { text: '只寫風險名稱與分數，細節之後再補。', why: '路線圖的目的是變成可執行的計畫，需要負責人與期限。' },
+      { text: '只寫預算金額，不寫任務。', why: '路線圖的基本欄位不是預算。' },
+      { text: '只由 CISO 一人維護，不需要他人檢視。', why: 'RunBook 建議放在共享空間並設權限，也要定期檢視。' }
+    ],
+    summary: '路線圖項目：任務、負責人、期限。' },
+
+  { id: 'q08', type: 'scn', lo: [3], refs: [C3('da-examples', '3.3 表 3-2'), C3('da-act', '3.2')],
+    stem: '依本章的範例二，這項「緩解措施」要注意什麼？',
+    scenario: '星野客服（虛構）參考 RunBook 範例二，打算把「執行前由人工監督」當作主要緩解：所有 AI 代理的建議都要人工點「同意」才會執行。客服主管說：「這樣就放心了，反正都有人在看。」',
+    options: [
+      { text: '放心了，人工監督一定有效。', why: 'RunBook 範例自己提醒：若人工介入很少或過度依賴 AI 建議，攻擊仍可能成功。' },
+      { text: '需要搭配其他緩解：範例提醒人工驗證不足或過度依賴 AI 建議時，攻擊仍會成功；範例二的緩解還包括提示詞清洗、驗證中繼資料、定期檢視代理指派的權限與持續監控。', correct: true, why: '範例二的緩解是多層的，而且明說人工監督有失效條件。' },
+      { text: '人工監督無用，應全部移除。', why: '範例並沒有說人工監督無用，而是說要強化並搭配。' },
+      { text: '只需要把同意按鈕做大一點。', why: '介面調整不處理核心問題。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 範例二寫人工介入若很少或操作員過度依賴 AI 建議，攻擊仍可能成功。(2) 其緩解包含：嚴格的提示詞清洗、驗證送出的中繼資料、執行前的人工監督、定期檢視代理被指派的權限；路線圖還有每季紅隊與持續監控。(3) 單靠人工點同意，會落入「核准疲勞」（作者整理，AI Exchange 第 4 章有討論）。</p><p><strong>結論：</strong>多層控制，並檢驗人工監督是否真的有在看。對應教材：<a href="03-decide-act.html#da-examples">3.3 節</a>。</p>' },
+
+  { id: 'q09', type: 'match', lo: [3], refs: [C3('da-decide', '3.1 表 3-1')],
+    stem: '把下列需求配對到最適合查閱的參考分頁。',
+    cats: [
+      { id: 'a6a', label: '6a Defenses & Mitigations' },
+      { id: 'a6b', label: '6b Incident Monitoring & Alerts' },
+      { id: 'a6c', label: '6c AI Third Party Questions' }
+    ],
+    items: [
+      { text: '要知道針對某個弱點有哪些緩解措施可選', answer: 'a6a', why: '6a 是防禦與緩解措施清單。' },
+      { text: '要決定需要補哪些偵測與警示', answer: 'a6b', why: '6b 是事件監控與警示的參考。' },
+      { text: '要檢查供應商在 AI 功能與資料使用上的做法', answer: 'a6c', why: '6c 是第三方供應商要問的問題。' }
+    ],
+    summary: '四個參考分頁各有用途；內容請直接開試算表。' },
+
+  /* ================= LO4 評分 ================= */
+  { id: 'q10', type: 'mc', lo: [4], refs: [C2('c-score', '2.2 表 2-2')],
+    stem: '某威脅的可能性是 5、衝擊是 4。依 COMPASS 的算法與試算表 About 分頁的等級表，下列哪一項正確？',
+    options: [
+      { text: '分數 9，等級 Low。', why: '9 是相加；COMPASS 是相乘。' },
+      { text: '分數 20，等級 High。', why: '算式對，但 High 是 15–19；20 屬 Critical。' },
+      { text: '分數 20，等級 Moderate。', why: '10–14 才是 Moderate。' },
+      { text: '分數 20，等級 Critical。', correct: true, why: '5 × 4＝20，落在 20–25 的 Critical。' }
+    ],
+    summary: '風險分數＝可能性 × 衝擊；20 屬 Critical。' },
+
+  { id: 'q11', type: 'scn', lo: [4], refs: [C3('da-examples', '3.3 表 3-2'), C2('c-score', '2.2')],
+    stem: '依本教材，這位同事該如何處理這個等級標籤？',
+    scenario: '北極星支付（虛構）的風險報告引用 RunBook 範例二，寫「初始分數 16 為 Critical」，並據此規定「16 分以上一律走緊急變更程序」。資安經理對照試算表 About 分頁，發現該表把 15–19 稱為 High，並把 20–25 稱為 Critical。',
+    options: [
+      { text: '不用理會，RunBook 範例是官方的，一定比試算表正確。', why: '教材無法判斷哪一邊較新或正確；兩者不一致。' },
+      { text: '兩份官方資料不一致：以自己複製使用的試算表等級表為準（16＝High），並在報告中註明 RunBook 範例的標籤與試算表不同；緊急變更的門檻要由公司自己明確定義，不能直接套用範例的標籤。', correct: true, why: '對應 3.3 節：教材不擅自擇一，建議以實際使用的試算表為準。' },
+      { text: '把試算表的等級表改成範例的標籤即可。', why: '改表等於替官方決定哪個正確，而且會讓你的分數與其他使用者無法比較。' },
+      { text: '直接刪掉等級，只看分數。', why: '等級有助於溝通；問題是定義要一致，不是刪掉。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) RunBook 範例二：16 稱 Critical、9 稱 Medium。(2) 試算表 About 分頁：15–19 High、20–25 Critical、5–9 Low，且沒有 Medium。(3) 教材無法判斷是範例沿用舊分級還是筆誤，所以不擇一；使用者自己複製的試算表才是工作基準。</p><p><strong>結論：</strong>以試算表為準，註明範例不一致，並在公司內部明確定義門檻。對應教材：<a href="03-decide-act.html#da-examples">3.3 節</a>。</p>' },
+
+  /* ================= LO5 整合 ================= */
+  { id: 'q12', type: 'scn', lo: [5], refs: [C4('c-year', '4.2'), C4('ig-official', '4.1 表 4-1')],
+    stem: '依本章，這項「對照」有什麼問題？',
+    scenario: '金橋保險（虛構）要把 COMPASS 試算表中的威脅「LLM06:2025 Excessive Agency」對照到 LLM Top 10 2026。承辦人直接去查 2026 版的 LLM06，發現是 Unbounded Consumption，覺得 COMPASS 的資料錯了，打算把試算表中的名稱改成 Unbounded Consumption。',
+    options: [
+      { text: '承辦人是對的，COMPASS 的編號錯了，應該照 2026 版修改。', why: '編號沒有錯，只是年份不同：2025 版的 LLM06 就是 Excessive Agency。' },
+      { text: '問題在於跨年份直接用編號比對：2025 版的 LLM06 是 Excessive Agency，2026 版的 Excessive Agency 是 LLM03。應該用條目名稱比對，並把標籤連同年份一起升級。', correct: true, why: '4.2 節與 GenAI Security Project 主題的版本演進表。' },
+      { text: '應該把 2026 版的編號改回 2025 版。', why: '2026 版是現行最新版，不應改回。' },
+      { text: '兩個編號都沒有問題，只是同一個風險有兩個名字。', why: '兩個編號對應不同風險，不是兩個名字。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) COMPASS 試算表使用 LLM Top 10 2025 的標籤。(2) 2025：LLM06＝Excessive Agency；2026：LLM03＝Excessive Agency，LLM06＝Unbounded Consumption。(3) 承辦人把兩份不同年份的編號直接對上，造成誤判。</p><p><strong>結論：</strong>用名稱比對，標籤一律帶年份。對應教材：<a href="04-integration.html#c-year">4.2 節</a>。</p>' },
+
+  { id: 'q13', type: 'mc', lo: [5], refs: [C4('ig-official', '4.1 表 4-1'), C4('ig-limit', '4.3')],
+    stem: '你的團隊需要精確量化 AI 弱點的嚴重度，以決定是否擋下一次發布。依本章，COMPASS 的哪一項限制與此最相關？',
+    options: [
+      { text: 'COMPASS 是快速評估；需要精確結果時，應搭配其他工具與專家，例如 06 階段的 AIVSS。', correct: true, why: 'FAQ 的說法；AIVSS 的關聯屬作者整理，AIVSS 本身見 06 階段的 AIVSS 主題。' },
+      { text: 'COMPASS 不接受任何弱點資料。', why: '它的 3a 分頁正是用來蒐集已知弱點。' },
+      { text: 'COMPASS 只能用於模型提供者。', why: 'Profile 3 才是它處理最少的部分。' },
+      { text: 'COMPASS 要付費才能使用。', why: '它是 CC BY-SA 4.0 授權的資源，並可自行複製修改。' }
+    ],
+    summary: 'COMPASS 排序；精確量化要另找工具與專家。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'threat-defense-compass', mode: 'final',
+    los: [
+      { n: 1, text: '定位：說明 COMPASS 是什麼、版本與日期，以及它不適合拿來做什麼。' },
+      { n: 2, text: '觀察與定位：說明 Observe 與 Orient 各階段做什麼。' },
+      { n: 3, text: '決策與行動：把威脅對映到防禦、建立路線圖，並走完範例。' },
+      { n: 4, text: '評分：用「可能性 × 衝擊」算出分數與等級，並辨認範例與試算表分級的不一致。' },
+      { n: 5, text: '整合：知道 COMPASS 與其他文件如何接，以及何時換別的工具。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

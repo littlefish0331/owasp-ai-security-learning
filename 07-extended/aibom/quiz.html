@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜AIBOM｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AIBOM 主題總測驗：12 題，涵蓋三個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="aibom" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：AIBOM</h1>
+<ul class="meta-row">
+  <li>12 題（選擇題 5、情境判斷題 4、配對題 3）</li>
+  <li>預估時間：約 15 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO3</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–3 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位與範圍：</strong>說明 AIBOM Initiative 與 Generator 各是什麼、工具的現行入口與授權，以及只涵蓋 Hugging Face 模型的範圍限制。</li>
+  <li><strong>用途與限制：</strong>說明為什麼 AI 需要物料清單、清單在事件應變等場景怎麼用，並理解完整度分數不等於安全。</li>
+  <li><strong>BOM 家族與整合：</strong>區分 AIBOM、DBOM、AgBOM、SBOM，並知道其他 OWASP 文件對 BOM 提出了什麼要求。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：AIBOM Generator 儲存庫 — Apache-2.0；genai.owasp.org 網站與引用的官方 PDF — CC BY-SA 4.0（事件應變 PDF 內文未見授權文字，以網站頁尾為準）；ACS 規格 — Apache-2.0，說明文件 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-position.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-why-and-what.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-bom-family.html', a, '第 3 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位與範圍 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('ab-onepage', '1.1 表 1-1'), C1('ab-entry', '1.2')],
+    stem: '下列關於 OWASP AIBOM Generator 的描述，哪一項最符合本教材讀到的官方資料？',
+    options: [
+      { text: '版本 1.0、授權 CC BY-SA 4.0、入口只有 Hugging Face Space。', why: '版本未能確認；儲存庫授權是 Apache-2.0；現行入口以 owasp-genai-aibom.org 為準。' },
+      { text: '版本未能確認、儲存庫授權 Apache-2.0、輸出 CycloneDX 1.6；現行入口為 owasp-genai-aibom.org（資源頁下載連結仍指向較早的 Hugging Face Space）。', correct: true, why: '符合表 1-1 與 1.2 節。' },
+      { text: '版本 0.2、授權 MIT、輸出 SPDX 2.3。', why: 'v0.2 只是分支合併的痕跡；授權是 Apache-2.0；輸出是 CycloneDX 1.6。' },
+      { text: '它已停止維護，儲存庫在 2025 年之後沒有任何提交。', why: '儲存庫最近提交為 2026-10-17。' }
+    ],
+    summary: '版本未能確認；Apache-2.0；CycloneDX 1.6；現行入口 owasp-genai-aibom.org。' },
+
+  { id: 'q02', type: 'scn', lo: [1], refs: [C1('ab-scope', '1.3 範圍')],
+    stem: '依本教材，這份盤點宣稱有什麼問題？',
+    scenario: '大安生技（虛構）的資安報告寫：「我們用 OWASP AIBOM Generator 盤點了整個 AI 系統：自己訓練後只放在內部的模型、RAG 的文件語料與向量庫，以及客服 Agent 使用的工具。結果顯示完整度 100 分。」',
+    options: [
+      { text: '沒有問題，AIBOM Generator 是通用的 AI 系統盤點工具。', why: '官方範圍是從 Hugging Face 上的開源模型開始。' },
+      { text: '範圍不符：工具針對 Hugging Face 上的模型，內部自訓模型、RAG 語料與向量庫、Agent 工具都不在它的範圍；這些需要其他做法（例如 DBOM、AgBOM）；完整度 100 分也只代表文件完整。', correct: true, why: '符合 1.3 節與 1.4 節。' },
+      { text: '只有向量庫不在範圍，其他都算涵蓋。', why: '內部自訓模型與 Agent 工具同樣不在範圍。' },
+      { text: '問題只在分數不該是 100。', why: '問題在範圍與分數的意義。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 官方範圍：Hugging Face 上的開源模型。(2) RAG 語料與向量庫屬 DBOM 的範圍；Agent 工具屬 AgBOM。(3) 完整度分數衡量文件完整度。</p><p><strong>結論：</strong>報告的範圍宣稱要縮小，並補上其他清單。對應教材：<a href="01-position.html#ab-scope">1.3 節</a>。</p>' },
+
+  { id: 'q03', type: 'scn', lo: [1], refs: [C1('ab-concept', '1.4 完整度分數'), C1('ab-scope', '1.3')],
+    stem: '依本教材，採購人員對這份 AIBOM 的結論有什麼問題？',
+    scenario: '東海紡織（虛構）的採購人員收到供應商的 AIBOM，工具顯示完整度分數 97。於是他在審查表上寫：「模型來源可信、無供應鏈風險、無需簽章驗證。」供應商另外補了一句：「部分欄位是用 AI 推論補上的。」',
+    options: [
+      { text: '結論正確，高分代表可信。', why: '分數衡量文件完整度，不是模型安全或來源可信。' },
+      { text: '結論錯在 AIBOM 不能用於採購。', why: '教材沒有這樣說；AIBOM 可以作為可追溯性的依據，只是不能當作安全證明。' },
+      { text: '結論錯在分數不是 100。', why: '問題不在滿不滿分，而在分數衡量的對象。' },
+      { text: '結論過度：完整度分數只反映清單欄位填得多齊，不能證明來源可信或沒有投毒；簽章驗證、掃描等是獨立的控制；而且「部分欄位由 AI 推論補上」要自行檢查來源，官方沒說這些欄位是否有標示。', correct: true, why: '符合 1.3、1.4 節。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 完整度分數衡量清單欄位的完整度，不是模型安全。(2) 簽署驗證與產生 AI-BOM 在 IR 指南是獨立項目。(3) CLI 有 --inference 選項用 AI 推論補強中繼資料，官方沒說這類欄位是否特別標示，未能確認。</p><p><strong>結論：</strong>把 AIBOM 當作追溯性依據，另做簽章驗證與掃描，並自行檢查推論欄位的來源。對應教材：<a href="01-position.html#ab-concept">1.4 節</a>、<a href="01-position.html#ab-scope">1.3 節</a>。</p>' },
+
+  /* ================= LO2 用途與限制 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C2('wh-concept', '2.3 核心概念')],
+    stem: 'IR 指南對「產生 AI-BOM」與「簽署並驗證 AI 成品」兩者的關係，最貼近下列哪一項？',
+    options: [
+      { text: '兩者是獨立項目：清單是前提（回答有什麼），簽署驗證是另一道控制（確認沒被改動）；都需要。', correct: true, why: '符合 2.3 節。' },
+      { text: '兩者是同一項控制，做其中一個即可。', why: 'IR 指南把它們列為獨立項目。' },
+      { text: '產生 AI-BOM 可以取代簽署與驗證。', why: '清單不阻擋、不驗證任何東西。' },
+      { text: '簽署與驗證可以取代 AI-BOM。', why: '簽章不能回答「裡面有什麼」。' }
+    ],
+    summary: '清單是前提，不是防線；與簽署驗證是獨立控制。' },
+
+  { id: 'q05', type: 'match', lo: [2], refs: [C2('wh-ir', '2.2 表 2-2')],
+    stem: '把下列要求配對到 IR 指南中提出它的階段。',
+    cats: [
+      { id: 'build', label: '建置與封裝' },
+      { id: 'static', label: '靜態偵測' },
+      { id: 'erad', label: '根除' },
+      { id: 'post', label: '事後活動' }
+    ],
+    items: [
+      { text: '自動產生 AI-BOM 並在 CI/CD 閘門強制', answer: 'build', why: '建置與封裝。' },
+      { text: '視產生 AI-BOM 為高信任環境的前提', answer: 'static', why: '靜態偵測段。' },
+      { text: '重新產生 BOM 以驗證所有相依仍可信', answer: 'erad', why: '根除段。' },
+      { text: '更新 AI-BOM 與模型登錄庫', answer: 'post', why: '事後活動。' }
+    ],
+    summary: 'AI-BOM 貫穿 IR 指南的多個階段。' },
+
+  { id: 'q06', type: 'scn', lo: [2], refs: [C2('wh-scn', '2.4 情境 A'), C2('wh-concept', '2.3')],
+    stem: '依本章，這個團隊在事件後最合理的下一步是什麼？',
+    scenario: '玉里電子（虛構）得知某公開模型庫上有一個熱門基礎模型被修改。團隊查了自己的 AI-BOM：基礎模型版本在受影響範圍內，並用於兩個服務。主管說：「既然清單已確認是受影響版本，直接換成別的模型就結案。」',
+    options: [
+      { text: '直接換模型即可結案。', why: '還要驗證換完之後的相依是否可信，並更新清單與登錄庫。' },
+      { text: '刪除舊的 AI-BOM，以免被稽核。', why: '與 IR 指南的要求相反。' },
+      { text: '換掉受影響模型後，重新產生 BOM，驗證目前所有模型相依、資料集與工具是否仍為已知且可信，更新 AI-BOM 與模型登錄庫；另外還需簽章驗證、行為測試，確認其他成品沒有被動過。', correct: true, why: '符合 2.2 節與 2.4 節。' },
+      { text: '等官方發布新的版本再處理。', why: '延誤事件處置；IR 指南要求事件後驗證。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 清單回答了「是否受影響、用在哪裡」。(2) IR 指南根除段要求重新產生 BOM 驗證相依仍可信，事後更新清單與登錄庫。(3) 清單不驗證其他成品，需另做簽章驗證與行為測試。</p><p><strong>結論：</strong>換模型 → 重新產生 BOM → 更新登錄庫 → 另做驗證。對應教材：<a href="02-why-and-what.html#wh-scn">2.4 節</a>。</p>' },
+
+  { id: 'q07', type: 'mc', lo: [2], refs: [C2('wh-diff', '2.1 表 2-1'), C2('wh-concept', '2.3')],
+    stem: '資安主管說：「我們已經有完整的 SBOM，所以 AI 模型的供應鏈追溯不需要另外的清單。」依本章，最恰當的回應是？',
+    options: [
+      { text: '正確，SBOM 已經涵蓋模型。', why: 'SBOM 列軟體元件與相依；模型來源、訓練資料出處、資料集版本與授權不在其中。' },
+      { text: '不完全：SBOM 回答軟體元件，但 AI 還要回答模型出處、訓練資料與其來源、哪個訓練運行用了哪個資料集版本、授權；IR 指南也建議 AI-BOM 與傳統 SBOM 工具整合，而不是取代。', correct: true, why: '符合 2.1 節表 2-1 與 IR 指南的整合建議。' },
+      { text: '不正確，因為 SBOM 已被 AIBOM 取代而作廢。', why: '官方建議的是整合，沒有說取代。' },
+      { text: '正確，因為模型檔本質上就是軟體套件。', why: '模型檔不是套件管理器裡的套件，來源常是模型庫上的儲存庫。' }
+    ],
+    summary: 'AI-BOM 與 SBOM 整合，而不是取代；AI 多回答出處、資料、授權。' },
+
+  /* ================= LO3 BOM 家族與整合 ================= */
+  { id: 'q08', type: 'match', lo: [3], refs: [C3('bf-table', '3.1 表 3-1')],
+    stem: '把下列描述配對到最貼近的清單。',
+    cats: [
+      { id: 'aibom', label: 'AIBOM' },
+      { id: 'dbom', label: 'DBOM' },
+      { id: 'agbom', label: 'AgBOM' }
+    ],
+    items: [
+      { text: '針對 Hugging Face 上的模型，輸出 CycloneDX 1.6', answer: 'aibom', why: 'AIBOM Generator。' },
+      { text: '建議以 CycloneDX ML-BOM（ECMA-424，v1.7）為基礎，記錄資料來源、授權與血緣', answer: 'dbom', why: '資料安全 2026。' },
+      { text: '屬於 ACS-Inspect 設定檔，工作階段中組成變動時要更新', answer: 'agbom', why: 'ACS-Inspect-Dynamic 的 agbom/changed。' }
+    ],
+    summary: '三種清單的範圍與格式各不同。' },
+
+  { id: 'q09', type: 'mc', lo: [3], refs: [C3('bf-demand', '3.2 表 3-2')],
+    stem: '依本教材，ACS 規格對 AgBOM 的要求，哪一項是對的？',
+    options: [
+      { text: 'AgBOM 是 ACS-Core 的強制項目。', why: 'ACS-Core 明確不要求 AgBOM。' },
+      { text: 'AgBOM 由 OWASP 驗證其符合性。', why: 'ACS v0.1.0 的符合性是自行宣告，無人驗證。' },
+      { text: 'AgBOM 只允許序列化為 CycloneDX 1.7。', why: '規格寫 CycloneDX 1.6、SPDX 3.0 或 SWID。' },
+      { text: 'AgBOM 屬選用的 ACS-Inspect 設定檔；宣告它的部署每個工作階段送出一次 agbom/snapshot；組成會變動的部署另用 ACS-Inspect-Dynamic。', correct: true, why: '符合表 3-2。' }
+    ],
+    summary: 'AgBOM = ACS-Inspect，選用。' },
+
+  { id: 'q10', type: 'scn', lo: [3], refs: [C3('bf-table', '3.1'), C3('bf-demand', '3.2')],
+    stem: '依本章，這份計畫最需要小心的是什麼？',
+    scenario: '太平洋電子（虛構）的 Agent 平台允許使用者在執行中隨時安裝新技能並連到不同的 MCP 伺服器。資安團隊在建置時用工具為模型產生了一份 AIBOM，並認為「清單已經涵蓋整個 Agent 系統」。',
+    options: [
+      { text: '需小心：Agent 的組成在執行期會變，建置時的 AIBOM 只涵蓋模型這一部分；技能與 MCP 伺服器的變動需要即時的 AgBOM（ACS-Inspect-Dynamic）或等效做法；ACS 本身是早期規格。', correct: true, why: '符合 3.3 節。' },
+      { text: '沒有問題，建置時的 AIBOM 已涵蓋所有執行期變動。', why: '建置時的清單是某個時間點的快照，看不到執行期安裝的技能與 MCP 伺服器。' },
+      { text: '需小心：不應該產生任何清單。', why: '官方要求有清單。' },
+      { text: '沒有問題，因為使用者安裝的技能不屬於供應鏈。', why: '技能是供應鏈的一部分（見 Agentic Skills Top 10）。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 建置時 AIBOM 是靜態快照。(2) 平台允許執行中安裝技能、連 MCP 伺服器，組成會變。(3) ACS 的 AgBOM 與 agbom/changed 正是為這類情境設計，但 ACS 還是早期規格。</p><p><strong>結論：</strong>需要即時清單或等效做法。對應教材：<a href="03-bom-family.html#bf-concept">3.3 節</a>。</p>' },
+
+  { id: 'q11', type: 'mc', lo: [3], refs: [C3('bf-table', '3.1 CycloneDX 版本')],
+    stem: '三份官方文件提到的 CycloneDX 版本是否一致？依本章，最恰當的描述是？',
+    options: [
+      { text: '一致，都是 CycloneDX 1.6。', why: '資料安全 2026 建議 DBOM 以 ML-BOM（ECMA-424，v1.7）為基礎。' },
+      { text: '不一致，且官方已宣布統一為 v2.0。', why: '沒有這樣的官方說法。' },
+      { text: '不一致：AIBOM Generator 輸出 1.6；ACS 的 AgBOM 允許 CycloneDX 1.6、SPDX 3.0 或 SWID；資料安全建議 DBOM 以 v1.7 為基礎；三者如何互通官方沒有說明。', correct: true, why: '符合 3.1 節。' },
+      { text: '無法比較，因為三份文件都沒有提到 CycloneDX。', why: '三份文件都有提到。' }
+    ],
+    summary: '版本：1.6、1.6／SPDX／SWID、v1.7；互通性未能確認。' },
+
+  { id: 'q12', type: 'match', lo: [3], refs: [C3('bf-demand', '3.2 表 3-2')],
+    stem: '依資料安全 2026，把下列 DBOM 相關控制配對到它所在的條目與層級。',
+    cats: [
+      { id: 'd04t2', label: 'DSGAI04 的 Tier 2' },
+      { id: 'd10t1', label: 'DSGAI10 的 Tier 1' },
+      { id: 'd21', label: 'DSGAI21（完整性證明）' }
+    ],
+    items: [
+      { text: '為每個資料集、檢查點與訓練運行維護 CycloneDX ML-BOM，並有完整的出處連結', answer: 'd04t2', why: '表 3-2：DSGAI04 的 DBOM 在 Tier 2，範圍為 Build。' },
+      { text: '為所有訓練資料集記錄「來源到成品」的血緣（Dataset Bill of Materials）', answer: 'd10t1', why: '表 3-2：DSGAI10 的 Tier 1 有 Dataset Bill of Materials。' },
+      { text: '延伸 DBOM，加入訓練語料與檢索來源的完整性證明記錄', answer: 'd21', why: '表 3-2：DSGAI21 要求在 DBOM 加上完整性證明。' }
+    ],
+    summary: '同一個 DBOM 概念，在不同條目落在不同層級。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'aibom', mode: 'final',
+    los: [
+      { n: 1, text: '定位與範圍：說明 AIBOM Initiative 與 Generator、現行入口與授權，以及只涵蓋 Hugging Face 模型的範圍限制。' },
+      { n: 2, text: '用途與限制：說明為什麼 AI 需要物料清單、清單在事件應變怎麼用，並理解完整度分數不等於安全。' },
+      { n: 3, text: 'BOM 家族與整合：區分 AIBOM、DBOM、AgBOM、SBOM，並知道其他官方文件對 BOM 的要求。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

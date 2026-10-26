@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　八個領域與二十四個實務｜AI 成熟度評估（AIMA）｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AIMA 的八個領域各自在問什麼、24 個實務的名稱、AI 特有的挑戰，以及這些領域與前面治理主題的對應。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="ai-maturity-assessment" data-page="02-domains.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　八個領域與二十四個實務</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position.html">第 1 章</a></li>
+</ul>
+<p class="lead">一份 76 頁的模型，真正要你記住的其實是一張表：八個領域各自在問什麼。這一章用「這個領域想防止什麼事」來講，而不是背名稱，並指出它和你已讀過的治理文件重疊在哪裡。</p>
+
+<h2 id="dm-table">2.1 八個領域與二十四個實務</h2>
+<p>PDF 的目錄把 24 個實務一字排開。下表依 PDF 的順序列出，並加上作者整理的「這個領域想防止什麼事」一欄。<strong>該欄是作者整理，非官方</strong>；領域與實務的名稱和順序取自官方 PDF 目錄，領域的一句話描述改寫自各領域的導言。</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　AIMA V1.0 的八個領域與二十四個實務（名稱取自官方；「想防止什麼」為作者整理）</caption>
+<thead><tr><th scope="col">領域</th><th scope="col">三個實務（官方名稱）</th><th scope="col">想防止什麼事（作者整理，非官方）</th></tr></thead>
+<tbody>
+<tr><th scope="row">1　Responsible AI <br>（負責任 AI）</th><td>Ethical Values and Societal Impact；Transparency and Explainability；Fairness and Bias</td><td>系統造成不公平或無法解釋的結果，傷害信任</td></tr>
+<tr><th scope="row">2　Governance <br>（治理）</th><td>Strategy and Metrics；Policy and Compliance；Education and Guidance</td><td>沒有方向、規則與衡量，各團隊各做各的</td></tr>
+<tr><th scope="row">3　Data Management <br>（資料管理）</th><td>Data Quality and Integrity；Data Governance and Accountability；Data Training</td><td>資料被污染、沒人負責、訓練資料不可追溯</td></tr>
+<tr><th scope="row">4　Privacy <br>（隱私）</th><td>Data Minimization and Purpose Limitation；Privacy by Design and Default；User Control and Transparency</td><td>蒐集過多、用途模糊、使用者失去控制</td></tr>
+<tr><th scope="row">5　Design <br>（設計）</th><td>Threat Assessment；Security Architecture；Security Requirements</td><td>設計階段沒想到 AI 特有的威脅，事後補不起來</td></tr>
+<tr><th scope="row">6　Implementation <br>（實作）</th><td>Secure Build；Secure Deployment；Defect Management</td><td>建置、部署與修補環節留下可被利用的弱點</td></tr>
+<tr><th scope="row">7　Verification <br>（驗證）</th><td>Security Testing；Requirement-based Testing；Architecture Assessment</td><td>上線前後沒有針對 AI 的測試與架構檢視</td></tr>
+<tr><th scope="row">8　Operations <br>（營運）</th><td>Incident Management；Event Management；Operational Management</td><td>運作中的異常、事件與漂移沒人看見、沒人處理</td></tr>
+</tbody></table></div>
+<p>注意第 1 個實務：目錄與模型章節（3.1.1）的名稱是「Ethical Values and Societal Impact」，但儲存庫原始檔的資料夾與部分文字用「Ethical and Societal Impact」。兩者指同一件事，教材採 PDF 目錄的寫法。</p>
+
+<h2 id="dm-concept">2.2 核心概念：為什麼這八個領域要這樣切</h2>
+<div class="concept">
+<h3 id="c-domains">領域是沿著 AI 生命週期排的</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>模型章節說這八個領域「橫跨整個 AI 系統生命週期」。前兩個（負責任 AI、治理）是方向與規則；中間（資料管理、隱私）是 AI 特有的資產；接著從 Design 到 Operations 依序是設計 → 實作 → 驗證 → 營運的工程流程。</dd>
+  <dt data-n="2">為什麼會這樣設計</dt>
+  <dd>簡介給了理由：AI 的風險有一部分在寫任何程式之前就發生了（被污染的資料、有偏見的資料），所以資料與隱私必須獨立成領域，不能只附在「設計」或「實作」底下；治理導言也點出「以資料為中心的攻擊面」。</dd>
+  <dt data-n="3">怎麼使用（概念層級）</dt>
+  <dd>評估時不是八個領域平均分配力氣，而是先看你的組織在哪些領域最空白。例如一個剛起步的團隊，通常 Governance 與 Data Management 會先有明顯缺口。這句話是作者的觀察，不是官方的建議。</dd>
+  <dt data-n="4">怎麼防止誤用</dt>
+  <dd>每個領域導言都說的是「為什麼 AI 的這件事不同於傳統軟體」，而不是「照做就合規」。領域的工作表才是評估的依據（第 3 章）。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「Privacy 領域等於隱私法規遵循。」不完全是。它的三個實務談的是蒐集最小化、設計時就內建隱私、使用者控制與透明；法規遵循在 Governance 的 Policy and Compliance 實務裡。</dd>
+</dl>
+</div>
+<figure class="diagram">
+<pre class="mermaid" data-alt="八個領域依生命週期排列：方向與規則層有負責任 AI 與治理；AI 特有資產層有資料管理與隱私；工程流程層依序是設計、實作、驗證、營運。治理貫穿其他領域，營運的回饋再回到設計。">
+flowchart LR
+  subgraph F["方向與規則"]
+    R1["1 Responsible AI"] --> G2["2 Governance"]
+  end
+  subgraph A["AI 特有資產"]
+    D3["3 Data Management"] --> P4["4 Privacy"]
+  end
+  subgraph E["工程流程"]
+    S5["5 Design"] --> I6["6 Implementation"] --> V7["7 Verification"] --> O8["8 Operations"]
+  end
+  F --> A --> E
+  O8 -.->|"回饋"| S5
+</pre>
+<figcaption><strong>圖 2-1　八個領域的排列（作者整理，非官方）。</strong>分成三群、以及「營運回饋到設計」的虛線是教材作者的歸納；官方只說八個領域「橫跨整個 AI 系統生命週期」，並依 1–8 的順序排列。</figcaption>
+</figure>
+
+<h2 id="dm-map">2.3 與前面治理主題的重疊</h2>
+<p>你已讀過的幾份治理文件，在 AIMA 的領域裡都有「落腳處」。下表是作者把它們放在一起看的結果：</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　AIMA 領域與前面主題的對應（作者整理，非官方）</caption>
+<thead><tr><th scope="col">AIMA 領域／實務</th><th scope="col">相近的前面內容</th><th scope="col">為什麼是「相近」而不是「相同」</th></tr></thead>
+<tbody>
+<tr><th scope="row">Governance／Strategy and Metrics</th><td><a href="../governance-checklist-and-coe/04-coe.html">CoE 的 OKR 與 KPI</a></td><td>CoE 給的是範例 KPI；AIMA 把「有沒有訂指標」當成一個要評級的實務</td></tr>
+<tr><th scope="row">Governance／Policy and Compliance</th><td><a href="../governance-checklist-and-coe/03-checklist-areas.html">Checklist 的治理、法務與合規區塊</a></td><td>Checklist 問「想清楚了嗎」；AIMA 評「做到第幾級」</td></tr>
+<tr><th scope="row">Design／Threat Assessment</th><td>Checklist 的威脅建模區塊；<a href="../threat-defense-compass/01-position-and-ooda.html">COMPASS</a></td><td>COMPASS 是做威脅排序的工具；AIMA 評的是「你有沒有這個能力」</td></tr>
+<tr><th scope="row">Operations／Incident Management</th><td>COMPASS 的事件應變準備度分頁；Checklist 的事件應變演練</td><td>前者是工具分頁；AIMA 評組織的能力級別</td></tr>
+<tr><th scope="row">Data Management／Data Training</th><td>Checklist 的訓練管線與資料安全條目</td><td>Checklist 每條只有一句；AIMA 是一整個領域</td></tr>
+<tr><th scope="row">Implementation／Secure Build（供應鏈驗證）</th><td><a href="../agentic-security-and-governance/04-protocols-identity.html">Agentic 報告的供應鏈要求</a></td><td>Agentic 報告針對 agent 的執行期組合；AIMA 的導言談的是外部服務與預訓練模型的供應鏈完整性</td></tr>
+</tbody></table></div>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：同樣的問題，用三種工具問</p>
+  <p>以「我們有沒有定義 AI 威脅？」為例：Checklist 會問你「有沒有做威脅建模」；COMPASS 會要你「對每個威脅評可能性與衝擊」；AIMA 會問「你的威脅評估實務在 Level 幾」。三者不是重複，而是三個層次：<strong>該不該做、做了怎麼排、做得夠不夠成熟</strong>。這個三層的說法是作者的整理，三份文件都沒有這樣自我定位。</p>
+</div>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>八個領域（順序依 PDF）：Responsible AI、Governance、Data Management、Privacy、Design、Implementation、Verification、Operations。</li>
+  <li>每個領域三個實務，共 24 個；Governance 的三個是 Strategy and Metrics、Policy and Compliance、Education and Guidance。</li>
+  <li>領域沿著 AI 生命週期排列；資料與隱私獨立成領域，因為 AI 的風險有一部分發生在寫程式之前。</li>
+  <li>AIMA 與 Checklist、COMPASS、Agentic 報告有重疊，但問的是不同層次：該不該做、怎麼排、成熟度第幾級。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能依序說出八個領域，並為每個領域說出至少一個實務。</li>
+  <li>我能說明為什麼資料管理與隱私是獨立領域。</li>
+  <li>我能把一個治理問題放到對的領域。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-assessing.html">第 3 章　怎麼做評估：級別、問卷與記分</a>：知道領域之後，看怎麼真的去評一個組織，並用治理工作表算一次分數。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Maturity Assessment V1（PDF，Version V1.0 — August 11, 2025）：目錄、第 3 章 The AIMA Model（3.1–3.8 的領域導言）；<a href="https://raw.githubusercontent.com/OWASP/www-project-ai-maturity-assessment/main/releases/V1/OWASP-AIMA_V1.pdf">releases/V1/OWASP-AIMA_V1.pdf</a>；2026-10-26 讀取。</li>
+    <li>GitHub 儲存庫 <code>source/latest/10_The_Model/</code> 各領域的 <code>00_index.md</code>；CC BY-SA 4.0；<a href="https://github.com/OWASP/www-project-ai-maturity-assessment">github.com/OWASP/www-project-ai-maturity-assessment</a>；2026-10-26 讀取。本教材只讀了八個領域的導言，沒有讀 24 個實務各自的三級細節。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AIMA — CC BY-SA 4.0（儲存庫 LICENSE.md；GitHub 偵測值為 NOASSERTION）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'am-ch2', topic: 'ai-maturity-assessment', mode: 'chapter',
+  questions: [
+    { id: 'am2q1', type: 'match', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-domains.html#dm-table'}],
+      stem: '把下列實務配對到它所屬的 AIMA 領域。',
+      cats: [
+        { id: 'gov', label: 'Governance' },
+        { id: 'data', label: 'Data Management' },
+        { id: 'design', label: 'Design' },
+        { id: 'ops', label: 'Operations' }
+      ],
+      items: [
+        { text: 'Education and Guidance', answer: 'gov', why: 'Governance 的三個實務之一。' },
+        { text: 'Data Governance and Accountability', answer: 'data', why: 'Data Management 的第二個實務。' },
+        { text: 'Threat Assessment', answer: 'design', why: 'Design 的第一個實務。' },
+        { text: 'Incident Management', answer: 'ops', why: 'Operations 的第一個實務。' }
+      ],
+      summary: '24 個實務分屬八個領域，每個領域三個。' },
+    { id: 'am2q2', type: 'mc', lo: [2], refs: [{label: '2.2 概念', href: '02-domains.html#c-domains'}],
+      stem: '為什麼 AIMA 把資料管理與隱私獨立成領域，而不是附在設計或實作底下？',
+      options: [
+        { text: '因為資料部門的人數最多。', why: '與組織人數無關。' },
+        { text: '因為 AI 的風險有一部分在寫任何程式之前就發生了（如被污染或有偏見的資料），需要獨立的實務來處理。', correct: true, why: '治理導言與簡介的理由：資料中心的攻擊面。' },
+        { text: '因為隱私法規只適用於 AI。', why: '本章沒有這樣的說法。' },
+        { text: '因為 SAMM 沒有資料這個概念。', why: '本章沒有這樣的比較。' }
+      ],
+      summary: '資料與隱私獨立：AI 的風險有一部分發生在程式之前。' },
+    { id: 'am2q3', type: 'mc', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-domains.html#dm-table'}],
+      stem: '一個團隊說：「我們已經做了威脅模型，所以 AIMA 的 Design 領域不用看了。」依本章，這個說法的問題是？',
+      options: [
+        { text: '沒有問題，威脅模型就是 Design 領域的全部。', why: 'Design 有三個實務：威脅評估、安全架構、安全需求。' },
+        { text: 'Design 領域有三個實務：Threat Assessment、Security Architecture、Security Requirements。做了威脅評估只涵蓋其中一個，還要看架構與需求是否也據此訂出。', correct: true, why: '表 2-1。' },
+        { text: '威脅模型應該放在 Operations 領域。', why: '威脅評估屬於 Design。' },
+        { text: 'AIMA 不評估威脅模型。', why: 'AIMA 把 Threat Assessment 列為 Design 的實務。' }
+      ],
+      summary: 'Design：威脅評估 + 安全架構 + 安全需求。' },
+    { id: 'am2q4', type: 'scn', lo: [2], refs: [{label: '2.2 概念', href: '02-domains.html#c-domains'}, {label: '2.3 表 2-2', href: '02-domains.html#dm-map'}],
+      stem: '依本章，這位同事的結論應該怎麼修正？',
+      scenario: '瑞穗醫材（虛構）的合規主管看完 AIMA 的八個領域，說：「這些領域我們在 Governance Checklist 的 13 個區塊都做過了，AIMA 是重複的，不需要再做。」資安長覺得不完全對。',
+      options: [
+        { text: '主管說得對，AIMA 與 Checklist 完全重複。', why: '兩者問的層次不同：Checklist 問想清楚了嗎，AIMA 評做到第幾級。' },
+        { text: '兩者有重疊，但層次不同：Checklist 回答「該想清楚哪些面向」，AIMA 評估每個實務的成熟度級別並給出下一步；即使 Checklist 都勾了，也不代表在 AIMA 各實務已達 Level 幾。（這個三層的說法是作者整理）', correct: true, why: '2.3 節的對應與作者整理的說明。' },
+        { text: '主管說得對，因為 AIMA 沒有 Governance 領域。', why: 'AIMA 有 Governance 領域。' },
+        { text: '應該完全捨棄 Checklist，改用 AIMA。', why: '本章沒有這樣的建議；兩者互補。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) Checklist 是導入前「請確認……」的行動項；AIMA 是對每個實務問 Yes／No 並給級別。(2) 做完 Checklist 能說明你想過這些面向；AIMA 要看活動與成品是否真的存在。(3) 表 2-2 顯示兩者重疊但不同層。</p><p><strong>結論：</strong>互補而非重複。對應教材：<a href="02-domains.html#dm-map">2.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

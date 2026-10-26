@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　決策、行動與兩個範例｜Threat Defense COMPASS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="COMPASS 的 Decide 與 Act 階段：把威脅對映到預防與偵測型防禦、建立有負責人與期限的路線圖、先做的六件事，以及 RunBook 的兩個官方範例與分級不一致。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="threat-defense-compass" data-page="03-decide-act.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　決策、行動與兩個範例</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3、LO4</li>
+  <li>前置：<a href="02-observe-orient.html">第 2 章</a></li>
+</ul>
+<p class="lead">排好序的威脅，如果沒有變成有人負責、有期限的工作，就只是一張漂亮的表。這一章看 COMPASS 的最後兩個階段，並用 RunBook 附的兩個範例走一遍完整流程，包括其中一個範例與試算表自己對不上的地方。</p>
+
+<h2 id="da-decide">3.1 決策 (Decide)：把威脅對映到防禦</h2>
+<p>RunBook 的 Step 6 目的是「評估並決定適當的<strong>預防型與偵測型控制</strong>」，做法是把威脅對映到防禦與緩解，並把缺少的預防與偵測型控制記到路線圖。這兩個詞你在 <a href="../../primer-security-for-developers.html">資安前置觀念</a> 看過：預防型是擋在前面，偵測型是看見後面。</p>
+<p>支援這個步驟的是試算表的四個參考分頁：</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　Decide 階段使用的參考分頁（試算表分頁名稱與 RunBook 說明）</caption>
+<thead><tr><th scope="col">分頁</th><th scope="col">是什麼</th><th scope="col">什麼時候看</th></tr></thead>
+<tbody>
+<tr><th scope="row">6 AI Security Matrix <br>（AI 資安矩陣）</th><td>威脅與防禦的對照</td><td>弱點與事件找到之後，查有哪些防禦</td></tr>
+<tr><th scope="row">6a Defenses &amp; Mitigations <br>（防禦與緩解）</th><td>各種防禦與緩解措施清單</td><td>要決定緩解措施時</td></tr>
+<tr><th scope="row">6b Incident Monitoring &amp; Alerts <br>（事件監控與警示）</th><td>偵測方向的參考</td><td>決定要補哪些偵測型控制時</td></tr>
+<tr><th scope="row">6c AI Third Party Questions <br>（AI 第三方問題）</th><td>評估第三方供應商時要問的問題</td><td>威脅來自供應商或供應鏈時</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：這四個參考分頁的具體內容</p>
+  <p>本教材只確認了它們的名稱與 RunBook 對用途的說明，<strong>沒有逐列讀完內容</strong>，因此不列出矩陣的任何條目。實際使用時請直接開啟試算表。</p>
+</div>
+
+<h2 id="da-act">3.2 行動 (Act)：路線圖五件事</h2>
+<p>Step 7 的目的是把發現「變成可執行、有優先順序的 AI 資安計畫」。每個項目要有任務 (Task)、負責人 (Owner) 與期限 (Timeline)。RunBook 把路線圖拆成五個工作：</p>
+<ol>
+  <li><strong>找出缺口：</strong>記錄 Profile 1 與 Profile 2 中，超出組織風險容忍度的缺口。</li>
+  <li><strong>記錄威脅與緩解：</strong>把已辨識的威脅和擬議的緩解寫進路線圖。</li>
+  <li><strong>指定負責人與時程：</strong>寫明負責的個人或團隊與預計完成日期。</li>
+  <li><strong>更新目標檔案：</strong>實作緩解或風險改變時，回頭更新分頁 2。</li>
+  <li><strong>建立更新節奏：</strong>定一個固定的檢視流程，讓路線圖隨威脅與部署演變。</li>
+</ol>
+<p>RunBook 還建議：整合現有輸入（業務衝擊分析 BIA、SOC 的發現、紅隊結果）；啟用版本控制並保留檢視紀錄；放在共享的協作空間並設定權限。</p>
+<p>另有一份「<strong>Do this First</strong>」的清單，不用跑完整個流程就可以先做：確認法律與法規義務已更新；更新處理匯款、發票與招募的詐欺偵測流程以防範深偽；把 AI 事件（含假訊息策略）納入事件應變計畫；檢視第三方夥伴的功能與資料使用協議是否變動；更新第三方問卷以包含 AI 功能；確保有 AI 政策，或更新可接受使用政策以註明不得使用公司資料的 AI 工具。</p>
+
+<h2 id="da-examples">3.3 兩個官方範例</h2>
+<p>RunBook 附了兩個範例。它們很適合用來看「各分頁怎麼串起來」，但也各有值得注意之處。</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　RunBook 的兩個範例（官方，改寫）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">範例一：客服聊天機器人</th><th scope="col">範例二：多 Agent 事件處理流程</th></tr></thead>
+<tbody>
+<tr><th scope="row">背景</th><td>部署客服聊天機器人（GPT 模型、AWS 託管、公開存取）</td><td>以 AI 驅動的工作流分類、分析並解決客服工單（GPT 類代理、AWS、內部經認證的使用者）</td></tr>
+<tr><th scope="row">觀察</th><td>在 2a 記錄目標；2b 估初始威脅分數</td><td>可能性：提示詞注入 4（高）；衝擊 4（嚴重）；初始分數 16，RunBook 稱 Critical</td></tr>
+<tr><th scope="row">定位</th><td>3a 查 LLM Top 10 與 Agentic Top 10 類別的已知弱點；3b 研究事件並更新分數；3d 完成審查問題並建立紅隊演練計畫</td><td>3a 對映 LLM01:2025 與 LLM02:2025 並列出 CVE；3b 研究類似的提示詞注入事件；3d 問「提示詞注入能否繞過 AI 邏輯」「人工驗證是否足以防止權限提升」</td></tr>
+<tr><th scope="row">決策</th><td>在 6、6a 定義緩解（提示詞清洗、安全的資料處理政策）</td><td>嚴格的提示詞清洗、驗證送出的中繼資料、執行前的人工監督、定期檢視 AI 代理指派的權限</td></tr>
+<tr><th scope="row">行動</th><td>在 5 記錄策略與路線圖，如每季一次紅隊評估</td><td>提示詞清洗一週內完成；每季針對提示詞注入與 Agent 權限提升的紅隊評估；持續監控異常的升級行為</td></tr>
+<tr><th scope="row">結果</th><td>（範例未寫分數）更新分頁 2 與 2a</td><td>緩解後分數降為 9，RunBook 稱 Medium，並持續監控</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">觀察到的不一致：範例的等級標籤與試算表的等級表對不上</p>
+  <p>範例二寫「初始分數 Critical (16)」與「降至 Medium (9)」。但試算表 About 分頁的對照是 15–19＝High、20–25＝Critical、5–9＝Low，並<strong>沒有「Medium」這個等級</strong>（中間級是 Moderate，範圍 10–14）。所以依試算表，16 是 High、9 是 Low。本教材無法判斷是範例沿用了較早的分級、還是筆誤，教材<strong>不擅自擇一</strong>：用 COMPASS 時請以你複製的那份試算表的等級表為準，並注意 RunBook 範例的標籤不能直接拿來比對。</p>
+</div>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：範例二裡的「權限提升」與其他文件的關係</p>
+  <p>範例二的核心是：工單裡夾帶的指令影響了分類 agent，進而讓後續 agent 跳過驗證。這是你在 <a href="../../01-overview/ai-exchange/index.html">AI Exchange</a> 看過的「間接提示詞注入加上過大的權限」。其中的緩解之一「執行前人工監督」，也有核准疲勞的問題（RunBook 範例自己提醒：若人工介入很少或過度依賴 AI 建議，攻擊仍會成功）。把它們連在一起是作者的整理，RunBook 沒有引用 AI Exchange。</p>
+</div>
+
+<h2 id="da-scenario">3.4 情境範例 A：一週內排出五個先做的事</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：海灣證券的導入前排序</h3>
+<p><span class="tag fiction">虛構</span> 海灣證券是虛構的公司。治理檢核表的盤點結果列出 14 個 AI 專案的缺口。資安長要在週五前向執行長報告「先處理哪些」，只有兩位分析師與一週時間。他們決定用 COMPASS，不求精確，只求把 14 個缺口排出前五。</p>
+<ol class="steps">
+  <li><strong>先校準：</strong>在 2b 把衝擊的金額區間換成公司的標準，並寫下三個「最糟情境」：客戶資料外洩、對外 agent 被操縱而送出錯誤的交易建議、AI 假冒高階主管指示匯款。</li>
+  <li><strong>選視角：</strong>先評 Profile 1（深偽與釣魚）、再評 Profile 2a 的治理缺口，最後才評自製客服 agent 的 2c。</li>
+  <li><strong>評分：</strong>每項各打可能性與衝擊。對「AI 服務帳號權限」這種不明但高後果的項目，依 RunBook 的做法先打高分。</li>
+  <li><strong>用證據調整：</strong>查 CVE 與公開事件後，把「對外客服 agent」的可能性從 3 調為 4。另兩項因沒有新證據維持不變。</li>
+  <li><strong>決策與行動：</strong>前五項各指定負責人與期限；缺少偵測型控制的兩項登記到路線圖；兩週後安排複查（對應「至少每兩週檢查新弱點」）。</li>
+  <li><strong>這個情境的提醒：</strong>COMPASS 只負責「排序」。前五名裡有兩項涉及合約與保險，仍需回到治理檢核表的法務區塊與法務部門；若要精確量化，要另做風險評估。</li>
+</ol>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>Decide：把威脅對映到預防型與偵測型控制，參考分頁 6、6a、6b、6c；缺少的控制記到路線圖。</li>
+  <li>Act：路線圖五件事（找缺口、記錄威脅與緩解、指定負責人與時程、更新檔案、建立更新節奏）。</li>
+  <li>「Do this First」清單可以先做，不需跑完整個流程。</li>
+  <li>RunBook 範例的等級標籤（Critical 16、Medium 9）與試算表等級表不一致；以你複製的試算表為準。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出路線圖的五件事，以及每個項目需要的三個欄位。</li>
+  <li>我能指出範例二的等級標籤與試算表對不上的地方。</li>
+  <li>我知道 COMPASS 排完序之後，哪些事要回頭交給法務或做精確評估。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3、LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-integration.html">第 4 章　跨文件整合與收尾</a>：看 COMPASS 怎麼接到 Checklist、LLM Top 10、MITRE 與 AIVSS，並做全主題總整理。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，Threat Defense COMPASS RunBook（Version 1.0；資源頁 2025-09-10）：Step 6 Decide、Step 7 Act、Next Steps &amp; Recommendations、Example Use Case Scenario One／Two、Do this First；CC BY-SA 4.0；<a href="https://genai.owasp.org/resource/owasp-genai-security-project-threat-defense-compass-runbook/">genai.owasp.org/resource/owasp-genai-security-project-threat-defense-compass-runbook/</a>；2026-10-26 讀取。</li>
+    <li>COMPASS 試算表 V 1.0（About 分頁的等級對照；分頁名稱）；CC BY-SA 4.0；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：COMPASS RunBook 與試算表 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'tc-ch3', topic: 'threat-defense-compass', mode: 'chapter',
+  questions: [
+    { id: 'tc3q1', type: 'mc', lo: [3], refs: [{label: '3.2 路線圖', href: '03-decide-act.html#da-act'}],
+      stem: '依 RunBook 的 Step 7，路線圖中的每個項目至少要寫明哪三樣東西？',
+      options: [
+        { text: '任務、負責人與期限。', correct: true, why: 'RunBook 範例：Task、Owner、Timeline。' },
+        { text: '攻擊者姓名、攻擊工具與攻擊時間。', why: '路線圖是防禦計畫，不是攻擊紀錄。' },
+        { text: '供應商報價、合約期限與付款方式。', why: '與採購無關。' },
+        { text: '威脅分數、CVSS 分數與 CWE 編號。', why: '這些屬於 Orient 階段的評分資訊，不是路線圖項目的基本欄位。' }
+      ],
+      summary: '路線圖項目：任務、負責人、期限。' },
+    { id: 'tc3q2', type: 'scn', lo: [4], refs: [{label: '3.3 表 3-2', href: '03-decide-act.html#da-examples'}],
+      stem: '依本章，這位同事引用範例二時，哪一個說法需要加註？',
+      scenario: '同事在簡報寫：「依 OWASP COMPASS RunBook 範例，初始威脅分數 16 屬 Critical，緩解後降到 9 屬 Medium，所以我們公司只要分數低於 10 就是 Medium。」你記得試算表 About 分頁有等級表。',
+      options: [
+        { text: '沒有問題，這是官方範例。', why: '範例的標籤與試算表 About 分頁的等級表不一致；不能直接當作標準。' },
+        { text: '需要加註：依試算表 About 分頁，16 屬 High（15–19），9 屬 Low（5–9），且表中沒有「Medium」；RunBook 範例的標籤與試算表不一致，應以自己複製的試算表等級表為準。', correct: true, why: '對應 3.3 節的不一致提醒。' },
+        { text: '應改成：分數低於 10 一律是 Critical。', why: '與兩份資料都不符。' },
+        { text: '只需把 Medium 改成 Moderate，其他都對。', why: '單改名稱仍無法對應：Moderate 範圍是 10–14，9 不在其中。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) RunBook 範例二寫「Critical (16)」與「Medium (9)」。(2) 試算表 About 分頁的等級表：20–25 Critical、15–19 High、10–14 Moderate、5–9 Low、1–4 Minimal。(3) 所以依該表 16＝High、9＝Low，且沒有 Medium；教材不判斷哪一邊較新。</p><p><strong>結論：</strong>簡報要註明範例的標籤與試算表不一致，並以公司採用的等級表為準。對應教材：<a href="03-decide-act.html#da-examples">3.3 節</a>。</p>' },
+    { id: 'tc3q3', type: 'match', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-decide-act.html#da-decide'}],
+      stem: '把下列需求配對到最適合查閱的參考分頁。',
+      cats: [
+        { id: 'a6', label: '6 AI Security Matrix' },
+        { id: 'a6a', label: '6a Defenses & Mitigations' },
+        { id: 'a6b', label: '6b Incident Monitoring & Alerts' },
+        { id: 'a6c', label: '6c AI Third Party Questions' }
+      ],
+      items: [
+        { text: '要決定針對某個弱點採取哪些緩解措施', answer: 'a6a', why: '6a 是防禦與緩解措施清單。' },
+        { text: '要確認供應商是否有 AI 功能與如何處理資料', answer: 'a6c', why: '6c 是評估第三方供應商時要問的問題。' },
+        { text: '要決定需要補哪些偵測與警示', answer: 'a6b', why: '6b 提供事件監控與警示的方向。' },
+        { text: '要查威脅與防禦的對照', answer: 'a6', why: '6 是 AI 資安矩陣。' }
+      ],
+      summary: '四個參考分頁各有用途；內容請直接開試算表。' },
+    { id: 'tc3q4', type: 'mc', lo: [3], refs: [{label: '3.2 Do this First', href: '03-decide-act.html#da-act'}],
+      stem: '一個團隊沒有時間跑完整個 COMPASS 流程。依 RunBook 的「Do this First」，下列哪一項可以先做？',
+      options: [
+        { text: '重寫所有的模型訓練管線。', why: 'RunBook 的清單沒有這項，它偏向政策、詐欺偵測與事件應變等低成本動作。' },
+        { text: '更新處理匯款、發票與招募的詐欺偵測流程，以防範深偽。', correct: true, why: '這是 Do this First 的項目之一，另有更新事件應變計畫、檢視第三方協議、更新 AI 政策等。' },
+        { text: '購買一套標示「通過 OWASP 認證」的產品。', why: 'OWASP 沒有這樣的認證。' },
+        { text: '把所有 AI 服務直接停用。', why: '清單沒有要求停用，而是更新政策與流程。' }
+      ],
+      summary: 'Do this First：法規、詐欺流程、事件應變、第三方、AI 政策。' }
+  ]
+});
+</script>
+</body>
+</html>

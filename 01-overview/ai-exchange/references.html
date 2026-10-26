@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜OWASP AI Exchange｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP AI Exchange 主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="01-overview" data-topic="ai-exchange" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26（教材內容所依據的來源快照：2026-10-25）</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 4.8、4.9 節與第 8 節）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以本教材回到一手來源重新核對。本頁列出：每個項目採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。教材中的舊版資訊只出現在版本演進與本頁。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（均為 2026-10-26 實際連線取得）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">OWASP AI Exchange（內容本體）</th><td>無版本號；<strong>2026-10-25 內容快照</strong></td><td>owaspai.org 回應標頭 Last-Modified 為 2026-10-25 13:30 GMT；PDF 快照內文首行「Generated from owaspai.org on: 10/25/2026」，383 頁，PDF 中繼資料建立於 2026-10-25</td><td>CC0 1.0（About 頁及頁尾連結）</td></tr>
+<tr><th scope="row">owasp.org 專案登記頁</th><td>Flagship、Documentation、「Latest Version 1.0」</td><td><a href="https://owasp.org/www-project-ai-exchange/">owasp.org/www-project-ai-exchange/</a>（回應 308 轉址後 200）</td><td>CC BY-SA 4.0（owasp.org 全站頁尾）</td></tr>
+<tr><th scope="row">GitHub 儲存庫</th><td>無 release；最後推送 2026-10-25</td><td>GitHub API；README 說明儲存庫舊名保留是出於歷史原因</td><td>GitHub 未偵測到授權檔；內容授權以 owaspai.org 的 CC0 1.0 為準</td></tr>
+<tr><th scope="row">Top 10 for LLM Applications 2026</th><td>Version 2026；<strong>2026-08-04</strong></td><td>GitHub README「Current release: 2026 — published August 4, 2026」；PDF 封面「August 4th, 2026」；資源頁寫 August 3, 2026（較早，不採用）</td><td>CC BY-SA 4.0（README badge 與 PDF 封面）</td></tr>
+<tr><th scope="row">Top 10 for Agentic Applications 2026</th><td>Version 2026；2025 年 12 月</td><td>PDF 封面（57 頁，中繼資料建立於 2025-12-10）；資源頁日期 December 9, 2025</td><td>CC BY-SA 4.0（PDF「License and Usage」）</td></tr>
+<tr><th scope="row">AISVS</th><td>1.01（最新穩定版）；1.02 開發中</td><td>GitHub README（2026-10-24 仍有推送）。owasp.org 專案頁仍寫 1.0 為最新穩定版，並說 1.01 開發中，版本號較小，不採用</td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">MCP Top 10</th><td>無版本號；條目標 2025；專案頁標示 Production 分類，Roadmap「Phase 3 – Beta … We are here right now」</td><td>owasp.org 專案頁；GitHub README</td><td><span class="tag nc">NC 授權</span>頁面寫「CC BY-NC-SA 4.0」，同一句又描述為 Attribution-ShareAlike；GitHub 授權偵測為 NOASSERTION</td></tr>
+<tr><th scope="row">Machine Learning Security Top 10</th><td>2023 edition；Version 0.3 Draft；Incubator</td><td>owasp.github.io 專案頁</td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0（npm 最新版，2026-10-13 發布）</td><td>npm registry；cdn.jsdelivr.net 上的 dist/mermaid.min.js；SHA-256 前 16 碼 a8a6a6f805b074a8</td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">ISO/IEC 42001</th><td>「在本次讀取的內容中未見提及」</td><td>概覽頁沒有，但 PDF 快照的深入章節多處出現（例如 AI PROGRAM 的標準清單、數個控制的「有用的標準」）。AI Exchange 在 AI PROGRAM 說明：42001 偏治理，ISO/IEC 5338 偏工程生命週期</td><td>第 1 章引用 AI PROGRAM 的說法</td></tr>
+<tr><th scope="row">概覽頁內容</th><td>內容架構 0–7；Essentials 四大類</td><td>概覽頁另有「AI engineering primer」、「Agentic AI overview」（含致命三要素）、「RAG systems overview」、「From general risks to controls」表，以及提示詞注入的七層防線</td><td>第 3–7 章納入</td></tr>
+<tr><th scope="row">頁數</th><td>owasp.org 專案頁寫 200+，同頁後文與 owaspai.org 寫 300+</td><td>owasp.org/www-project-ai-exchange/ 兩處皆寫 200+；owasp.github.io 舊名頁同頁並存 200+ 與 300+；owaspai.org 寫 300+；PDF 實際 383 頁</td><td>不以頁數為版本依據；第 1 章如實說明</td></tr>
+<tr><th scope="row">受眾</th><td>（筆記未載）</td><td>owasp.github.io 舊名頁寫「For Builders, Breakers, Buyers」；project.owasp.yaml 的 audience 只列 builder、breaker</td><td>第 1 章以 owaspai.org 的「Who is this for」為準（實務工作者）</td></tr>
+<tr><th scope="row">專案領導者</th><td>owaspai.org About 列 3 位；owasp.org 專案頁與 yaml 列 4 位</td><td>owaspai.org Roadmap 與 owasp.github.io 列 3 位；owasp.org/www-project-ai-exchange/ 與 project.owasp.yaml 列 4 位（含 Chris Ancharski）。本教材無法判斷哪份較新</td><td><strong>未能確認</strong>，教材不列名單，只提創辦人</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">AI Exchange 版本</th><td>owaspai.org 無版本號；owasp.org 與 owasp.github.io 寫 Version 1.0</td><td>內容以 owaspai.org 為準，用快照日期引用；1.0 視為專案登記欄位（兩個「1.0」都在專案登記頁）</td></tr>
+<tr><th scope="row">LLM Top 10 2026 發布日</th><td>資源頁 08-03；GitHub、PDF 封面 08-04；PDF 封面另殘留「[Publication date to be set]」，修訂歷史最後一列仍是「[2026 release date]」</td><td>採較新的 08-04。PDF 殘留佔位文字的原因未能確認，筆記所指的未能確認事項在此仍成立</td></tr>
+<tr><th scope="row">AISVS 版本</th><td>GitHub 1.01；owasp.org 1.0</td><td>採 1.01（版本號較大，且 GitHub 近期仍有推送）</td></tr>
+<tr><th scope="row">LLM Top 10 專案層級</th><td>GitHub 寫 Flagship；owasp.org 專案頁寫 Lab Project；AI Exchange 稱 GenAI Security Project 於 2025 年 3 月獲旗艦</td><td>教材不使用「LLM Top 10 的層級」；僅引用 AI Exchange 對 GenAI Security Project 與 AI Exchange 並列為兩個旗艦專案的說法。LLM Top 10 專案頁的標示為何較新<strong>未能確認</strong></td></tr>
+<tr><th scope="row">授權</th><td>owaspai.org 內容 CC0 1.0；owasp.org 專案頁頁尾 CC BY-SA 4.0</td><td>兩者分別標示在頁尾；教材自身內容的再利用以來源各自授權為準</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>AI Exchange「2026 夏季前重大更新」是否完成：</strong>路線圖寫目標，頁面沒有說明完成與否。</li>
+  <li><strong>與 ISO／CEN-CENELEC 標準的貢獻細節：</strong>「prEN 18282 貢獻 70 頁」「ISO/IEC 27090 貢獻 70 頁」「官方聯絡夥伴關係」皆是 AI Exchange 的自述，本教材沒有向標準組織查證，只能引述。</li>
+  <li><strong>專案領導者名單：</strong>3 位或 4 位，見表 R-2。</li>
+  <li><strong>owasp.org/www-project-ai-security-and-privacy-guide/ 回傳 404 的原因：</strong>project.owasp.yaml 的 website 欄位仍指向它；是否為快取、轉址或專案頁改名造成，未能確認。</li>
+  <li><strong>AI Exchange 對 LLM Top 10「刻意不完整、不含提示詞安全」的說法與 2026 版內容的不一致：</strong>原因未能確認，教材只提醒不要把它當成對 2026 版的描述。</li>
+  <li><strong>MCP Top 10 的授權：</strong>見表 R-1。</li>
+  <li><strong>「AI Exchange 是否把 RAG／向量風險對照到 LLM09」：</strong>本教材在 PDF 快照全文搜尋 LLM09、Vector and Embedding，沒有找到；教材據此不宣稱官方有這個對照。</li>
+  <li><strong>圖像內容：</strong>官方的威脅地圖與週期表有圖片版本。本教材檢視了 threats.png 與 threatscontrols.png，教材的圖是依文字內容與這兩張圖<strong>重新繪製</strong>的簡化版，不是官方原圖。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<h3>AI Exchange</h3>
+<ul>
+  <li>首頁：<a href="https://owaspai.org/">https://owaspai.org/</a></li>
+  <li>0. AI Security Overview（About、Relevant OWASP AI initiatives、Roadmap、How to use this Document、AI engineering primer、How to organize AI Security、Essentials、Threats overview、Agentic AI overview、RAG systems overview、AI Security Matrix、Controls overview、Periodic table、risk analysis、How about …）：<a href="https://owaspai.org/go/about/">https://owaspai.org/go/about/</a>（<code>/go/essentials/</code>、<code>/docs/ai_security_overview/</code> 回傳完全相同的位元組，是同一份長文）</li>
+  <li>PDF 快照：<a href="https://owaspai.org/OWASP-AI-Exchange.pdf">https://owaspai.org/OWASP-AI-Exchange.pdf</a>（383 頁）</li>
+  <li>威脅與控制頁（皆在 PDF 快照內）：<code>/go/leastmodelprivilege</code>、<code>/go/oversight</code>、<code>/go/monitoruse</code>、<code>/go/continuousvalidation</code>、<code>/go/devsecurity</code>、<code>/go/segregatedata</code>、<code>/go/dataqualitycontrol</code>、<code>/go/inputsegregation</code>、<code>/go/promptinjectionsevenlayers</code>、<code>/go/directpromptinjection</code>、<code>/go/agentescape</code>、<code>/go/inputdataleak</code>、<code>/go/augmentationdataconfidentiality</code>、<code>/go/augmentationdataintegrity</code>、<code>/go/outputcontainsconventionalinjection</code>、<code>/go/secprogram</code>、<code>/go/aiprogram</code>（皆為 https://owaspai.org 之下）</li>
+  <li>官方圖：<a href="https://owaspai.org/images/threats.png">threats.png</a>、<a href="https://owaspai.org/images/threatscontrols.png">threatscontrols.png</a></li>
+  <li>OWASP 專案頁：<a href="https://owasp.org/www-project-ai-exchange/">https://owasp.org/www-project-ai-exchange/</a>；<a href="https://owasp.github.io/www-project-ai-security-and-privacy-guide/">owasp.github.io 舊名頁</a>；<a href="https://github.com/OWASP/www-project-ai-security-and-privacy-guide">GitHub 儲存庫</a>（README、project.owasp.yaml）</li>
+</ul>
+<h3>相鄰文件</h3>
+<ul>
+  <li>Top 10 for LLM Applications 2026：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10">GitHub</a>（<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/tree/main/2026/final">2026/final</a>：Preface、LLM01、LLM03、LLM04、LLM08、LLM09、LLM10）；<a href="https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/">資源頁</a>；PDF 122 頁</li>
+  <li>Top 10 for Agentic Applications 2026：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a>；PDF 57 頁</li>
+  <li>MCP Top 10：<a href="https://owasp.org/www-project-mcp-top-10/">owasp.org</a>；<a href="https://github.com/OWASP/www-project-mcp-top-10">GitHub</a></li>
+  <li>Machine Learning Security Top 10：<a href="https://owasp.github.io/www-project-machine-learning-security-top-10/index.html">專案頁</a></li>
+  <li>AISVS：<a href="https://github.com/OWASP/AISVS">GitHub</a>；<a href="https://owasp.org/www-project-artificial-intelligence-security-verification-standard-aisvs-docs/">owasp.org 專案頁</a></li>
+</ul>
+<h3>資安前置觀念頁引用（OWASP Cheat Sheet Series，各頁未載版本與日期；CC BY-SA 4.0）</h3>
+<ul>
+  <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_Product_Design_Cheat_Sheet.html">Secure Product Design</a>、<a href="https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html">Threat Modeling</a>、<a href="https://cheatsheetseries.owasp.org/cheatsheets/Attack_Surface_Analysis_Cheat_Sheet.html">Attack Surface Analysis</a>、<a href="https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html">Authorization</a>、<a href="https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html">SQL Injection Prevention</a></li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<p>下列內容是作者的整理或類比，在正文中均以「作者整理，非官方」標示：</p>
+<ul>
+  <li>前置觀念頁：預防／偵測／回應三分法、各類比（IAM、CSRF、CI gate、熔斷器等）。</li>
+  <li>圖 1-1 中三個虛線入口（Agentic、MCP、ML 的導引）；第 3 章把 LLM 應用開發者最常掌握的控制類別歸納為 Watch 與 Limit 等；表 3-3 的預防／偵測／回應歸類。</li>
+  <li>圖 4-1 的分群版面；「降低成功率」與「限縮後果」的標籤（分群依據是官方「其餘各層是爆炸半徑控制」的說法）。</li>
+  <li>致命三要素與 Rule of Two 在結構上的對應。</li>
+  <li>第 8 章表 8-1 中標示「作者整理」的格子，以及圖 8-2 的「症狀」欄。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>AI Exchange 內容為 CC0 1.0；其官方圖片檔上註明「donated to AI Exchange, free of copyright and attribution」。本教材沒有嵌入官方圖片，而是重新繪製。</li>
+  <li>LLM Top 10 2026、Agentic Top 10 2026、AISVS、ML Top 10、OWASP Cheat Sheet Series 為 CC BY-SA 4.0。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li><span class="tag nc">NC 授權</span> MCP Top 10 專案頁標示 CC BY-NC-SA 4.0（非商業）。本教材只引用它的名稱、狀態與授權標示，沒有使用其內容。</li>
+  <li>Mermaid 為 MIT 授權，授權檔隨附於 <code>assets/vendor/mermaid.LICENSE.txt</code>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：OWASP AI Exchange — CC0 1.0；LLM Top 10 2026、Agentic Top 10 2026、AISVS、ML Top 10、OWASP Cheat Sheet Series — CC BY-SA 4.0；<span class="tag nc">NC 授權</span> MCP Top 10 — CC BY-NC-SA 4.0（非商業；本教材僅引用名稱與狀態）；Mermaid — MIT。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

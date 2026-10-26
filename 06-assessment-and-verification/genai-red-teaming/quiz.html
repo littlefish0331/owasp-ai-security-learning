@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜GenAI 紅隊演練｜OWASP AI 資安學習教材</title>
+<meta name="description" content="GenAI 紅隊演練主題總測驗：14 題，涵蓋四個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="genai-red-teaming" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：GenAI 紅隊演練</h1>
+<ul class="meta-row">
+  <li>14 題（選擇題 4、情境判斷題 6、配對題 4）</li>
+  <li>預估時間：約 20 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO4</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–4 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位：</strong>說明三份文件各回答什麼問題與採用的版本日期，並說明 AI 紅隊與傳統紅隊的差異。</li>
+  <li><strong>八階段方法：</strong>說出八個階段與各階段的目的，並說明環境限制與信任邊界的角色。</li>
+  <li><strong>評估與報告：</strong>運用測試判準、ASR 與預算、影響範圍、可重現性與紅藍成對產出，判斷紅隊報告是否可靠。</li>
+  <li><strong>評估廠商與工具：</strong>用綠旗與紅旗分辨真正的對抗式測試，並比較顧問與自動化工具。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：GenAI Red Teaming Manual、GenAI Red Teaming Guide、Vendor Evaluation Criteria（各 PDF 封面）與 genai.owasp.org 網站 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-position.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-phases-1-4.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-phases-5-8.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-vendor-evaluation.html', a, '第 4 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('pos-onepage', '1.1 表 1-1')],
+    stem: '下列哪一種寫法最能正確地引用 Red Teaming Guide 的版本與日期？',
+    options: [
+      { text: '「GenAI Red Teaming Guide，2025-01-22」（資源頁日期）', why: '資源頁寫 2025-01-22，但 PDF 封面寫 2025-01-23；版本日期衝突時本教材採較新的 2025-01-23。' },
+      { text: '「GenAI Red Teaming Guide，Version 1.0，2025-01-23」', correct: true, why: '教材採 PDF 封面較新的日期，並寫明版本。' },
+      { text: '「GenAI Red Teaming Manual 的舊版」', why: '未能確認 Manual 是 Guide 的後繼，不能這樣稱呼。' },
+      { text: '「OWASP GenAI Security Project 2026 版」', why: '專案沒有整體版本號；要指到具體產出與版本日期。' }
+    ],
+    summary: '版本日期衝突時採較新者，並寫明版本。' },
+
+  { id: 'q02', type: 'scn', lo: [1], refs: [C1('pos-onepage', '1.1 表 1-1'), C1('pos-which', '1.4 圖 1-1')],
+    stem: '依本教材，這位同事的說法有哪些問題？',
+    scenario: '漣漪科技（虛構）的簡報寫：「OWASP 的 GenAI Red Teaming Manual 取代了舊的 Guide，所以 Guide 已經作廢，我們只看 Manual。另外，Vendor Evaluation Criteria 是 Manual 的附錄。」你想確認官方怎麼說。',
+    options: [
+      { text: '兩個說法都有官方依據。', why: '官方資源頁沒有說明 Manual 與 Guide 的關係；Vendor Evaluation Criteria 是獨立文件。' },
+      { text: '第一句沒有官方依據（兩者關係未能確認，Manual 全文也沒有提到 Guide）；第二句也不對，Vendor Evaluation Criteria 是獨立的文件，用途是採購評估。', correct: true, why: '對應表 1-1 與 1.4 節。' },
+      { text: '只有第二句有問題。', why: '第一句同樣沒有官方依據：兩者關係未能確認。' },
+      { text: '兩句都對，只是日期要補上。', why: '補日期無法解決關係未明的問題。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) Manual 全文沒有提到 Guide，官方資源頁也沒有說明兩者關係，所以「取代」「作廢」沒有依據；(2) Manual 回答「演練怎麼做」，Guide 偏概念與組織面，兩者各自引用。(3) Vendor Evaluation Criteria 是給採購者的獨立文件，不是 Manual 的附錄。</p><p><strong>結論：</strong>簡報應改成各自標版本與日期，並標明兩者關係未能確認。對應教材：<a href="01-position.html#pos-onepage">1.1 節</a>。</p>' },
+
+  { id: 'q03', type: 'match', lo: [1], refs: [C1('pos-diff', '1.2 表 1-2')],
+    stem: '把下列描述配對到它最符合的紅隊類型。',
+    cats: [
+      { id: 'trad', label: '傳統紅隊' },
+      { id: 'genai', label: 'GenAI 紅隊' }
+    ],
+    items: [
+      { text: '成功的標準多半是明確的入侵結果，例如網域管理員憑證被竊', answer: 'trad', why: 'Guide 的對照：傳統紅隊關注明確定義的系統入侵。' },
+      { text: '輸出具機率性，需要統計式評估，並區分正常變異與惡意造成的退化', answer: 'genai', why: '隨機性評估與判定標準是 GenAI 紅隊的差異。' },
+      { text: '風險範圍包含偏誤與有害內容這類社會技術風險', answer: 'genai', why: '表 1-2「關注範圍」。' },
+      { text: '測試重點是攻擊者能不能取得系統存取', answer: 'trad', why: '官方詞彙頁的說法：傳統紅隊測存取，AI 紅隊測能否讓系統違反自己的限制。' }
+    ],
+    summary: '傳統：測存取、結果明確；GenAI：測系統會不會違反自己的限制，結果是光譜。' },
+
+  /* ================= LO2 八階段 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C2('ph-overview', '2.1 表 2-1')],
+    stem: '依 Manual 的 PDF 目錄，八個階段的正確順序是哪一個？',
+    options: [
+      { text: '規劃與範圍 → 攻擊面對應 → 偵察與指紋辨識 → 利用與衝擊 → …', why: '偵察在攻擊面對應之前；階段 3 需要用階段 2 的結果。' },
+      { text: '規劃與範圍 → 利用與衝擊 → 偵察與指紋辨識 → 攻擊面對應 → …', why: '利用排在第四，要先偵察與對應。' },
+      { text: '偵察與指紋辨識 → 規劃與範圍 → 攻擊面對應 → 利用與衝擊 → …', why: '規劃與範圍是第一階段，先談好才動手偵察。' },
+      { text: '規劃與範圍 → 偵察與指紋辨識 → 攻擊面對應 → 利用與衝擊 → 持久化與升級 → 後利用 → 評估與報告 → 事後與修補', correct: true, why: '符合表 2-1 與圖 2-1。' }
+    ],
+    summary: '先談好、摸清、畫圖，才動手；最後是評估報告與修補。' },
+
+  { id: 'q05', type: 'scn', lo: [2], refs: [C2('ph-p1', '2.2 階段 1'), C2('ph-env', '2.2 表 2-2')],
+    stem: '依本教材，應該先要求這個專案補上什麼？',
+    scenario: '松蔭零售（虛構）要對客服 agent 做紅隊演練。agent 連到真實的訂單系統與電子郵件。專案經理說：「測試帳號就用客服同仁的個人帳號，直接在正式環境跑；萬一出事再處理。」資安長想擋下計畫。',
+    options: [
+      { text: '補上範圍與排除項目、專用且有標記的測試帳號、對真實訂單與郵件的隔離或模擬、速率與 token 上限、中止與回復條件，以及證據處理方式。', correct: true, why: '對應 2.2 節：交戰規則、正式環境四項限制，以及 agent 平台要切斷正式業務工具。' },
+      { text: '補上更多攻擊提示詞，讓測試更有效。', why: '問題在規劃與環境，不在測試內容。' },
+      { text: '改成只做黑箱測試。', why: '黑箱是存取等級；環境隔離與交戰規則不會因為選黑箱而消失。' },
+      { text: '出事再處理即可，因為紅隊是授權的。', why: '授權不等於可以污染正式資料或造成服務中斷；這些要在階段 1 約定。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) agent 會執行動作，沙箱必須切斷正式的業務工具；(2) 若一定在正式環境，需四項限制：非破壞非持久、有標記的專用帳號、速率與 token 上限、中止與回復；(3) 個人帳號會讓 SOC 分不清測試與真實攻擊。</p><p><strong>結論：</strong>退回計畫，補上階段 1 的內容。對應教材：<a href="02-phases-1-4.html#ph-p1">2.2 節</a>。</p>' },
+
+  { id: 'q06', type: 'match', lo: [2], refs: [C2('ph-overview', '2.1 表 2-1'), C3('ph-p8', '3.4 階段 8')],
+    stem: '把下列活動配對到最主要的階段。',
+    cats: [
+      { id: 'p3', label: '階段 3　攻擊面對應' },
+      { id: 'p5', label: '階段 5　持久化與升級' },
+      { id: 'p6', label: '階段 6　後利用' },
+      { id: 'p8', label: '階段 8　事後與修補' }
+    ],
+    items: [
+      { text: '畫出信任邊界，並把威脅標籤疊上去排出測試優先順序', answer: 'p3', why: '階段 3 的核心。' },
+      { text: '檢查入侵能否撐過工作階段重置', answer: 'p5', why: '持久化屬階段 5。' },
+      { text: '用五條軸記錄影響範圍，並評定嚴重度', answer: 'p6', why: '後果與嚴重度屬階段 6。' },
+      { text: '把紅隊演練中成功的案例自動化進 CI/CD，並更新偵測規則', answer: 'p8', why: '回歸與偵測規則屬階段 8。' }
+    ],
+    summary: '階段 3 畫圖排序、階段 5 看存活、階段 6 評後果、階段 8 轉成防禦。' },
+
+  { id: 'q07', type: 'mc', lo: [2], refs: [C2('c-boundary', '2.4 信任邊界與資料流圖')],
+    stem: '依 Manual，下列哪一項最符合「可執行的安全邊界」的要求？',
+    options: [
+      { text: '在系統提示詞裡寫明不得存取其他租戶的資料。', why: '提示詞是模型層的期望，不是可強制執行的邊界。' },
+      { text: '在隱藏上下文中放一條安全規則，攻擊者就看不到。', why: 'Manual 的白箱檢查明列：隱藏上下文不應放祕密或唯一的安全控制。' },
+      { text: '檢索層依租戶分區並先做存取控制再做相似度搜尋，模型無法繞過或改寫。', correct: true, why: '邊界存在於模型之外的服務裡。' },
+      { text: '固定模型版本，讓行為不再改變。', why: '固定版本不等於行為可預期，也不等於有授權邊界。' }
+    ],
+    summary: '可執行的邊界在模型無法繞過或改寫的服務裡。' },
+
+  /* ================= LO3 評估與報告 ================= */
+  { id: 'q08', type: 'scn', lo: [3], refs: [C3('ph-p7', '3.3 階段 7'), C3('ph-scn', '3.5 情境範例 A')],
+    stem: '依本教材，這份報告的結論有什麼問題？',
+    scenario: '瀚海保險（虛構）的紅隊報告寫：「理賠 agent 的核准工具通過授權測試，因為我們沒有看到未授權的核准。」審查者發現，這次測試沒有記錄工具呼叫與授權檢查，只保留了對話逐字稿。報告還說：「候選模型 X 比 Y 更安全，因為 X 的 ASR 是 3%、Y 是 9%」，但 X 每個案例跑 3 次、Y 跑 30 次。',
+    options: [
+      { text: '兩項結論都成立。', why: '前者缺軌跡，後者預算不同，都不成立。' },
+      { text: '只有第二項有問題。', why: '第一項缺少軌跡，不能記成通過。' },
+      { text: '兩項都有問題：缺少軌跡不能記成通過，應列為可觀測性發現；ASR 的比較必須在相同嘗試次數、輪數與 token 上限下進行。', correct: true, why: '對應 3.3 節的「沒有紀錄不是通過」與「預算要配對」。' },
+      { text: '只要把 ASR 改成 pass 率就可以比較。', why: '換指標名稱不解決預算不同的問題。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 授權失敗可能發生在輸出無害時；沒有軌跡就無法判定，Manual 明寫缺少軌跡絕對不能記成通過。(2) X 與 Y 的嘗試次數不同，ASR 不可比；要在相同預算下重測，並連同預算一起報。</p><p><strong>結論：</strong>兩項都要修正。對應教材：<a href="03-phases-5-8.html#ph-p7">3.3 節</a>。</p>' },
+
+  { id: 'q09', type: 'mc', lo: [3], refs: [C3('ph-p5', '3.1 持久化')],
+    stem: '紅隊把內容放進共用知識庫後，一個乾淨的後續工作階段沒有回想或執行它。依 Manual，最恰當的結論是？',
+    options: [
+      { text: '已建立持久化，因為內容仍在儲存體裡。', why: '休眠內容只是資料殘留。' },
+      { text: '尚未建立持久化，只是資料殘留；若要主張，需要乾淨的後續工作階段成功回想並執行。', correct: true, why: '3.1 節的判斷標準。' },
+      { text: '已建立持久化，嚴重度為嚴重。', why: '嚴重度要看已驗證的衝擊，不能只看內容是否存在。' },
+      { text: '無法判斷，因為持久化只能用服務重啟來驗證。', why: '服務重啟只是要記錄的邊界事件之一。' }
+    ],
+    summary: '持久化＝乾淨的後續工作階段回想並執行；休眠內容只是殘留。' },
+
+  { id: 'q10', type: 'match', lo: [3], refs: [C3('ph-p8', '3.4 表 3-3')],
+    stem: '把下列內容配對到它屬於紅方產出還是藍方產出。',
+    cats: [
+      { id: 'red', label: '紅方產出' },
+      { id: 'blue', label: '藍方產出' }
+    ],
+    items: [
+      { text: '最短的重現步驟與通過／失敗判準', answer: 'red', why: '紅方產出給工程團隊重現與修復。' },
+      { text: '偵測邏輯（SIEM 查詢或關聯規則）與所需遙測欄位', answer: 'blue', why: '藍方產出給 SOC 與偵測工程。' },
+      { text: '清理步驟：如何撤銷測試期間的動作', answer: 'red', why: '清理屬紅方產出。' },
+      { text: '遏制與通報路徑', answer: 'blue', why: '遏制與通報屬藍方產出。' }
+    ],
+    summary: '以同一個案例編號連結：紅方管重現，藍方管偵測與遏制。' },
+
+  { id: 'q11', type: 'scn', lo: [3], refs: [C3('ph-p6', '3.2 階段 6 表 3-1')],
+    stem: '依本教材，嚴重度應該怎麼評？',
+    scenario: '藍鯨客服（虛構）的紅隊發現：一個零點擊的資料外洩路徑，讓一位使用者的對話內容被另一位使用者的 agent 取得。輸出看起來完全無害，沒有任何不當內容。審查者不確定：沒有有害內容，是否就該評低？',
+    options: [
+      { text: '評低，因為沒有有害內容。', why: '嚴重度看衝擊，不看輸出看起來是否危險。' },
+      { text: '評為高或嚴重：Manual 的校準案例明指，不含有害內容的跨使用者外洩因影響機密性而評為嚴重；並寫下前提與已驗證範圍。', correct: true, why: '3.2 節的校準案例邏輯。' },
+      { text: '取各步驟評分的平均，所以評中等。', why: 'Manual 明寫不要平均，取鏈上最嚴重且可達的後果。' },
+      { text: '不評分，因為沒有 CVE。', why: '嚴重度評定不依賴 CVE。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) Manual 的校準案例（EchoLeak、ShadowLeak）不含有害內容，仍評為嚴重，因為跨使用者邊界影響機密性；(2) 不平均不可回復的後果，取最嚴重且可達的一步；(3) 區分觀察到的效果與潛在升級。</p><p><strong>結論：</strong>評為高或嚴重，並寫下前提與驗證範圍。對應教材：<a href="03-phases-5-8.html#ph-p6">3.2 節</a>。</p>' },
+
+  /* ================= LO4 廠商 ================= */
+  { id: 'q12', type: 'mc', lo: [4], refs: [C4('vd-compare', '4.3 表 4-2')],
+    stem: '依文件的比較矩陣，在多代理系統上，自動化工具與顧問的適配評級是？',
+    options: [
+      { text: '自動化工具 High，顧問 Low-Medium。', why: '顛倒了。' },
+      { text: '兩者都是 High。', why: '那是簡單系統的評級。' },
+      { text: '自動化工具 Medium-High，顧問 High。', why: '那是 MCP 系統的評級。' },
+      { text: '自動化工具 Low-Medium，顧問 High。', correct: true, why: '表 4-2：多代理系統上工具只有 Low-Medium。' }
+    ],
+    summary: '多代理系統：顧問 High；自動化工具 Low-Medium。' },
+
+  { id: 'q13', type: 'scn', lo: [4], refs: [C4('vd-scn', '4.5 情境範例 B'), C4('vd-criteria', '4.2')],
+    stem: '依本教材，採購小組該怎麼處理這個簡報？',
+    scenario: '藤原醫療（虛構）要為多代理的病歷摘要系統採購紅隊服務。廠商簡報：「越獄成功率 99%，一鍵完成，不需人工介入，涵蓋全部已知攻擊。」另一家廠商提供逐步攻擊鏈、工具呼叫軌跡與業務衝擊對應，並說明限制。',
+    options: [
+      { text: '選第一家，因為數字漂亮、成本低。', why: '「一鍵」「完整涵蓋」「只看越獄」都是紅旗。' },
+      { text: '兩家都淘汰，改自己做。', why: '第二家具備多項綠旗，不應淘汰。' },
+      { text: '要求第一家補證據（新發現、可重現的多輪測試、軌跡與人工驗證）；第二家的特徵多為綠旗；多代理系統應優先考慮顧問。', correct: true, why: '4.2、4.3 節與探索問題。' },
+      { text: '只比價錢，因為兩家都有紅隊經驗。', why: '成本要對照價值；兩家的證據品質並不同。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 第一家有多個紅旗；(2) 第二家的逐步攻擊鏈、軌跡、嚴重度對應與限制說明是綠旗；(3) 多代理系統的自動化適配僅 Low-Medium，顧問為 High。</p><p><strong>結論：</strong>先請第一家補證據，優先考慮顧問。對應教材：<a href="04-vendor-evaluation.html#vd-scn">4.5 節</a>。</p>' },
+
+  { id: 'q14', type: 'mc', lo: [4], refs: [C4('vd-scope', '4.1'), C4('vd-compare', '4.3 常見陷阱')],
+    stem: '「我們的聊天機器人沒有工具也沒有 agent，所以很安全，不必做紅隊。」依文件，這個想法的問題是？',
+    options: [
+      { text: '沒有問題，簡單系統確實不需要紅隊。', why: '「假設簡單系統是安全的」是文件列出的陷阱之一。' },
+      { text: '簡單系統仍有越獄、洩漏、幻覺、內部資料誤用等風險，所以仍需對抗式評估。', correct: true, why: '4.1 節與 4.3 節的陷阱。' },
+      { text: '問題是只要有 RAG 就一定不安全。', why: '文件沒有這樣的說法；RAG 屬簡單系統的一種。' },
+      { text: '問題是應該改用進階系統。', why: '系統類型是依需求決定的，不是為了做紅隊而改。' }
+    ],
+    summary: '簡單系統也有風險；「假設簡單系統是安全的」是常見陷阱。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'genai-red-teaming', mode: 'final',
+    los: [
+      { n: 1, text: '定位：說明三份文件各回答什麼問題與採用的版本日期，並說明 AI 紅隊與傳統紅隊的差異。' },
+      { n: 2, text: '八階段方法：說出八個階段與各階段的目的，並說明環境限制與信任邊界的角色。' },
+      { n: 3, text: '評估與報告：運用測試判準、ASR 與預算、影響範圍、可重現性與紅藍成對產出判斷報告是否可靠。' },
+      { n: 4, text: '評估廠商與工具：用綠旗與紅旗分辨真正的對抗式測試，並比較顧問與自動化工具。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

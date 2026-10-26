@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>提示詞注入防護｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="提示詞注入防護主題首頁：學習目標、前置知識、學習路徑與章節總覽。以 LLM01:2026 與 Prompt Injection Prevention Cheat Sheet 為主。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="prompt-injection" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>提示詞注入防護</h1>
+<ul class="meta-row">
+  <li>03 提示詞注入與 RAG 實作｜主題 1</li>
+  <li>預估學習時間：約 70–80 分鐘（4 章閱讀約 34 分鐘；章末檢核與總測驗約 25–30 分鐘；前置觀念頁另需約 10 分鐘）</li>
+  <li>採用來源：<a href="../../02-llm-applications/llm-top-10/02-prompt-injection.html#pi-what">LLM01:2026</a>（Version 2026，2026-08-04）；LLM Prompt Injection Prevention Cheat Sheet（無版本，GitHub 最新提交 2026-10-22）</li>
+</ul>
+<p class="lead">AI Exchange 告訴你「疊七層、假設前兩層會被突破」。這個主題往下一步：把這個原則落到 OWASP 最新的實作指引上。你會看到哪些常見做法其實只是訊號而不是邊界、真正把關的是工具邊界，以及怎麼驗證而不誇大結果。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>為什麼沒有根治法：</strong>說明提示詞注入 (Prompt Injection) 為何沒有等價於參數化查詢 (Parameterized Query) 的做法，並用 LLM01:2026 的三個軸（投遞面、傳播行為、編碼）拆解一個情境。<br><small>對應：<a href="01-why-no-parameterized-query.html">第 1 章</a></small></li>
+  <li id="lo2"><strong>防線的限制：</strong>判斷輸入篩選 (Input Screening)、結構化提示 (Structured Prompt)、輸出驗證、護欄模型 (Guardrail Model) 各自的限制，說明它們為何不構成安全邊界，以及它們仍有用的地方。<br><small>對應：<a href="02-fragile-layers.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>架構式控制：</strong>為有工具的 LLM 應用挑選控制（工具邊界 (Tool Boundary) 授權、最小權限 (Least Privilege)、人工確認、Rule of Two、CaMeL 的概念），並區分「降低成功率」與「限縮後果」。<br><small>對應：<a href="03-architectural-defense.html">第 3 章</a></small></li>
+  <li id="lo4"><strong>驗證與整合：</strong>設計並回報冒煙測試 (Smoke Test) 與適應性測試而不誇大，並把防禦對應到 LLM01:2026、AI Exchange 七層與 AISVS 章節。<br><small>對應：<a href="04-verify-and-integrate.html">第 4 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>熟悉 LLM 應用開發（提示詞、工具呼叫、RAG 的運作不必再解釋）。</li>
+  <li>先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>，特別是 <a href="../../primer-security-for-developers.html#sqli-vs-pi">SQL Injection 與 Prompt Injection 的對照</a> 和 <a href="../../primer-security-for-developers.html#p-lp">最小權限</a>。</li>
+  <li>建議先讀 <a href="../../01-overview/ai-exchange/index.html">OWASP AI Exchange 主題</a>，特別是第 4 章七層防線與第 5 章致命三要素。本主題不重講它們，而是往更細的實作層級走。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="../../primer-security-for-developers.html">資安前置觀念</a></span><span class="p-state" data-file-shared="primer"></span><span class="p-desc">共用頁面（約 10 分鐘）。</span></li>
+  <li><span class="p-title"><a href="01-why-no-parameterized-query.html">第 1 章　為什麼沒有參數化查詢：LLM01:2026 與攻擊面</a></span><span class="p-state" data-file="01-why-no-parameterized-query.html"></span><span class="p-desc">三個軸、13 種攻擊的歸類、低權限管道高權限執行。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="02-fragile-layers.html">第 2 章　會被繞過的防線：篩選、結構化提示與護欄</a></span><span class="p-state" data-file="02-fragile-layers.html"></span><span class="p-desc">四種防線的限制、正規化的邊界、Cheat Sheet 的修訂方向。情境 A。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-architectural-defense.html">第 3 章　架構式防禦：工具邊界與限縮後果</a></span><span class="p-state" data-file="03-architectural-defense.html"></span><span class="p-desc">11 項緩解的性質、Rule of Two、CaMeL 與雙 LLM。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="04-verify-and-integrate.html">第 4 章　驗證、整合與收尾</a></span><span class="p-state" data-file="04-verify-and-integrate.html"></span><span class="p-desc">冒煙測試與回報、跨文件對應。情境 B。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（14 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO4，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">核對清單、版本與日期對照、授權、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>LLM 不區分指令與資料，所以<strong>沒有等價於參數化查詢的根治法</strong>；官方立場是防禦要靠架構，而不是攔截。</li>
+  <li>輸入篩選、結構化提示、輸出驗證、護欄模型都是有用的層，但<strong>都不是安全邊界</strong>；OWASP Cheat Sheet 在 2026-10 的修訂也一路為它們加上限定語。</li>
+  <li>真正把關的是<strong>工具邊界</strong>：模型提出動作，由應用程式碼依權限決定能不能做。驗證時，固定攻擊集的成績會高估防禦，回報要附分母、區間與版本。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的歸類、對照或結論。</li>
+  <li>兩個情境（A、B）都是 <span class="tag fiction">虛構</span> 的公司與系統，且只停在概念層級，不含可直接使用的攻擊字串或繞過步驟。</li>
+  <li>OWASP Cheat Sheet 頁面沒有版本與日期，本教材用 GitHub 提交紀錄標示最新狀態；內容可能比本教材更新，引用時請讀原文。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；停用時進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>後續主題：<a href="../rag-security/index.html">RAG 安全</a>、<a href="../hands-on-labs/index.html">動手練習</a>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：OWASP Cheat Sheet Series、OWASP Top 10 for LLM Applications 2026、AISVS — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

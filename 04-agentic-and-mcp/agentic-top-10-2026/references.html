@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜Top 10 for Agentic Applications 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Top 10 for Agentic Applications 2026 主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="agentic-top-10-2026" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 3.1 節與第 8 節）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以作者回到一手來源重新核對：下載官方 PDF（用瀏覽器標頭與 Referer），讀封面、目錄、十個條目全文與附錄 A–D，並比對資源頁、GitHub 儲存庫與 LLM Top 10 2025／2026 的編號。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。舊版資訊只出現在本頁。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">OWASP Top 10 for Agentic Applications for 2026</th><td><strong>Version 2026、December 2025</strong>；PDF 57 頁；資源頁 2025-12-09</td><td>PDF 封面；資源頁顯示 December 9, 2025；網頁 datePublished 2025-12-10 (UTC)；PDF 檔案建立 2025-12-10</td><td>CC BY-SA 4.0（PDF 封面）</td></tr>
+<tr><th scope="row">Agentic AI – Threats and Mitigations（僅作對照）</th><td>Version 1.1、December 2025</td><td>見<a href="../agentic-threats-and-mitigations/references.html">前一主題的參考資料頁</a></td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Top 10 for LLM Applications 2026（僅用於 2026 版編號）</th><td>Version 2026，2026-08-04</td><td>GitHub <code>2026/README.md</code> 與 <code>2026/final/LLM00_Preface.md</code></td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Top 10 for LLM Applications 2025（僅用於 2025 版編號）</th><td>2025 版，資源頁 2024-11-17</td><td>genai.owasp.org/llm-top-10/ 首頁條目清單</td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0（沿用先前主題已放置的副本）</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正或補充）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">十項名稱與編號</th><td>ASI01–ASI10 名稱取自 PDF 目錄與 At a Glance</td><td>與 PDF 目錄一致</td><td>無更正</td></tr>
+<tr><th scope="row">筆誤</th><td>PDF 內 ASI10 一處寫 AS01、AS04</td><td>屬實（ASI10 描述段落）</td><td>一律用 ASI 編號；第 2 章提示</td></tr>
+<tr><th scope="row">Appendix A 與 T&amp;M 的 T 編號名稱</th><td>筆記只說附錄含對照</td><td>附錄 A 在 ASI06 一列寫「T4 Memory Overload、T6 Broken Goals、T12 Shared Memory Poisoning」，與 T&amp;M 1.1 威脅表名稱不同</td><td>以 T&amp;M 1.1 為準；列入未能確認</td></tr>
+<tr><th scope="row">GitHub 原始碼</th><td>只有 <code>0.5-initial-candidates</code> 與 <code>Sprint 1-first-public-draft-expanded</code>，未見定稿</td><td>GitHub API 再次確認，並確認儲存庫最近推送為 2026-04-04（更新事件追蹤表）</td><td>依 PDF</td></tr>
+<tr><th scope="row">是否已定稿</th><td>「頁面未標示草稿或定稿；自稱 globally peer-reviewed」</td><td>PDF 封面也沒有草稿標示</td><td>教材不宣稱「定稿」，只說採用 PDF</td></tr>
+<tr><th scope="row">授權</th><td>未列</td><td>PDF 封面標示 CC BY-SA 4.0，並要求署名須包含專案名稱與所參照資產的名稱</td><td>頁尾與本頁 R-7 標示</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">發布日期</th><td>資源頁 2025-12-09；網頁 datePublished 2025-12-10 (UTC)；PDF 封面 December 2025；PDF 檔案建立 2025-12-10</td><td>教材標「December 2025」（封面），資源頁日期並記</td></tr>
+<tr><th scope="row">LLM Top 10 編號年份</th><td>Agentic Top 10 引用 LLM Top 10 <strong>2025</strong>；LLM Top 10 2026 重新編號</td><td>一律寫 <code>LLMnn:年份</code>；2025→2026 換算是作者整理</td></tr>
+<tr><th scope="row">文件內部不一致</th><td>(a) T&amp;M 的 T 名稱與附錄 A 不同；(b) ASI02 情境第 4 點標題在 PDF 文字層呈現亂碼；(c) ASI08 原文有「LLM04 Data &amp; Model Poisoning」未寫年份</td><td>依表 R-2；亂碼只引用其內容</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>附錄 A 的名稱差異：</strong>見表 R-2；是筆誤、引用早期命名，還是另有所指，未能確認。</li>
+  <li><strong>附錄 D 事件追蹤表的事件細節：</strong>表中列了 2025 年 6 月至 10 月的第三方事件與連結，本教材沒有逐一查證原始報導；教材只用它說明「一個事件常對到多條 ASI」。文件說該表每週更新，PDF 中的是 2025-12 當時的快照；<strong>線上最新版本本教材沒有讀取</strong>。</li>
+  <li><strong>各條「參考資料」的外部連結：</strong>每條末尾有學術論文與部落格連結，本教材未逐一讀取。</li>
+  <li><strong>「逾 100 位專家」與「全球同儕審查」：</strong>為資源頁自述，未獨立查證。</li>
+  <li><strong>AIVSS 核心風險對照：</strong>附錄 A 的 AIVSS 欄本教材只當成官方對照轉述，AIVSS 本身見〈<a href="../../06-assessment-and-verification/aivss/index.html">AIVSS</a>〉。</li>
+  <li><strong>是否有 2026 年的更新版：</strong>資源頁沒有說明；GitHub 儲存庫最近推送是 2026-04-04（事件追蹤表），沒有看到新版 Top 10。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<ul>
+  <li>Top 10 for Agentic Applications for 2026 資源頁：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/</a></li>
+  <li>Agentic Security Initiative 頁：<a href="https://genai.owasp.org/initiatives/agentic-security-initiative/">https://genai.owasp.org/initiatives/agentic-security-initiative/</a></li>
+  <li>GenAI-Agent-Security-Initiative 儲存庫：<a href="https://github.com/GenAI-Security-Project/GenAI-Agent-Security-Initiative">https://github.com/GenAI-Security-Project/GenAI-Agent-Security-Initiative</a></li>
+  <li>LLM Top 10 2026：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">GitHub 2026/README.md</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM00_Preface.md">LLM00_Preface.md</a></li>
+  <li>LLM Top 10 2025：<a href="https://genai.owasp.org/llm-top-10/">https://genai.owasp.org/llm-top-10/</a></li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 1 章圖 1-1 中「政策與治理」的位置簡化，以及 Least Agency 「對自主性設預算」的類比。</li>
+  <li>第 2 章圖 2-1 的事故歸屬判斷順序與問句。</li>
+  <li>第 3 章圖 3-1 的三個「切斷點」框；情境 A 的整體設定。</li>
+  <li>第 5 章表 5-1「2025→2026」欄（依條目名稱配對）；圖 5-1 的整張使用流程。</li>
+  <li>所有 Mermaid 圖皆為依官方文字重新繪製的簡化版，不是官方原圖。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>Top 10 for Agentic Applications 2026、Top 10 for LLM Applications 2025／2026：PDF 封面或來源標示 CC BY-SA 4.0。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>PDF 封面的署名要求：必須包含專案名稱以及所參照資產的名稱；本教材已在各章「本章來源」標示。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：Top 10 for Agentic Applications 2026、Top 10 for LLM Applications 2025／2026 — CC BY-SA 4.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

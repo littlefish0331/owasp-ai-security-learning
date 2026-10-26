@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜資料安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="資料安全主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="data-security" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 4.5 節與第 8 節第 12 項）</li>
+</ul>
+<p class="lead">調查筆記說：Data Security Risks &amp; Mitigations 2026 的「資源頁未列出個別風險條目，風險清單須讀 PDF（未取得）」。這次本教材下載並讀完了該 PDF 的主體，因此筆記的這個缺口已補上。本頁列出：採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">OWASP GenAI Data Security Risks and Mitigations 2026</th><td>封面：<strong>Version 1.0、March 2026</strong>；103 頁；資源頁 2026-03-17；LLM Top 10 2026 附錄 A 標題也寫 "v1.0 (2026-03-17)"</td><td><a href="https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/">資源頁</a>與 PDF 封面</td><td>CC BY-SA 4.0（封面）</td></tr>
+<tr><th scope="row">LLM and Gen AI Data Security Best Practices</th><td>資源頁 2025-02-13；PDF 62 頁；PDF 內文沒有版本號（封面引用格式寫 "Guide 1.0"）；中繼資料檔名 "…Best Practices 2025.docx"</td><td><a href="https://genai.owasp.org/resource/llm-and-gen-ai-data-security-best-practices/">資源頁</a>與 PDF</td><td>CC BY-SA 4.0（封面）</td></tr>
+<tr><th scope="row">OWASP Top 10 for LLM Applications 2026 附錄 A</th><td>README 與 PDF 封面 2026-08-04（沿用既有主題的取捨）；附錄 A 的 DSGAI 對照節</td><td><a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/Appendix_A_Related_Framework_Mappings.md">Appendix_A_Related_Framework_Mappings.md</a></td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0（沿用既有副本）</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正或補充）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">個別風險條目</th><td>「資源頁未列出個別風險條目，風險清單須讀 PDF（未取得）」；筆記第 8 節第 12 項：「個別風險條目（可能有編號）在 PDF 內，本次未取得」</td><td>已取得 PDF。目錄與正文有 <strong>DSGAI01–DSGAI21 共 21 項</strong>，每項有 How the attack unfolds、Attacker Capabilities、Illustrative scenario、Impact、Mitigations、三層成熟度與 Known CVEs</td><td>第 3 章整理；<strong>第 8 節第 12 項已可解決</strong></td></tr>
+<tr><th scope="row">版本「v1.0 取自檔名」</th><td>2026-03-17（v1.0 取自檔名）</td><td>PDF 封面明寫 <strong>Version 1.0、March 2026</strong>，不只是檔名推論；LLM Top 10 2026 附錄 A 也寫 "v1.0 (2026-03-17)"</td><td>版本採 1.0，日期採 2026-03-17（資源頁與附錄 A）</td></tr>
+<tr><th scope="row">文件定位</th><td>「論述資料層…的新攻擊面，提供開源基準框架」</td><td>這個措辭<strong>有原文依據</strong>：資源頁 About 段寫「建立一個基礎性的開源框架 (a foundational, open-source framework)，聚焦資料層」。但 PDF 本身 (Document Scope and Objectives) 的自我描述不同：是「風險與緩解的列舉」，<strong>不是 Top 10、也不取代 OWASP Data Security Top 10</strong>，是 2025-02 Best Practices 的演進，其實作最佳實務拆到另一份 companion 文件。PDF 正文也有幾處自稱「this framework」（例如 DSGAI08 寫「本框架其他地方記載的錯誤設定…」、「完整框架對照維護在 companion implementation guide」），所以「框架」一詞並非完全沒有出現；但 Document Scope 這段正式的範圍說明用的是「列舉」與「不是 Top 10」</td><td>資源頁 About 段與 PDF 範圍說明措辭不同；教材<strong>採 PDF 範圍說明的自我描述</strong>（列舉、非 Top 10），並在此記錄資源頁的「開源框架」說法。兩者同屬 2026-03 前後，<strong>未能確認</strong>哪個代表官方最終定位。另外，PDF 說「完整框架對照維護在 companion implementation guide」，這是 companion 文件存在的另一個線索，但仍未能確認是否已發布</td></tr>
+<tr><th scope="row">2025 版類型</th><td>白皮書，談資料外洩與合規挑戰</td><td>屬實；另有三類受眾、資料管線階段（資料來源、載入器、資料湖、準備與計算、資料倉儲、資料分享，另有洞察庫與 AI 庫）、Agent 資料流與治理</td><td>第 1、2 章整理</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">條目總數</th><td>目錄與正文：DSGAI01–21；GenAI Data Risks 一節：「二十一個條目」；What is Data Security 一節：「DSGAI01-DSGAI25」並提到 DSGAI25；DSGAI04 結尾交叉引用「DSGAI26 (Disinformation &amp; Integrity Attacks via Data Poisoning)」，而該標題在目錄是 DSGAI21</td><td>採 <strong>21 項</strong>（目錄與正文結構一致）；DSGAI22–26 沒有條目，視為殘留引用，<strong>原意未能確認</strong>；教材要求以標題引用</td></tr>
+<tr><th scope="row">授權段的引用格式</th><td>PDF 封面的 "Attribution Guidelines" 寫引用 "OWASP Top 10 for LLMs - GenAI Red Teaming Guide"，與本文件名不符</td><td>疑似沿用範本，<strong>未能確認</strong>；教材依文件實際名稱引用，並標明授權為 CC BY-SA 4.0</td></tr>
+<tr><th scope="row">LLM Top 10 的年份</th><td>2026 版資料安全：引用 <code>LLM03:2025</code>（帶年份且與 2025 版相符）；2025 版 Best Practices：全程 2025 編號（<code>LLM01:2025</code> 等）；LLM Top 10 2026 附錄 A 的 DSGAI 對照：2026 編號</td><td>各依來源的年份寫，教材一律寫 <code>LLMnn:年份</code></td></tr>
+<tr><th scope="row">2025 版內表格</th><td>統計欄在不同風險列重複同一句（例如 "Research shows that even sophisticated defenses like RAG do not fully prevent these vulnerabilities" 出現在 LLM01 與 LLM02 兩列；"Adversarial examples have shown a 35% success rate…" 出現在兩列）</td><td>疑似排版複製錯誤；教材<strong>不引用這些統計</strong></td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>DSGAI22–DSGAI26 的存在與原意：</strong>見 R-3。官方說「早期草稿中的條目因重疊被合併，編輯註記保留交叉引用」，但這與編號缺口的因果關係官方沒有說。</li>
+  <li><strong>companion 實作文件是否已發布：</strong>2026 版稱「實作最佳實務」被拆到另一份文件（正文另有「完整框架對照維護在 companion implementation guide」一句）。本教材逐頁檢查了 genai.owasp.org 資源庫的第 1–3 頁，其中與資料安全有關的只有 2026 風險文件和 2025 Best Practices 兩份，<strong>沒有看到</strong> companion 實作指南；資源庫共 8 頁，本教材只查了前 3 頁（沿用既有主題的已知限制：後幾頁動態載入），所以「沒有看到」不等於「沒有發布」。</li>
+  <li><strong>PDF 內的 Known CVEs 與廠商事件：</strong>例如多個 CVE 編號、2025–2026 年的廠商事件（如對 Mixpanel 的揭露、Google Cloud 的蒸餾報告）。這些是文件自引的資料，本教材沒有逐項查證，<strong>教材不複述</strong>。
+  </li>
+  <li><strong>2025 版的版本號：</strong>PDF 內文沒有版本；封面引用格式寫 "Guide 1.0"，中繼資料檔名帶 2025。教材不寫版本號。</li>
+  <li><strong>2025 版的「統計」欄：</strong>35%、12%、"Proof Pudding" 等，來源與可靠性未查證，不引用。</li>
+  <li><strong>授權引用格式的筆誤：</strong>見 R-3。</li>
+  <li><strong>DSGAI10、DSGAI19 與 LLM Top 10 的對照：</strong>在附錄 A 的 DSGAI 節完全沒有出現。這是作者數出來的事實；原因官方沒說。</li>
+  <li><strong>Handbook／companion 文件／AOS 之外的 OWASP Data Security Top 10：</strong>2026 版提到「OWASP Data Security Top 10」，本教材沒有查證該清單是否存在或其現況。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<ul>
+  <li>OWASP GenAI Data Security Risks &amp; Mitigations 2026：<a href="https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/">資源頁</a>（PDF 由該頁下載連結取得）</li>
+  <li>OWASP LLM and Gen AI Data Security Best Practices：<a href="https://genai.owasp.org/resource/llm-and-gen-ai-data-security-best-practices/">資源頁</a></li>
+  <li>OWASP Top 10 for LLM Applications 2026 附錄 A：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/Appendix_A_Related_Framework_Mappings.md">GenAI-LLM-Top10/2026/final/Appendix_A_Related_Framework_Mappings.md</a></li>
+  <li>OWASP GenAI Incident Response Guide 1.0（第 4 章僅引用一句）：<a href="https://genai.owasp.org/resource/genai-incident-response-guide-1-0/">資源頁</a></li>
+  <li>OWASP AI Exchange（控制名稱，僅引用名稱）：<a href="https://owaspai.org/">owaspai.org</a></li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>表 2-1「為什麼容易漏掉」欄；表 2-2「對應的風險」欄；圖 2-1 的四個「衍生物」方框（第 2 章）。</li>
+  <li>表 3-1「一句話」欄（依各條目 How the attack unfolds 改寫）；圖 3-1 中群組③往前三組的「支撐」箭頭；表 3-2 的辨析（第 3 章）。</li>
+  <li>圖 4-1 的症狀措辭與串接；情境 A、B 的因果推演；情境 B 中「偵測所需資料與資料最小化之間存在張力」的說法（第 4 章）。注意：「中繼資料層級記錄加遮蔽」是 DSGAI14 Tier 1 的<strong>官方</strong>控制，不是作者推論（本頁先前誤標，2026-10-26 已更正）。</li>
+  <li>5.1 節「DSGAI10、DSGAI19 完全沒出現」是計數事實，「所以是 LLM 清單較少涵蓋的面向」是解讀；表 5-2 中標「作者整理」的列；圖 5-1 的分流（第 5 章）。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>OWASP GenAI Data Security Risks and Mitigations 2026、LLM and Gen AI Data Security Best Practices（PDF 封面）、OWASP Top 10 for LLM Applications 2026：CC BY-SA 4.0。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>GenAI Incident Response Guide 1.0：PDF 內文<strong>未見授權文字</strong>，以 genai.owasp.org 網站頁尾 CC BY-SA 4.0（除非另有說明）為準；本主題僅引用一句話。</li>
+  <li>OWASP AI Exchange：CC0 1.0（僅引用控制名稱）。Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：OWASP GenAI Data Security Risks and Mitigations 2026、LLM and Gen AI Data Security Best Practices、OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

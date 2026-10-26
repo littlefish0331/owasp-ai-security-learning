@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　GenAI 的資料面與 AI-DSPM｜資料安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="GenAI 要保護的六類資料、上下文視窗為何是單一扁平的信任空間、資料安全態勢管理 (AI-DSPM) 的觀念，以及 2025 版的資料管線階段。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="data-security" data-page="02-data-surfaces.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　GenAI 的資料面與 AI-DSPM</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position.html">第 1 章</a></li>
+</ul>
+<p class="lead">在傳統系統裡，「保護資料」大致是保護資料庫、檔案和傳輸通道。GenAI 讓這件事複雜了：同一筆資料可能同時存在於原始文件、嵌入、快取、日誌，甚至模型權重。這一章先回答兩個問題：<strong>要保護的資料到底有哪幾類？</strong>以及<strong>為什麼上下文視窗是 GenAI 資料安全最特別的地方？</strong>最後介紹官方用來做「資料盤點與持續管理」的 AI-DSPM。</p>
+
+<h2 id="ds-six">2.1 要保護的六類資料</h2>
+<p>2026 版對 GenAI 脈絡下的資料安全下的定義，是保護資料的機密性、完整性、可用性與真實性 (authenticity)，涵蓋訓練與微調、檢索 (RAG)、工具使用、Agent 記憶、遙測與可觀測性、推論時處理和下游輸出。它把要保護的資料分成六類：</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　GenAI 要保護的六類資料（官方分類；「為什麼容易漏掉」欄為作者整理，非官方）</caption>
+<thead><tr><th scope="col">類別</th><th scope="col">官方列舉的例子</th><th scope="col">為什麼容易漏掉（作者整理，非官方）</th></tr></thead>
+<tbody>
+<tr><th scope="row">來源資料 <br>(Source data)</th><td>原始語料（結構化與非結構化）、使用者上傳、工單、知識庫、分析匯出</td><td>最直覺，通常已有保護</td></tr>
+<tr><th scope="row">衍生資料 <br>(Derived data)</th><td>嵌入、索引、檢索出的段落、摘要、合成資料集、特徵庫</td><td>來源刪了它還在；常沒有繼承來源的分類標籤</td></tr>
+<tr><th scope="row">模型產物 <br>(Model artifacts)</th><td>檢查點、adapter／LoRA、訓練日誌、評估集、模型登錄庫</td><td>被當成「程式碼」而不是「資料」管理</td></tr>
+<tr><th scope="row">執行期資料 <br>(Runtime data)</th><td>prompts、上下文視窗、工具呼叫（LLM 到 SQL／Graph／API）、Agent 之間的訊息、暫存快取（例如 KV cache）、工作階段記憶</td><td>存活時間短，被認為「用完即丟」</td></tr>
+<tr><th scope="row">營運副產物 <br>(Operational exhaust)</th><td>日誌、追蹤 (traces)、除錯模式擷取、監控管線</td><td>建置時只想著除錯方便，沒有當成敏感資料存放處</td></tr>
+<tr><th scope="row">Agent 狀態與委派產物</th><td>Agent 記憶（短期與長期）、Agent 間訊息、工具呼叫的酬載與結果、委派鏈、被快取的憑證</td><td>隨 Agent 架構浮現的新類別，傳統資產清單沒有</td></tr>
+</tbody></table></div>
+<p>這張表最值得記的一點是：<strong>後四類資料在傳統資料盤點裡通常不存在</strong>。如果你的資產清單只有「資料庫與檔案」，GenAI 系統裡大部分的敏感資料流都在清單之外。</p>
+
+<h2 id="ds-flat">2.2 核心概念：上下文視窗是一個扁平的信任空間</h2>
+<div class="concept">
+<h3 id="c-flat">沒有內部存取控制的混合空間</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>官方說，有一個架構特性讓 GenAI 的資料安全和以往所有運算模型根本不同：<strong>上下文視窗把多個信任域（system prompt、使用者輸入、RAG 結果、工具輸出、對話歷史）聚合進一個扁平的命名空間，內部沒有存取控制</strong>。從機密 HR 資料庫取回的一段 RAG 內容，和使用者的輸入享有相同的信任權重。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>模型只看到一長串 token，沒有「這一段只能用來推理、不能原文輸出」的標記。官方明說：目前沒有機制可以把上下文的某一段標成「可用於推理但不可直接輸出」，或「可用於決策但不可轉發給其他 Agent」。這也是為什麼控制平面（指令）與資料平面（內容）在這裡融合。</dd>
+  <dt data-n="3">對安全的含意（概念層級）</dt>
+  <dd>只要某段敏感內容進了上下文視窗，它在原理上就可能被輸出。所以官方把好幾個條目（DSGAI01、DSGAI19、DSGAI21，以及文中另一個殘留的 DSGAI25 引用）追溯到這個根因，並直言：<strong>這些條目的緩解是「繞過」這個限制，而不是「解決」它</strong>。</dd>
+  <dt data-n="4">怎麼防（官方的三個姿態）</dt>
+  <dd>(1) 最小化與受控上下文：只送需要的，避免過寬的上下文視窗。(2) 隔離與最小權限：每租戶、每使用者、每 Agent 的邊界，工具權限有範圍，高風險或不可逆動作需要人工核准。(3) 生命週期嚴謹：保留與刪除要涵蓋原始與衍生資產（嵌入、備份）。官方的基本態度是「對模型零固有信任（它可能透過記憶、反推或輸出洩漏資料）」。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「我在 system prompt 寫了『不要輸出機密』，所以機密被保護了。」那是請求，不是存取控制。要減少風險，是讓機密內容<strong>根本不進入</strong>這個上下文，而不是進去後再要求模型保密。</dd>
+</dl>
+</div>
+
+<h2 id="ds-dspm">2.3 AI-DSPM：把資料盤點變成持續的工作</h2>
+<p>資料安全態勢管理 (DSPM) 是傳統資料安全的做法：持續找出資料在哪裡、分類、治理、監控。官方把它延伸到 GenAI，稱為 <strong>AI-DSPM</strong>：在 GenAI 管線與執行期，持續地探索、分類、治理與監控資料，讓你看得到敏感資料在哪裡、如何衍生（例如進入嵌入或日誌），並執行能防止外洩、竄改與不合規的控制。官方列了 13 個能力類別，下表挑出最能說明「GenAI 不一樣在哪」的幾項：</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　AI-DSPM 的代表性能力（節錄；官方共 13 類。「對應的風險」欄為作者整理，非官方）</caption>
+<thead><tr><th scope="col">能力</th><th scope="col">官方要點</th><th scope="col">對應的風險（作者整理，非官方）</th></tr></thead>
+<tbody>
+<tr><th scope="row">資產探索與清單</th><td>盤點訓練集、評估集、prompt 樣板、system prompt、Agent 記憶、RAG 來源、向量資料庫、嵌入管線、外掛與 MCP 工具、LLM 閘道、快取，以及可能擷取完整 prompt 的日誌。目標是消除「未知的資料儲存」與隱藏的 AI 資料路徑</td><td>影子 AI、過度暴露</td></tr>
+<tr><th scope="row">分類與政策綁定</th><td>把既有分類延伸到 prompts、嵌入、檢索片段、工具酬載與可觀測事件；<strong>標籤必須傳遞到衍生物</strong>（嵌入、快取、備份），不只是原始檔案</td><td>衍生物外洩、刪除不完整</td></tr>
+<tr><th scope="row">資料流、血緣與「GenAI 物料清單」</th><td>維護來源→預處理→嵌入→索引→檢索→組 prompt→生成→日誌的端到端血緣，以及資料集版本→模型版本→部署版本。加入 DBOM (Data Bill of Materials) 概念，以 CycloneDX ML-BOM (ECMA-424，v1.7) 為基礎格式，記錄來源、攝入時間、預處理步驟、分類標籤與授權</td><td>投毒與供應鏈、舉證出處</td></tr>
+<tr><th scope="row">存取治理</th><td>細粒度 RBAC／ABAC；短效憑證；每個 Agent 有自己的身分與範圍；<strong>即時 (JIT) 資料存取</strong>：不給 Agent 常駐憑證，而是針對任務發出帶範圍與有效期的暫時 token，完成即撤銷</td><td>身分與憑證外洩</td></tr>
+<tr><th scope="row">可觀測性與日誌保留</th><td>最少日誌的預設值（預設不記完整內容）、對 prompts、工具輸出與機密做代碼化或遮蔽、除錯追蹤短 TTL 並需核准、對可觀測平台本身做存取控制與監控</td><td>遙測外洩</td></tr>
+<tr><th scope="row">生命週期、抹除與合規</th><td>刪除或讓與已刪除來源相關的嵌入、索引、快取與備份過期；支援資料主體權利並可追溯；追蹤合法依據與用途限制；除非需要，預設零保留</td><td>刪除請求後資料仍留存</td></tr>
+</tbody></table></div>
+<p>一個值得留意的細節：官方的「GenAI 物料清單／DBOM」直接指向 CycloneDX 的 ML-BOM。這是資料安全與<a href="../aibom/index.html">AIBOM 主題</a>相連的地方；第 5 章會回來談。</p>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="資料在 GenAI 管線中的衍生鏈：來源資料經預處理、嵌入、索引、檢索、組 prompt、生成，最後進入日誌與監控。每一步都產生衍生物：嵌入與索引、檢索片段、快取、日誌與追蹤；標籤與保留規則必須傳遞到這些衍生物。刪除來源時，衍生物不會自動消失。">
+flowchart LR
+  S["來源資料"] --> P["預處理"] --> E["嵌入"] --> I["索引 / 向量庫"] --> R["檢索"] --> PR["組 prompt<br>上下文視窗"] --> G["生成"] --> L["日誌 / 追蹤 / 監控"]
+  E -. "衍生物" .-> D1["嵌入副本"]
+  I -. "衍生物" .-> D2["快照 / 備份"]
+  PR -. "衍生物" .-> D3["快取 / KV cache"]
+  L -. "衍生物" .-> D4["日誌 / 追蹤"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class D1,D2,D3,D4 author
+</pre>
+<figcaption><strong>圖 2-1　資料在 GenAI 管線中的衍生鏈。</strong>主鏈（來源→預處理→嵌入→索引→檢索→組 prompt→生成→日誌）是官方 AI-DSPM「資料流與血緣」一項列出的鏈；四個「衍生物」方框與虛線是<strong>作者整理，非官方</strong>，用來強調「標籤與保留規則要傳遞到衍生物」這句官方要求。</figcaption>
+</figure>
+
+<h2 id="ds-2025">2.4 2025 版怎麼談資料管線</h2>
+<p>2025 版的 Best Practices 用的是更傳統的資料管線語言。它的「Data」一節把管線分成六個主要階段，另外有兩個附加階段，每個階段都寫了「發生什麼、安全控制、測試」：</p>
+<ul>
+  <li><strong>主要階段：</strong>資料來源 (Data Sources)、資料載入器 (Data Loaders)、資料湖 (Data Lake)、準備與計算 (Preparation/Computation)、資料倉儲 (Data Warehouse)、資料分享 (Data Sharing)。</li>
+  <li><strong>附加階段：</strong>洞察庫 (Insight Stores)，存放衍生的洞察、模型輸出與中繼資料；AI 庫 (AI Store)，存放模型、相關資料集、程式碼與設定，用於可重現與版本管理。</li>
+</ul>
+<p>兩份文件的差異可以這樣看（作者整理，非官方）：2025 版是「<em>資料經過哪些階段、每階段做什麼控制</em>」；2026 版是「<em>GenAI 特有的資料風險有哪些、各自分幾層控制</em>」。前者像施工圖，後者像風險登記冊。兩者互補，但 2025 版對齊的是 LLM Top 10 <strong>2025</strong>。</p>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>要保護的資料有六類：來源、衍生、模型產物、執行期、營運副產物、Agent 狀態。後四類通常不在傳統資料盤點裡。</li>
+  <li>上下文視窗把多個信任域聚合進單一扁平空間，內部沒有存取控制；官方承認好幾個條目的緩解是繞過而非解決這個限制。</li>
+  <li>AI-DSPM 把資料盤點變成持續工作；分類標籤要傳遞到衍生物；JIT 資料存取用任務範圍的暫時憑證取代常駐憑證。</li>
+  <li>2025 版談資料管線階段，2026 版談風險條目與分層控制；兩者互補，且對齊的 LLM Top 10 年份不同。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出六類資料，並指出哪些在傳統盤點中常被漏掉。</li>
+  <li>我能解釋為什麼「在 system prompt 叫模型保密」不是存取控制。</li>
+  <li>我能說明分類標籤為什麼必須傳遞到衍生物。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-dsgai-map.html">第 3 章　21 個資料風險地圖</a>：看官方怎麼把 21 個條目分成六個群組。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Data Security Risks and Mitigations 2026（What is Data Security in the GenAI Context?、DSPM for Gen AI）：<a href="https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/">genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/</a>；Version 1.0，March 2026；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP LLM and Gen AI Data Security Best Practices（Data 一節）：<a href="https://genai.owasp.org/resource/llm-and-gen-ai-data-security-best-practices/">genai.owasp.org/resource/llm-and-gen-ai-data-security-best-practices/</a>；2025-02-13；2026-10-26 讀取；CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP GenAI Data Security Risks and Mitigations 2026 與 LLM and Gen AI Data Security Best Practices — CC BY-SA 4.0（各 PDF 封面）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'd-ch2', topic: 'data-security', mode: 'chapter',
+  questions: [
+    { id: 'd2q1', type: 'mc', lo: [2], refs: [{label: '2.2 上下文視窗是扁平的信任空間', href: '02-data-surfaces.html#ds-flat'}],
+      stem: '依官方，為什麼說 GenAI 的上下文視窗讓資料安全「和以往所有運算模型根本不同」？',
+      options: [
+        { text: '因為上下文視窗一定儲存在雲端。', why: '官方談的是架構特性，不是儲存位置。' },
+        { text: '因為它把多個信任域的內容聚合進一個扁平的空間，內部沒有存取控制，來自機密資料庫的段落和使用者輸入享有相同信任權重。', correct: true, why: '2.2 節的核心。' },
+        { text: '因為上下文視窗的容量太小，裝不下機密資料。', why: '問題不在容量，而在內部沒有存取控制。' },
+        { text: '因為模型會自動加密上下文視窗的內容。', why: '官方沒有這樣說；官方說的是目前沒有機制標記某段「可用於推理但不可輸出」。' }
+      ],
+      summary: '上下文視窗 = 單一扁平的信任空間，內部沒有存取控制。' },
+    { id: 'd2q2', type: 'match', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-data-surfaces.html#ds-six'}],
+      stem: '把下列資料配對到官方六類中最貼近的一類。',
+      cats: [
+        { id: 'derived', label: '衍生資料' },
+        { id: 'artifact', label: '模型產物' },
+        { id: 'runtime', label: '執行期資料' },
+        { id: 'exhaust', label: '營運副產物' }
+      ],
+      items: [
+        { text: '為一批工單產生的嵌入與向量索引', answer: 'derived', why: '嵌入與索引屬衍生資料。' },
+        { text: '微調用的 LoRA adapter 與評估集', answer: 'artifact', why: 'adapter／LoRA 與評估集屬模型產物。' },
+        { text: '工作階段中的 KV cache 與組好的 prompt', answer: 'runtime', why: '暫存快取與 prompt 屬執行期資料。' },
+        { text: '開啟除錯模式後記下完整請求內容的追蹤紀錄', answer: 'exhaust', why: '日誌、追蹤、除錯擷取屬營運副產物。' }
+      ],
+      summary: '六類資料：後四類常不在傳統資料盤點裡。' },
+    { id: 'd2q3', type: 'scn', lo: [2], refs: [{label: '2.2', href: '02-data-surfaces.html#ds-flat'}, {label: '2.3 AI-DSPM', href: '02-data-surfaces.html#ds-dspm'}],
+      stem: '依本章，這個團隊的資料保護做法有什麼缺口？',
+      scenario: '白鷺保險（虛構）的資安團隊盤點了所有資料庫與檔案伺服器，並對它們加上分類標籤。公司另有一個客服助理：它把保戶資料轉成嵌入存在向量庫，每次回答時把檢索段落放進 prompt，除錯時還把完整請求寫進追蹤系統。團隊說：「我們的資料都已分類，所以助理是安全的。」',
+      options: [
+        { text: '沒有缺口，資料庫已分類就等於所有衍生資料都受保護。', why: '官方要求標籤必須傳遞到衍生物；嵌入、檢索片段與追蹤紀錄不會自動繼承標籤。' },
+        { text: '缺口在衍生資料與營運副產物：嵌入、向量庫、檢索片段與追蹤紀錄都含有保戶資料，卻沒有在盤點裡；應把清單與分類標籤延伸到這些衍生物，並對追蹤系統採最少日誌預設與存取控制。', correct: true, why: '符合 2.1、2.3 節。' },
+        { text: '缺口在資料庫沒有加密。', why: '情境沒有提到加密問題；缺口是盤點範圍。' },
+        { text: '缺口在助理的 system prompt 沒有寫「不要洩漏保戶資料」。', why: '那是請求而非存取控制，不能取代盤點與標籤傳遞。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 盤點只含資料庫與檔案，屬「來源資料」。(2) 助理產生了衍生資料（嵌入、向量庫、檢索片段）與營運副產物（追蹤）。(3) 官方 AI-DSPM 要求盤點這些資產，並讓標籤傳遞到衍生物。</p><p><strong>結論：</strong>把資產清單與分類延伸到向量庫、嵌入管線與追蹤系統。對應教材：<a href="02-data-surfaces.html#ds-six">2.1 節</a>、<a href="02-data-surfaces.html#ds-dspm">2.3 節</a>。</p>' },
+    { id: 'd2q4', type: 'mc', lo: [2], refs: [{label: '2.3 表 2-2', href: '02-data-surfaces.html#ds-dspm'}],
+      stem: '官方 AI-DSPM 提到的「即時 (JIT) 資料存取」，最貼近下列哪個做法？',
+      options: [
+        { text: '給 Agent 一組永久的資料庫憑證，方便它隨時查詢。', why: '那正是 JIT 要取代的常駐憑證。' },
+        { text: '當使用者問了相關問題，Agent 才請求存取；系統針對該任務發出帶範圍與有效期的暫時 token，完成即撤銷。', correct: true, why: '符合表 2-2 存取治理一列。' },
+        { text: '每天凌晨批次把所有資料複製給 Agent。', why: '與 JIT 的「任務時才存取」相反，也擴大了暴露面。' },
+        { text: '讓所有 Agent 共用同一組憑證，以簡化管理。', why: '官方要求每個 Agent 有自己的身分與範圍。' }
+      ],
+      summary: 'JIT：任務範圍、有效期、完成即撤銷。' }
+  ]
+});
+</script>
+</body>
+</html>

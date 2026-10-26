@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　三份文件與 AI 紅隊的定位｜GenAI 紅隊演練｜OWASP AI 資安學習教材</title>
+<meta name="description" content="GenAI Red Teaming Manual、Guide 與 Vendor Evaluation Criteria 三份文件各回答什麼問題、版本與日期怎麼取捨；AI 紅隊與傳統紅隊的差異；黑箱、灰箱、白箱與何時做紅隊演練。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="genai-red-teaming" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　三份文件與 AI 紅隊的定位</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../../01-overview/genai-security-project/03-initiatives.html#ini-names">GenAI Security Project 第 3 章</a>（知道 AI Red Teaming 是八個 Initiatives 之一）</li>
+</ul>
+<p class="lead">在 GenAI Security Project 的地圖上，AI Red Teaming 是八個 Initiatives 之一，它發布了三份主要文件。本章先弄清楚這三份各回答什麼問題、版本與日期該怎麼引用，再看 AI 紅隊和你可能聽過的傳統紅隊差在哪裡，最後談黑箱／灰箱／白箱與什麼時候該做。</p>
+
+<p>先對齊幾個資安用語（通用用語，不是這幾份文件特有的）：紅隊演練 (Red Teaming) 是在授權範圍內扮演攻擊者，主動找出防禦的缺口；負責偵測與回應的一方是藍隊 (Blue Team)；兩邊合作、用紅隊的發現直接驗證並調整防禦，則稱為紫隊 (Purple Team) 做法。開發者可以把它類比成「由刻意想弄壞系統的人來跑的整合測試」，這個類比是 <span class="tag author">作者整理，非官方</span>。</p>
+
+<h2 id="pos-onepage">1.1 三份文件一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　AI Red Teaming 三份主要文件（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">GenAI Red Teaming Manual</th><th scope="col">GenAI Red Teaming Guide</th><th scope="col">Vendor Evaluation Criteria</th></tr></thead>
+<tbody>
+<tr><th scope="row">完整名稱</th><td>GenAI Red Teaming Manual（副標：A Practical Guide for Adversarial Testing of Generative AI Models &amp; Systems）</td><td>GenAI Red Teaming Guide（副標：A Practical Approach to Evaluating AI Vulnerabilities）</td><td>Vendor Evaluation Criteria for AI Red Teaming Providers &amp; Tooling</td></tr>
+<tr><th scope="row">採用的版本與日期</th><td>Version 1.0；<strong>2026-10-20</strong>（資源頁日期；PDF 封面只寫 October 2026）</td><td>Version 1.0；<strong>2025-01-23</strong>（PDF 封面；資源頁寫 2025-01-22，採較新者）</td><td>v1.0 Public Release；<strong>2026-02-04</strong>（資源頁；PDF 封面寫 2026-01-13，採較新者）</td></tr>
+<tr><th scope="row">規模</th><td>PDF 144 頁</td><td>PDF 77 頁</td><td>PDF 32 頁</td></tr>
+<tr><th scope="row">它回答的問題</th><td>一次 GenAI 紅隊演練要怎麼做：八個階段、每階段的目的與產出</td><td>GenAI 紅隊為何與傳統不同、怎麼起步、如何從模型到執行期分層評估、組織怎麼成熟</td><td>我要採購紅隊服務或工具，怎麼分辨真正的對抗式測試與只會越獄的淺層服務</td></tr>
+<tr><th scope="row">主要讀者（文件自述）</th><td>紅隊成員、資安研究者與從業人員</td><td>資安專業人員、AI／ML 工程師、紅隊、風險管理者、CISO、架構團隊與業務主管</td><td>評估廠商的決策者與採購者</td></tr>
+<tr><th scope="row">授權（PDF 封面）</th><td>CC BY-SA 4.0</td><td>CC BY-SA 4.0；引用須含專案名稱與所參照資產名稱</td><td>CC BY-SA 4.0；引用須含專案名稱與所參照資產名稱</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：Manual 是不是 Guide 的後繼</p>
+  <p>兩份都是「Version 1.0」，但 Guide 在 2025 年初、Manual 在 2026 年 10 月發布。本教材在 Manual 全文搜尋，沒有找到任何提到 Guide 的地方；官方資源頁也沒有說明兩者的關係。所以<strong>不能</strong>說 Manual 取代了 Guide。本教材的做法：兩者各自標版本與日期，內容上 Manual 是做法、Guide 是概念與組織面。</p>
+</div>
+
+<h2 id="pos-diff">1.2 核心概念：AI 紅隊與傳統紅隊有什麼不同</h2>
+<div class="concept">
+<h3 id="c-redteam">AI 紅隊測的是「系統會不會違反自己的限制」</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>官方詞彙頁的說法：傳統紅隊測試攻擊者能不能取得系統的存取；AI 紅隊測試攻擊者能不能讓系統<strong>違反它自己的限制</strong>。工具從連接埠掃描變成提示詞、對抗式輸入、嵌入文件的指令與多輪對話。</dd>
+  <dt data-n="2">為什麼會不同</dt>
+  <dd>傳統系統通常「放行或不放行」，AI 系統則落在一條順從程度的光譜上：紅隊要找的是模型在哪些條件下失守。Guide 列出四個結構性差異（見表 1-2），根源都是輸出具機率性、風險也包含社會技術層面。</dd>
+  <dt data-n="3">沒意識到時會怎樣（概念層級）</dt>
+  <dd>把傳統滲透測試的「成功／失敗」二分法套到 AI 上：一次嘗試沒成功就宣稱安全；或只看技術漏洞，漏掉偏誤、有害內容與過度依賴這類 Guide 明確納入的風險。</dd>
+  <dt data-n="4">怎麼做</dt>
+  <dd>沿用傳統紅隊的共通基礎（Guide 列了六項：系統探索、全堆疊評估、風險評估、攻擊者模擬、防禦驗證、升級路徑），再加上對機率性結果的統計式評估與清楚的判定標準。這兩件事分別是第 3 章的「測試判準」與「攻擊成功率」。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「AI 紅隊就是試越獄。」越獄只是其中一種；Manual 的測試範圍還包含資料外洩、跨使用者或跨租戶外洩、未授權動作、工具鏈、記憶與檢索污染、資源耗盡等，第 4 章的廠商準則也把「只會越獄」列為警訊。</dd>
+</dl>
+</div>
+
+<div class="table-wrap"><table>
+<caption>表 1-2　傳統紅隊與 GenAI 紅隊的四個差異（Guide 的 Key Differences，改寫）</caption>
+<thead><tr><th scope="col">面向</th><th scope="col">傳統紅隊</th><th scope="col">GenAI 紅隊</th></tr></thead>
+<tbody>
+<tr><th scope="row">關注範圍</th><td>技術弱點為主</td><td>除了技術弱點，還包含偏誤、有害內容這類社會技術風險</td></tr>
+<tr><th scope="row">資料複雜度</th><td>相對單純</td><td>需要整理、產生與分析大量多模態資料，用於非確定性系統</td></tr>
+<tr><th scope="row">隨機性評估</th><td>結果大致可重複</td><td>輸出具機率性，需要統計上站得住腳的測試方法</td></tr>
+<tr><th scope="row">判定標準與門檻</th><td>明確的入侵結果，例如網域管理員憑證被竊</td><td>結果不只通過／失敗；要區分「模型本來的正常變異」與「惡意造成的退化」，重心轉向統計門檻與持續監測</td></tr>
+</tbody></table></div>
+
+<h2 id="pos-posture">1.3 黑箱、灰箱、白箱，以及什麼時候該做</h2>
+<p>Manual 要你先依「想模擬的對手」和演練目標，選定測試者能拿到多少資訊：</p>
+<ul>
+  <li><strong>黑箱 (Black-box)：</strong>只測對外介面，看不到內部實作。從介面推測出的模型或架構，只能當作假設，除非另有獨立證據。</li>
+  <li><strong>灰箱 (Gray-box)：</strong>有限的內部資訊，例如架構圖、部分日誌、不同權限等級的帳號。要如實記錄「到底提供了什麼」。</li>
+  <li><strong>白箱 (White-box)：</strong>檢查可取得的實作、設定、提示詞、政策、資料流與執行期遙測。Manual 特別提醒：能存取整個應用，<strong>不等於</strong>能取得託管模型的權重或訓練資料。</li>
+</ul>
+<p>這三種可以反覆進行，一次演練不必三種都做。</p>
+
+<h3 id="pos-when">什麼時候該做紅隊演練</h3>
+<p>Manual 列出十一種情境，本教材依性質歸成四群（分群是 <span class="tag author">作者整理，非官方</span>）：</p>
+<ul>
+  <li><strong>上線前後：</strong>部署前驗證 (Pre-Deployment Validation)、新用途評估（把 LLM 接進處理客戶資料的高風險流程）、導入前評估（新模型、微調版本或 AI SaaS）、外部供應商導入驗證。</li>
+  <li><strong>變更之後：</strong>模型微調、護欄調整或功能發布後的回歸測試 (Regression Testing)；規模擴大（十倍使用者、新地區、新語言）之前。</li>
+  <li><strong>事件之後：</strong>事件處置完、漏洞已修補後，重走原本的攻擊路徑驗證修補，並找原本入口以外的其他路徑。</li>
+  <li><strong>驗證防守與合規：</strong>驗證藍隊的偵測與回應；新投資的 SIEM、EDR 上線後的效果；為法規要求留下測試證據。</li>
+</ul>
+<div class="callout official">
+  <p class="callout-title">測試偵測與回應只是目標之一</p>
+  <p>Manual 明寫：測試偵測與回應是一種目標，<strong>不是</strong>每次 AI 紅隊演練的前提。所以「我們沒有 SOC，就不能做紅隊」是誤解。另外，Manual 也提醒對抗式測試可能產生冒犯或令人不適的內容，組織要顧及紅隊成員的心理安全，並在合法、合乎政策的前提下進行。</p>
+</div>
+<p>Manual 另外把測試對應到生命週期六個階段：範圍界定、模型選擇、模型客製化、開發整合、部署、持續改進，每個階段紅隊的角色與產出不同。</p>
+
+<h2 id="pos-which">1.4 該讀哪一份</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程：要規劃並執行一次 GenAI 紅隊演練，讀 Red Teaming Manual；要理解 GenAI 紅隊為何不同與如何分層評估，讀 Red Teaming Guide；要採購紅隊服務或工具，讀 Vendor Evaluation Criteria；要找工具與分類，查 Solutions Landscape 的紅隊版與 Taxonomy；要可重複的測試案例，看 AI Testing Guide；要可驗證的安全需求，看 AISVS 與 LLMSVS。">
+flowchart TD
+  S["我現在要做的事"] --> Q{"需求類型"}
+  Q -->|"規劃並執行一次紅隊演練"| A["Red Teaming Manual<br>八階段方法"]
+  Q -->|"理解為何不同、怎麼起步、如何分層評估"| B["Red Teaming Guide<br>概念與藍圖"]
+  Q -->|"採購紅隊服務或自動化工具"| C["Vendor Evaluation Criteria"]
+  Q -->|"找紅隊工具與攻擊分類"| D["Solutions Landscape 紅隊版與 Taxonomy"]
+  Q -->|"可重複的測試案例編號"| E["AI Testing Guide"]
+  Q -->|"可驗證的安全需求"| F["AISVS 與 LLMSVS"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q,D,E,F author
+</pre>
+<figcaption><strong>圖 1-1　該讀紅隊的哪一份文件。</strong>前三條對應各文件自述的用途；虛線框的「需求」措辭，以及連到 Landscape、AI Testing Guide、AISVS／LLMSVS 的三條，是<strong>作者整理，非官方</strong>。後兩者是本階段的另外兩個主題：<a href="../ai-testing-guide/index.html">AI Testing Guide</a>、<a href="../aisvs-and-llmsvs/index.html">AISVS 與 LLMSVS</a>。</figcaption>
+</figure>
+<p>Guide 的「四個評估面向」有兩種寫法，要並列看：官方資源頁摘要寫 model evaluation、implementation testing、infrastructure assessment、runtime behavior analysis；PDF 的藍圖 (Blueprint) 寫 Model、Implementation、System、Run-time Human &amp; Agentic Interaction。兩者逐項的對應是 <span class="tag author">作者整理，非官方</span>：模型 ↔ 模型評估、實作（護欄、RAG）↔ 實作測試、系統（基礎設施、整合、供應鏈）↔ 基礎設施評估、執行期的人與 agent 互動 ↔ 執行期行為分析。</p>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>三份文件：Manual（八階段做法，2026-10-20）、Guide（概念與藍圖，採 2025-01-23）、Vendor Evaluation Criteria（採購準則，採 2026-02-04）。版本日期衝突時採較新者。</li>
+  <li>Manual 與 Guide 是否為前後代關係：未能確認，各自引用。</li>
+  <li>AI 紅隊測的是系統會不會違反自己的限制；輸出具機率性，所以要統計式評估，而不是二分法。</li>
+  <li>黑箱、灰箱、白箱是依想模擬的對手選的；白箱不等於拿得到模型權重。</li>
+  <li>測試偵測與回應只是目標之一，不是每次演練的前提。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出三份文件各回答的問題，並正確寫出各自的版本與日期。</li>
+  <li>我能用兩句話解釋 AI 紅隊與傳統紅隊的差異，並舉出表 1-2 的一項。</li>
+  <li>我能說出黑箱、灰箱、白箱的差別，並指出白箱的常見誤解。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-phases-1-4.html">第 2 章　階段 1–4：規劃到利用</a>：Manual 八階段的前半，從議定交戰規則到實際測試。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>GenAI Red Teaming Manual，Version 1.0，資源頁 2026-10-20（PDF 封面 October 2026，144 頁）：<a href="https://genai.owasp.org/resource/genai-red-teaming-manual-version-1-0/">資源頁</a>；引言、AI Red Teaming Posture、When to Use an AI Red Team Exercise、Mapping Testing to the Generative AI Systems Lifecycle、Adversarial Testing Advisory；CC BY-SA 4.0。</li>
+    <li>GenAI Red Teaming Guide，Version 1.0，PDF 封面 2025-01-23（資源頁 2025-01-22，77 頁）：<a href="https://genai.owasp.org/resource/genai-red-teaming-guide/">資源頁</a>；Executive Summary、1. Introduction（Key Differences、Shared Foundations）、6. Blueprint；CC BY-SA 4.0。</li>
+    <li>Vendor Evaluation Criteria for AI Red Teaming Providers &amp; Tooling，v1.0，資源頁 2026-02-04（PDF 封面 2026-01-13，32 頁）：<a href="https://genai.owasp.org/resource/owasp-vendor-evaluation-criteria-for-ai-red-teaming-providers-tooling-v1-0/">資源頁</a>；CC BY-SA 4.0。</li>
+    <li>AI Red Teaming 詞彙頁（傳統紅隊與 AI 紅隊的差異說法）：<a href="https://genai.owasp.org/glossary/ai-red-teaming/">genai.owasp.org/glossary/ai-red-teaming/</a>；2026-10-26 讀取；網站頁尾 CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：GenAI Red Teaming Manual、GenAI Red Teaming Guide、Vendor Evaluation Criteria（各 PDF 封面）與 genai.owasp.org 網站 — CC BY-SA 4.0。Guide 與 Vendor 文件要求引用時須含專案名稱與所參照資產名稱，本頁已於「本章來源」標示。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'rt-ch1', topic: 'genai-red-teaming', mode: 'chapter',
+  questions: [
+    { id: 'r1q1', type: 'mc', lo: [1], refs: [{label: '1.2 AI 紅隊與傳統紅隊', href: '01-position.html#c-redteam'}, {label: '1.2 表 1-2', href: '01-position.html#pos-diff'}],
+      stem: '依本章，AI 紅隊與傳統紅隊最核心的差異是哪一個？',
+      options: [
+        { text: 'AI 紅隊不需要考慮技術弱點，只看有害內容。', why: 'Guide 的說法是範圍變廣：除了技術弱點，還納入偏誤、有害內容等社會技術風險，不是取代技術弱點。' },
+        { text: '傳統紅隊測能否取得存取；AI 紅隊測能否讓系統違反它自己的限制，而且結果落在一條光譜上，不只是通過或失敗。', correct: true, why: '符合 1.2 節與表 1-2：判定標準與門檻、隨機性評估都是因為輸出具機率性。' },
+        { text: 'AI 紅隊只能用自動化工具執行，因為輸出量太大。', why: '教材沒有這樣的限制；Guide 的做法強調人的專業與跨領域團隊，自動化只是工具之一。' },
+        { text: 'AI 紅隊就是反覆嘗試越獄，成功一次就算發現漏洞。', why: '越獄只是範圍的一部分；一次成功與否也不足以描述機率性系統，需要統計式評估。' }
+      ],
+      summary: '核心差異：測的是系統會不會違反自己的限制，而且結果是光譜、不是二分法。' },
+    { id: 'r1q2', type: 'mc', lo: [1], refs: [{label: '1.3 黑箱、灰箱、白箱', href: '01-position.html#pos-posture'}],
+      stem: '一位同事說：「我們給紅隊白箱權限了，所以他們一定能檢查託管模型的權重與訓練資料。」依 Manual，最恰當的回應是？',
+      options: [
+        { text: '正確，白箱就是完全開放所有資訊。', why: 'Manual 特別提醒：能存取整個應用，不等於能取得託管模型的權重或訓練資料。' },
+        { text: '錯誤，白箱代表完全不提供任何資訊。', why: '那是黑箱的描述。' },
+        { text: '錯誤，灰箱才會提供架構圖與日誌，白箱只檢查模型輸出。', why: '把兩者顛倒：灰箱是有限的內部資訊，白箱是檢查可取得的實作、設定、提示詞與遙測。' },
+        { text: '不一定：白箱是檢查可取得的實作、設定、提示詞與遙測，但完整存取應用不等於拿得到託管模型的權重或訓練資料。', correct: true, why: '正是 Manual 在 AI Red Teaming Posture 裡的提醒。' }
+      ],
+      summary: '白箱不等於能拿到託管模型的權重或訓練資料。' },
+    { id: 'r1q3', type: 'scn', lo: [1], refs: [{label: '1.3 什麼時候該做', href: '01-position.html#pos-when'}],
+      stem: '依本章，這位主管的結論有什麼問題？',
+      scenario: '晨光物流（虛構）要在客服 LLM 上線前做紅隊演練。主管說：「我們還沒建立 SOC，沒有人能偵測攻擊，所以紅隊演練沒有意義，等 SOC 建好再做。」資安工程師想反駁，但不確定 Manual 怎麼說。',
+      options: [
+        { text: 'Manual 明寫測試偵測與回應只是目標之一，不是每次演練的前提；部署前驗證、新用途評估本身就是獨立的演練情境。', correct: true, why: '1.3 節：偵測與回應是其中一種目標；部署前驗證、新用途評估等情境不依賴 SOC。' },
+        { text: '主管說得對，沒有 SOC 就無法評估任何紅隊結果。', why: '這正是本章要糾正的誤解。' },
+        { text: '應該先做紫隊演練，再決定要不要紅隊。', why: '紫隊是紅藍合作驗證防禦，並非紅隊的前置；Manual 沒有這樣的順序要求。' },
+        { text: '應該改成只做黑箱測試，因為這樣不需要偵測能力。', why: '黑箱與灰箱、白箱是依想模擬的對手選的存取等級，和是否有 SOC 無關。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) Manual 列出十一種使用情境，其中部署前驗證、新用途評估、導入前評估都不是在驗證藍隊。(2) Manual 明寫測試偵測與回應是目標之一，不是每次演練的前提。(3) 主管把「驗證藍隊」誤當成唯一目標。</p><p><strong>結論：</strong>可以先做上線前驗證；若沒有偵測能力，把「偵測與回應」排除在本次目標之外並寫進範圍即可。對應教材：<a href="01-position.html#pos-when">1.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 章　跨文件整合與收尾｜GenAI Security Project｜OWASP AI 資安學習教材</title>
+<meta name="description" content="把 GenAI Security Project 的地圖和 AI Exchange 接起來：從風險到文件的查找流程、官方明載的對應、版本演進，以及全主題重點與下一步。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="01-overview" data-topic="genai-security-project" data-page="05-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 5 章　跨文件整合與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO1、LO3、LO5</li>
+  <li>前置：第 1–4 章；<a href="../ai-exchange/index.html">AI Exchange 主題</a></li>
+</ul>
+<p class="lead">你現在有兩張地圖：AI Exchange 教你「從威脅到控制」，GenAI Security Project 教你「從需求到文件與工具」。這一章把兩張疊起來，並標出哪些對應是官方寫的、哪些是作者整理的。</p>
+
+<h2 id="int-two">5.1 兩張地圖怎麼合用</h2>
+<p>AI Exchange 在「How to use this Document」裡，把 GenAI 專案列為「必要時會被導向的進一步資料」。反過來，GenAI 專案的章程把「AI 紅隊與評估」「agentic AI 資安」等列為研究項目。兩者的對照可以整理成一個工作流程：</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="合用流程：先用 AI Exchange 的風險分析找出對你的系統適用的威脅與控制；再用 GenAI Security Project 的 Initiative 地圖找各領域的專門指南；需要工具時查 Solutions Landscape；需要驗證時用紅隊與 AISVS；最後回到 AI Exchange 的風險登記冊記錄決定。">
+flowchart TD
+  A["1 用 AI Exchange 風險分析<br>找出適用的威脅與控制（第 7 章）"] --> B["2 用 GenAI Security Project 的 Initiative 地圖<br>找各領域的專門指南（第 3 章）"]
+  B --> C{"需要什麼？"}
+  C -->|"工具"| D["Solutions Landscape<br>縮小候選（第 4 章）"]
+  C -->|"驗證防護"| E["AI Red Teaming<br>或 AISVS 逐條驗證"]
+  C -->|"治理與導入"| F["AI Security Governance 類產出"]
+  D --> G["3 回到風險登記冊<br>記錄決定與殘餘風險"]
+  E --> G
+  F --> G
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class A,B,C,D,E,F,G author
+</pre>
+<figcaption><strong>圖 5-1　兩個旗艦專案的合用流程（作者整理，非官方）。</strong>整張圖是作者把兩份文件串成的工作流程；官方分別寫了 AI Exchange 的風險分析、各 Initiative 的產出，以及 Landscape 的用途，但沒有寫這個串接。</figcaption>
+</figure>
+
+<h2 id="int-table">5.2 概念對照</h2>
+<p>下表只列「官方有寫」的對應；沒有官方依據的格子，標示為作者整理。</p>
+<div class="table-wrap"><table>
+<caption>表 5-1　GenAI Security Project 的概念與 AI Exchange、其他文件的對應</caption>
+<thead><tr><th scope="col">GenAI Security Project 的概念</th><th scope="col">對應的內容</th><th scope="col">性質</th></tr></thead>
+<tbody>
+<tr><th scope="row">專案本身</th><td>AI Exchange 稱它與自己是「兩個旗艦 OWASP AI 專案」，並說明各自分工</td><td><span class="tag official">官方</span>（AI Exchange 的說明）</td></tr>
+<tr><th scope="row">Top 10 for LLM and GenAI Initiative</th><td>LLM Top 10 2026；AI Exchange 的 GenAI 九項特性表與威脅頁的參考區塊，引用其編號</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">Agentic App Security Initiative</th><td>Agentic Top 10 2026；<a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a> 說明其在 agentic 系統中可表現為 ASI02、ASI03、ASI08；AI Exchange 的 Agentic AI overview 引用 Threats and Mitigations 與 Agentic Top 10</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">AI Security Solutions Initiative</th><td>Solutions Landscape 的目錄以 LLM Top 10（2025／2023）與 Agentic Top 10（ASI:26）為風險標籤；Reference Guide 說明自己是 LLM Top 10 與 CISO Checklist 的伴隨資源</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">AI Red Teaming Initiative</th><td>AI Exchange 的 AI Security Testing 章節討論紅隊與測試工具，並提到與 CSA 合作的 Agentic AI Red Teaming Guide（來自 AI Exchange 總覽頁）</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">AI Bill of Materials Initiative</th><td>AI Exchange 的 <code class="ctl">SUPPLY CHAIN MANAGE</code> 控制頁列出 OWASP AIBOM Foundations Guide v1.0 與 CycloneDX AI/ML-BOM 作為參考</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">SecOps 九階段 vs. AI Exchange 控制的生命週期分區</th><td>兩者都依生命週期組織，但切法不同：Landscape 切九個營運階段；AI Exchange 的控制依「開發期／執行期」與四大類組織。沒有官方的逐項對照表</td><td><span class="tag author">作者整理，非官方</span></td></tr>
+<tr><th scope="row">Initiative 與 AI Exchange 威脅頁的對應</th><td>例如把 Data Security Initiative 對到 AI Exchange 的 <code class="ctl">DATA MINIMIZE</code> 等資料限制控制</td><td><span class="tag author">作者整理，非官方</span></td></tr>
+<tr><th scope="row">Crosswalk 的涵蓋範圍</th><td>官方描述：來自四份 OWASP 清單的 51 項弱點對照到 25 個框架。<strong>哪四份清單、哪 25 個框架</strong>：互動網頁動態載入，本教材未能讀取，因此不列</td><td><span class="tag official">官方</span>（描述）；細節未能確認</td></tr>
+</tbody></table></div>
+
+<h2 id="int-evolution">5.3 版本演進：你會在不同文件看到不同年份的標籤</h2>
+<p>GenAI 專案各產出更新速度不一，造成「同一個風險在不同文件有不同編號或名稱」。這是你在整合文件時最容易踩到的坑。</p>
+<div class="table-wrap"><table>
+<caption>表 5-2　同一個風險在不同年份文件中的標示（依官方清單核對）</caption>
+<thead><tr><th scope="col">風險概念</th><th scope="col">LLM Top 10 2025</th><th scope="col">LLM Top 10 2026</th><th scope="col">備註</th></tr></thead>
+<tbody>
+<tr><th scope="row">過度授權</th><td>LLM06:2025 Excessive Agency</td><td>LLM03:2026 Excessive Agency</td><td>2026 版升到第 3 名（官方 What's New）</td></tr>
+<tr><th scope="row">資源耗盡與成本</th><td>LLM10:2025 Unbounded Consumption</td><td><a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-consume">LLM06:2026</a> Unbounded Consumption</td><td>上升四名（官方 What's New）</td></tr>
+<tr><th scope="row">隱藏的 system prompt</th><td>LLM07:2025 System Prompt Leakage</td><td><a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-hidden">LLM08:2026</a> Hidden Context Exposure</td><td>官方說這是更名並擴大範圍</td></tr>
+<tr><th scope="row">輸出處理</th><td>LLM05:2025 Improper Output Handling</td><td><a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-output">LLM10:2026</a> Improper Output Handling</td><td>從第 5 降到第 10（官方 What's New）</td></tr>
+<tr><th scope="row">供應鏈</th><td>LLM03:2025 Supply Chain</td><td><a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-supply">LLM04:2026</a> Supply Chain</td><td>編號變動；名稱不變</td></tr>
+</tbody></table></div>
+<p>這張表連同第 4 章 Landscape 的風險標籤停在 2025／2023 這件事，說明了一件事：<strong>引用編號時務必連年份一起寫</strong>（LLM03:<strong>2026</strong>），並確認你比對的兩份文件用的是同一年的版本。LLM Top 10 的完整演進（2023 → 2025 → 2026）見 <a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 2026 第 8 章的編號換算</a>。</p>
+
+<h2 id="int-key">5.4 全主題重點整理</h2>
+<div class="keypoints"><ul>
+  <li><strong>定位（LO1）：</strong>GenAI Security Project 是 OWASP 的傘專案，起源於 2023 年 5 月的 LLM Top 10，沒有整體版本號；GitHub 與 AI Exchange 稱為旗艦，但 owasp.org 的 LLM Top 10 登記頁標 Lab，現行層級未能確認；與 AI Exchange 分工：後者是涵蓋所有 AI 的統一知識庫，前者是生成式 AI 領域的一組獨立產出。</li>
+  <li><strong>治理（LO2）：</strong>功績制；董事會（最高決策）與核心團隊（日常管理、批准 Initiative）；決策採懶人共識，無共識時逐級升級；治理頁無版本日期，核心團隊任期未明定。</li>
+  <li><strong>地圖（LO3）：</strong>八個 Initiatives；同一個 Initiative 在各頁名稱略有不同；Initiative 是組織單位而非風險類別，一個問題常橫跨多個 Initiative。</li>
+  <li><strong>Landscape（LO4）：</strong>每季更新的解決方案指南與線上目錄；依 SecOps 九階段與四種應用型態組織；官方明說「不是完整清單、也不是背書」；風險標籤仍停在 LLM Top 10 2025／2023；贊助標示存在，影響不明。</li>
+  <li><strong>整合（LO5）：</strong>用 AI Exchange 找適用威脅與控制，再用 Initiative 地圖找專門指南與工具，引用編號務必帶年份。</li>
+</ul></div>
+
+<h2 id="int-check">5.5 自我檢核清單</h2>
+<ul class="checklist">
+  <li>我能用兩句話說明 GenAI Security Project 是什麼、和 AI Exchange 有何不同。</li>
+  <li>我能說出八個 Initiatives，並為一個需求選出最先該看的那一個。</li>
+  <li>我能解釋為什麼治理頁沒有版本日期是個要留意的限制。</li>
+  <li>我能說出 SecOps 九階段，並解釋 Landscape 目錄「不是完整清單、也不是背書」的意義。</li>
+  <li>我知道把 LLM Top 10 2025 的編號套用到 2026 版會出錯，並能舉一個例子。</li>
+  <li>我能區分哪些對應是官方明載、哪些是整理。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO1、LO3、LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="int-next">5.6 接下來讀什麼</h2>
+<ol>
+  <li><strong>先做這個主題的 <a href="quiz.html">總測驗</a>（15 題）</strong>，檢查各學習目標的掌握度；答錯的題目會連回對應章節。</li>
+  <li>需要核對來源時，看 <a href="references.html">參考資料與來源核對</a>。</li>
+  <li><strong>學習地圖上的下一個主題：</strong>02 LLM 應用的<a href="../../02-llm-applications/llm-top-10/index.html">Top 10 for LLM Applications 2026</a>，它是 01 總覽兩個主題之後的完整條目講解。需要對照官方文件時，可以閱讀：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/tree/main/2026/final">LLM Top 10 2026 原始碼</a>。</li>
+</ol>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Exchange，0. AI Security Overview：Relevant OWASP AI initiatives、How to use this Document、Agentic AI overview、GenAI 九項特性表、AI Security Testing 目錄、SUPPLY CHAIN MANAGE 控制頁：<a href="https://owaspai.org/go/aiatowasp">owaspai.org/go/aiatowasp</a>、<a href="https://owaspai.org/go/document">…/document</a>；2026-10-25 快照；CC0 1.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">2026/README.md</a>（編號與名稱）、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM00_Preface.md">Preface</a>（What's New）、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM03_ExcessiveAgency.md">LLM03</a>；Version 2026；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2025 清單：<a href="https://genai.owasp.org/llm-top-10/">genai.owasp.org/llm-top-10/</a>（僅用於表 5-2 的編號對照）。</li>
+    <li>GenAI Security Industry Framework Crosswalk：<a href="https://genai.owasp.org/resource/genai-security-industry-framework-crosswalk/">資源頁</a>（2026-09-01）。</li>
+    <li>OWASP Solutions Reference Guide Q2_Q3'25：<a href="https://genai.owasp.org/resource/owasp-genai-security-project-solutions-reference-guide-q2_q325/">資源頁</a>（2025-11-04）；CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AI Exchange（owaspai.org）— CC0 1.0；OWASP Top 10 for LLM Applications 2025／2026、Solutions Reference Guide、genai.owasp.org 網站 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'g-ch5', topic: 'genai-security-project', mode: 'chapter',
+  questions: [
+    { id: 'g5q1', type: 'scn', lo: [5], refs: [{label: '5.1 圖 5-1', href: '05-integration.html#int-two'}, {label: '5.4 全主題重點', href: '05-integration.html#int-key'}],
+      stem: '依本章圖 5-1 的合用流程（作者整理），這個團隊下一步最適合做什麼？',
+      scenario: '凌雲電信（虛構）要上線客服 LLM 助理。團隊已用 AI Exchange 的風險分析列出適用的威脅與控制，也做好最小權限等設計。資安長要求上線前要能證明這些防護真的有效。有人提議：「Solutions Landscape 的目錄裡有產品標示涵蓋這些風險，買一個就算驗證過了。」',
+      options: [
+        { text: '在 Landscape 目錄挑一個標示涵蓋相同風險的產品，採購後視為通過驗證。', why: '官方明說目錄「不是完整清單、也不是背書」；在圖 5-1 裡，Landscape 的用途是在需要工具時縮小候選，不是回答防護有沒有效。' },
+        { text: '走到圖 5-1 的「驗證防護」分支：用 AI Red Teaming 或 AISVS 逐條驗證，再把結果與殘餘風險記回風險登記冊。', correct: true, why: '圖 5-1 在「需要什麼？」之後把「驗證防護」接到 AI Red Teaming 或 AISVS，最後所有分支都回到風險登記冊。注意這個串接是作者整理，官方沒有寫。' },
+        { text: '走「治理與導入」分支，去看 AI Security Governance 類產出。', why: '那個分支回答的是治理與導入需求；這裡的需求是證明防護有效，對應的是驗證分支。' },
+        { text: '重新做一次 AI Exchange 風險分析，因為風險分析本身就是驗證。', why: '風險分析是圖 5-1 的第 1 步，用來找出適用的威脅與控制；防護是否有效是之後另一個分支要回答的事。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 團隊已完成第 1 步（AI Exchange 風險分析）與設計。(2) 現在的需求是驗證防護，不是找工具，也不是治理與導入。(3) 圖 5-1 的「需要什麼？」節點把「驗證防護」接到 AI Red Teaming 或 AISVS 逐條驗證；Landscape 目錄只用來縮小工具的候選，且官方明說它不是背書。(4) 驗證的結果與殘餘風險要回到風險登記冊。</p><p><strong>結論：</strong>走驗證分支，再回風險登記冊記錄。對應教材：<a href="05-integration.html#int-two">5.1 節</a>。這條流程是作者整理，非官方。</p>' },
+    { id: 'g5q2', type: 'match', lo: [1], refs: [{label: '5.2 表 5-1', href: '05-integration.html#int-table'}],
+      stem: '本章表 5-1 把對應分成「官方有寫」、「作者整理」和「細節未能確認」。把下列說法配對到它在教材中的性質。',
+      cats: [
+        { id: 'official', label: '官方有寫' },
+        { id: 'author', label: '作者整理，非官方' },
+        { id: 'unsure', label: '細節未能確認' }
+      ],
+      items: [
+        { text: 'AI Exchange 稱它與 GenAI Security Project 是「兩個旗艦 OWASP AI 專案」。', answer: 'official', why: '表 5-1 第一列：這是 AI Exchange 的說明，標為官方。' },
+        { text: '把 SecOps 九階段與 AI Exchange 控制的生命週期分區逐項對起來。', answer: 'author', why: '兩者都依生命週期組織但切法不同，沒有官方的逐項對照表，表 5-1 標為作者整理。' },
+        { text: '把 Data Security Initiative 對到 AI Exchange 的 DATA MINIMIZE 等資料限制控制。', answer: 'author', why: '表 5-1 的例子，標為作者整理，非官方。' },
+        { text: 'GenAI Security Industry Framework Crosswalk 究竟是哪四份清單、對照哪 25 個框架。', answer: 'unsure', why: '官方只描述了涵蓋範圍（四份清單的 51 項弱點對照到 25 個框架）；明細在動態載入的互動網頁，教材未能讀取，所以不列。' },
+        { text: 'AI Exchange 的 SUPPLY CHAIN MANAGE 控制頁列出 OWASP AIBOM Foundations Guide v1.0 與 CycloneDX AI/ML-BOM 作為參考。', answer: 'official', why: '這是 AI Exchange 控制頁自己列出的參考，表 5-1 標為官方。' }
+      ],
+      summary: '官方有寫、作者整理、未能確認：引用時三種要分開標示。' },
+    { id: 'g5q3', type: 'mc', lo: [5], refs: [{label: '5.3 表 5-2', href: '05-integration.html#int-evolution'}],
+      stem: '稽核表寫著「供應商須涵蓋 LLM Top 10 的 LLM10：Unbounded Consumption」，但你們的內部標準採用 LLM Top 10 2026。依表 5-2，最恰當的處理是？',
+      options: [
+        { text: '把它讀成 LLM06:2026 Unbounded Consumption：2025 版的 LLM10:2025 在 2026 版是 LLM06:2026，名稱不變、名次上升四名；稽核表上的兩個編號都要連年份一起寫。', correct: true, why: '符合表 5-2 的「資源耗盡與成本」一列。引用編號時連年份一起寫，才不會對錯條目。' },
+        { text: '直接視為 2026 版的 LLM10，也就是 Improper Output Handling，因為編號相同。', why: '同一個編號在兩個年份指向不同風險：2026 版的 LLM10 是 Improper Output Handling，Unbounded Consumption 是 LLM06。' },
+        { text: '這一條在 2026 版已經刪除，不需要再要求供應商涵蓋。', why: '表 5-2 顯示它仍在 2026 版，只是編號與名次變了。' },
+        { text: '兩版的條目名稱全都重新命名，無法比對，必須請供應商重新解釋每一條。', why: '表 5-2 中多數條目名稱不變，只有隱藏的 system prompt 一列是官方說明的更名並擴大範圍；用名稱加年份就能比對。' }
+      ],
+      summary: '同名風險的編號會隨年份變動：引用要帶年份，並用名稱加年份核對。' },
+    { id: 'g5q4', type: 'mc', lo: [3], refs: [{label: '5.2 表 5-1', href: '05-integration.html#int-table'}],
+      stem: '雲杉資安（虛構）的團隊讀了 AI Exchange 的供應鏈控制（SUPPLY CHAIN MANAGE），想為自家系統建立 AI 物料清單 (AI Bill of Materials)。依表 5-1，他們最該先去看 GenAI Security Project 的哪個 Initiative 與參考？',
+      options: [
+        { text: 'AI Red Teaming Initiative：它處理紅隊與測試工具，可以順便產出元件清單。', why: '表 5-1 中 AI Red Teaming 對應的是紅隊與測試工具的討論，用來驗證防護，不是建立元件清單。' },
+        { text: 'AI Security Solutions Initiative 的 Landscape：到目錄裡找 AIBOM 產品。', why: 'Landscape 是縮小工具候選的目錄，不是物料清單的規格；而且官方明說它不是完整清單、也不是背書。' },
+        { text: 'AI Bill of Materials Initiative：AI Exchange 的 SUPPLY CHAIN MANAGE 控制頁列出 OWASP AIBOM Foundations Guide v1.0 與 CycloneDX AI/ML-BOM 作為參考。', correct: true, why: '這是表 5-1 的官方對應。需求是物料清單時，先看專門處理它的 Initiative。' },
+        { text: 'Agentic App Security Initiative：因為供應鏈風險都歸 Agentic Top 10。', why: '該 Initiative 對應的是 Agentic Top 10 2026 與 agentic 系統的風險，不是所有供應鏈問題的歸屬；物料清單另有專門的 Initiative。' }
+      ],
+      summary: '先把需求對到 Initiative，再看它的產出與 AI Exchange 控制頁列出的參考。' }
+  ]
+});
+</script>
+</body>
+</html>

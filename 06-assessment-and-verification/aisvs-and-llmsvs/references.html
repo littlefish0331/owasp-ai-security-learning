@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜AISVS 與 LLMSVS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AISVS 與 LLMSVS 主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="aisvs-and-llmsvs" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 4.11、4.14 節與第 8 節）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以本教材回到一手來源重新核對。本頁列出：每個項目採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。舊版資訊只出現在版本演進與本頁。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">OWASP AISVS</th><td><strong>1.01</strong>（最新穩定版）；1.02-dev 為唯一開發中版本；2.0 延後。GitHub 最近提交 2026-10-24（Align release guidance with active 1.02 development）</td><td>GitHub README、RELEASE.md；v1.0 與 v1.01 的發布說明；1.01/en 各章（C1–C12）</td><td>CC BY-SA 4.0（README 與 GitHub 偵測值相符）</td></tr>
+<tr><th scope="row">AISVS 1.0 與 1.01 的 GitHub Releases</th><td>v1.0 與 v1.01 兩個 Release 皆建立於 2026-10-16（相隔兩秒）；發布說明自述「追溯記錄原始發布 commit」，<strong>原始發布日未能確認</strong></td><td>GitHub API releases；發布說明</td><td>同上</td></tr>
+<tr><th scope="row">OWASP LLMSVS</th><td><strong>v2.0（英文）</strong>為現行發布，年份 2026；v2.1 為草稿（「The draft is not a release」）；0.1 為 2024 年 2 月首次公開</td><td>GitHub README、CHANGELOG、LLMSVS-v2.0-en.md、LLMSVS-v2.1-draft-en.md</td><td>CC BY-SA 4.0（LICENSE.md；GitHub 偵測值相符）</td></tr>
+<tr><th scope="row">AISVS owasp.org 專案頁</th><td>標示 Incubator、Standards；Latest Version「1.0」；貢獻者 51、GitHub 星數 565（頁面顯示值，非教材引用）</td><td><a href="https://owasp.org/www-project-artificial-intelligence-security-verification-standard-aisvs-docs/">owasp.org 專案頁</a></td><td>頁面標示 CC BY-SA 4.0</td></tr>
+<tr><th scope="row">OWASP AI Testing Guide（僅用於對照）</th><td>owasp.org 專案頁寫 v1 於 2025-11-26 發布；Incubator；詳見兄弟主題</td><td>owasp.org 專案頁；GitHub README</td><td>LICENSE.md 寫 CC BY-SA 4.0（詳見兄弟主題）</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0（沿用先前主題已放置的副本）</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">AISVS 的 Releases</th><td>「Releases 區為空」「GitHub 未標明發布日期」</td><td>讀取時已有兩個 Release：v1.0 與 v1.01，皆建立於 2026-10-16，發布說明列出 191 與 213 條需求</td><td>採用發布說明；原始發布日仍未能確認</td></tr>
+<tr><th scope="row">AISVS 的負責人</th><td>founder：Jim Manico</td><td>README 與 owasp.org 頁面列出：Jim Manico（founder）、Otto Sulin、Rico Komenda、Russ Memisyazici</td><td>第 2 章列出四位</td></tr>
+<tr><th scope="row">AISVS 的需求規模與附錄</th><td>未提需求數；列 12 章</td><td>1.0：191 條、附錄 C 68 條；1.01：213 條現行（23 新增、1 移除）、附錄 C 69 條。作者逐章計數 213，與發布說明相符</td><td>第 2 章引用並標「作者計數」</td></tr>
+<tr><th scope="row">LLMSVS 的版本狀態</th><td>v2.0 為目前版本，v2.1 為草稿</td><td>與 README 相符，但 GitHub Releases 的標籤另有說法（見 R-3）</td><td>依 README 與 CHANGELOG 的明文；Releases 標籤不一致列為未能確認</td></tr>
+<tr><th scope="row">LLMSVS 的範疇</th><td>「補充 ASVS 的 LLM 應用安全需求目錄，涵蓋架構、模型生命週期、訓練、運作與整合、儲存與監控」</td><td>v2.0 實際為 8 章 70 條（V1–V8）；README 受眾列 Builders、Breakers、Defenders；文件明說「不取代 ASVS」</td><td>第 3 章整理八章與需求數</td></tr>
+<tr><th scope="row">LLMSVS 的 owasp.org 頁</th><td>owasp.org/www-project-llm-verification-standard/ 讀取為 404</td><td>屬實，2026-10-26 再次讀取仍是 404</td><td>層級標示 Incubator 只能以 GitHub README 為準</td></tr>
+<tr><th scope="row">LLMSVS 與 AISVS 的差異與關係</th><td>「頁面未說明，未能確認」</td><td>仍未找到官方說明</td><td>第 4 章表 4-2 的比較全部標「作者整理」</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">AISVS 最新穩定版</th><td>owasp.org 專案頁：「AISVS 1.0 is the latest stable release」，1.01 在 <code>1.01-dev</code> 開發；GitHub README：「The latest stable version is AISVS 1.01」，1.02 是唯一開發中版本；GitHub 最近提交 2026-10-24</td><td>採較新的 <strong>1.01</strong>，並判斷 owasp.org 頁面落後；但<strong>哪個是 OWASP 官方認定未能確認</strong>。第 2 章 2.4 節與圖 2-1 說明</td></tr>
+<tr><th scope="row">LLMSVS 現行版本</th><td>README、CHANGELOG：v2.0 為現行發布、v2.1 為草稿，「Cite v2.0 until the project accepts a newer edition」；GitHub Releases：2.0 標為「v2.0 release candidate」（prerelease，2026-05-11）、2.1 標為「V2.1 Draft version」（2026-10-23，非 prerelease）、1.0 標為「v1.0 release」（2026-05-11）</td><td>依專案自己在 README 與 CHANGELOG 的明文：v2.0 現行、v2.1 草稿；Releases 標籤的落差<strong>未能確認</strong>其意義</td></tr>
+<tr><th scope="row">AISVS 層級是否累積</th><td>README 說每條需求被指派層級 1、2 或 3，「多數正式系統至少應以層級 2 為目標」，沒有明說以層級 2 為目標是否需做完層級 1</td><td><strong>未能確認</strong>；ASVS 的層級是累積的，若比照辦理約 167 條，為作者推算；報告應明寫採用的解讀</td></tr>
+<tr><th scope="row">LLMSVS v2.0 層級是否累積</th><td>v2.0 以勾選表呈現，無文字說明；v2.1 草稿明文累積</td><td>v2.0 的勾選樣式是巢狀的（L1 欄 17、L2 欄 50、L3 欄 70，沒有只勾 L1 或只勾 L2 的列），這是作者觀察；v2.0 本身是否視為累積<strong>未能確認</strong></td></tr>
+<tr><th scope="row">授權</th><td>AISVS：README 與頁面皆 CC BY-SA 4.0；LLMSVS：README 與 LICENSE.md 皆 CC BY-SA 4.0；GitHub 偵測兩者皆為 CC-BY-SA-4.0</td><td>無衝突，採 CC BY-SA 4.0；本主題未使用 NC 授權來源</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>AISVS 官方認定的最新穩定版：</strong>owasp.org 專案頁寫 1.0，GitHub 寫 1.01；見 R-3。</li>
+  <li><strong>AISVS 1.0 與 1.01 的原始發布日：</strong>GitHub Releases 兩者建立於 2026-10-16，且自述為追溯記錄。</li>
+  <li><strong>AISVS 層級是否累積：</strong>README 未明說；見 R-3。</li>
+  <li><strong>LLMSVS 的 Releases 標籤與 README 的落差：</strong>2.0 被標為 release candidate（預發布），2.1 標為 Draft version（未標預發布）；專案的正式狀態以哪個為準，本教材無法判斷。</li>
+  <li><strong>LLMSVS v2.0 的層級是否視為累積：</strong>v2.0 文件沒有文字說明。</li>
+  <li><strong>LLMSVS v2.1 草稿的附屬資料夾：</strong>README 與草稿前言提到 <code>mappings/crosswalk.md</code>、<code>profiles/</code>、<code>examples/worked-assessment.md</code>、<code>catalog/llmsvs-draft.json</code>；本教材在 main 讀取倉庫根目錄只看到檔案，<code>mappings/crosswalk.md</code> 讀取為 404；這些內容的存在與細節無法確認，教材不引用。</li>
+  <li><strong>LLMSVS 的 owasp.org 專案頁：</strong>讀取為 404。</li>
+  <li><strong>LLMSVS 與 AISVS 的差異與關係：</strong>官方文字未說明。</li>
+  <li><strong>AISVS 附錄 B、C 與 Research Wiki 的逐條內容：</strong>本教材只讀了十二章的需求表，未逐條讀 Research Wiki 與附錄；教材只轉述 README 對它們的描述。</li>
+  <li><strong>AISVS 各章控制目標的細節：</strong>本教材讀了各章需求表與控制目標，但「在驗證什麼」一欄是作者對控制目標與小節標題用自己的話整理，不是官方措辭。</li>
+</ol>
+
+<h2 id="ref-sources">5. 引用的一手來源</h2>
+<h3>AISVS</h3>
+<ul>
+  <li>GitHub：<a href="https://github.com/OWASP/AISVS">github.com/OWASP/AISVS</a>；README：<a href="https://raw.githubusercontent.com/OWASP/AISVS/main/README.md">raw README</a>；RELEASE.md：<a href="https://github.com/OWASP/AISVS/blob/main/RELEASE.md">RELEASE.md</a></li>
+  <li>發布說明：<a href="https://github.com/OWASP/AISVS/releases/tag/v1.0">v1.0</a>、<a href="https://github.com/OWASP/AISVS/releases/tag/v1.01">v1.01</a></li>
+  <li>1.01 各章原始檔：<a href="https://github.com/OWASP/AISVS/tree/main/1.01/en">1.01/en</a>（本教材讀取 C1–C12）</li>
+  <li>owasp.org 專案頁：<a href="https://owasp.org/www-project-artificial-intelligence-security-verification-standard-aisvs-docs/">owasp.org/www-project-artificial-intelligence-security-verification-standard-aisvs-docs/</a></li>
+</ul>
+<h3>LLMSVS</h3>
+<ul>
+  <li>GitHub：<a href="https://github.com/OWASP/www-project-llm-verification-standard">github.com/OWASP/www-project-llm-verification-standard</a></li>
+  <li>文件：<a href="https://github.com/OWASP/www-project-llm-verification-standard/blob/main/LLMSVS-v2.0-en.md">LLMSVS-v2.0-en.md</a>、<a href="https://github.com/OWASP/www-project-llm-verification-standard/blob/main/LLMSVS-v2.1-draft-en.md">LLMSVS-v2.1-draft-en.md</a>（草稿）、<a href="https://github.com/OWASP/www-project-llm-verification-standard/blob/main/CHANGELOG.md">CHANGELOG.md</a></li>
+  <li>Releases：<a href="https://github.com/OWASP/www-project-llm-verification-standard/releases">releases</a></li>
+</ul>
+<h3>相鄰文件（僅用於對照）</h3>
+<ul>
+  <li>OWASP AI Testing Guide：<a href="https://owasp.org/www-project-ai-testing-guide/">owasp.org/www-project-ai-testing-guide/</a></li>
+  <li>OWASP Top 10 for LLM Applications 2026：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">2026/README.md</a></li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 1 章表 1-1 的「一句話角色」欄，與圖 1-1 的整個決策流程。</li>
+  <li>第 2 章表 2-2 的「在驗證什麼」欄；各章需求數與層級分佈（逐章計數，總和 213，與發布說明相符）；全體層級分佈 57／110／46；「C9 與 C10 合計 76 條」「C4 偏層級 3、C5 無層級 1」的觀察；以層級 2 為目標約 167 條的推算；「owasp.org 頁面落後」的判斷。</li>
+  <li>第 3 章表 3-2 的「控制目標一句話」；v2.0 勾選分佈（17／50／70）與「形式上是巢狀」的觀察；表 3-3 的比較整理。</li>
+  <li>第 4 章 4.1 節的三步流程與圖 4-1；表 4-1 的驗證方法與證據；表 4-2 的「廣度」列與廣窄比較；兩個虛構情境（A、B）。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>OWASP AISVS（含 README、各章與發布說明）：CC BY-SA 4.0。</li>
+  <li>OWASP LLMSVS（含 v2.0、v2.1 草稿、CHANGELOG）：CC BY-SA 4.0（LICENSE.md）。</li>
+  <li>OWASP Top 10 for LLM Applications 2026：CC BY-SA 4.0。</li>
+  <li>本教材以自己的話整理，短引用均標示來源與識別碼；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：OWASP AISVS、OWASP LLMSVS、OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Control Standard｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP Agent Control Standard (ACS) 主題首頁：學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="agent-control-standard" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>Agent Control Standard</h1>
+<ul class="meta-row">
+  <li>07 延伸主題｜主題 5</li>
+  <li>預估學習時間：約 45–55 分鐘（3 章閱讀約 22 分鐘；章末檢核與總測驗約 22–28 分鐘）</li>
+  <li>採用來源：genai.owasp.org 資源頁、GitHub 儲存庫 GenAI-Security-Project/agent-control-standard（README、規格文字、CHANGELOG、LICENSING、GOVERNANCE），2026-10-26 讀取</li>
+</ul>
+<p class="lead">前面的主題大多在談「Agent 可能出什麼事」。Agent Control Standard (ACS) 談的是另一件事：<strong>在 Agent 動手之前，讓另一個獨立的角色先看一眼、決定放不放行</strong>。這個主題帶你讀 ACS 的核心設計（Guardian 與 Observed Agent、鉤子 (hook)、五種處置），並特別留意兩件事：它的失敗姿態預設是「放行」，以及它自己承認「沒有人驗證符合性宣告」。學完後，你能說出 ACS 解決什麼問題、它有哪些關鍵設計取捨，以及為什麼這是一份<strong>仍在早期</strong>的規格。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>定位與成熟度：</strong>說明 ACS 是什麼、解決什麼問題、現行版本與成熟度（規格 v0.1.0、倉庫 0.1.4），以及「自行宣告、無人驗證」的限制。<br><small>對應：<a href="01-position.html">第 1 章</a></small></li>
+  <li id="lo2"><strong>核心設計：</strong>說明 Guardian 與 Observed Agent 的分工、鉤子的概念、五種處置，以及三支柱與符合性設定檔 (profile) 的關係。<br><small>對應：<a href="02-guardian-and-hooks.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>失敗姿態與取捨：</strong>解釋 fail-open 與 fail-closed 的差別、ACS 的預設值與理由，並判斷一個部署該怎麼設定。<br><small>對應：<a href="03-failure-posture.html">第 3 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>建議先讀 <a href="../../01-overview/ai-exchange/index.html">OWASP AI Exchange 主題</a>第 3 章（控制地圖），ACS 的角色類似其中的偵測與回應類控制。</li>
+  <li>建議先讀 <a href="../agentic-skills-top-10/index.html">Agentic Skills Top 10 主題</a>（本階段另一個主題），ACS 有針對技能生命週期的鉤子。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>（約 10 分鐘）。本主題用到預設拒絕、失效安全與縱深防禦。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="01-position.html">第 1 章　全貌與定位</a></span><span class="p-state" data-file="01-position.html"></span><span class="p-desc">ACS 是什麼、版本三處標示、自行宣告無人驗證、與 AIBOM 和 Observability 標準的關係。表 2 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="02-guardian-and-hooks.html">第 2 章　Guardian、鉤子與五種處置</a></span><span class="p-state" data-file="02-guardian-and-hooks.html"></span><span class="p-desc">兩個角色、Guardian 的兩層、鉤子、五種處置、三支柱與設定檔。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-failure-posture.html">第 3 章　失敗姿態與情境</a></span><span class="p-state" data-file="03-failure-posture.html"></span><span class="p-desc">fail-open 與 fail-closed、預設值的理由、參考實作自述的缺口；兩個情境，並與前面主題整合。情境 A、B。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（12 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO3，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">核對清單、版本與日期對照、授權、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>ACS 把「Agent 要做什麼」與「這件事該不該做」<strong>拆成兩個角色</strong>：被觀察的 Agent 在每個鉤子點先問，獨立的 Guardian 回答允許、拒絕、修改、詢問或延後。</li>
+  <li>它的<strong>預設失敗姿態是失效即放行 (Fail-open)</strong>：Guardian 掛了、逾時或不可達時，Agent 照常繼續（但必須留下稽核紀錄）。規格明說這是用強制力換可用性，可以改成拒絕。</li>
+  <li>它是<strong>早期規格</strong>：規格 v0.1.0、倉庫 0.1.4；符合性是自行宣告，v0.1.0 沒有人驗證；參考實作自己列出缺口（線路未認證）。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的類比、歸類或流程。</li>
+  <li>兩個情境（A、B）都是 <span class="tag fiction">虛構</span> 的公司與系統，不含可直接使用的攻擊手法。</li>
+  <li>ACS 是規格，不是已被驗證的產品。教材描述的是<strong>規格怎麼寫</strong>，不代表任何實作已經做到；參考實作自己列出的缺口會在第 3 章說明。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；無法使用時，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>圖表以本地 Mermaid 繪製；若圖沒有顯示，每張圖下方都有文字說明。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：ACS 儲存庫的規格與程式碼 — Apache-2.0；說明文件（docs 與 README）— CC BY-SA 4.0；genai.owasp.org 資源頁 — CC BY-SA 4.0。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜AI 輔助寫程式與模型營運安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AI 輔助寫程式與模型營運安全主題總測驗：15 題，涵蓋五個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="secure-coding-with-ai" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：AI 輔助寫程式與模型營運安全</h1>
+<ul class="meta-row">
+  <li>15 題（選擇題 6、情境判斷題 5、配對題 4）</li>
+  <li>預估時間：約 18 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO5</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–5 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位與版本：</strong>說出兩份速查表各自的讀者與守的迴圈，正確標示版本、日期與授權，並分辨控制清單與風險清單。</li>
+  <li><strong>開發迴圈的信任邊界：</strong>說出五類威脅來源，區分幻覺依賴與過期依賴，並判斷哪些文字會變成助理的指令。</li>
+  <li><strong>工具、沙箱與規則檔：</strong>收窄助理能碰到的工具、環境與憑證，並解釋規則檔為什麼要比照 CI/CD 管線審查。</li>
+  <li><strong>模型營運：</strong>把 Model Ops 九節放回生命週期，並判斷推論 API 的成本控制與執行期隔離該怎麼做。</li>
+  <li><strong>跨文件整合：</strong>分辨官方寫的對應與作者整理的對應，並把開發迴圈的疏漏與營運面的控制串成一條線。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：OWASP Cheat Sheet Series — CC BY-SA 4.0；OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-position.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-dev-loop-trust.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-tools-sandbox-rules.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-model-ops.html', a, '第 4 章 ' + l); };
+  var C5 = function (a, l) { return R('05-integration.html', a, '第 5 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位與版本 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('po-onepage', '1.1 表 1-1')],
+    stem: '下列哪一項最符合本教材對這兩份速查表版本與授權的記錄？',
+    options: [
+      { text: 'Secure Coding with AI 為 v1.0、Model Ops 為 v2.0，授權皆為 CC0。', why: '兩份都沒有版本號，授權是 CC BY-SA 4.0。' },
+      { text: '兩份都沒有版本號；Secure Coding with AI 首次提交 2026-05-05、Model Ops 首次提交 2025-08-08，兩份最後修改都是 2026-10-04；授權為 CC BY-SA 4.0。', correct: true, why: '符合表 1-1。' },
+      { text: '兩份都首次提交於 2025-08-08、最後修改於 2026-05-05。', why: '兩份的首次提交日不同，最後修改日也不是 2026-05-05。' },
+      { text: '授權為 CC BY-NC-SA 4.0，不可用於商業用途。', why: '網站頁尾與儲存庫 LICENSE 皆為 CC BY-SA 4.0，沒有 NC。' }
+    ],
+    summary: '無版本號；讀取日加首次提交日與最後修改日；CC BY-SA 4.0。' },
+
+  { id: 'q02', type: 'scn', lo: [1], refs: [C1('po-concept', '1.4 對引用的含意'), C4('mo-map', '4.1 表 4-1')],
+    stem: '依本教材，這份內部規範的引用方式有什麼問題？',
+    scenario: '天文科技（虛構）在 2026 年 3 月寫了一份規範：「依 Secure AI/ML Model Ops Cheat Sheet 第 6 節（監控與日誌），所有推論服務都要啟用漂移偵測。」現在新進審查員照規範去讀最新版第 6 節，看到的卻是 Runtime & Hardware Isolation（執行期與硬體隔離），不知道該以哪個為準。',
+    options: [
+      { text: '沒有問題，節號是固定的，審查員讀錯了。', why: '這兩份速查表的節號會變。' },
+      { text: '審查員應以舊版為準，因為新增的節不屬於正式內容。', why: '網站讀到的是最新版；舊版只在歷史紀錄裡。' },
+      { text: '節號會變：2026-05-15 新增「執行期與硬體隔離」成為第 6 節，原第 6–8 節順延為第 7–9 節（監控與日誌現為第 7 節）；規範只寫節號、沒有節名與讀取日，所以讀者對不上。應改成帶節名與讀取日的寫法。', correct: true, why: '符合 1.4 節與表 4-1。' },
+      { text: '問題在於文件被竄改，應通報 OWASP。', why: '這是正常的修訂，GitHub 提交紀錄有跡可循。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 兩份速查表沒有版本號，節號就是唯一的定位。(2) Model Ops 在 2026-05-15 插入「Runtime &amp; Hardware Isolation」，原第 6–8 節順延。(3) 規範寫於 3 月，當時第 6 節確實是監控與日誌。</p><p><strong>結論：</strong>引用要寫節名與讀取日，並定期對照最新版。對應教材：<a href="01-position.html#po-concept">1.4 節</a>、<a href="04-model-ops.html#mo-map">4.1 節</a>。</p>' },
+
+  { id: 'q03', type: 'mc', lo: [1], refs: [C1('po-concept', '1.4 核心概念')],
+    stem: '主管要求：「請證明我們符合 Secure Coding with AI Cheat Sheet。」依本教材，最恰當的回應是？',
+    options: [
+      { text: '速查表是實務建議，沒有可驗證的需求編號與層級；可以說明已實作哪些 Do 項目並留下證據，但要做符合性宣稱，應另用驗證標準（例如 AISVS）。', correct: true, why: '符合 1.4 節第 4 點：符合性是驗證標準的工作。' },
+      { text: '可以，文件結尾的 Top 10 對照表就是符合性證明。', why: '對照表只是索引，不是符合性宣稱，而且年份未標。' },
+      { text: '可以，Cheat Sheet 本身就是標準，照做就算符合。', why: 'Cheat Sheet 是實務建議，隨時會修訂，不是標準。' },
+      { text: '不行，因為速查表的授權禁止做符合性宣稱。', why: '授權是 CC BY-SA 4.0，與能否宣稱符合無關。' }
+    ],
+    summary: '速查表≠驗證標準；符合性宣稱要用驗證標準。' },
+
+  /* ================= LO2 開發迴圈的信任邊界 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C2('dl-deps', '2.2 表 2-2')],
+    stem: '依第 1、2 節，下列哪一項正確區分「幻覺依賴」與「過期依賴」的檢查？',
+    options: [
+      { text: '兩者都在合併前用弱點審計工具處理即可。', why: '剛被搶先註冊的惡意套件通常還不在漏洞資料庫裡，要先確認名稱確實存在且可信。' },
+      { text: '兩者都請助理再確認一次。', why: '助理正是出錯的來源，不能當成獨立的檢查。' },
+      { text: '幻覺依賴要在合併前審計，過期依賴要在安裝前查登錄。', why: '順序顛倒了：名稱要在安裝前查，版本要在合併前與 CI 審計。' },
+      { text: '幻覺依賴在安裝前查登錄（存在、建立日期、下載量、維護者）；過期依賴在合併前與每次 CI 跑弱點審計並固定版本。', correct: true, why: '符合表 2-2。' }
+    ],
+    summary: '名稱：安裝前查登錄；版本：合併前與 CI 審計。' },
+
+  { id: 'q05', type: 'scn', lo: [2], refs: [C2('dl-vectors', '2.3 表 2-3'), C2('dl-concept', '2.4 核心概念')],
+    stem: '依本教材，這個事件的核心問題是什麼？',
+    scenario: '柳營軟體（虛構）的開發者對助理說：「處理一下 PR 上的審查意見。」其中一則留言來自首次貢獻的外部人士，除了合理的命名建議，還夾帶一句針對助理的要求：順便把某個測試目錄的檢查關掉，說是為了加快 CI。助理照辦，開發者只看了命名建議那部分的 diff。',
+    options: [
+      { text: '助理的程式能力不足，換一個更強的模型就能解決。', why: '問題不在能力，而在助理把低權限者的文字當成指示執行。' },
+      { text: '審查意見是文件列的進入管道之一：文字來自低權限的外部人士，卻由握有開發者權限的助理執行；團隊缺少「處理外部內容後檢查助理實際動作」與限縮脈絡的做法。', correct: true, why: '符合 2.3 節與 2.4 節。' },
+      { text: '問題只在於命名建議不合理。', why: '命名建議是正常內容；問題在夾帶的指示與沒被檢查的動作。' },
+      { text: '把留言設為私人就不會發生。', why: '管道是助理「會去讀」的文字，與可見度無關；外部貢獻者的內容本來就要視為不可信。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 「處理審查意見」是文件第 3 節的第二條管道，審查意見可能要求改不相干的檔案或削弱安全控制。(2) 文字來自低權限的人，動作卻帶開發者的高權限。(3) 文件的建議：外部內容視為不可信、處理後檢查非預期變更、限縮脈絡、稽核助理的動作。</p><p><strong>結論：</strong>還原被關掉的檢查，之後在處理外部貢獻者內容時逐檔檢視助理的變更。對應教材：<a href="02-dev-loop-trust.html#dl-concept">2.4 節</a>。</p>' },
+
+  { id: 'q06', type: 'match', lo: [2], refs: [C2('dl-boundaries', '2.1 表 2-1')],
+    stem: '把下列描述配對到文件的五類威脅來源。',
+    cats: [
+      { id: 'repo', label: '倉庫內容' },
+      { id: 'mcp', label: 'MCP 伺服器' },
+      { id: 'rules', label: '規則檔' },
+      { id: 'cicd', label: 'CI/CD 助理' }
+    ],
+    items: [
+      { text: 'README 或 changelog 裡藏著人眼看不到、助理卻讀得到的指示', answer: 'repo', why: '倉庫內容：助理讀到就等於讀到指示。' },
+      { text: '核准後的工具定義被更新，行為悄悄改變', answer: 'mcp', why: 'MCP 伺服器：抽換 (Rug Pull)。' },
+      { text: '悄悄影響之後每一次生成，可被惡意 PR 或助理自己修改', answer: 'rules', why: '規則檔：持久化的指示來源。' },
+      { text: '依 PR 內容行動、同時握有組織機密與寫入權的審查機器人', answer: 'cicd', why: 'CI/CD 助理：文件稱為大規模的混淆代理人。' }
+    ],
+    summary: '五類威脅來源：倉庫內容、MCP 伺服器、規則檔、助理本身、CI/CD 助理。' },
+
+  /* ================= LO3 工具、沙箱與規則檔 ================= */
+  { id: 'q07', type: 'mc', lo: [3], refs: [C3('ts-concept', '3.3 核心概念')],
+    stem: '為什麼文件把規則檔當成「安全關鍵設定」，要求審查比照 CI/CD 管線的變更？',
+    options: [
+      { text: '因為規則檔是可執行檔，會被編譯進產品。', why: '規則檔是寫給助理讀的純文字，不是可執行檔。' },
+      { text: '因為規則檔只能由管理員建立。', why: '外部貢獻者的 PR 就可能新增或修改規則檔，這正是文件要防的情況。' },
+      { text: '因為它是具工作階段層級持久化效果的指示注入面：一次被改，之後每次互動都會讀到，改它的人控制之後的生成，包括削弱安全控制。', correct: true, why: '符合 3.3 節。' },
+      { text: '因為助理會把規則檔上傳到公開網站。', why: '文件沒有這樣說；風險在於規則檔被改後持續影響助理行為。' }
+    ],
+    summary: '規則檔：持久化的指示注入面，審查比照 CI/CD。' },
+
+  { id: 'q08', type: 'scn', lo: [3], refs: [C3('ts-narrow', '3.1 表 3-1')],
+    stem: '依第 4 節，這個團隊最缺哪些控制？',
+    scenario: '石碇網路（虛構）的開發者讓助理自動探索並連上團隊新出現的 MCP 伺服器。新連上的伺服器註冊了一個與既有「讀取檔案」工具同名的工具，描述中還夾帶針對助理的額外指示；一週後，同一伺服器又更新了工具的行為。',
+    options: [
+      { text: '核准清單且不讓助理自動探索連線；檢查工具描述有無隱藏指示；監看與正牌工具同名的工具；固定工具定義並做快照比對以抓出抽換；限制助理可呼叫的工具。', correct: true, why: '符合表 3-1 的 MCP 與工具各列。' },
+      { text: '把助理的 token 額度加大就能解決。', why: '額度與工具信任無關。' },
+      { text: '在規則檔寫一句「不要相信工具描述」就夠了。', why: '規則檔是文字，本身就是需要被管控的對象，不是強制的邊界。' },
+      { text: '只要把所有 MCP 工具全部停用，不需要其他控制。', why: '文件的做法是核准、固定與監看，而不是一律禁用；且沒有說明如何管理已用的工具。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 「自動探索並連上」違反第 4 節的 Don\'t。(2) 同名工具是工具名稱遮蔽 (Tool Shadowing)，文件要求監看。(3) 描述夾帶指示：描述是助理的脈絡，要審查。(4) 一週後行為改變：抽換，要固定定義並比對。</p><p><strong>結論：</strong>建立核准清單、停止自動連線，並對工具定義做快照比對。對應教材：<a href="03-tools-sandbox-rules.html#ts-narrow">3.1 節</a>。</p>' },
+
+  { id: 'q09', type: 'match', lo: [3], refs: [C3('ts-narrow', '3.1 表 3-1'), C3('ts-rules', '3.2 規則檔')],
+    stem: '把下列控制配對到它所屬的節。',
+    cats: [
+      { id: 's4', label: '第 4 節（MCP 與工具）' },
+      { id: 's5', label: '第 5 節（執行期沙箱）' },
+      { id: 's6', label: '第 6 節（規則檔）' }
+    ],
+    items: [
+      { text: '監看與正牌工具同名的工具', answer: 's4', why: '第 4 節：工具名稱遮蔽。' },
+      { text: '設定 CPU、記憶體與程序數上限', answer: 's5', why: '第 5 節：執行環境的資源上限。' },
+      { text: '稽核既有規則檔，找有沒有放寬檢查的內容', answer: 's6', why: '第 6 節：稽核現有規則檔。' },
+      { text: '不讓助理取得部署金鑰與組織層級機密', answer: 's5', why: '第 5 節：憑證與機密不給開發環境的助理。' }
+    ],
+    summary: '第 4 節管工具、第 5 節管環境與憑證、第 6 節管規則檔。' },
+
+  /* ================= LO4 模型營運 ================= */
+  { id: 'q10', type: 'match', lo: [4], refs: [C4('mo-map', '4.1 表 4-1'), C4('mo-api', '4.2 表 4-2')],
+    stem: '把下列描述配對到 Model Ops 提到的機制。',
+    cats: [
+      { id: 'shadow', label: '影子部署' },
+      { id: 'canary', label: '金絲雀發布' },
+      { id: 'cb', label: '熔斷器或緊急關閉開關' }
+    ],
+    items: [
+      { text: '候選模型在真實輸入上執行，但輸出不影響線上結果', answer: 'shadow', why: '第 8 節：影子部署 (Shadow Deployment)。' },
+      { text: '先把小比例流量導向新模型，有問題能快速回滾', answer: 'canary', why: '第 8 節：金絲雀發布 (Canary Release)。' },
+      { text: '成本、延遲或工具呼叫暴增時自動中止服務', answer: 'cb', why: '第 4 節：熔斷器或緊急關閉開關。' }
+    ],
+    summary: '影子部署看行為不上線；金絲雀小流量可回滾；熔斷處理失控當下。' },
+
+  { id: 'q11', type: 'scn', lo: [4], refs: [C4('mo-isolation', '4.3 核心概念')],
+    stem: '依第 6 節，這個平台最該怎麼改？',
+    scenario: '紅樹林運算（虛構）把兩家客戶的微調工作排在同一張 GPU 上，工作結束後只刪了容器，沒有清理暫存檔、快取與加速器記憶體。其中一家客戶的資料含有未公開的訓練資料。',
+    options: [
+      { text: '只要加密靜態檔案就足夠。', why: '加密靜態資料處理儲存，不處理執行期共用 GPU 的殘留。' },
+      { text: '只要為每家客戶設定不同的 API 權杖。', why: '權杖處理的是呼叫身分，不處理共用硬體上的記憶體殘留。' },
+      { text: '只要增加 GPU 數量，就會自動隔離。', why: '數量不等於隔離；互不信任的租戶仍可能共用資源。' },
+      { text: '互不信任的租戶不共用 GPU，除非平台提供硬體層的分割與記憶體隔離；工作之間清除暫存檔、快取與加速器記憶體（執行環境支援時），並驗證拆除確實清乾淨；高敏感工作改用微型虛擬機或專用節點。', correct: true, why: '符合 4.3 節的「切開」「不共用」「善後」。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 共用加速器加上殘留的暫存與記憶體，正是文件列的「薄弱的執行期隔離」：跨租戶資料外露與未授權存取加速器記憶體。(2) 第 6 節的建議：不信任的租戶不共用 GPU、工作之間清除、驗證拆除。(3) 高敏感工作用微型虛擬機、gVisor、Kata Containers、機密運算或專用節點。</p><p><strong>結論：</strong>改變排程與清除流程，必要時改用專用節點。對應教材：<a href="04-model-ops.html#mo-isolation">4.3 節</a>。</p>' },
+
+  { id: 'q12', type: 'mc', lo: [4], refs: [C4('mo-map', '4.1 表 4-1')],
+    stem: '依本章的觀察（作者整理，非官方），Model Ops 的 12 項常見問題中，哪一項沒有任何一節建議直接處理？',
+    options: [
+      { text: '寫死的機密（第 2 節直接處理）。', why: '第 2 節就是處理這一項。' },
+      { text: '孤兒部署：測試或已廢棄的模型留在正式環境；九節沒有一節直接寫到下線舊模型，最接近的是環境隔離與回滾。', correct: true, why: '符合 4.1 節的觀察。' },
+      { text: '不安全的 API（第 4 節直接處理）。', why: '第 4 節處理驗證、輸入、限速與成本。' },
+      { text: '開放的成品儲存（第 3 節直接處理）。', why: '第 3 節有存取控制的登錄庫與限制日誌存取。' }
+    ],
+    summary: '孤兒部署沒有直接對應的建議（作者觀察）。' },
+
+  /* ================= LO5 跨文件整合 ================= */
+  { id: 'q13', type: 'scn', lo: [5], refs: [C5('mp-scn', '5.3 情境'), C5('mp-rest', '5.1 表 5-1')],
+    stem: '依本章的串接，這個分工有什麼問題？',
+    scenario: '玉井科技（虛構）把兩份速查表分給兩個人：開發者只讀 Secure Coding with AI，MLOps 工程師只讀 Model Ops。MLOps 工程師說：「我們的模型登錄庫有存取控制和簽署，成品很安全。」但開發者的助理在自動接受模式下改了 CI 設定，讓簽署步驟被略過，審查者沒有逐檔看 diff，沒人發現。',
+    options: [
+      { text: '沒有問題，簽署與存取控制已經足夠。', why: '簽署只保護簽署之後的成品；被略過時成品沒有簽署。' },
+      { text: '問題只在 MLOps 沒讀第 14 節的人員問責。', why: '第 14 節重要，但這個事件的缺口在 CI 設定被改且未被標示。' },
+      { text: '開發迴圈的疏漏流進了營運面：CI 設定的變更要被審查與標示（SC 第 7、10 節），營運面也要確認成品確實經過簽署；兩份速查表要串成一條線讀（串接為作者整理，非官方）。', correct: true, why: '符合 5.3 節的串接與表 5-1。' },
+      { text: '問題在於 CI 不該使用任何助理。', why: '文件的做法是管控與審查，沒有說禁用。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 第 10 節把 CI/CD 設定列為要格外審查的檔案；第 7 節說審查者容易被任務描述錨定而漏看範圍外的修改。(2) 營運面的簽署與存取控制（Model Ops 第 3 節）只保護簽署之後的成品。(3) 因此缺口在兩份文件的接縫。</p><p><strong>結論：</strong>補上 CI 設定的審查與標示，營運面也確認成品經過簽署。對應教材：<a href="05-integration.html#mp-scn">5.3 節</a>。</p>' },
+
+  { id: 'q14', type: 'mc', lo: [5], refs: [C5('mp-map', '5.2 表 5-2')],
+    stem: '下列哪一項是兩份速查表「文件自己寫的」對應或指向，而不是本教材的整理？',
+    options: [
+      { text: 'Secure Coding with AI 結尾附有 OWASP Top 10 對照表，把第 6 節掛到 A05（年份未標）。', correct: true, why: '符合表 5-2 第二欄。' },
+      { text: 'Model Ops 的第 4 節明確引用 LLM06:2026 無限制消耗。', why: 'Model Ops 沒有引用 LLM Top 10；這個對應是作者整理。' },
+      { text: 'Secure Coding with AI 的第 6 節明確對應到 Agentic Skills Top 10。', why: '官方未對應；兩者概念相近是作者整理。' },
+      { text: 'Model Ops 的 12 項常見問題逐項標了 ML01–ML10 編號。', why: '文件沒有標 ML Top 10 編號。' }
+    ],
+    summary: '官方只寫了 Top 10 對照表與指向的其他 Cheat Sheet。' },
+
+  { id: 'q15', type: 'match', lo: [5], refs: [C5('mp-map', '5.2 表 5-2'), C5('ch5-key', '5.4 接下來讀什麼')],
+    stem: '把下列需求配對到本教材建議接續閱讀的主題（接續閱讀的配對為作者整理，非官方）。',
+    cats: [
+      { id: 'aibom', label: 'AIBOM 主題' },
+      { id: 'mcp', label: 'MCP 安全主題' },
+      { id: 'ir', label: '事件應變與 Deepfake 主題' }
+    ],
+    items: [
+      { text: '想為模型成品建立可追溯的物料清單', answer: 'aibom', why: '表 5-2：成品清單見 AIBOM 主題。' },
+      { text: '想審查並登錄一個第三方 MCP 伺服器', answer: 'mcp', why: '表 5-2：MCP 的審查與登記見 MCP 安全主題。' },
+      { text: '想了解 AI 事件發生後的應變流程', answer: 'ir', why: '表 5-2：事件應變的 AI 事件流程見事件應變與 Deepfake 主題。' }
+    ],
+    summary: '成品清單→AIBOM；MCP 審查→MCP 安全；事件流程→事件應變。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'secure-coding-with-ai', mode: 'final',
+    los: [
+      { n: 1, text: '定位與版本：說出兩份速查表各自的讀者與守的迴圈，正確標示版本、日期與授權，並分辨控制清單與風險清單。' },
+      { n: 2, text: '開發迴圈的信任邊界：說出五類威脅來源，區分幻覺依賴與過期依賴，並判斷哪些文字會變成助理的指令。' },
+      { n: 3, text: '工具、沙箱與規則檔：收窄助理能碰到的工具、環境與憑證，並解釋規則檔為什麼要比照 CI/CD 管線審查。' },
+      { n: 4, text: '模型營運：把 Model Ops 九節放回生命週期，並判斷推論 API 的成本控制與執行期隔離該怎麼做。' },
+      { n: 5, text: '跨文件整合：分辨官方寫的對應與作者整理的對應，並把開發迴圈的疏漏與營運面的控制串成一條線。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

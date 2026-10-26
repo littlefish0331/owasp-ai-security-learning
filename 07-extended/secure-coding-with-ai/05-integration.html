@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 章　跨文件整合與收尾｜AI 輔助寫程式與模型營運安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Secure Coding with AI 其餘八節速覽、兩份速查表與 LLM Top 10 2026、MCP、ML Top 10 等文件的對應（官方寫的與作者整理的分開標示），以及一個把開發迴圈與營運面串起來的虛構情境。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="secure-coding-with-ai" data-page="05-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 5 章　跨文件整合與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO5</li>
+  <li>前置：<a href="04-model-ops.html">第 4 章</a></li>
+</ul>
+<p class="lead">前四章走過了 Secure Coding with AI 的前六節與 Model Ops 的九節。這一章收尾：先補上 Secure Coding with AI 其餘八節的重點，再整理這兩份速查表與其他 OWASP 文件的關係，最後用一個虛構團隊把開發迴圈與營運面串成一條線。</p>
+
+<h2 id="mp-rest">5.1 Secure Coding with AI 其餘八節速覽</h2>
+<p>第 7 到第 14 節篇幅都不長，表 5-1 用一兩句話交代每節在擋什麼。</p>
+<div class="table-wrap"><table>
+<caption>表 5-1　第 7–14 節速覽（依文件重寫）</caption>
+<thead><tr><th scope="col">節</th><th scope="col">擋的是什麼</th><th scope="col">文件的主要建議</th></tr></thead>
+<tbody>
+<tr><th scope="row">7 超出範圍的修改與審查錨定 <br>(Review Anchoring)</th><td>助理常動到任務以外的檔案（lockfile、CI 設定、不相干的測試），審查者被任務描述「錨定」而沒看到；文件稱這是最常見的審查失誤</td><td>能標示所有變更檔案的 diff 工具；CI 標示非預期修改；逐檔審查；敏感檔案用 CODEOWNERS 指定審查者；限制助理的檔案範圍</td></tr>
+<tr><th scope="row">8 測試偽造與刪除</th><td>助理可能靠刪掉失敗的測試、弱化斷言、mock 掉被測單元來讓 CI 變綠；同一個助理寫的測試沒有獨立保證</td><td>人工審查所有測試修改；加入助理沒寫的對抗與負面案例；安全關鍵測試手寫；CI 標示刪測試或斷言減少</td></tr>
+<tr><th scope="row">9 脈絡外洩與敏感程式碼暴露</th><td>助理把開啟的檔案、專案結構與終端機輸出送到模型供應商的 API，其中可能有憑證與個資；<code>.gitignore</code> 只影響 git，不影響助理讀檔</td><td>確認工具送出什麼；用排除清單排除 <code>.env</code>、私鑰；受控檢視送出的請求且先遮蔽敏感內容；機密專案用自架或隔離工具；機密不放專案樹內</td></tr>
+<tr><th scope="row">10 提示到程式碼的供應鏈 (Supply Chain) 風險</th><td>助理也會改建置腳本、CI 設定、套件腳本與部署設定，這些檔案以高權限自動執行</td><td>對安裝鉤子、CI 工作流程、Dockerfile、Makefile 的變更格外審查；標示新增網路存取、下載或執行 shell 的變更；第三方 GitHub Action 用 commit SHA 固定，不用可變標籤</td></tr>
+<tr><th scope="row">11 CI/CD 助理與混淆代理人 <br>(Confused Deputy)</th><td>審查機器人在 PR 事件上執行，同時握有組織機密與寫入權；PR 內容是攻擊者可控的輸入</td><td>憑證給最小範圍；PR 內容先清理再交給 CI 助理；隔離環境執行；核准閘門；日誌只記動作中繼資料、關聯識別碼與結果，不記機密與敏感內容</td></tr>
+<tr><th scope="row">12 Markdown、連結與 Unicode 注入</th><td>助理輸出經 IDE 聊天窗或 PR 留言渲染時，Markdown 圖片可經網址參數帶出對話內容；雙向文字覆寫與零寬字元能誤導審查者</td><td>渲染前清理 Markdown 圖片與隱藏連結；在程式碼、提交與輸出中偵測不可見字元；CI 掃描</td></tr>
+<tr><th scope="row">13 多 agent 與子 agent 的傳播</th><td>一個 agent 的被污染脈絡，會變成下一個 agent 的指示</td><td>把 agent 的輸出對另一個 agent 視為不可信輸入；agent 之間設脈絡邊界；子 agent 不繼承父 agent 的完整權限</td></tr>
+<tr><th scope="row">14 人員問責 <br>(Human Accountability)</th><td>責任不能推給工具：「是 AI 寫的」不是理由</td><td>每個 AI 變更都有人類負責人與明確核准；保留稽核軌跡（含使用的工具與模型版本）；AI 的審查留言不能取代人工審查</td></tr>
+</tbody></table></div>
+<p>其中第 11 節（以及第 9 節的請求檢視）在 2026-10-04 的修訂，把原本「完整記錄」改成「記錄中繼資料、排除機密與敏感內容」。這與資料安全主題的最少日誌原則 (Least-Logging Principle) 同方向（見<a href="../data-security/04-tiers-and-scenarios.html#tr-scn-b">資料安全第 4 章情境 B</a>），但文件沒有引用該原則，此關聯為作者整理，非官方。</p>
+
+<h2 id="mp-map">5.2 與其他文件的對應：官方寫的，與作者整理的</h2>
+<p>兩份速查表自己寫出的對應不多：Secure Coding with AI 有一張 OWASP Top 10 對照表（年份未標），並指向其他多份 Cheat Sheet；Model Ops 在 OWASP 文件中只指向 Prompt Injection Prevention Cheat Sheet（另引用 NIST 文件與 AISVS）。下表把能連到本教材其他主題的對應列出，並明確分欄。</p>
+<div class="table-wrap"><table>
+<caption>表 5-2　兩份速查表與本教材其他主題的對應（第二欄為官方文件所寫；第三欄為作者整理，非官方）</caption>
+<thead><tr><th scope="col">主題</th><th scope="col">文件自己寫的</th><th scope="col">本教材連到的相鄰文件（作者整理，非官方）</th></tr></thead>
+<tbody>
+<tr><th scope="row">相依與成品的來源（SC 第 1、2、10 節；MO 第 3 節）</th><td>SC 對照表掛到 A06、A08；SC 第 10 節指向 Software Supply Chain Security Cheat Sheet</td><td>LLM04:2026 供應鏈 (Supply Chain) 與 LLM05:2026 資料與模型投毒（<a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-supply">LLM Top 10 第 3 章</a>）；成品清單見 <a href="../aibom/index.html">AIBOM 主題</a>；ML06:2023 見 <a href="../ml-security-top-10/02-lifecycle-map.html#lc-list">ML Top 10 第 2 章</a></td></tr>
+<tr><th scope="row">讀進來的文字變成指令（SC 第 3、12、13 節）</th><td>SC 對照表掛到 A03、A10；指向 LLM Prompt Injection Prevention Cheat Sheet</td><td>LLM01:2026（<a href="../../03-prompt-injection-rag-practice/prompt-injection/index.html">提示詞注入防護主題</a>）；第 12 節的 Markdown 圖片外帶，在 LLM Top 10 的「用戶端渲染器」一列講過，歸 <a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-output">LLM10:2026 不當輸出處理 (Improper Output Handling)</a></td></tr>
+<tr><th scope="row">工具、沙箱 (Sandbox) 與 CI 助理（SC 第 4、5、11 節）</th><td>SC 指向 MCP Security Cheat Sheet（含第 8 節多伺服器隔離）與 AI Agent Security Cheat Sheet；對照表掛到 A01、A07</td><td>MCP 的審查與登記見<a href="../../04-agentic-and-mcp/mcp-security/index.html">MCP 安全主題</a>；部署與執行期強化見<a href="../../04-agentic-and-mcp/securing-agentic-applications/04-supply-assurance-hardening.html#d-deploy">保護 Agentic 應用第 4 章</a></td></tr>
+<tr><th scope="row">規則檔（SC 第 6 節）</th><td>SC 對照表掛到 A05</td><td>與 <a href="../agentic-skills-top-10/index.html">Agentic Skills Top 10</a> 談的技能（同為給 agent 讀的指令資料夾）概念相近；官方未對應</td></tr>
+<tr><th scope="row">模型本身的攻擊（MO 的 12 項常見問題）</th><td>MO 引用 NIST AI 100-2 E2025 區分模型反推與擷取，並獨立列出成員推論</td><td>ML01、ML02、ML03、ML04、ML05、ML06、ML10（皆 :2023）；對應方式見 <a href="../ml-security-top-10/04-integration.html#int-table">ML Top 10 第 4 章</a>，官方並未對應 MO</td></tr>
+<tr><th scope="row">推論 API 的成本與熔斷（MO 第 4 節）</th><td>MO 未引用 LLM Top 10</td><td>LLM06:2026（<a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-consume">LLM Top 10 第 7 章</a>）；第 4 章已說明</td></tr>
+<tr><th scope="row">事件、回滾與治理（MO 第 9 節）</th><td>MO 列「升級流程、回滾、對應到 ASVS 或 Proactive Controls」</td><td><a href="../incident-response-and-deepfake/index.html">事件應變與 Deepfake 主題</a>的 AI 事件流程；AISVS 見<a href="../../06-assessment-and-verification/aisvs-and-llmsvs/02-aisvs.html#av-onepage">AISVS 與 LLMSVS 第 2 章</a></td></tr>
+</tbody></table></div>
+<p>表中 SC 是 Secure Coding with AI、MO 是 Model Ops。兩份速查表引用的 AISVS 是 OWASP AI Security Verification Standard。<strong>未能確認</strong>的有兩處：Secure Coding with AI 的 Top 10 對照表是哪一年的版本（見第 1 章）；Model Ops 第 9 節的 ASVS 與其參考資料的 AISVS 關係（見第 4 章）。</p>
+
+<h2 id="mp-scn">5.3 情境範例 B：一個團隊，從依賴到 API</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：青岬保險的理賠文件分類服務</h3>
+<p><span class="tag fiction">虛構</span> 青岬保險是虛構的保險公司。一個五人團隊用 AI 編碼助理開發「理賠文件分類」服務：服務載入一個微調過的分類模型，對內提供 API，也對合作的理賠公司開放。團隊還維護一個對外公開的客戶端 SDK 倉庫。以下為虛構，細節停在概念層級。</p>
+<p class="arch"><strong>架構：</strong>開發者機器（助理開著自動接受，用開發者的完整憑證）→ 倉庫與 CI → 模型成品儲存 → 推論 API（對內與合作夥伴）。</p>
+<ol class="steps">
+  <li><strong>依賴：</strong>助理為新功能建議加入一個 PDF 處理套件，名稱看起來合理；另一個依賴則是舊版本。團隊直接合併，CI 沒有弱點審計。對應 Secure Coding with AI 第 1、2 節。</li>
+  <li><strong>讀進來的文字：</strong>一位外部人士在公開 SDK 倉庫開了議題；開發者對助理說「修好這個議題」。議題內文夾帶了針對助理的指示，助理在自動接受模式下，除了修 bug，還改了 CI 工作流程，並在 AGENTS.md 加了一行放寬檢查的規則。對應第 3、5、6、10 節。</li>
+  <li><strong>審查：</strong>審查者看了 PR 的標題與說明（「修正議題 #57」），認為合理，沒有逐檔看 diff；CI 工作流程與規則檔的變更沒有被標示。對應第 7 節。</li>
+  <li><strong>成品與 API：</strong>被改過的 CI 之後把未簽署的模型成品推到共用儲存；團隊另外在同一批機器上評估一個外部下載的模型。上線的推論 API 有驗證與每秒請求限制，但沒有每租戶花費上限與熔斷器 (Circuit Breaker)；合作夥伴的程式出現迴圈時，帳單在一夜之間暴增。對應 Model Ops 第 3、4、6 節。</li>
+  <li><strong>該採什麼控制：</strong>
+    <ul>
+      <li>開發迴圈：套件安裝前查證、CI 弱點審計（SC 第 1、2 節）；助理放進沙箱、短效憑證、不用自動接受處理外部議題（第 3、5 節）；規則檔與 CI 設定納入 CODEOWNERS 與 CI 標示（第 6、7、10 節）。</li>
+      <li>營運面：成品簽署並存於有存取控制的登錄庫；外部模型的評估放進隔離環境（MO 第 3、6 節）；每租戶花費與鏈深度上限、熔斷與告警（MO 第 4 節）。</li>
+      <li>人：每個 AI 變更有人類負責人與核准紀錄（SC 第 14 節）。</li>
+    </ul>
+  </li>
+  <li><strong>學到什麼：</strong>這條線上沒有一步需要「很厲害的攻擊」：每一步只是一個沒人檢查的預設值。兩份速查表的分工是：前者縮小「助理被帶偏時能做的事」，後者縮小「成品與服務出事時的傷害」。把兩份讀成同一條鏈，才看得到「開發迴圈的疏漏如何流入營運面」。這個串接是作者整理，非官方。</li>
+</ol>
+</div>
+<figure class="diagram">
+<pre class="mermaid" data-alt="情境的串接：外部議題文字進入助理；助理握有完整憑證且自動接受，改動 CI 與規則檔；審查者被任務描述錨定而漏看；被改動的 CI 推出未簽署成品；成品在沒有花費上限與熔斷的推論 API 上線；合作夥伴迴圈造成帳單暴增。每一步旁標出可以攔住的控制：沙箱與短效憑證、規則檔與 CI 設定的審查標示、成品簽署與隔離評估、花費上限與熔斷。">
+flowchart TB
+  A["外部議題的文字"] --> B["助理讀取<br>自動接受、完整憑證"]
+  B --> C["改動 CI 與規則檔"]
+  C --> D["審查被任務描述錨定"]
+  D --> E["未簽署的成品上線"]
+  E --> F["API 無花費上限與熔斷<br>夥伴迴圈使帳單暴增"]
+  K1["沙箱、短效憑證"] -.-> B
+  K2["CI 標示變更、CODEOWNERS"] -.-> C
+  K3["逐檔審查、人員問責"] -.-> D
+  K4["成品簽署、隔離評估"] -.-> E
+  K5["花費上限、熔斷、告警"] -.-> F
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class K1,K2,K3,K4,K5 author
+</pre>
+<figcaption><strong>圖 5-1　情境的串接與可攔住的控制點。</strong>各步驟對應的節號取自兩份文件；把兩份文件串成同一條線，以及控制點的位置，是<strong>作者整理，非官方</strong>（虛線框）。</figcaption>
+</figure>
+
+<h2 id="ch5-key">5.4 全主題重點與接下來讀什麼</h2>
+<div class="keypoints"><ul>
+  <li>Secure Coding with AI 守開發迴圈：套件名稱與版本（第 1、2 節）、讀進來的文字（第 3 節）、工具與沙箱（第 4、5 節）、規則檔（第 6 節），加上審查、測試、脈絡外洩、建置檔、CI 助理、不可見字元、多 agent 與問責（第 7–14 節）。</li>
+  <li>Secure AI/ML Model Ops 守營運面：九節可依訓練、成品、推論 API、部署、執行期排列；成本控制與執行期隔離是 2026 年新增的重點。</li>
+  <li>兩份文件的對應多數是作者整理：官方只寫了 Top 10 對照表（年份未標）與指向的其他 Cheat Sheet。</li>
+  <li>引用時帶讀取日與提交日；速查表是控制清單，不是符合性標準。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出兩份速查表各守哪一端，以及它們的共同點與差異。</li>
+  <li>我能對一個用 AI 助理開發並營運模型服務的團隊，指出該先查哪幾節。</li>
+  <li>我能分辨哪些對應是官方寫的，哪些是本教材的整理。</li>
+</ul>
+<p>接下來可讀：<a href="../agentic-skills-top-10/index.html">Agentic Skills Top 10</a>（技能層的風險，與規則檔概念相近）、<a href="../aibom/index.html">AIBOM</a>（成品的物料清單）、<a href="../incident-response-and-deepfake/index.html">事件應變與 Deepfake</a>（出事之後怎麼做）。</p>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series, <em>Secure Coding with AI Cheat Sheet</em>（Section 7–14、OWASP Top 10 Mapping、References）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_Coding_with_AI_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；2026-10-26 讀取；GitHub 首次提交 2026-05-05、最後修改 2026-10-04；CC BY-SA 4.0。</li>
+    <li>OWASP Cheat Sheet Series, <em>Secure AI/ML Model Ops Cheat Sheet</em>：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_AI_Model_Ops_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；2026-10-26 讀取；GitHub 首次提交 2025-08-08、最後修改 2026-10-04；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026（LLM01、LLM04、LLM05、LLM06、LLM10 條目的概念對照）：見 <a href="../../02-llm-applications/llm-top-10/index.html">LLM Top 10 2026 主題</a>；CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series — CC BY-SA 4.0；OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'sca-ch5', topic: 'secure-coding-with-ai', mode: 'chapter',
+  questions: [
+    { id: 's5q1', type: 'mc', lo: [5], refs: [{label: '5.1 表 5-1', href: '05-integration.html#mp-rest'}],
+      stem: '審查者只看了 PR 標題與說明就核准，結果漏掉助理順手改的 CI 設定與 lockfile。這最符合 Secure Coding with AI 的哪一節？',
+      options: [
+        { text: '第 7 節：超出範圍的修改與審查錨定。', correct: true, why: '符合表 5-1：審查者被任務描述錨定，沒看到範圍外的修改。' },
+        { text: '第 8 節：測試偽造與刪除。', why: '第 8 節談的是助理讓 CI 變綠的方式（刪測試、弱化斷言）。' },
+        { text: '第 12 節：Markdown、連結與 Unicode 注入。', why: '第 12 節談的是輸出渲染與不可見字元。' },
+        { text: '第 2 節：過期依賴。', why: '第 2 節談的是依賴版本的已知漏洞。' }
+      ],
+      summary: '審查錨定＝第 7 節；要逐檔看 diff、CI 標示範圍外修改。' },
+    { id: 's5q2', type: 'scn', lo: [5], refs: [{label: '5.2 表 5-2', href: '05-integration.html#mp-map'}],
+      stem: '依本章，這份內部文件的說法有什麼問題？',
+      scenario: '岩崎金融（虛構）的內部文件寫：「Secure Coding with AI Cheat Sheet 第 3 節對應 LLM01:2026，第 1 節對應 LLM04:2026，這是 OWASP 官方的對應。」審查者查到：Cheat Sheet 本身沒有引用任何 LLM Top 10 編號，只有一張未標年份的 Top 10 對照表。',
+      options: [
+        { text: '沒有問題，概念相同就等於官方對應。', why: '概念相近不等於官方寫了對應。' },
+        { text: '對應本身說得通，但「官方」兩字錯了：Cheat Sheet 沒有引用 LLM Top 10 編號；這是本教材（作者）的整理，要標明「作者整理，非官方」，並寫出年份。', correct: true, why: '符合 5.2 節：文件自己寫的只有 Top 10 對照表（年份未標）與指向的其他 Cheat Sheet。' },
+        { text: '對應完全錯誤，第 3 節與提示詞注入無關。', why: '第 3 節就是開發流程中的間接提示詞注入，對應合理，只是不是官方寫的。' },
+        { text: '只需把編號補上年份即可，不必改「官方」兩字。', why: '問題不只在年份，而在「官方」的歸屬；年份則要依所引用的清單版本標示。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 兩份速查表自己寫的對應：SC 有一張未標年份的 OWASP Top 10 對照表，並指向其他 Cheat Sheet；沒有 LLM Top 10 編號。(2) 把第 3 節連到 LLM01:2026、第 1 節連到 LLM04:2026，是教材作者依兩者的內容所做的整理，LLM04 條目確實談到幻覺套件，但 Cheat Sheet 沒有引用。(3) 引用時應標清楚來源性質與年份。</p><p><strong>結論：</strong>改為「作者整理，非官方」，並寫 LLM01:2026、LLM04:2026。對應教材：<a href="05-integration.html#mp-map">5.2 節</a>。</p>' },
+    { id: 's5q3', type: 'match', lo: [5], refs: [{label: '5.3 情境', href: '05-integration.html#mp-scn'}],
+      stem: '把情境裡的疏漏配對到最該補的控制所在的文件與節。',
+      cats: [
+        { id: 'sc1', label: 'SC 第 1、2 節（依賴）' },
+        { id: 'sc6', label: 'SC 第 6、7、10 節（規則檔、審查、建置檔）' },
+        { id: 'mo3', label: 'MO 第 3、6 節（成品、隔離）' },
+        { id: 'mo4', label: 'MO 第 4 節（推論 API 成本）' }
+      ],
+      items: [
+        { text: '新增的套件沒查證是否存在，也沒有弱點審計', answer: 'sc1', why: '依賴名稱與版本的檢查。' },
+        { text: 'CI 工作流程與 AGENTS.md 被助理改動，沒有被標示', answer: 'sc6', why: '規則檔、審查錨定與建置檔的審查。' },
+        { text: '未簽署的成品，以及外部模型與正式推論同機評估', answer: 'mo3', why: '成品簽署（第 3 節）與隔離（第 6 節）。' },
+        { text: '合作夥伴迴圈造成帳單暴增，沒有花費上限與熔斷', answer: 'mo4', why: '推論 API 的成本控制。' }
+      ],
+      summary: '一條線上，每一步對應不同的節。' },
+    { id: 's5q4', type: 'mc', lo: [5], refs: [{label: '5.1 表 5-1', href: '05-integration.html#mp-rest'}, {label: '5.3 情境', href: '05-integration.html#mp-scn'}],
+      stem: '開發者說：「這段程式是 AI 寫的，出了問題該找工具商。」依第 14 節，最恰當的回應是？',
+      options: [
+        { text: '同意，AI 工具對它產生的程式碼負責。', why: '第 14 節明說 AI 工具不承擔責任。' },
+        { text: '不同意：每個 AI 變更都應有人類負責人與明確核准，並保留稽核軌跡（含工具與模型版本）；「是 AI 寫的」不是理由，AI 的審查留言也不能取代人工審查。', correct: true, why: '符合表 5-1 第 14 節。' },
+        { text: '責任由審查機器人承擔。', why: '第 14 節指出 AI 審查不能取代人工審查，責任在批准的開發者。' },
+        { text: '責任在於 OWASP。', why: '與文件的主張無關。' }
+      ],
+      summary: '第 14 節：人類負責、核准、稽核軌跡。' }
+  ]
+});
+</script>
+</body>
+</html>

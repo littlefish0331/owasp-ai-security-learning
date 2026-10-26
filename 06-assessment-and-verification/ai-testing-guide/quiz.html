@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜AI Testing Guide｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AI Testing Guide 主題總測驗：12 題，涵蓋四個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="ai-testing-guide" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：AI Testing Guide</h1>
+<ul class="meta-row">
+  <li>12 題（選擇題 4、情境判斷題 4、配對題 4）</li>
+  <li>預估時間：約 15 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO4</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–3 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位：</strong>說明 AI Testing Guide 是什麼、官方為什麼主張「可信度」，以及三個測試領域。</li>
+  <li><strong>方法與結構：</strong>說明威脅驅動的三步方法，以及四層共 32 項測試的組織方式。</li>
+  <li><strong>地圖的用法：</strong>從威脅模型挑出該跑的測試，並正確處理 LLM Top 10 的年份差異。</li>
+  <li><strong>限制與整合：</strong>說明黑箱測試 AI 的限制、灰／白箱所需資訊，並區分官方明載與作者整理的文件關係。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：OWASP AI Testing Guide — CC BY-SA 4.0（依儲存庫 LICENSE.md；GitHub 偵測值為 NOASSERTION）；OWASP AISVS、GenAI Red Teaming Manual — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-position.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-test-map.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-using-the-guide.html', a, '第 3 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('tg-concept', '1.2 可信度測試')],
+    stem: '下列哪一個說法最貼近 AI Testing Guide 對可信度測試的立場？',
+    options: [
+      { text: 'AI 系統只要通過所有紅隊演練就是可信的。', why: '紅隊演練屬於安全面；官方的可信度還包含隱私與負責任 AI，且指引也不等於紅隊演練。' },
+      { text: '安全測試是 AI 可信度的唯一必要條件。', why: '這正是官方要糾正的：安全不夠，可信度才是目標。' },
+      { text: '可信 AI 包含負責任 AI、資安 AI 與隱私 AI 三個領域，所以只做安全測試不夠。', correct: true, why: '符合 1.2 節：可信 AI = 負責任 AI + 資安 AI + 隱私 AI。' },
+      { text: 'AI 的行為不確定，所以無法被系統性地測試。', why: '官方的立場是需要可重複的測試方法，只是要處理非確定性。' }
+    ],
+    summary: '可信度 = 三領域；只測安全不夠。' },
+
+  { id: 'q02', type: 'scn', lo: [1, 2], refs: [C1('tg-method', '1.4 威脅驅動方法'), C1('tg-onepage', '1.1 一頁式全貌')],
+    stem: '依本教材，簡報中這段說明有哪些地方需要修正？',
+    scenario: '榮盛科技（虛構）的簡報寫道：「OWASP AI Testing Guide 是 GenAI Security Project 的八個 Initiatives 之一。使用方法是把 32 項測試全部跑一遍，並且保證它的內容與 2025 年 11 月公告的 v1 PDF 完全相同。」',
+    options: [
+      { text: '三處都沒有問題。', why: '三處都與教材的說明不符。' },
+      { text: '只有「八個 Initiatives 之一」需要修正。', why: '還有另外兩處問題。' },
+      { text: '三處都需要修正：它是獨立的 OWASP 孵化專案，不在八個 Initiatives 清單中；方法是威脅驅動地挑測試，不是全跑；與 v1 PDF 是否一致未能確認，不能保證。', correct: true, why: '對應 1.1 節（專案屬性與未能確認的 PDF 一致性）與 1.4 節（威脅驅動三步）。' },
+      { text: '只有「保證內容與 v1 PDF 完全相同」需要修正。', why: '前兩處也不正確。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 專案頁在 owasp.org，標示為 Incubator Project，程式與文件在 OWASP 組織的 GitHub 儲存庫，並不在 GenAI Security Project 的八個 Initiatives 清單中。(2) 官方方法是威脅建模 → 威脅對應 → 測試設計，依威脅挑測試。(3) 本教材依據 GitHub main（最近提交 2026-06-01），沒有下載 v1 PDF，所以與 PDF 是否一致未能確認。</p><p><strong>結論：</strong>簡報要改成：獨立的孵化專案；依威脅挑測試；引用時寫明依據的版本。對應教材：<a href="01-position.html#tg-onepage">1.1 節</a>、<a href="01-position.html#tg-method">1.4 節</a>。</p>' },
+
+  { id: 'q03', type: 'match', lo: [1], refs: [C1('tg-domains', '1.3 表 1-2')],
+    stem: '把下列關注點配對到它最主要所屬的測試領域（依官方原則章）。',
+    cats: [
+      { id: 'sec', label: '資安 (Security)' },
+      { id: 'pri', label: '隱私 (Privacy)' },
+      { id: 'rai', label: '負責任 AI (Responsible AI)' }
+    ],
+    items: [
+      { text: '偏見與公平性稽核', answer: 'rai', why: '官方把它列在負責任 AI 領域。' },
+      { text: '資料最小化、目的限制與同意管理的合規驗證', answer: 'pri', why: '官方把資料治理合規列在隱私領域。' },
+      { text: '把自動化的對抗與依賴掃描整合進 CI/CD', answer: 'sec', why: '官方在資安領域列了持續測試。' },
+      { text: '高影響決策的人在迴路與升級機制', answer: 'rai', why: '官方把人在迴路控制列在負責任 AI 領域。' }
+    ],
+    summary: '三領域各有關注點，一個測試可橫跨多個領域。' },
+
+  /* ================= LO2 方法與結構 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C1('tg-method', '1.4 威脅驅動方法')],
+    stem: '一位工程師想直接開始寫測試案例，跳過威脅建模與威脅對應。依官方的威脅驅動方法，最大的問題是什麼？',
+    options: [
+      { text: '沒有問題，測試案例越早寫越好。', why: '官方方法的前提就是先弄清楚哪些威脅最可能影響你的系統。' },
+      { text: '測試案例無法對應到系統的哪個元件、哪個威脅，容易漏測重要風險並浪費資源。', correct: true, why: '符合 1.4 節：先建模、再對應、再設計測試。' },
+      { text: '威脅建模只是形式，官方不要求。', why: '官方把威脅建模列為方法的第一步。' },
+      { text: '因為 AI 沒有威脅，所以只需要功能測試。', why: '與官方立場相反。' }
+    ],
+    summary: '先威脅建模，再對應，再設計測試。' },
+
+  { id: 'q05', type: 'match', lo: [2], refs: [C2('tm-list', '2.2 表 2-1、2-2')],
+    stem: '把下列測試配對到它所屬的層。',
+    cats: [
+      { id: 'app', label: '應用層 (APP)' },
+      { id: 'mod', label: '模型層 (MOD)' },
+      { id: 'inf', label: '基礎設施層 (INF)' },
+      { id: 'dat', label: '資料層 (DAT)' }
+    ],
+    items: [
+      { text: 'Agent 行為限制 (Agentic Behavior Limits)', answer: 'app', why: 'AITG-APP-06。' },
+      { text: '供應鏈竄改 (Supply Chain Tampering)', answer: 'inf', why: 'AITG-INF-01。' },
+      { text: '反推攻擊 (Inversion Attacks)', answer: 'mod', why: 'AITG-MOD-05。' },
+      { text: '資料最小化與同意 (Data Minimization & Consent)', answer: 'dat', why: 'AITG-DAT-05。' }
+    ],
+    summary: '依編號前綴判斷層：APP、MOD、INF、DAT。' },
+
+  { id: 'q06', type: 'mc', lo: [2], refs: [C2('tm-layers', '2.1 四層結構')],
+    stem: '四層測試的數量依序是（應用、模型、基礎設施、資料）：',
+    options: [
+      { text: '7、14、5、6', why: '把數量對錯了層。應用層最多。' },
+      { text: '6、5、14、7', why: '順序錯誤。' },
+      { text: '5、6、7、14', why: '順序與數量都不對。' },
+      { text: '14、7、6、5（共 32 項）', correct: true, why: '2.1 節：APP 14、MOD 7、INF 6、DAT 5。' }
+    ],
+    summary: '14 + 7 + 6 + 5 = 32。' },
+
+  /* ================= LO3 地圖的用法 ================= */
+  { id: 'q07', type: 'scn', lo: [3], refs: [C2('tm-year', '2.3 年份陷阱'), C2('tm-list', '2.2 表 2-1')],
+    stem: '依本教材，這位稽核員的對照有什麼問題？',
+    scenario: '星野製造（虛構）的風險登記冊使用 LLM Top 10 2026 標籤，其中有一筆「LLM03:2026 Excessive Agency」。稽核員查 AI Testing Guide 的測試頁，看到 AITG-APP-06 的參考資料寫「LLM06」，於是在登記冊寫下「LLM06」並認定與自己的 LLM03:2026 是同一筆，沒有問題。',
+    options: [
+      { text: '沒有問題，LLM06 與 LLM03 是同一個條目的不同寫法。', why: '兩者是不同年份對同一風險的不同編號，需要明確標年份，而不是當作同義寫法。' },
+      { text: '問題在於 APP-06 與 LLM06 的數字巧合，應該改成 APP-03。', why: 'AITG 的編號是測試自己的編號，與 LLM Top 10 的編號沒有對應關係。' },
+      { text: 'Threat Source 欄指的是 LLM Top 10 2025；LLM06 在 2025 版是 Excessive Agency，在 2026 版是 LLM03:2026。應以名稱比對，登記冊要註明年份。', correct: true, why: '對應 2.3 節：編號隨年份改變，用名稱比對並標年份。' },
+      { text: '問題是測試頁不應該引用任何 LLM Top 10 編號。', why: '引用編號是合理的，問題在於不同年份的編號不能直接混用。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 框架表的 Threat Source 寫 OWASP Top 10 LLM 2025，APP-06 頁面的參考資料用的也是 2025 版的 LLM06（頁面沒標年份）。(2) 2025 版的 Excessive Agency 是 LLM06；2026 版是 LLM03:2026。(3) 稽核員把兩個年份的編號當成同一個，容易在別的條目對錯（例如投毒是 04 變 05）。</p><p><strong>結論：</strong>登記冊以名稱連結，並註明各自的年份。對應教材：<a href="02-test-map.html#tm-year">2.3 節表 2-3</a>。</p>' },
+
+  { id: 'q08', type: 'mc', lo: [3], refs: [C2('tm-list', '2.2 表 2-2'), C2('tm-pick', '2.4 圖 2-1')],
+    stem: '你的系統使用第三方託管的 LLM，團隊拿不到模型訓練資料與微調環境。下列哪一項做法最符合本教材？',
+    options: [
+      { text: '把「被投毒的訓練集」與「微調投毒」測試標為通過，因為沒發現問題。', why: '碰不到就沒有「通過」可言；這會製造虛假的安心。' },
+      { text: '直接刪除這兩項測試，不留任何紀錄。', why: '應該保留紀錄並說明原因，讓審查者知道這是範圍外。' },
+      { text: '標示為不適用或超出控制並記錄理由，同時評估供應商管理是否涵蓋這類風險。', correct: true, why: '這是圖 2-1 與情境 A 的做法（作者整理）。' },
+      { text: '要求供應商把整個訓練資料集交給你。', why: '不切實際，也不是官方測試指引的要求。' }
+    ],
+    summary: '碰不到的測試標不適用並記錄理由，不標通過。' },
+
+  { id: 'q09', type: 'scn', lo: [3], refs: [C2('tm-scenario', '2.5 情境 A'), C2('tm-pick', '2.4 圖 2-1')],
+    stem: '依本教材的做法，澄雲客服的測試計畫最先該補上什麼？',
+    scenario: '澄雲客服（虛構）的助理會檢索客戶上傳的文件、再回答客服人員的問題，並能呼叫「建立退款申請」工具。測試計畫目前只列了：提示詞注入 (APP-01)、不安全輸出 (APP-05)、有毒輸出 (APP-12)。資安窗口發現計畫沒有任何測試處理「檢索來源的不可信內容」或「工具的授權與外掛邊界」。',
+    options: [
+      { text: '補上間接提示詞注入 (APP-02)、Agent 行為限制 (APP-06)、外掛邊界違反 (INF-03)，因為威脅來自檢索內容與工具呼叫。', correct: true, why: '威脅 → 元件 → 測試：檢索文件的間接注入、工具呼叫的授權與邊界。' },
+      { text: '補上規避攻擊 (MOD-01)，因為所有攻擊都是規避。', why: '規避攻擊是對模型輸入的對抗擾動，與檢索內容、工具呼叫的威脅不是同一類。' },
+      { text: '補上資料集多樣性與涵蓋 (DAT-03)，因為資料最重要。', why: '它處理資料集的代表性，不是文件被當成指令或工具被誘導的威脅。' },
+      { text: '不用補，因為 APP-01 已涵蓋所有提示詞相關的威脅。', why: 'APP-01 是直接提示詞注入；間接注入（APP-02）與工具行為限制（APP-06）是獨立的測試。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 客戶上傳的文件會被檢索進提示，屬外部不可信內容 → 間接提示詞注入 (APP-02)。(2) 助理能建立退款申請 → Agent 行為限制 (APP-06) 與外掛邊界違反 (INF-03)。(3) 授權檢查應放在工具後端、在 agent 控制之外，這是 APP-06 設計考量提醒的。</p><p><strong>結論：</strong>補上 APP-02、APP-06、INF-03。對應教材：<a href="02-test-map.html#tm-scenario">2.5 節</a>、<a href="02-test-map.html#tm-pick">2.4 節</a>。</p>' },
+
+  /* ================= LO4 限制與整合 ================= */
+  { id: 'q10', type: 'mc', lo: [4], refs: [C3('us-limits', '3.1 黑箱的五個限制')],
+    stem: '依官方框架章，下列哪一項「不是」純黑箱測試 LLM 系統時會遇到的限制？',
+    options: [
+      { text: '護欄本身常由 LLM 實作，使分析更複雜。', why: '這是官方列出的限制之一。' },
+      { text: '多代理系統的 token 成本可能很高，甚至造成 DoS／DoW。', why: '這是官方列出的限制之一。' },
+      { text: '模型是數值權重，不能像讀程式碼一樣判斷某類問題有沒有。', why: '這是官方列出的限制之一。' },
+      { text: '必須有 OWASP 發給的認證才能對 AI 系統做黑箱測試。', correct: true, why: '官方沒有這樣的要求；其餘三項都在 3.1 節。' }
+    ],
+    summary: '五個限制：無原始碼、難重現、護欄是 LLM、多代理成本、token 計費。' },
+
+  { id: 'q11', type: 'scn', lo: [4], refs: [C3('us-scenario', '3.3 情境 B'), C3('us-boxes', '3.2 表 3-1')],
+    stem: '依本教材，建豪（稽核員）在拿到預算後最合理的下一步是什麼？',
+    scenario: '霧嶺銀行（虛構）的對帳助理由三個 agent 串成，模型由外部供應商提供並按 token 計費。建豪原本計畫純黑箱、每項測試只跑一次。第一輪測試中，同一項檢查重複跑兩次，一次通過、一次沒有（結果不一定能重現）；前端也看不出是哪個 agent 出了問題。',
+    options: [
+      { text: '把兩次結果取平均當作最終結果。', why: '平均掩蓋了問題；應該重複並記錄條件，而不是平均。' },
+      { text: '取得應用日誌與供應商主控台唯讀存取，重複關鍵測試並記錄次數與模型設定，再算清 token 與門檻。', correct: true, why: '對應 3.1 節（難重現、多代理、token 成本）與 3.2 節三項需求。' },
+      { text: '放棄測試，因為 AI 無法被測試。', why: '官方的立場是限制可以透過方法與資訊來處理。' },
+      { text: '只選通過的那一次當作結果。', why: '選擇性呈現結果會誤導審查者。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 同一項檢查結果不同，符合「結果難以重現，需重複」（3.1 節第 2 點）。(2) 看不出哪個 agent 出錯，是黑箱看不到中間（第 4 點）。(3) 官方列出的三項需求：日誌、提示詞／架構／原始碼、主控台唯讀存取（3.2 節）。外部模型按 token 計費，要先算成本（第 5 點）。</p><p><strong>結論：</strong>補資訊、重複關鍵測試、記錄條件。對應教材：<a href="03-using-the-guide.html#us-limits">3.1 節</a>、<a href="03-using-the-guide.html#us-boxes">3.2 節</a>。</p>' },
+
+  { id: 'q12', type: 'match', lo: [4], refs: [C3('us-integration', '3.4 表 3-2')],
+    stem: '把下列關於文件關係的敘述，配對到它的性質。',
+    cats: [
+      { id: 'off', label: '官方明載' },
+      { id: 'auth', label: '作者整理，非官方' }
+    ],
+    items: [
+      { text: '本指引不取代、也不重複 NIST SP 800-115、OSSTMM、OWASP WSTG', answer: 'off', why: '官方 1.3 節明確寫出。' },
+      { text: 'AISVS 提供合格標準，本指引提供驗證方法，兩者是固定的分工', answer: 'auth', why: '這個分工說法是教材作者的推論。' },
+      { text: 'AISVS 1.01 發布說明指出，測試程序的指引指向 AI Testing Guide', answer: 'off', why: '官方（AISVS 發布說明）明載；出處是 AISVS，不是本指引。' },
+      { text: '圖 3-1 的評估接力流程（風險 → 測試／演練 → 評分 → 修補）', answer: 'auth', why: '圖 3-1 明標作者整理。' }
+    ],
+    summary: '區分官方明載與作者整理，是引用跨文件關係的基本功。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'ai-testing-guide', mode: 'final',
+    los: [
+      { n: 1, text: '定位：說明 AI Testing Guide 是什麼、官方為什麼主張「可信度」，以及三個測試領域。' },
+      { n: 2, text: '方法與結構：說明威脅驅動的三步方法，以及四層共 32 項測試的組織方式。' },
+      { n: 3, text: '地圖的用法：從威脅模型挑出該跑的測試，並正確處理 LLM Top 10 的年份差異。' },
+      { n: 4, text: '限制與整合：說明黑箱測試 AI 的限制、灰／白箱所需資訊，並區分官方明載與作者整理的文件關係。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

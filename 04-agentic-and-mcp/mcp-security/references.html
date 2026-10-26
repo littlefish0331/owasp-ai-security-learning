@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜MCP 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="MCP 安全主題的來源核對清單：採用的版本與日期、與調查筆記的差異（MCP06 改名、版本號）、授權矛盾、未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="mcp-security" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 6.1、6.2、6.3 節與第 8 節）</li>
+  <li><span class="tag nc">NC</span> MCP Top 10 的授權文字自相矛盾，保守視為非商業</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以作者回到一手來源重新核對：下載兩份官方 PDF（用瀏覽器標頭與 Referer）、clone MCP Top 10 與 Cheat Sheet Series 的 GitHub 倉庫讀取提交歷史，並比對 owasp.org 頁面。本頁列出採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。舊版資訊只出現在本頁。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">A Practical Guide for Secure MCP Server Development</th><td><strong>Version 1.0、February 2026</strong>；PDF 17 頁；資源頁 2026-02-16</td><td>PDF 封面；資源頁 February 16, 2026；網頁 datePublished 2026-02-17T00:03Z（UTC）；PDF 檔案建立 2026-02-17</td><td>CC BY-SA 4.0（PDF 封面）</td></tr>
+<tr><th scope="row">CheatSheet – A Practical Guide for Securely Using Third-Party MCP Servers</th><td><strong>Version 1.0、October 23, 2025</strong>；PDF 16 頁；資源頁 2025-11-04</td><td>PDF 封面 October 23, 2025；資源頁 November 4, 2025；PDF 檔案建立 2025-11-05</td><td>CC BY-SA 4.0（PDF 封面）</td></tr>
+<tr><th scope="row">MCP Security Cheat Sheet</th><td>無版本號；GitHub 提交紀錄：2026-10-04 建立 (commit 77b5b70)，<strong>最近修改 2026-10-16</strong> (commit 1a78ae3)</td><td><code>OWASP/CheatSheetSeries</code> 的 blobless clone（深度 200）的 <code>git log</code>；網頁抽取文字與 GitHub 原始 Markdown 比對</td><td>Cheat Sheet Series 網站標示為準（本教材未獨立核對該站授權頁）</td></tr>
+<tr><th scope="row">OWASP MCP Top 10</th><td>無版本號；條目皆標 2025；<strong>Beta（Phase 3）</strong>；GitHub 最近提交 2026-07-29（commit 165fe0f）；<code>index.md</code> 最近修改 2026-07-29</td><td>owasp.org 頁；GitHub 倉庫 clone（236 個提交）；<code>project.owasp.yaml</code> 為 <code>level: 2</code></td><td><strong>矛盾</strong>：<code>LICENSE.md</code>（2025-11-02）CC BY-SA 4.0；README 與 <code>index.md</code>（2025-11-21，較新）CC BY-NC-SA 4.0；GitHub 偵測 NOASSERTION</td></tr>
+<tr><th scope="row">MCP Top 10 Recommended Controls（2 份）</th><td>Client-Side Tool Risk Gating（2026-07-11）；MCPS Cryptographic Security Layer（2026-03-13）</td><td>倉庫 <code>2025/recommended-controls/</code> 與提交紀錄</td><td>隨 MCP Top 10；MCPS 倉庫自述 MIT（其自身專案，非本倉庫授權）</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">MCP06 名稱</th><td>"Prompt Injection via Contextual Payloads"（連結檔名為 Intent-Flow-Subversion，「與標題不同」）</td><td>GitHub <code>index.md</code>（2026-01-12 提交 "add-intent-flow-subversion"）、條目檔名與條目內標題皆為 <strong>Intent Flow Subversion</strong>；owasp.org 頁與 README 仍是舊名</td><td>採較新的 Intent Flow Subversion，標明舊名</td></tr>
+<tr><th scope="row">Server 開發指南版本</th><td>「無版本號；封面檔名含 Final，頁面未明載狀態」</td><td>PDF 封面明載 <strong>Version 1.0、February 2026</strong></td><td>採 Version 1.0</td></tr>
+<tr><th scope="row">第三方使用指南日期</th><td>「2025-11-04，版本 1.0」</td><td>資源頁 2025-11-04；PDF 封面 <strong>October 23, 2025</strong>，版本 1.0</td><td>兩個日期並記</td></tr>
+<tr><th scope="row">MCP Security Cheat Sheet 日期</th><td>「無日期與版本」</td><td>用 GitHub 提交紀錄補充：2026-10-04 建立，最近 2026-10-16（共 3 筆提交，深度 200 的歷史內）</td><td>標示「讀取日 2026-10-26，最近修改 2026-10-16」；不當作版本</td></tr>
+<tr><th scope="row">MCP Security Cheat Sheet 內容</th><td>「12 項最佳實務（…）」</td><td>屬實；本次讀 GitHub 原始 Markdown 還確認：2026-10-14 的修訂新增了「工具可用不等於已被同意」與「註記不可信」的段落</td><td>第 4 章採用最新版本內容</td></tr>
+<tr><th scope="row">MCP Top 10 授權</th><td>CC BY-NC-SA 4.0（owasp.org 頁）；「GitHub 偵測 NOASSERTION」</td><td>確認矛盾：同一句寫 CC BY-NC-SA 4.0 又寫 Attribution-ShareAlike；LICENSE.md 為 CC BY-SA 4.0</td><td>保守標 NC（沿用登記簿 U-C6）；不複製條目內文</td></tr>
+<tr><th scope="row">Recommended Controls</th><td>未提</td><td>倉庫另有 2 份 recommended-controls</td><td>第 5 章概述；列入未能確認</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">MCP06 名稱</th><td>owasp.org 頁、README：Prompt Injection via Contextual Payloads；<code>index.md</code>（2026-01-12 起）與條目檔：Intent Flow Subversion</td><td>採較新的 Intent Flow Subversion</td></tr>
+<tr><th scope="row">MCP Top 10 成熟度</th><td>owasp.org：「Production Project」；路線圖：Phase 3 Beta「We are here right now」；<code>project.owasp.yaml</code>：<code>level: 2</code></td><td><strong>未能確認</strong>標籤與階段的對應；教材採保守說法：Beta</td></tr>
+<tr><th scope="row">MCP Top 10 是否已有 2026 版</th><td><code>index.md</code>：「Next Release in October 2026」；倉庫無 2026 資料夾；最近提交 2026-07-29</td><td>採倉庫現況（條目皆標 2025）；是否已發布新版<strong>未能確認</strong></td></tr>
+<tr><th scope="row">MCP Top 10 授權</th><td>見 R-1</td><td>保守標 NC，僅引用名稱、編號與簡短描述；不複製條目內文</td></tr>
+<tr><th scope="row">第三方使用指南日期</th><td>封面 2025-10-23 vs. 資源頁 2025-11-04</td><td>兩者並記</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>MCP Top 10 的層級（Production／level 2）與 Beta 階段的對應：</strong>沿用登記簿 U-C10。</li>
+  <li><strong>MCP Top 10 是否已發布 2026 版：</strong>見表 R-3。</li>
+  <li><strong>MCP Top 10 的授權：</strong>沿用登記簿 U-C6；本教材還查了 <code>LICENSE.md</code> 的提交歷史（2025-11-02 更新為 CC BY-SA 4.0），仍無法判斷哪個才是有效標示。</li>
+  <li><strong>MCP Top 10 的條目內文只讀了 Description 段落與 MCP03、MCP09、MCP10 的細節：</strong>MCP01、02、04、05、06、07、08 的 Impact、檢查表與預防控制未逐項讀；教材第 2 章的分組與一句話是作者的概述，不是官方內文。</li>
+  <li><strong>兩個 Recommended Controls 的有效性與成熟度：</strong>本教材只讀了倉庫內的文件與涵蓋表，並確認涵蓋清單與條目一致（MCPS 自述涵蓋 8 項，不含 MCP05、MCP10；Tool Risk Gating 涵蓋 MCP02、03、06、08、09、10，不含 MCP01、04、05、07）；<strong>未實際測試或獨立查證</strong>，也未查證其參考實作。</li>
+  <li><strong>指南列舉的大量工具名稱</strong>（mcp-scan、Semgrep MCP Scanner、mcp-watch、mcp-context-protector 等）：官方舉例，本教材未查證其現況、授權或有效性；教材不背書、不逐一介紹。</li>
+  <li><strong>MCP 協定規格本身：</strong>Cheat Sheet 引用的 2026-07-28 版 MCP 規格，本教材未直接讀取；教材只轉述 Cheat Sheet 的說法。</li>
+  <li><strong>OWASP 名下其他 MCP 儲存庫</strong>（MCP Governance and Risk Project、Security Testing Guide、Taxonomy、Threat Modeling、Verification Standard）：<strong>本教材未核對其內容</strong>；筆記的描述（成熟度不一、部分幾乎為空）未經本教材驗證。</li>
+  <li><strong>AISVS 的 MCP Security 一章：</strong>筆記提到，本教材未核對。</li>
+  <li><strong>GitHub 提交歷史的深度：</strong>Cheat Sheet 的 clone 深度為 200，MCP Security Cheat Sheet 在該範圍內只有 3 筆提交；是否更早還有，未能確認（但檔案在 2026-10-04 才被建立，這個日期也由提交紀錄顯示）。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<ul>
+  <li>Secure MCP Server Development：<a href="https://genai.owasp.org/resource/a-practical-guide-for-secure-mcp-server-development/">https://genai.owasp.org/resource/a-practical-guide-for-secure-mcp-server-development/</a></li>
+  <li>第三方 MCP 使用 Cheat Sheet：<a href="https://genai.owasp.org/resource/cheatsheet-a-practical-guide-for-securely-using-third-party-mcp-servers-1-0/">https://genai.owasp.org/resource/cheatsheet-a-practical-guide-for-securely-using-third-party-mcp-servers-1-0/</a></li>
+  <li>MCP Security Cheat Sheet：<a href="https://cheatsheetseries.owasp.org/cheatsheets/MCP_Security_Cheat_Sheet.html">https://cheatsheetseries.owasp.org/cheatsheets/MCP_Security_Cheat_Sheet.html</a>；原始碼：<a href="https://github.com/OWASP/CheatSheetSeries">github.com/OWASP/CheatSheetSeries</a></li>
+  <li>OWASP MCP Top 10：<a href="https://owasp.org/www-project-mcp-top-10/">https://owasp.org/www-project-mcp-top-10/</a>；<a href="https://github.com/OWASP/www-project-mcp-top-10">https://github.com/OWASP/www-project-mcp-top-10</a></li>
+  <li>MCP Top 10 Recommended Controls：<a href="https://github.com/OWASP/www-project-mcp-top-10/tree/main/2025/recommended-controls">github.com/OWASP/www-project-mcp-top-10/tree/main/2025/recommended-controls</a></li>
+  <li>本階段其他主題：<a href="../agentic-threats-and-mitigations/references.html">Agentic 威脅與緩解</a>、<a href="../agentic-top-10-2026/references.html">Top 10 for Agentic Applications 2026</a>、<a href="../securing-agentic-applications/references.html">保護 Agentic 應用指南</a>。</li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 1 章圖 1-1 的「邊界 1／2／3」標法。</li>
+  <li>第 2 章表 2-1 的 A／B／C 分組、「一句話」概述，及表 2-2 的整張語意對照（官方沒有 MCP 對 ASI 或 LLM 的對照表）。</li>
+  <li>第 3 章 3.4 的「三個各自合理的決定組合起來」的歸納與情境 A 的設定。</li>
+  <li>第 5 章圖 5-1「先分角色、再補實務、再對照風險」的順序；圖 5-2 的四個主題關係；表 5-2 中 LLM Top 10 2026 對應。</li>
+  <li>暫譯：受信任登錄、影子 MCP 伺服器、工具投毒、抽換、工具遮蔽、權杖直通、最低標準。</li>
+  <li>所有 Mermaid 圖皆為依官方文字重新繪製的簡化版，不是官方原圖。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>Secure MCP Server Development 指南、第三方 MCP 使用 Cheat Sheet：PDF 封面標示 CC BY-SA 4.0。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>MCP Security Cheat Sheet：以 Cheat Sheet Series 網站標示為準。</li>
+  <li><span class="tag nc">NC</span> OWASP MCP Top 10：授權文字自相矛盾（LICENSE.md 為 CC BY-SA 4.0；README 與 index.md 為 CC BY-NC-SA 4.0）；<strong>本教材保守視為非商業授權</strong>，只引用名稱、編號與極簡描述，並明確標示哪些說明是作者自己整理的，不複製條目內文。若你要再散布或商業使用，請先自行確認授權。</li>
+  <li>PDF 封面的署名要求：必須包含專案名稱以及所參照資產的名稱；本教材已在各章「本章來源」標示。</li>
+  <li>Mermaid：MIT。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：Secure MCP Server Development 指南、第三方 MCP 使用 Cheat Sheet — CC BY-SA 4.0；MCP Security Cheat Sheet — Cheat Sheet Series 網站標示；Mermaid — MIT。<span class="tag nc">NC</span> OWASP MCP Top 10 的授權文字自相矛盾，本教材保守視為非商業授權，僅引用其名稱、編號與簡短描述。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

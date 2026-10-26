@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　生命週期的控制：設計、建置、營運｜保護 Agentic 應用指南｜OWASP AI 資安學習教材</title>
+<meta name="description" content="指南第 3 節把 agentic 應用的安全控制按生命週期分成設計與開發、建置與部署、營運與執行期三個階段：各階段做什麼、為什麼這樣分，以及兩個容易被忽略的設計：控制與資料平面分離、特權與隔離 LLM。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="securing-agentic-applications" data-page="02-lifecycle.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　生命週期的控制：設計、建置、營運</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-components-attack-surface.html">第 1 章</a></li>
+</ul>
+<p class="lead">指南第 3 節把「怎麼做」按軟體生命週期切成三段：<strong>設計與開發</strong>、<strong>建置與部署</strong>、<strong>營運與執行期</strong>。這樣分的用意很實際：有些控制必須在寫第一行程式前就決定（例如記憶要不要跨使用者），有些在上線前才能做，有些只能在系統跑起來後做。本章教你每個階段的重點，以及兩個最容易被漏掉、卻很決定性的設計。</p>
+
+<h2 id="l-phases">2.1 三個階段的重點</h2>
+<p>官方在每個階段的開頭有一段總結：agentic 系統除了 LLM Top 10 的風險，還引入新的攻擊面，包含持久記憶、自主規劃與突發行為；這些必須在<strong>設計時</strong>就考慮，包括定義「安全失敗」狀態、劃出整合邊界、制定記憶存取政策，以及在適用處放入人類把關。</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　生命週期三階段的控制（指南 3.1–3.3，改寫並分組；細項為官方編號）</caption>
+<thead><tr><th scope="col">階段</th><th scope="col">官方的重點</th><th scope="col">代表性控制（官方列舉的摘要）</th></tr></thead>
+<tbody>
+<tr><th scope="row">3.1 設計與開發</th><td>在寫程式前決定好邊界與失敗方式</td><td>3.1.2 系統提示詞強化（明確邊界、預設拒絕未列出的主題、用分隔符與結構化輸入、並<strong>以確定性控制限制 agent 能做的事</strong>）；3.1.3 安全寫碼（驗證所有輸入而非只驗工具參數、不外洩資訊的錯誤處理、機密管理、最小權限）；3.1.5 HITL 設計（以風險識別需核准的動作、清楚的審查介面、並加強速率限制以免壓垮人類）；3.1.6 記憶安全設計（存取控制、加密、寫入前驗證、PII 處理、人工審核記憶條目）；3.1.7 輸入輸出驗證（對輸入與輸出都套用護欄、結構描述強制、輸出淨化、安全渲染、資料最小化）；3.1.8 授權與驗證（辨識權限邊界、用既有身分與授權伺服器、判斷 agent 是代表使用者還是代表系統）</td></tr>
+<tr><th scope="row">3.2 建置與部署</th><td>管線與環境要能隔離失敗、約束工具、防止記憶損壞與漂移</td><td>3.2.1 SAST；3.2.2 SCA；3.2.3 環境強化與沙箱（容器、微型虛擬機、WebAssembly、受管沙箱；並<strong>禁止 agent 自己存取部署管線與組態</strong>）；3.2.4 組態管理（機密管理系統、憑證輪替、IaC 掃描）；3.2.5 部署前測試（提示介面模糊測試、API 模糊測試、針對威脅建模結果的滲透測試）；3.2.6 以記憶隔離達到執行期安全；3.2.7 控制與資料平面分離；3.2.8 即時 (JIT) 存取與短效憑證</td></tr>
+<tr><th scope="row">3.3 營運與執行期</th><td>持續的行為監控，遠超過效能指標；操作者要保有即時覆寫能力</td><td>3.3.1 持續監控與異常偵測（輸入輸出掃描、工具呼叫監控、計畫與執行監控、記憶異常偵測、多 agent 行為分析、串接 SIEM、自動異常回應）；3.3.2 執行期護欄（輸入輸出護欄、護欄位置、agent 間內容過濾、記憶 TTL、記憶淨化與 PII 遮罩、輸出淨化、內容安全政策）；3.3.3 日誌、稽核與可追溯性（集中式日誌、session 範圍標記、結構化日誌、trace ID、日誌完整性與最小權限、<strong>禁止寫入的敏感內容清單</strong>）；3.3.4 執行期弱點掃描；3.3.5 事件應變規劃</td></tr>
+</tbody></table></div>
+<p>三個階段的對應關係很好記：<strong>設計定邊界、建置定隔離、營運定觀測</strong>（<span class="tag author">作者整理，非官方</span>）。若你在營運階段才發現沒有日誌或沒有隔離，補救的成本通常最高，所以指南才把這些前移到設計與建置。</p>
+
+<h2 id="l-two">2.2 兩個容易漏掉的設計</h2>
+<p>在指南 3.2 節裡有兩條不起眼、卻針對 agent 特有問題的設計。</p>
+<div class="concept">
+<h3 id="c-plane">控制與資料平面分離，以及特權與隔離 LLM</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>(a) <strong>控制與資料平面分離 (3.2.7)</strong>：多 agent 協作時，agent 間的通訊要區分「控制訊息」（任務指派、命令）與「資料訊息」（共享資訊）；控制通道要有更強的驗證、授權與完整性檢查。(b) <strong>特權與隔離 LLM (3.2.6)</strong>：把「產生控制流程」的 LLM（特權 LLM，只看到可信的提示詞）與「處理不可信資料」的 LLM（隔離 LLM，沒有工具存取權）明確分開。指南舉 Google 的 CaMeL 為例。</dd>
+  <dt data-n="2">為什麼會需要</dt>
+  <dd>agent 處理不可信資料的那個元件，通常也是最容易被指示「做別的事」的元件。若它同時握有工具與控制權，一次污染就能發出惡意命令。指南的說法是：這讓你「不必只依賴模型的對齊」，而是用系統設計強制資料流。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>沒有分離時：一個處理外部文件的 agent，因文件內夾帶的指示而向同一個多 agent 系統的其他 agent 發出任務指派，這些指派被當成合法的控制訊息；或同一個 LLM 既讀不可信內容、又決定要呼叫哪些工具，使不可信內容直接影響工具參數。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>控制與資料走不同通道、控制通道強化驗證；用 API 或自訂直譯器，依細緻的能力與資料流追蹤，在執行工具呼叫前強制安全政策；讓不可信資料不能直接影響 agent 的動作或經未授權的工具參數外洩資訊。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「只要把系統提示詞寫好，就能阻止不可信內容影響行動。」指南的 3.1.2 同時說要「以確定性控制限制 agent 能做的事」，3.2.6 更是明說這類架構是在「即使底層 LLM 對提示詞注入脆弱」時仍提供縱深防禦。提示詞強化是必要但不足夠。</dd>
+</dl>
+</div>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="特權與隔離 LLM 的資料流：使用者的可信請求交給特權 LLM，它只看到可信提示詞並產生執行計畫；計畫由有政策與資料流追蹤的直譯器執行；需要讀取不可信內容時，交給沒有工具存取權的隔離 LLM 處理；隔離 LLM 的輸出作為資料，不能直接決定工具參數，要經過直譯器的政策檢查。">
+flowchart LR
+  U["可信請求"] --> P["特權 LLM<br>只看可信提示詞<br>產生計畫"]
+  P --> I["直譯器<br>政策與資料流追蹤"]
+  X["不可信內容<br>文件、網頁、郵件"] --> Q["隔離 LLM<br>沒有工具存取權"]
+  Q -->|"輸出只當資料"| I
+  I -->|"通過政策檢查才執行"| T["工具呼叫"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class X author
+</pre>
+<figcaption><strong>圖 2-1　特權與隔離 LLM 的資料流（依指南 3.2.6 重新繪製，並非官方原圖）。</strong>指南以 Google 的 CaMeL 為例說明此類設計；虛線框的「不可信內容」是作者標出的入口，是<strong>作者整理，非官方</strong>。</figcaption>
+</figure>
+
+<h2 id="l-trap">2.3 常見陷阱：護欄放在哪裡</h2>
+<p>指南在 3.3.2 提醒一件容易被忽略的事：<strong>護欄的位置會影響偵測效果</strong>。例如放在網路層（API 或 AI 閘道）的護欄，可能錯過多回合的提示詞注入，因為它看不到 session 歷史與脈絡；放在應用程式或 agent 程式碼裡的護欄，則有最完整的視野與脈絡。官方依層級描述：API 閘道（輸入層）負責確定性的輸入與存取控制；LLM（模型）負責對齊與行為規則；agent（推理與工具）負責工具權限、逐步驗證、記憶控制；輸出（後處理）負責最終輸出過濾與修正。多 agent 流程中，還要依 agent 對輸出的影響力放置，例如循序架構裡的最後一個 agent 會決定整個流程的輸出。</p>
+<p>這和你在 <a href="../../01-overview/ai-exchange/04-seven-layers.html">AI Exchange 的七層防線</a>看到的概念相通：不同層看到的資訊不同，單靠一層容易漏。</p>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>指南按生命週期分三段：設計與開發、建置與部署、營運與執行期；越早做的決定，越便宜也越有效。</li>
+  <li>記憶範圍、整合邊界、HITL 與「安全失敗」狀態都是設計階段的決定；系統提示詞強化要搭配確定性控制。</li>
+  <li>建置階段要隔離（沙箱）、管理機密、做部署前測試，並<strong>禁止 agent 存取自己的部署管線</strong>。</li>
+  <li>營運階段要觀測到「決策、計畫演進、記憶存取與工具互動」，日誌本身要有最小權限與不得寫入的敏感內容。</li>
+  <li>多 agent 要分離控制與資料平面；可把處理不可信資料的 LLM 與握有控制權的 LLM 分開。</li>
+</ul></div>
+<ul class="checklist">
+  <li>給我一個控制措施，我能說出它最適合在生命週期的哪個階段決定。</li>
+  <li>我能用自己的話解釋控制與資料平面分離，以及為什麼不能只靠提示詞強化。</li>
+  <li>我知道護欄的位置會影響偵測效果，並能舉一個網路層護欄的盲點。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-architectures-capabilities.html">第 3 章　三種架構與高風險能力</a>：單 agent、中央協調者、蜂群，各自的安全重點，以及程式碼執行、網頁使用、PC 操作等高風險能力的控制。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>Securing Agentic Applications Guide</em>, Version 1.0, July 28, 2025：<a href="https://genai.owasp.org/resource/securing-agentic-applications-guide-1-0/">資源頁</a>；2026-10-26 讀取；CC BY-SA 4.0。引用段落：3 Agentic Developer Guidelines（3.1、3.2、3.3，含 3.2.6、3.2.7、3.3.2、3.3.3）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Securing Agentic Applications Guide — CC BY-SA 4.0（PDF 封面）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'saa-ch2', topic: 'securing-agentic-applications', mode: 'chapter',
+  questions: [
+    { id: 'p2q1', type: 'match', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-lifecycle.html#l-phases'}],
+      stem: '把下列控制配對到指南的生命週期階段。',
+      cats: [
+        { id: 'design', label: '3.1 設計與開發' },
+        { id: 'build', label: '3.2 建置與部署' },
+        { id: 'ops', label: '3.3 營運與執行期' }
+      ],
+      items: [
+        { text: '決定記憶要不要跨使用者共享，並制定記憶存取政策', answer: 'design', why: '記憶安全設計屬 3.1.6，要在設計時決定。' },
+        { text: '在隔離的容器或微型虛擬機中執行 LLM 產生的程式碼，並禁止 agent 存取部署管線', answer: 'build', why: '屬 3.2.3 環境強化與沙箱。' },
+        { text: '串接 SIEM，並對工具呼叫頻率與參數做異常偵測', answer: 'ops', why: '屬 3.3.1 持續監控。' },
+        { text: '依風險決定哪些動作（寄信、改資料庫、執行程式碼、花錢）需要人核准', answer: 'design', why: '屬 3.1.5 HITL 設計。' }
+      ],
+      summary: '設計定邊界、建置定隔離、營運定觀測。' },
+    { id: 'p2q2', type: 'mc', lo: [2], refs: [{label: '2.2 核心概念', href: '02-lifecycle.html#c-plane'}],
+      stem: '依指南，把「處理不可信資料的 LLM」與「產生控制流程的 LLM」分開，最主要的目的是？',
+      options: [
+        { text: '讓兩個 LLM 互相驗證，提升回答品質。', why: '目的不是品質，而是控制資料流。' },
+        { text: '即使底層 LLM 對提示詞注入脆弱，也能用系統設計強制資料流，讓不可信資料不能直接影響 agent 的動作。', correct: true, why: '指南 3.2.6 的說法：不必只依賴模型對齊。' },
+        { text: '降低推論成本。', why: '指南沒有以成本為理由。' },
+        { text: '讓使用者不必核准任何動作。', why: '與 HITL 無直接關係；高風險動作仍需人核准。' }
+      ],
+      summary: '用架構而不是模型的自覺來阻擋不可信資料。' },
+    { id: 'p2q3', type: 'mc', lo: [2], refs: [{label: '2.3 護欄位置', href: '02-lifecycle.html#l-trap'}],
+      stem: '團隊把所有護欄都放在 API 閘道，並認為這樣最集中、最好管。依指南，這種做法有什麼盲點？',
+      options: [
+        { text: '閘道層的護欄完全無效。', why: '閘道層適合做確定性的輸入與存取控制，只是不能涵蓋所有威脅。' },
+        { text: '網路層護欄可能看不到 session 歷史與脈絡，因而錯過多回合的提示詞注入；放在應用或 agent 程式碼內的護欄視野最完整。', correct: true, why: '指南 3.3.2 的說明。' },
+        { text: '護欄放在哪裡都一樣。', why: '指南明說位置會影響偵測效果。' },
+        { text: '閘道只能處理輸出，不能處理輸入。', why: '官方把 API 閘道定位在輸入層。' }
+      ],
+      summary: '護欄的位置影響看到多少脈絡。' },
+    { id: 'p2q4', type: 'scn', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-lifecycle.html#l-phases'}, {label: '2.2 核心概念', href: '02-lifecycle.html#c-plane'}],
+      stem: '依本章，這個設計哪裡違反了指南的建議？該先改什麼？',
+      scenario: '蒼山物流（虛構）的多 agent 系統中，一個「文件摘要 agent」負責讀取供應商寄來的 PDF；它與「調度 agent」共用同一個訊息通道，兩者都能發出「任務指派」與「資料」兩種訊息，且通道沒有區分兩類訊息的驗證強度。資安經理說：「我們已經在系統提示詞裡寫了不得執行文件裡的指示。」',
+      options: [
+        { text: '沒有違反，系統提示詞已經足夠。', why: '指南明說提示詞強化要搭配確定性控制，且這類通道設計是為了在 LLM 對注入脆弱時仍有防線。' },
+        { text: '控制與資料沒有分離：處理不可信文件的 agent 能發出任務指派。應把控制訊息與資料訊息分流，控制通道加強驗證、授權與完整性檢查。', correct: true, why: '指南 3.2.7。' },
+        { text: '只要把所有 agent 合併成一個。', why: '這不是指南的建議，且單一 agent 一樣會處理不可信資料。' },
+        { text: '只要增加日誌即可。', why: '日誌屬營運階段的偵測，不能取代設計階段的通道分離。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 處理不可信文件的 agent 是最容易被「指示做別的事」的元件。(2) 它能在共用通道發出任務指派，意味著被污染一次就能向調度 agent 下令。(3) 指南的做法是分離控制與資料平面，控制通道要有更強的驗證、授權與完整性檢查。</p><p><strong>結論：</strong>先在設計上拆通道並強化控制通道，系統提示詞只是其中一層。對應教材：<a href="02-lifecycle.html#c-plane">2.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

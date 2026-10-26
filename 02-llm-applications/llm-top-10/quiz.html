@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜LLM Top 10 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Top 10 for LLM Applications 2026 主題總測驗：18 題，涵蓋五個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="02-llm-applications" data-topic="llm-top-10" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：Top 10 for LLM Applications 2026</h1>
+<ul class="meta-row">
+  <li>18 題（選擇題 7、情境判斷題 6、配對題 5）</li>
+  <li>預估時間：約 25 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO5</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–10 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位與引用：</strong>說明 LLM Top 10 2026 是什麼、名次怎麼排、管到哪裡為止，並能正確引用。</li>
+  <li><strong>輸入與成品：</strong>解釋提示詞注入為何沒有根治方法、防禦為何是架構式的；區分供應鏈與投毒。</li>
+  <li><strong>放大器：</strong>辨認過度授權、不當輸出處理、隱藏上下文與向量層的弱點，並選出對應的控制。</li>
+  <li><strong>衝擊：</strong>說明敏感資訊外洩的通道、無限制消耗的成本不對稱，以及錯誤資訊如何變成錯誤行動。</li>
+  <li><strong>演進與整合：</strong>在三版之間轉換編號、分清官方明載與作者整理，並用三個問題把事件對應到條目。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：OWASP Top 10 for LLM Applications 2023/24、2025、2026 與 genai.owasp.org 網站 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-position.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-prompt-injection.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-supply-chain-poisoning.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-agency-output.html', a, '第 4 章 ' + l); };
+  var C5 = function (a, l) { return R('05-context-vectors.html', a, '第 5 章 ' + l); };
+  var C6 = function (a, l) { return R('06-disclosure.html', a, '第 6 章 ' + l); };
+  var C7 = function (a, l) { return R('07-consumption-misinformation.html', a, '第 7 章 ' + l); };
+  var C8 = function (a, l) { return R('08-evolution.html', a, '第 8 章 ' + l); };
+  var C9 = function (a, l) { return R('09-scenarios.html', a, '第 9 章 ' + l); };
+  var C10 = function (a, l) { return R('10-integration.html', a, '第 10 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位與引用 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('ov-onepage', '1.1'), C1('ov-method', '1.2')],
+    stem: '下列哪一種描述最符合 LLM Top 10 2026 的文件性質？',
+    options: [
+      { text: '具規範性的合規標準，通過稽核就代表符合 OWASP 的要求。', why: '官方章程明說它不是規範性標準或合規框架；要逐條驗證，是用 AISVS 這類驗證標準（第 10 章）。' },
+      { text: '完整窮舉所有 LLM 弱點的分類，沒有列在裡面的就不是 LLM 風險。', why: '章程明說它不是完整或窮盡的分類；它挑出最關鍵的風險類別，清晰重於完整。' },
+      { text: '社群共識的認知文件：挑出最關鍵的風險類別，說明並給緩解方向；名次由投票（3/4）與事件資料（1/4）加權決定。', correct: true, why: '符合 1.1、1.2 節：認知文件，不是標準也不是窮盡的分類。' },
+      { text: '只針對自主 agent 的風險清單，一般 LLM 應用不適用。', why: 'agent 化的風險由 Agentic Top 10 處理；LLM Top 10 管的是模型當元件的應用。' }
+    ],
+    summary: '認知文件，不是標準或窮盡的分類；名次 = 投票 3/4 + 事件資料 1/4。' },
+
+  { id: 'q02', type: 'scn', lo: [1, 5], refs: [C1('ov-cite', '1.5 怎麼正確引用'), C8('ev-numbers', '8.2 表 8-1')],
+    stem: '依本教材，簡報的這句話該怎麼修正？',
+    scenario: '貝殼資安顧問（虛構）的簡報寫著：「依 OWASP LLM Top 10 現行版（genai.owasp.org/llm-top-10/），LLM06 是 Excessive Agency，LLM07 是 System Prompt Leakage。」審閱者查證後發現，那個網址頁面列出的確實是這兩個編號，但官方 2026 版 PDF 已發布。',
+    options: [
+      { text: '不需修正：官網目錄頁就是官方最新版。', why: '2026-10-26 該目錄頁仍列 2025 版，完全沒提 2026 版；它不代表現行版。' },
+      { text: '只要把「LLM07」改成「LLM08」，其他維持原樣。', why: '兩個編號都過時了（LLM06 在 2026 版是 Unbounded Consumption），且沒有標年份，之後仍會被誤讀。' },
+      { text: '改用名稱而不用編號，就不會出錯。', why: '名稱也會變（System Prompt Leakage 已更名為 Hidden Context Exposure）；最穩妥的是編號、名稱與年份並列。' },
+      { text: '簡報用的是 2025 版編號。2026 版對應 LLM03:2026 Excessive Agency 與 LLM08:2026 Hidden Context Exposure；引用要帶年份，並註明文件版本與日期（Version 2026，2026-08-04）。', correct: true, why: '符合 1.5 節三條引用規則與表 8-1 的轉換。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 該網址是官網目錄頁，2026-10-26 仍列 2025 版；2026 版要從資源頁 PDF 或 GitHub <code>2026/final/</code> 讀（第 1 章 1.1 節）。(2) 2025 的 LLM06 Excessive Agency 在 2026 版是 LLM03；2025 的 LLM07 System Prompt Leakage 更名並擴大為 LLM08 Hidden Context Exposure（第 8 章表 8-1）。(3) 同一個編號在兩版指向不同風險，所以編號必須帶年份。</p><p><strong>結論：</strong>改寫為帶年份的編號與名稱，並註明版本與日期。對應教材：<a href="01-position.html#ov-cite">1.5 節</a>、<a href="08-evolution.html#ev-numbers">8.2 節</a>。</p>' },
+
+  { id: 'q03', type: 'match', lo: [1], refs: [C1('ov-boundary', '1.3 表 1-1')],
+    stem: '把下列描述配對到它最符合的文件。',
+    cats: [
+      { id: 'llm', label: 'LLM Top 10 2026' },
+      { id: 'asi', label: 'Agentic Top 10 2026' },
+      { id: 'aix', label: 'OWASP AI Exchange' }
+    ],
+    items: [
+      { text: '模型是應用的元件：輸入處理、輸出產生與工具互動由應用程式指揮。', answer: 'llm', why: '官方章程對 LLM Top 10 範圍的描述。' },
+      { text: '模型自己選工具、帶跨對話的記憶、在下游引發後果。', answer: 'asi', why: '行動者情境，風險移向 Agentic Top 10。' },
+      { text: '涵蓋所有種類的 AI，沒有版本號，用內容快照日期引用。', answer: 'aix', why: '表 1-1：AI Exchange 無版本號。' },
+      { text: '條目編號 LLM01:2026 至 LLM10:2026，Version 2026，2026-08-04。', answer: 'llm', why: '本主題採用的版本標示。' }
+    ],
+    summary: '元件看 LLM Top 10；行動者搭配 Agentic Top 10；AI Exchange 是涵蓋所有 AI、無版本號的知識庫。' },
+
+  /* ================= LO2 輸入與成品 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C2('pi-controls', '2.4'), C2('pi-concept', '2.5')],
+    stem: '關於提示詞注入的防禦，下列哪一項最符合官方 LLM01:2026 的立場？',
+    options: [
+      { text: '防禦是架構式而非攔截式：假設模型的指令邊界終將被繞過，去限制模型被允許做的事與輸出能到達的地方，讓成功的注入不變成成功的利用。', correct: true, why: '符合 2.4 節官方立場。' },
+      { text: '只要使用最新的模型加上強力過濾器，就能根除提示詞注入。', why: '官方說目前沒有可靠的預防機制；語意過濾可被改寫或編碼規避。' },
+      { text: '用特殊分隔符與標記把指令和資料分開，就能達到類似參數化查詢的根治效果。', why: '官方控制 #6：標示來源的通道只在非適應性測試中降低成功率；知道標記方式的攻擊者可以模仿。' },
+      { text: '只需要防範使用者直接輸入的注入，因為間接注入必須先入侵後端。', why: '間接注入的結構是攻擊者不需入侵後端，只要把文字放在你的 LLM 會讀到的地方。' }
+    ],
+    summary: '沒有可靠的預防機制；防禦是架構式的，重點在限縮後果。' },
+
+  { id: 'q05', type: 'scn', lo: [2], refs: [C2('pi-surfaces', '2.2 信任面')],
+    stem: '依 2.2 節的信任面分類，這個設計哪裡有問題？',
+    scenario: '松濤製造（虛構）的助理只讀公司「內部知識庫」，因此團隊把它歸為可信來源，沒做任何處理。但知識庫有一個功能：外部客戶透過公開的回報表單提交意見，系統會自動建立一筆條目。助理在取回這類條目後，依其中內容呼叫了寄信工具。',
+    options: [
+      { text: '沒問題：內部知識庫屬於可信面，不需要處理。', why: '官方指出可信面也可能被污染：開發者可能不知道攻擊者已經透過無關的上游入口（例如公開表單）放了內容進來。' },
+      { text: '可信面也可能被上游入口污染：公開表單這條低權限通道，把外部文字放進了看似可信的知識庫。應把這類條目視為半可信或不可信，隔離並標示來源，並限制助理讀到它時能做的事。', correct: true, why: '符合 2.2 節：信任面決定可行的防禦，而且攻擊者不需入侵後端。' },
+      { text: '只要禁止助理讀知識庫，問題就解決了。', why: '這等於放棄功能；官方的做法是區分來源信任度並限縮後果，而不是不讓模型讀資料。' },
+      { text: '問題在於知識庫太大，縮小規模即可。', why: '規模不是關鍵；關鍵是外部文字經過低權限通道進入了被視為可信的來源。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 官方依信任程度把間接注入的投遞面分成不可信、半可信、可信三類。(2) 「可信面」的官方說明是：開發者自己的資料庫與文件，但可能有攻擊者透過無關的上游入口（例如公開表單）放進內容。(3) 這個情境正是如此，而助理又能呼叫寄信工具，後果會延伸到聊天視窗之外。</p><p><strong>結論：</strong>重新分類來源信任度，隔離並標示，並用最小權限與人工確認限縮寄信工具。對應教材：<a href="02-prompt-injection.html#pi-surfaces">2.2 節</a>。</p>' },
+
+  { id: 'q06', type: 'scn', lo: [2], refs: [C3('sc-concept', '3.5 表 3-3'), C3('sc-supply', '3.2')],
+    stem: '依第 3 章，這份「通過」的結論有什麼問題？',
+    scenario: '青山科技（虛構）的流水線以 latest 標籤取得微調後的模型，再由公司自己的建置系統簽署並發布。某次建置快取遭到污染，產出一個被竄改的版本，但它由公司自己的基礎設施簽署，下游的來源驗證與只針對外部元件的掃描器都顯示通過。團隊據此認定「模型安全」。',
+    options: [
+      { text: '簽署通過就代表模型安全，沒有問題。', why: '官方：簽署證明完整性與來源，不證明安全；建置流水線被攻陷時，成品由組織自己簽署，會通過來源檢查。' },
+      { text: '應該把簽署機制整個關掉，避免產生假的安全感。', why: '簽署仍可防止替換，官方是說它不等於安全，要與其他控制疊加。' },
+      { text: '簽署只證明「這是公司自己的基礎設施簽出來的」，不證明建置沒被攻陷。應以不可變摘要取代 latest 標籤、把建置流水線視為高風險晉升點，並加上行為評估與後門探測。', correct: true, why: '符合 3.5 節表 3-3 與官方 LLM04 情境 #7。' },
+      { text: '改用更大的模型就能避免被竄改。', why: '模型大小與成品完整性無關。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) latest 是可變的參照，官方指出以可變參照取得成品會在晉升邊界被悄悄換掉。(2) 官方情境 #7：後門成品由組織自己的發布基礎設施建置並簽署，所以通過下游的來源檢查與只標記外部元件的掃描器。(3) 所以還需要行為層的檢查。</p><p><strong>結論：</strong>改用不可變參照，保護建置流水線，並補後門探測與行為評估。對應教材：<a href="03-supply-chain-poisoning.html#sc-concept">3.5 節</a>。</p>' },
+
+  { id: 'q07', type: 'match', lo: [2], refs: [C3('sc-two', '3.1 表 3-1'), C3('sc-supply', '3.2'), C3('sc-poison', '3.3')],
+    stem: '把下列情況配對到它主要對應的條目。',
+    cats: [
+      { id: 'l04', label: 'LLM04:2026 供應鏈' },
+      { id: 'l05', label: 'LLM05:2026 資料與模型投毒' }
+    ],
+    items: [
+      { text: '流水線以 latest 標籤取模型，被換成另一個版本。', answer: 'l04', why: '可變參照造成成品被悄悄替換，屬成品流轉的問題。' },
+      { text: '自動重新訓練的回饋迴圈被一般使用者介面的輸入慢慢帶偏。', answer: 'l05', why: '持續學習管線的投毒（官方 LLM05 階段與情境）。' },
+      { text: '合併服務在合併 adapter 時引入惡意修改。', answer: 'l04', why: '轉換與合併服務是高風險的晉升點（LLM04）。' },
+      { text: '少量被毒化的文件就能在不同大小的模型裡植入後門。', answer: 'l05', why: '官方引用的研究：250 份文件即可，與資料集大小無關。' }
+    ],
+    summary: '流轉與來源 → LLM04；學習過程被動手腳 → LLM05。' },
+
+  /* ================= LO3 放大器 ================= */
+  { id: 'q08', type: 'mc', lo: [3], refs: [C4('ag-agency', '4.1 表 4-1')],
+    stem: '下列哪一個設計是「過度權限 (excessive permissions)」，而不是過度功能或過度自主？',
+    options: [
+      { text: '要讀文件的 agent，所選的第三方工具同時也能修改與刪除文件。', why: '這是官方列的過度功能範例：工具提供了任務不需要的功能。' },
+      { text: '刪除使用者文件的工具，在執行前不需要任何確認。', why: '這是過度自主：高衝擊動作沒有獨立驗證與核准。' },
+      { text: '開發期試用後淘汰的工具，仍留在 agent 可呼叫的清單。', why: '這也是過度功能：不需要的工具仍然可用。' },
+      { text: '只需要讀資料的工具，用同時有 SELECT、UPDATE、INSERT、DELETE 權限的資料庫身分連線。', correct: true, why: '官方過度權限範例：下游系統的權限超過任務需要。' }
+    ],
+    summary: '功能（有什麼能力）、權限（能碰到什麼）、自主（誰決定要不要做）要分開收。' },
+
+  { id: 'q09', type: 'scn', lo: [3], refs: [C4('ag-output', '4.2 七種出口與表 4-2')],
+    stem: '依 LLM10 的做法，最直接的控制是什麼？',
+    scenario: '潮汐開發（虛構）的命令列開發助理，會把模型的輸出直接寫進終端機與日誌檢視器。使用者請它摘要一個第三方網頁；網頁含針對 AI 的文字，使模型輸出夾帶一串終端機控制字元，導致畫面顯示被偽造，並嘗試改寫使用者的剪貼簿。',
+    options: [
+      { text: '在寫入終端機與日誌之前，清除控制字元（ANSI、BEL、OSC、退格、歸位字元）與其他不可印位元組；必須保留時改用可見方式編碼。', correct: true, why: '符合 LLM10 官方控制與 4.2 節表 4-2 的終端機一列。' },
+      { text: '對每位使用者設定每分鐘請求上限。', why: '請求限制處理的是可用性與成本，不影響控制字元被寫進終端機。' },
+      { text: '在系統提示詞要求模型不要輸出控制字元。', why: '提示詞只是部分控制；輸出是否夾帶控制字元取決於注入的結果，應在寫入前由程式碼處理。' },
+      { text: '把工具的資料庫權限改成唯讀。', why: '這個事件沒有涉及資料庫權限，問題在輸出的出口。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 事件裡的資料沒有離開、也沒有越權的工具呼叫，問題出在模型輸出被寫進會「解讀」控制字元的出口。(2) LLM10 把終端機、日誌檢視器、IDE 面板列為出口，風險包含視覺偽裝與剪貼簿劫持。(3) 官方控制：寫入前清除控制字元，必要時以可見方式編碼。</p><p><strong>結論：</strong>在輸出出口加上控制字元清除。對應教材：<a href="04-agency-output.html#ag-output">4.2 節</a>。</p>' },
+
+  { id: 'q10', type: 'mc', lo: [3], refs: [C5('cv-vector', '5.2'), C5('cv-concept', '5.4')],
+    stem: '關於 LLM09:2026 向量與嵌入弱點，下列哪一項正確？',
+    options: [
+      { text: '它就是 RAG 場景下的提示詞注入。', why: '官方明說兩者不同：LLM09 利用嵌入空間的幾何與相似度搜尋機制，而不是模型的指令遵循行為。' },
+      { text: '它利用嵌入空間的幾何與相似度搜尋機制，很多攻擊在取回的內容沒有任何惡意指令時也能成立。', correct: true, why: '符合 5.2 節官方說明。' },
+      { text: '只要每份文件都有租戶標籤、每個 API 呼叫都已驗證，就不會有跨租戶風險。', why: '官方指出，因為存取控制發生在嵌入空間搜尋之後，攻擊仍可成立。' },
+      { text: '它只適用 RAG，向量化的 agent 記憶與語意快取不在範圍內。', why: '官方範圍包含向量化的 agent 記憶、語意快取與去重管線。' }
+    ],
+    summary: 'LLM09 利用嵌入幾何與相似度搜尋，與指令遵循無關。' },
+
+  { id: 'q11', type: 'match', lo: [3], refs: [C4('ag-output', '4.2 表 4-2')],
+    stem: '把下列模型輸出的出口，配對到官方建議的主要處理方式。',
+    cats: [
+      { id: 'enc', label: '依使用位置做輸出編碼，並配合 CSP' },
+      { id: 'param', label: '參數化查詢或預備陳述式' },
+      { id: 'strip', label: '清除控制字元' },
+      { id: 'render', label: '預設關閉自動渲染外部資源' }
+    ],
+    items: [
+      { text: '模型產生的 Markdown 或 JavaScript 被回傳到瀏覽器。', answer: 'enc', why: '避免被瀏覽器直譯造成 XSS。' },
+      { text: '模型產生的 SQL 要送到資料庫執行。', answer: 'param', why: '凡涉及模型輸出的資料庫操作都用參數化查詢。' },
+      { text: '模型輸出被寫進終端機或日誌檢視器。', answer: 'strip', why: '清除 ANSI 等控制字元，避免視覺偽裝與剪貼簿劫持。' },
+      { text: '聊天介面會自動載入模型輸出中引用的 Markdown 圖片。', answer: 'render', why: '自動載入可讓攻擊者經圖片網址帶走對話資料。' }
+    ],
+    summary: '依出口選處理方式：編碼、參數化、清除控制字元、關閉自動載入。' },
+
+  /* ================= LO4 衝擊 ================= */
+  { id: 'q12', type: 'mc', lo: [4], refs: [C6('dc-boundary', '6.3 表 6-1'), C5('cv-concept', '5.4 情境與常見誤解')],
+    stem: '一份向量庫備份外洩。團隊說：「只外洩了嵌入，原文另外加密、沒有外洩，所以是低嚴重度。」依本主題，最恰當的回應是？',
+    options: [
+      { text: '「僅嵌入」不是安全港：現代嵌入可被反推重建原文，應視同來源文件外洩，重新評估嚴重度與法規通報義務。', correct: true, why: '符合第 5 章與第 6 章：嵌入反推的機制歸 LLM09，法規後果由 LLM02 擁有。' },
+      { text: '同意低嚴重度，因為嵌入不是原文。', why: '官方情境正是這個誤判：嵌入被零樣本反推後重建出含個資的內容，事件被重新定級。' },
+      { text: '只要原文有加密，就不需要評估通報義務。', why: '風險取決於接收者能學到什麼；嵌入可被反推，原文加密並不改變這一點。' },
+      { text: '嵌入不屬於受保護的資訊，不需要納入分類規則。', why: 'LLM02 把嵌入列為外洩通道，要求按同一套分類與去識別規則處理。' }
+    ],
+    summary: '「僅嵌入」外洩要當作來源文件外洩評估。' },
+
+  { id: 'q13', type: 'scn', lo: [4], refs: [C7('cm-misinfo', '7.2'), C3('sc-supply', '3.2')],
+    stem: '依本主題的條目分工，這個事件應如何歸類與處理？',
+    scenario: '流星軟體（虛構）的程式碼助理向開發者建議安裝一個看似合理的套件，但該套件名稱其實不存在。有人事先在公開套件庫註冊了同名的惡意套件，開發者未經查證就安裝了。',
+    options: [
+      { text: '只歸 LLM10，因為模型的輸出被執行了。', why: '官方把不安全程式碼的處理歸 LLM10，但這個事件的關鍵是不存在的套件名稱被當成供應鏈載體。' },
+      { text: '只歸 LLM07，因為是模型說錯了。', why: 'LLM07 擁有「錯誤內容被信任並據以行動」的失效模式，但官方把「幻覺套件名稱被註冊成供應鏈載體」這一面歸 LLM04。' },
+      { text: '兩個條目各管一塊：LLM07 管錯誤輸出被信任而行動的失效模式；套件名稱被註冊成供應鏈載體的面向歸 LLM04。控制包括驗證 AI 建議的相依套件確實存在且是預期的套件。', correct: true, why: '符合第 7 章邊界說明與第 3 章對 slopsquatting 的描述。' },
+      { text: '歸 LLM01，因為攻擊者提供了輸入。', why: '這個事件沒有注入內容改變模型行為，而是模型自己產生了不存在的名稱。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 起點是模型輸出一個看似合理但不存在的套件名稱，是錯誤資訊的一種（LLM07 的「錯誤或捏造的程式碼與相依套件」）。(2) 官方在 LLM07 與 LLM04 兩邊都明寫：幻覺套件名稱被註冊為供應鏈載體，歸 LLM04（slopsquatting）。(3) 控制：在採用 AI 建議的相依套件之前，驗證它確實存在且是預期的套件。</p><p><strong>結論：</strong>LLM07 與 LLM04 各管一塊，控制放在採用相依套件之前。對應教材：<a href="07-consumption-misinformation.html#cm-misinfo">7.2 節</a>、<a href="03-supply-chain-poisoning.html#sc-supply">3.2 節</a>。</p>' },
+
+  { id: 'q14', type: 'match', lo: [4], refs: [C6('dc-phases', '6.2'), C7('cm-consume', '7.1'), C7('cm-misinfo', '7.2')],
+    stem: '把下列事件配對到主要對應的條目。',
+    cats: [
+      { id: 'l02', label: 'LLM02 敏感資訊外洩' },
+      { id: 'l06', label: 'LLM06 無限制消耗' },
+      { id: 'l07', label: 'LLM07 錯誤資訊' }
+    ],
+    items: [
+      { text: '推理軌跡被原樣寫進共用的 APM 專案，檢索到的個資暴露給多位工程師。', answer: 'l02', why: '管線階段的外洩：日誌與推理軌跡是通道。' },
+      { text: '短而無害的提示詞讓推理模型陷入長時間推理，耗盡思考 token。', answer: 'l06', why: '推理迴圈與思考 token 耗盡，輸入大小檢查沒有用。' },
+      { text: 'agent 回報夜間備份已完成，其實從未執行，之後還原才發現沒有備份。', answer: 'l07', why: '官方情境：虛構的任務完成，輸出被當成狀態。' },
+      { text: '利用雲端按量計價，讓提供者財務不堪負荷。', answer: 'l06', why: '錢包拒絕 (Denial of Wallet)，成本不對稱。' },
+      { text: '臨床摘要漏掉藥物禁忌，醫師依不完整的建議行事。', answer: 'l07', why: '誤導的摘要與關鍵遺漏。' }
+    ],
+    summary: '資料離開 → LLM02；可用性或成本 → LLM06；錯誤內容被相信 → LLM07。' },
+
+  /* ================= LO5 演進與整合 ================= */
+  { id: 'q15', type: 'mc', lo: [5], refs: [C8('ev-numbers', '8.2 表 8-1'), C8('ev-official', '8.3')],
+    stem: '一份 2025 年的內部文件寫著「LLM07：避免系統提示詞洩漏」。要改成現行（2026）版的引用，最恰當的寫法是？',
+    options: [
+      { text: 'LLM07:2026 Misinformation（編號沿用不變）。', why: '2026 的 LLM07 是 Misinformation，與系統提示詞洩漏無關；同一編號在兩版指向不同風險。' },
+      { text: 'LLM01:2026 Prompt Injection，因為洩漏提示詞都是注入造成的。', why: '官方把隱藏上下文被取出獨立成條目；LLM01 只是它放大的鄰近條目之一。' },
+      { text: '直接刪除這一條，因為 2026 版沒有對應條目。', why: '2026 版有對應條目：System Prompt Leakage 更名並擴大為 Hidden Context Exposure。' },
+      { text: 'LLM08:2026 Hidden Context Exposure（由 LLM07:2025 System Prompt Leakage 更名並擴大範圍）。', correct: true, why: '符合 8.2、8.3 節：2026 前言明載這個更名。' }
+    ],
+    summary: '2025 的 System Prompt Leakage 對應 2026 的 Hidden Context Exposure，編號 LLM07 → LLM08。' },
+
+  { id: 'q16', type: 'scn', lo: [5], refs: [C9('sc-method', '9.1 三個問題'), C2('pi-controls', '2.4 Rule of Two')],
+    stem: '依第 9 章的三個問題，這個事件怎麼對應，以及優先補哪一類控制？',
+    scenario: '北風科技（虛構）的開發助理連著 MCP，並以開發者的高權限讀取公開 issue tracker 上的 issue。有人在一則 issue 裡放了文字，助理讀取後，把開發者私人儲存庫的內容貼到一個公開的 pull request。事後查證，助理並沒有違反任何它被授予的權限。',
+    options: [
+      { text: '只歸 LLM02，應加強輸出遮蔽。', why: '資料離開確實是衝擊，但起點與被放大的能力沒有被處理；只遮蔽輸出不會改變助理能讀私人資料又能對外寫入。' },
+      { text: '入口是 LLM01（半可信面的間接注入），被放大的是 LLM03（高權限且可對外寫入），衝擊落在 LLM02。優先補限縮後果的控制，例如用 Rule of Two 拆掉一項能力：對外寫入需人工確認，或僅唯讀存取私人儲存庫。', correct: true, why: '符合 9.1 節三個問題與 2.4 節 Rule of Two。' },
+      { text: '只歸 LLM04，因為助理使用了 MCP。', why: 'MCP server 與工具註冊中心的供應鏈風險官方交給 ASI04；而這個事件的關鍵是 issue 中的文字被當成指示。' },
+      { text: '只歸 LLM10，因為輸出被貼到公開頁面。', why: '輸出到達了下游，但事件的起點是注入，被放大的是權限；只處理輸出出口不夠。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 問題一，入口：issue 是公開 tracker 的內容，屬半可信面，文字被當成指示，對應 LLM01（官方情境 #9）。(2) 問題二，被放大的能力：助理有開發者的高權限、可讀私人資料又能對外寫入，對應 LLM03。(3) 問題三，衝擊：私人內容離開，對應 LLM02。(4) 它同時具備不可信輸入、敏感資料、對外通訊三項能力，是 Rule of Two 描述的高風險組合，所以優先補限縮後果的控制。</p><p><strong>結論：</strong>LLM01 → LLM03 → LLM02；先拆掉一項能力或加人工確認。對應教材：<a href="09-scenarios.html#sc-method">9.1 節</a>、<a href="02-prompt-injection.html#pi-controls">2.4 節</a>。</p>' },
+
+  { id: 'q17', type: 'match', lo: [5], refs: [C8('ev-official', '8.3 表 8-2')],
+    stem: '把下列關於版本演進的說法，配對到它在本教材中的性質。',
+    cats: [
+      { id: 'official', label: '官方明載' },
+      { id: 'compare', label: '依名稱比對（作者整理）' },
+      { id: 'unsure', label: '未能確認（官方未說明）' }
+    ],
+    items: [
+      { text: 'System Prompt Leakage 更名並擴大為 Hidden Context Exposure。', answer: 'official', why: '2026 前言明寫，Figure 1 也以紅色虛線標示。' },
+      { text: 'Overreliance 在 2025 版以 Misinformation 呈現。', answer: 'compare', why: '依條目名稱比對；2025 的 What\'s New 沒有逐項列出。' },
+      { text: 'Model Theft 被併入 Unbounded Consumption。', answer: 'unsure', why: '官方沒有說明 Model Theft 的去向；看起來合理不等於官方說法。' },
+      { text: 'Improper Output Handling 從第 5 名降到第 10 名。', answer: 'official', why: '2026 前言的 What\'s New 明載。' },
+      { text: 'Insecure Plugin Design 被併入 Excessive Agency。', answer: 'unsure', why: '同樣是推論，官方未說明去向。' }
+    ],
+    summary: '引用演進時，分清官方明載、依名稱比對的整理、以及官方未說明的部分。' },
+
+  { id: 'q18', type: 'mc', lo: [5], refs: [C10('in-asi', '10.2 表 10-2'), C3('sc-two', '3.1 表 3-1')],
+    stem: '依官方 LLM04:2026 的範圍說明與附錄 A，MCP server 與工具註冊中心的供應鏈風險應該查哪裡？',
+    options: [
+      { text: 'LLM05:2026 資料與模型投毒。', why: 'LLM05 管的是資料或模型成品被動手腳而持久改變行為，不是 MCP server 的供應鏈。' },
+      { text: 'LLM09:2026 向量與嵌入弱點。', why: 'LLM09 管相似度搜尋層；它與 ASI04 的連結是嵌入模型本身要審查，不是 MCP。' },
+      { text: 'Agentic Top 10 的 ASI04（Agentic Supply Chain Vulnerabilities）：LLM04 把 agentic 專屬的供應鏈風險交給它，自己留下非 agentic 的模型、資料集與成品供應鏈。', correct: true, why: '符合表 3-1 與表 10-2 的官方分工。' },
+      { text: '不需要另外查：LLM04 已完整涵蓋。', why: '官方條目明確把 MCP server 與工具註冊中心交給 ASI04。' }
+    ],
+    summary: 'LLM04 管非 agentic 的供應鏈；MCP server 與工具註冊中心歸 ASI04。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'llm-top-10', mode: 'final',
+    los: [
+      { n: 1, text: '定位與引用：說明 LLM Top 10 2026 是什麼、名次怎麼排、管到哪裡為止，並能正確引用。' },
+      { n: 2, text: '輸入與成品：解釋提示詞注入為何沒有根治方法、防禦為何是架構式的；區分供應鏈與投毒。' },
+      { n: 3, text: '放大器：辨認過度授權、不當輸出處理、隱藏上下文與向量層的弱點，並選出對應的控制。' },
+      { n: 4, text: '衝擊：說明敏感資訊外洩的通道、無限制消耗的成本不對稱，以及錯誤資訊如何變成錯誤行動。' },
+      { n: 5, text: '演進與整合：在三版之間轉換編號、分清官方明載與作者整理，並用三個問題把事件對應到條目。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

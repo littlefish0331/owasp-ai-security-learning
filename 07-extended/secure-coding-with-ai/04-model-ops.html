@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　模型營運的九節｜AI 輔助寫程式與模型營運安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Secure AI/ML Model Ops 的九個建議節，依訓練、成品、推論 API、部署、執行期的生命週期重新排列；推論 API 的成本與濫用控制；以及執行期與硬體隔離為什麼要依信任邊界切分。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="secure-coding-with-ai" data-page="04-model-ops.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　模型營運的九節</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="03-tools-sandbox-rules.html">第 3 章</a></li>
+</ul>
+<p class="lead">前三章守的是開發迴圈。這一章換到營運面：模型寫好之後，怎麼訓練、存放、對外提供、部署、在共用機器上跑。Secure AI/ML Model Ops 用九個編號節給建議，但排列不完全依生命週期。本章把九節重排成「訓練、成品、推論 API、部署、執行期」，並深入兩處：推論 API 的成本控制，以及第 6 節的執行期與硬體隔離。</p>
+
+<h2 id="mo-map">4.1 九節放回生命週期</h2>
+<p>文件在建議之前有兩段：「常見安全問題」12 項（資料投毒 (Data Poisoning)、模型反推與擷取、成員推論 (Membership Inference)、對抗樣本 (Adversarial Examples)、提示詞注入 (Prompt Injection)、不安全的 API、寫死的機密、未驗證的第三方模型、開放的成品儲存、缺少監控與漂移偵測、孤兒部署 (Orphaned Deployments)、薄弱的執行期隔離），以及 8 類「真實案例」（例如惡意模型檔、外洩的 API 金鑰、沒有驗證的 MLflow 實例）。表 4-1 把九節放進生命週期；右欄標出主要回應哪些問題，那一欄是<span class="tag author">作者整理，非官方</span>，文件沒有逐節對應。</p>
+<div class="table-wrap"><table>
+<caption>表 4-1　Secure AI/ML Model Ops 九節的生命週期位置（階段排法與右欄為作者整理，非官方）</caption>
+<thead><tr><th scope="col">節</th><th scope="col">階段</th><th scope="col">建議的重點（改寫）</th><th scope="col">主要回應的問題</th></tr></thead>
+<tbody>
+<tr><th scope="row">1 開發與訓練</th><td>訓練</td><td>管線版本控管、可稽核；驗證並清理訓練資料；資料敏感時用差分隱私 (Differential Privacy) 或匿名化；用容器等可重現環境</td><td>資料投毒；成員推論</td></tr>
+<tr><th scope="row">2 機密與設定</th><td>貫穿各階段</td><td>機密不寫在原始碼或 notebook；用機密管理服務，以環境變數或 CI 注入取用</td><td>寫死的機密</td></tr>
+<tr><th scope="row">3 模型儲存與成品</th><td>成品</td><td>存放在有存取控制的登錄庫；簽署模型檔；加密靜態權重與資料集；限制訓練日誌存取；第三方模型上線前驗證完整性與行為</td><td>未驗證的第三方模型；開放的成品儲存</td></tr>
+<tr><th scope="row">4 推論 API</th><td>推論 API</td><td>驗證授權；輸入驗證；速率限制與濫用偵測；LLM 用結構化提示範本；每租戶限額；遞迴與鏈深度上限；熔斷或緊急關閉；近即時告警（見 4.2）</td><td>不安全的 API</td></tr>
+<tr><th scope="row">5 部署與基礎設施</th><td>部署</td><td>強化容器、限制能力；CI/CD 含安全掃描；最小權限 (Least Privilege)；開發、預備、正式環境隔離</td><td>（廣義的誤設定）</td></tr>
+<tr><th scope="row">6 執行期與硬體隔離</th><td>執行期</td><td>依信任邊界 (Trust Boundary) 切開訓練、評估與推論；互不信任的租戶不共用 GPU；工作間清除暫存與加速器記憶體；不信任的工作放進沙箱 (Sandbox)（見 4.3）</td><td>薄弱的執行期隔離</td></tr>
+<tr><th scope="row">7 監控與日誌</th><td>上線後</td><td>看輸入分佈、輸出熵與延遲；偵測漂移 (Drift)；可追溯但避免記下敏感資料；異常用量告警</td><td>缺少監控與漂移偵測</td></tr>
+<tr><th scope="row">8 對抗式穩健性</th><td>上線前到上線</td><td>測試納入對抗樣本；穩健訓練；信心門檻；影子部署 (Shadow Deployment)；金絲雀發布 (Canary Release)</td><td>對抗樣本</td></tr>
+<tr><th scope="row">9 事件應變與治理</th><td>出事之後</td><td>升級流程；回滾機制；威脅對應到 ASVS 或 Proactive Controls for AI/ML</td><td>（各項的善後）</td></tr>
+</tbody></table></div>
+<figure class="diagram">
+<pre class="mermaid" data-alt="模型生命週期的五個階段由上而下：訓練（第 1 節，含機密第 2 節貫穿）、成品（第 3 節）、推論 API（第 4 節）、部署（第 5 節）、執行期（第 6 節）。第 7 節監控與日誌、第 8 節對抗式穩健性、第 9 節事件應變與治理橫跨後段，監控的告警接到事件應變，事件應變的回滾回到部署。">
+flowchart TB
+  T["訓練<br>第 1 節"] --> A["成品<br>第 3 節"]
+  A --> I["推論 API<br>第 4 節"]
+  I --> D["部署<br>第 5 節"]
+  D --> R["執行期<br>第 6 節"]
+  S["機密 第 2 節<br>貫穿各階段"] -.-> T
+  S -.-> D
+  M["監控 第 7 節"] -.-> R
+  M -- "告警" --> G["事件應變 第 9 節"]
+  G -- "回滾" --> D
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class T,A,I,D,R,S,M,G author
+</pre>
+<figcaption><strong>圖 4-1　九節在生命週期的位置。</strong>九節的內容與編號取自文件；把它們排成「訓練、成品、推論 API、部署、執行期」五段，以及監控、事件應變與回滾之間的連線，是<strong>作者整理，非官方</strong>（全部為虛線框）。第 8 節（對抗式穩健性）因橫跨上線前後，沒有畫進圖裡。</figcaption>
+</figure>
+<p>表 4-1 有三處可觀察（作者整理，非官方）。其一，「孤兒部署」沒有任何一節寫到把舊模型下線；最接近的是第 5 節的環境隔離與第 9 節的回滾。其二，提示詞注入主要由第 4 節的結構化提示範本直接處理，其餘交給 LLM Prompt Injection Prevention Cheat Sheet。其三，2026-10-04 的修訂把成員推論從模型反推中獨立出來並引用 NIST，與 <a href="../ml-security-top-10/02-lifecycle-map.html#lc-concept">ML Top 10 第 2 章</a>的辨析方式一致。</p>
+<p>第 1 節與第 3 節在 LLM 清單也有相鄰條目：訓練資料驗證對應<a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-poison">LLM05:2026 資料與模型投毒 (Data and Model Poisoning)</a>，成品簽署與第三方模型驗證對應 LLM04:2026（第 2 章已連結）。Cheat Sheet 沒有引用這些條目，對應為作者整理，非官方。</p>
+
+<h2 id="mo-api">4.2 推論 API：成本也是攻擊面</h2>
+<p>第 4 節有八條建議：前三條是任何對外 API 都該有的，第四條針對 LLM，後四條是 2026-05-05 新增的。這四條的共同點（作者整理，非官方）是：<strong>一次請求的代價不再固定</strong>，要防的不只是服務被打掛，還有帳單被打爆。表 4-2 依「防什麼」重新分組（分組為作者整理，非官方）。</p>
+<div class="table-wrap"><table>
+<caption>表 4-2　第 4 節八條建議的分組（建議取自文件；分組與「為什麼需要」欄為作者整理，非官方）</caption>
+<thead><tr><th scope="col">要防的事</th><th scope="col">文件的建議</th><th scope="col">為什麼需要</th></tr></thead>
+<tbody>
+<tr><th scope="row">誰能呼叫、送進什麼</th><td>驗證與授權（OAuth、API 權杖）；驗證並清理所有輸入；LLM 用結構化提示範本把指令與使用者輸入分開</td><td>公開且無驗證的端點，是 12 項問題之一</td></tr>
+<tr><th scope="row">呼叫多少、花多少</th><td>速率限制與濫用偵測（含機器人偵測、異常評分）；每租戶的 token、請求、並行與花費上限（減輕錢包拒絕 (Denial of Wallet) 風險）；agent 或工具呼叫流程的遞迴、重試與鏈深度上限</td><td>按量計費下，請求數相同的兩個使用者，成本可差很多倍；工具呼叫鏈會把一次請求放大</td></tr>
+<tr><th scope="row">失控時怎麼止血</th><td>異常的成本、延遲或工具呼叫暴增時，用熔斷器 (Circuit Breaker) 或緊急關閉開關 (Kill Switch)；近即時監控 token、請求與花費的遙測，突然變化就告警</td><td>限額是事先的天花板，熔斷與告警處理「已經超過預期」的當下</td></tr>
+</tbody></table></div>
+<p>這組建議與 <a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-consume">LLM06:2026 無限制消耗 (Unbounded Consumption)</a> 官方提出的控制高度重疊：token 感知的限制、硬性花費上限、agent 熔斷器、成本歸屬監控。Cheat Sheet 沒有引用 LLM06，對應為作者整理，非官方；為什麼只靠每秒請求數不夠，答案在 LLM Top 10 主題那一章。</p>
+
+<h2 id="mo-isolation">4.3 核心概念：依信任邊界隔離工作負載</h2>
+<div class="concept">
+<h3 id="c-isolate">執行期與硬體隔離</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>第 6 節是 2026-05-15 新增的，此前文件沒有獨立談執行期與硬體隔離。它處理的情況是：訓練、評估、正式推論共用同一批基礎設施，常常還共用 GPU 等加速器。文件把問題列為「薄弱的執行期隔離」，後果包括跨租戶資料外露、憑證重複使用、側通道外洩，以及未授權存取加速器記憶體。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>模型檔不只是資料。文件的案例之一是 <code>.pt</code> 或 <code>.pkl</code> 模型檔被放進管線，在反序列化時執行了夾帶的惡意程式。換句話說，<strong>你拿來「評估」「微調」或「轉換格式」的模型，可能本身就會執行程式</strong>；如果這些工作和正式推論跑在同一台機器、同一組憑證下，一個不可信的模型就能碰到正式環境。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>在不同信任等級的工作共用資源時：不信任的模型檔在評估時執行程式，再沿著容器的主機路徑掛載、容器 socket 或雲端的中繼資料服務往外爬；或前一個工作留下的暫存檔、快取與加速器記憶體被下一個租戶讀到。本教材不提供具體做法。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>文件的十條可整理成五組（整理為作者整理，非官方）：<strong>切開</strong>：依信任邊界分開訓練、評估與正式推論；高敏感模型與資料用微型虛擬機 (microVM)、gVisor、Kata Containers、機密運算 (Confidential Computing) 或專用節點。<strong>不共用</strong>：互不信任的租戶不共用 GPU，除非平台提供硬體層分割與記憶體隔離。<strong>收窄</strong>：不信任的評估、微調、轉換工作在沙箱中跑並限制網路出口；模型服務容器不開放主機路徑、容器 socket、雲端中繼資料服務；憑證只綁特定模型、端點與環境。<strong>限額</strong>：每個工作負載有 CPU、記憶體、GPU、磁碟、程序與網路上限，避免吵鬧鄰居 (Noisy Neighbor)。<strong>善後與監看</strong>：工作結束清掉暫存檔、快取與加速器記憶體並驗證；監控隔離失敗與對中繼資料端點的存取嘗試。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「有容器就有隔離。」文件分了層次：容器只是第一層，高敏感工作要用微型虛擬機或專用節點；而且「清除記憶體」寫的是「在執行環境支援時」，不是無條件保證。另一個誤解：「簽署過的模型可以放心在正式機評估。」簽署證明來源（第 3 節），不證明行為；文件另外要求上線前驗證行為。</dd>
+</dl>
+</div>
+
+<h2 id="mo-net">4.4 上線之後：第 7、8、9 節是一張安全網</h2>
+<p>最後三節不屬於某一階段，而是把前面的控制接起來：第 7 節看見異常，第 8 節在換模型時降低衝擊，第 9 節決定異常後怎麼辦。影子部署讓候選模型在真實輸入上跑、輸出不上線；金絲雀發布讓小比例流量先走新模型並能回滾；兩者在 2026-02-27 新增，目的是不影響真實使用者就能觀察模型行為。另外，第 9 節寫「OWASP ASVS 或 Proactive Controls for AI/ML」，參考資料卻列 AI Security Verification Standard (AISVS)：文件沒說這兩者是不是同一回事，<strong>未能確認</strong>（AISVS 見<a href="../../06-assessment-and-verification/aisvs-and-llmsvs/02-aisvs.html#av-onepage">AISVS 與 LLMSVS 第 2 章</a>）。</p>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>九節可依「訓練（1、2）、成品（3）、推論 API（4）、部署（5）、執行期（6）」排列，7、8、9 橫跨整個上線後的安全網；排法為作者整理。</li>
+  <li>第 4 節的後四條處理成本面：每租戶限額、遞迴與鏈深度上限、熔斷或緊急關閉、近即時告警；與 LLM06:2026 的官方控制重疊，但文件沒有引用。</li>
+  <li>第 6 節（2026-05-15 新增）：模型檔本身可能執行程式，所以不信任的評估、微調與轉換要與正式推論隔開，並依信任邊界切分資源、憑證與加速器。</li>
+  <li>九節沒有一節直接寫到「下線舊模型」；第 9 節的 ASVS 與參考資料的 AISVS 是否同一回事，文件沒說明。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能把九節放回生命週期，並說出每段對應哪些節。</li>
+  <li>我能說明為什麼推論 API 需要每租戶限額加熔斷，而不只是速率限制。</li>
+  <li>我能說明為什麼評估一個外來模型要放進沙箱。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p><a href="05-integration.html">第 5 章　跨文件整合與收尾</a>：用一個虛構團隊把開發迴圈與營運面串起來，並整理與其他 OWASP 文件的對應。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series, <em>Secure AI/ML Model Ops Cheat Sheet</em>（Common Security Issues、Real-World Examples、Security Recommendations 第 1–9 節）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_AI_Model_Ops_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；2026-10-26 讀取；GitHub 首次提交 2025-08-08、最後修改 2026-10-04（共 7 個提交；第 3 節的第三方模型驗證 2026-02-26、影子部署與金絲雀發布 2026-02-27、第 4 節的成本控制 2026-05-05、執行期與硬體隔離（含「薄弱的執行期隔離」）2026-05-15、成員推論 2026-10-04）；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026（LLM05、LLM06 條目的概念對照）：見 <a href="../../02-llm-applications/llm-top-10/index.html">LLM Top 10 2026 主題</a>；CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series — CC BY-SA 4.0；OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'sca-ch4', topic: 'secure-coding-with-ai', mode: 'chapter',
+  questions: [
+    { id: 's4q1', type: 'match', lo: [4], refs: [{label: '4.1 表 4-1', href: '04-model-ops.html#mo-map'}],
+      stem: '把下列建議配對到它所在的生命週期階段（依本章表 4-1 的排法）。',
+      cats: [
+        { id: 'train', label: '訓練' },
+        { id: 'artifact', label: '成品' },
+        { id: 'api', label: '推論 API' },
+        { id: 'runtime', label: '執行期' }
+      ],
+      items: [
+        { text: '驗證並清理訓練資料，管線要版本控管', answer: 'train', why: '第 1 節。' },
+        { text: '簽署模型檔，存放在有存取控制的登錄庫', answer: 'artifact', why: '第 3 節。' },
+        { text: '每租戶設定 token、請求、並行與花費上限', answer: 'api', why: '第 4 節的成本控制。' },
+        { text: '互不信任的租戶之間不共用 GPU，工作結束清除加速器記憶體', answer: 'runtime', why: '第 6 節。' }
+      ],
+      summary: '訓練 1、成品 3、推論 API 4、執行期 6。' },
+    { id: 's4q2', type: 'scn', lo: [4], refs: [{label: '4.2 表 4-2', href: '04-model-ops.html#mo-api'}],
+      stem: '依第 4 節，這個團隊缺了哪一類控制？',
+      scenario: '蘭陽雲端（虛構）提供 LLM 推論服務，已有 API 權杖驗證與每秒請求數限制。某合作夥伴的 agent 程式出現迴圈，每次請求都觸發數十次工具呼叫與重試，一晚上用掉整月的預算；請求速率始終在限制之內，沒有任何告警。',
+      options: [
+        { text: '缺的是更嚴格的每秒請求數限制。', why: '請求速率本來就在限制內；問題在於單次請求被放大，以及沒有花費層級的天花板。' },
+        { text: '缺成本面的控制：每租戶的 token 與花費上限、遞迴與鏈深度上限、遇到成本或工具呼叫暴增時的熔斷器或緊急關閉開關，以及近即時的用量告警。', correct: true, why: '符合表 4-2 的「呼叫多少、花多少」與「失控時怎麼止血」。' },
+        { text: '缺的是加密模型權重。', why: '加密靜態權重屬第 3 節，與這次帳單失控無關。' },
+        { text: '缺的是金絲雀發布。', why: '金絲雀發布用於導入新模型時控制風險，不是用量失控的控制。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 驗證和每秒請求數限制只處理「誰能呼叫、多快」，不處理單次請求的代價。(2) 第 4 節後四條：每租戶用量與花費上限、遞迴／重試／鏈深度上限、熔斷或緊急關閉開關、近即時告警，正是為這種放大而設。(3) 這也是錢包拒絕 (Denial of Wallet) 的樣貌。</p><p><strong>結論：</strong>補上花費與鏈深度上限、熔斷與告警。對應教材：<a href="04-model-ops.html#mo-api">4.2 節</a>。</p>' },
+    { id: 's4q3', type: 'mc', lo: [4], refs: [{label: '4.3 核心概念', href: '04-model-ops.html#mo-isolation'}],
+      stem: '團隊想在正式推論的同一批機器上，先評估一個從外部下載的 .pkl 模型檔再決定要不要採用。依第 6 節的邏輯，最恰當的做法是？',
+      options: [
+        { text: '直接在正式機上評估，因為模型檔只是資料。', why: '文件的案例指出模型檔在反序列化時可以執行程式，不只是資料。' },
+        { text: '把評估放進沙箱或隔離的 worker，限制網路出口，不開放主機路徑、容器 socket 與雲端中繼資料服務，憑證只給它評估所需的最小範圍。', correct: true, why: '符合 4.3 節「收窄」與「切開」。' },
+        { text: '只要模型檔有簽章，就可以在正式機評估。', why: '簽章證明來源，不證明行為；仍要隔離，也要驗證行為。' },
+        { text: '只要加密磁碟就足夠。', why: '加密靜態資料處理的是儲存，不是執行時的隔離。' }
+      ],
+      summary: '不信任的評估、微調、轉換要放沙箱，與正式推論隔開。' },
+    { id: 's4q4', type: 'mc', lo: [4], refs: [{label: '4.1 觀察', href: '04-model-ops.html#mo-map'}, {label: '4.4 安全網', href: '04-model-ops.html#mo-net'}],
+      stem: '關於 Secure AI/ML Model Ops 與它引用的標準，下列哪一項與本章的說法一致？',
+      options: [
+        { text: '第 9 節寫的 ASVS 就是 AISVS，文件已明確說明。', why: '文件只寫了「OWASP ASVS 或 Proactive Controls for AI/ML」，參考資料列 AISVS，兩者關係沒有說明。' },
+        { text: '第 9 節寫的是把威脅對應到「OWASP ASVS 或 Proactive Controls for AI/ML」，參考資料列的是 AISVS；兩者是否同一回事，文件沒說明，未能確認。', correct: true, why: '符合 4.4 節。' },
+        { text: '九節都有一條直接處理「把舊模型下線」的建議。', why: '九節沒有一節直接寫到下線舊模型；最接近的是環境隔離與回滾。' },
+        { text: '文件逐節標明了回應 12 項問題中的哪一項。', why: '文件沒有逐節對應；表 4-1 的最右欄是作者整理。' }
+      ],
+      summary: 'ASVS／AISVS 的關係未能確認；孤兒部署沒有直接的建議；逐節對應是作者整理。' }
+  ]
+});
+</script>
+</body>
+</html>

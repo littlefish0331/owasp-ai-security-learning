@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　控制地圖｜OWASP AI Exchange｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AI Exchange 的四大控制類別（Manage、Have resilient models、Watch、Limit）、週期表如何由威脅找到控制，以及預防／偵測／回應類控制的比較。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="01-overview" data-topic="ai-exchange" data-page="03-control-map.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　控制地圖</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-threat-map.html">第 2 章</a>；<a href="../../primer-security-for-developers.html#p-pdr">預防／偵測／回應類控制</a></li>
+</ul>
+<p class="lead">知道有哪些威脅之後，下一個問題是：用什麼擋？AI Exchange 列出超過 50 項控制。本章不逐項背，而是教你兩件事：這些控制怎麼分類，以及怎麼由一個威脅反查到該用的控制。</p>
+
+<h2 id="cm-scope">3.1 先釐清：哪些控制是 AI 專屬的？</h2>
+<p>官方提醒，控制有兩種：一種是 AI 專屬的（例如對訓練集加雜訊），一種是傳統控制（例如加密訓練資料庫）。AI Exchange 把篇幅放在 AI 專屬控制上，傳統控制的細節請看其他資源，但它會說明<strong>傳統控制在 AI 情境下的特殊之處</strong>，例如模型參數可以用可信執行環境 (Trusted Execution Environment) 保護。</p>
+<div class="callout official">
+  <p class="callout-title">官方的提醒：控制不是越多越好</p>
+  <p>許多控制成本很高，也會與模型的其他特性（如正確性）互相取捨。特別是改變學習過程與資料分布的控制，可能有非預期的下游副作用，需要審慎導入。這也是為什麼下一章要先做風險分析，再選控制。</p>
+</div>
+
+<h2 id="cm-four">3.2 四大控制類別</h2>
+<p>官方「Essentials」把控制分成四大類、八個子類，連結到 50 多項獨立控制。控制名稱通常以大寫字母＋空格表示（例如 <code class="ctl">LEAST MODEL PRIVILEGE</code>），本教材沿用原文。</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　四大控制類別（Essentials 的組織方式）</caption>
+<thead><tr><th scope="col">類別</th><th scope="col">要做什麼</th><th scope="col">代表控制（原文名稱）</th><th scope="col">誰主要負責</th></tr></thead>
+<tbody>
+<tr><th scope="row">Manage<br>（管理）</th><td>延伸既有的治理／風險／合規 (GRC)、供應鏈管理與傳統安全控制，使其涵蓋 AI 資產</td><td><code class="ctl">AI PROGRAM</code>、<code class="ctl">SEC PROGRAM</code>、<code class="ctl">SUPPLY CHAIN MANAGE</code>、<code class="ctl">DEV SECURITY</code>、<code class="ctl">SEGREGATE DATA</code>、<code class="ctl">MODEL ACCESS CONTROL</code>、<code class="ctl">AUGMENTATION DATA INTEGRITY</code></td><td>管理層、資安、營運；多數是你已熟悉的傳統控制</td></tr>
+<tr><th scope="row">Have resilient models<br>（讓模型有韌性）</th><td>在模型開發階段用資料／模型工程手段，提升對輸入攻擊的抵抗力</td><td><code class="ctl">MODEL ALIGNMENT</code>、<code class="ctl">CONTINUOUS VALIDATION</code>、<code class="ctl">DATA QUALITY CONTROL</code>、<code class="ctl">POISON ROBUST MODEL</code>、<code class="ctl">TRAIN ADVERSARIAL</code></td><td>資料科學家與模型工程師</td></tr>
+<tr><th scope="row">Watch<br>（監看）</th><td>執行期對輸入與輸出做過濾、阻擋或告警，並監控模型的使用</td><td><code class="ctl">PROMPT INJECTION I/O HANDLING</code>、<code class="ctl">ANOMALOUS INPUT HANDLING</code>、<code class="ctl">RATE LIMIT</code>、<code class="ctl">MONITOR USE</code>、<code class="ctl">SENSITIVE OUTPUT HANDLING</code></td><td>模型工程師與資安維運</td></tr>
+<tr><th scope="row">Limit<br>（限制）</th><td>兩件事：減少或模糊化敏感資料；限制模型行為的後果</td><td>資料面：<code class="ctl">DATA MINIMIZE</code>、<code class="ctl">ALLOWED DATA</code>、<code class="ctl">SHORT RETAIN</code>；行為面：<code class="ctl">OVERSIGHT</code>、<code class="ctl">LEAST MODEL PRIVILEGE</code>、<code class="ctl">AI TRANSPARENCY</code>、<code class="ctl">EXPLAINABILITY</code></td><td>架構師、應用開發者、資安</td></tr>
+</tbody></table></div>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：LLM 應用開發者可以先看哪兩欄？</p>
+  <p>如果你不訓練模型、只是呼叫託管模型再串工具與資料，「Have resilient models」多半由模型供應商負責（官方也說：使用現成模型時，部分安全責任落在供應商，需透過供應鏈管理取得保證）。你自己最常直接控制的是 <strong>Watch</strong> 與 <strong>Limit</strong>，以及 Manage 裡的存取控制與增補資料 (augmentation data) 保護。這是作者的歸納；官方並沒有這樣建議閱讀順序。</p>
+</div>
+
+<h2 id="cm-periodic">3.3 週期表：由威脅反查控制</h2>
+<p>官方提供的「AI 資安週期表 (Periodic table of AI security)」是一張查找表：每一列是一個威脅，欄位是它的資產與影響、攻擊面 (Attack Surface)，以及該用的控制。官方還註明：<strong>一般的治理控制適用於所有威脅</strong>。下表挑出四列代表（控制名稱為官方原文），用來練習怎麼讀；完整表格請看官方。</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　週期表節選（官方週期表的 4 列；完整表格請看官方）</caption>
+<thead><tr><th scope="col">資產與影響</th><th scope="col">攻擊面</th><th scope="col">威脅</th><th scope="col">官方列出的控制</th></tr></thead>
+<tbody>
+<tr><th scope="row">模型行為完整性</th><td>執行期，輸入攻擊</td><td>Direct prompt injection<br>（直接提示詞注入 (Direct Prompt Injection)）</td><td>Limit unwanted behavior、Monitor、Rate limit、Model access control；另加 Prompt injection I/O handling、Model alignment</td></tr>
+<tr><th scope="row">模型行為完整性</th><td>開發期，工程環境</td><td>Data poisoning of train/finetune data<br>（訓練／微調資料投毒）</td><td>Limit unwanted behavior、Development environment security、Data segregation、Federated learning、Supply chain management；另加 Model ensemble；另加 More training data、Data quality control、Train data distortion、Poison robust model、Train adversarial</td></tr>
+<tr><th scope="row">模型輸入資料機密性</th><td>執行期，所有 IT</td><td>Input data leak<br>（輸入資料外洩）</td><td>Model input confidentiality</td></tr>
+<tr><th scope="row">任何資產的 CIA</th><td>執行期，所有 IT</td><td>Output contains conventional injection<br>（輸出含傳統注入）</td><td>Encode model output</td></tr>
+</tbody></table></div>
+<p>從表中可以讀出兩個規律：</p>
+<ul>
+  <li><strong>每一列都有「Limit unwanted behavior」。</strong>官方的邏輯是，只要模型行為可能被操縱，就必須限制行為後果（也就是爆炸半徑 (Blast Radius) 控制）。它不取代其他控制，是每個「行為完整性」威脅的底線。</li>
+  <li><strong>控制的數量與威脅的難度成正比。</strong>資料投毒列了最多控制，因為要在不同階段層層設防；輸出含傳統注入只有一項，因為傳統的輸出編碼就是解法。</li>
+</ul>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="用週期表選控制的流程：先確定威脅，找到它所在的列，先套用治理與限制行為後果的底線，再依威脅加入對應的專屬控制，最後依成本與風險決定要實作到什麼程度。">
+flowchart TD
+  A["確定要處理的威脅<br>（來自第 7 章的風險分析）"] --> B["在週期表找到該威脅那一列"]
+  B --> C["先套用底線：<br>一般治理控制 + Limit unwanted behavior"]
+  C --> D["加入該列的專屬控制<br>（Watch / Have resilient models / Manage 的對應項目）"]
+  D --> E{"成本、副作用、剩餘風險<br>可接受嗎？"}
+  E -->|"否"| F["調整強度，或改用其他處理方式<br>（轉移、避免）"]
+  E -->|"是"| G["實作、測試、持續調校"]
+  F --> D
+</pre>
+<figcaption><strong>圖 3-1　用週期表選控制的流程。</strong>步驟 A、B、D 來自官方「Select controls」的說明；C 的底線是官方週期表「一般治理控制適用於所有威脅」加上各列皆含 Limit unwanted behavior 的觀察；E 的取捨來自官方「控制不是越多越好」的提醒。流程圖的串接方式是作者整理。</figcaption>
+</figure>
+
+<h2 id="cm-types">3.4 預防、偵測、回應：官方怎麼說？</h2>
+<p>你在<a href="../../primer-security-for-developers.html#p-pdr">前置觀念</a>學到的三類控制，是通用資安用語。AI Exchange 並非依此分類，但在說明控制之間的關係時，明確區分了「預防」與「偵測／反應」：</p>
+<ul>
+  <li><code class="ctl">LEAST MODEL PRIVILEGE</code> 透過權限限制模型行動，官方稱之為預防型 (preventative)。</li>
+  <li><code class="ctl">OVERSIGHT</code> 是關於偵測，官方形容為反應式或閘門式 (reactive or gate-based)；偵測到不要的行為後，回應方式包括矯正、停止執行、交給人、或發出告警。</li>
+  <li><code class="ctl">MONITOR USE</code> 是更大的監控傘：記錄、關聯、重建事件，並常搭配預先定義的回應動作。</li>
+</ul>
+<div class="table-wrap"><table>
+<caption>表 3-3　三類控制比較（官方有明確說明的控制為依據；歸類是作者整理，非官方）</caption>
+<thead><tr><th scope="col">類型</th><th scope="col">代表控制</th><th scope="col">優點</th><th scope="col">限制（官方說法）</th></tr></thead>
+<tbody>
+<tr><th scope="row">預防<br>(preventive)</th><td><code class="ctl">LEAST MODEL PRIVILEGE</code>、<code class="ctl">MODEL ACCESS CONTROL</code>、<code class="ctl">DATA MINIMIZE</code>、<code class="ctl">ENCODE MODEL OUTPUT</code></td><td>事前就讓事情做不到。官方說預防型的權限控制比事後偵測有效得多</td><td>需要事前知道要限制什麼；給得太寬就等於沒限制</td></tr>
+<tr><th scope="row">偵測<br>(detective)</th><td><code class="ctl">OVERSIGHT</code>（自動化部分）、<code class="ctl">MONITOR USE</code>、<code class="ctl">PROMPT INJECTION I/O HANDLING</code>、<code class="ctl">CONTINUOUS VALIDATION</code></td><td>能涵蓋預防沒想到的情況；可累積證據</td><td>只在行為出現「之後」才作用；官方指出持續驗證通常抓不到後門型投毒</td></tr>
+<tr><th scope="row">回應<br>(responsive)</th><td><code class="ctl">OVERSIGHT</code> 的回應選項（停止、回滾、交給人）、<code class="ctl">MONITOR USE</code> 搭配的事件應變</td><td>把「發現」轉成「止血與復原」</td><td>人工審核成本高，會有核准疲勞（第 4 章）；回滾需事先設計</td></tr>
+</tbody></table></div>
+<p>官方在 Oversight 一項寫道，它是模型輸出之上的「最後一道檢查點」；但也說反應式監督只在行為出現之後才作用，預防型權限控制有效得多。所以兩者要搭配，而不是擇一。</p>
+
+<h2 id="cm-scenario">3.5 情境範例 A：從威脅選到控制</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：宏遠物流的客服分流系統</h3>
+<p><span class="tag fiction">虛構</span> 宏遠物流是虛構的公司。客服系統有兩個 AI 元件：(1) 第三方託管的 LLM，協助客服人員撰寫回覆；(2) 公司自己用歷史工單訓練的分類器，把來信分流到「理賠、改址、一般」三個佇列。分類器的訓練資料來自內部工單資料庫，在內部機器上訓練。</p>
+<p class="arch"><strong>架構：</strong>客戶來信 → 分類器 → 分流到佇列 → 客服人員 → LLM 輔助回覆。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>一位離職前不滿的工程師，在準備訓練資料時，把一批內容屬於「理賠」的工單標成「一般」，再交給訓練流程（概念層級，不涉及具體做法）。</li>
+  <li><strong>哪一環出問題：</strong>訓練資料被竄改，屬開發期威脅、攻擊面是工程環境；攻擊者是內部人員。</li>
+  <li><strong>影響：</strong>上線後，部分理賠來信被分到「一般」，處理被延遲。受損的是<strong>模型行為的完整性</strong>（圖 2-1 的「資料投毒」）。</li>
+  <li><strong>對應的威脅列：</strong>表 3-2 的「Data poisoning of train/finetune data」。</li>
+  <li><strong>先套用底線：</strong>治理控制，加上 Limit unwanted behavior。對這個系統而言，分類結果只是分流，後續還有客服人員處理，這本身就是一層限制後果的設計；若分類器能自動拒絕理賠，就必須加入人工複核 (<code class="ctl">OVERSIGHT</code>)。</li>
+  <li><strong>再套用該列的專屬控制（舉三項）：</strong><code class="ctl">DEV SECURITY</code>（把訓練資料與文件納入既有安全管理）、<code class="ctl">SEGREGATE DATA</code>（訓練環境與一般開發區隔，使負責訓練的人與能改資料的人分開）、<code class="ctl">DATA QUALITY CONTROL</code>（上線前偵測可疑樣本）。</li>
+  <li><strong>補一個偵測：</strong><code class="ctl">CONTINUOUS VALIDATION</code>。定期用固定測試集檢查分類結果，能抓到「突然的行為變化」。但官方提醒，它通常抓不到設計成能通過驗證的後門型投毒，所以不能是唯一一道防線。</li>
+</ol>
+<p><strong>順帶一問：</strong>這個情境裡的第三方託管 LLM，哪些威脅由供應商管？官方的做法是看「誰負責」：供應商訓練與託管模型，所以供應鏈模型投毒與執行期模型投毒要透過供應商管理來取得保證（第 7 章會處理）。</p>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>控制分為 AI 專屬與傳統兩種；AI Exchange 重點講前者，並說明傳統控制在 AI 情境下的特殊之處。</li>
+  <li>四大類：Manage、Have resilient models、Watch、Limit。LLM 應用開發者最常直接掌握 Watch、Limit 與 Manage 裡的存取控制。</li>
+  <li>用週期表由威脅反查控制：先套用底線（治理 + 限制行為後果），再加專屬控制。</li>
+  <li>預防型（如最小模型權限 (Least Model Privilege)）與偵測／回應型（如 Oversight）要搭配：官方說預防型的權限控制比事後偵測有效得多，但 Oversight 是最後一道檢查點。</li>
+  <li>授權要在後端強制，不要寫在提示詞裡（第 4 章會詳述最小模型權限）。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能把 <code class="ctl">DATA MINIMIZE</code>、<code class="ctl">OVERSIGHT</code>、<code class="ctl">DATA QUALITY CONTROL</code> 各歸到四大類之一。</li>
+  <li>我能用週期表為一個威脅挑出底線控制與專屬控制。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-seven-layers.html">第 4 章　縱深防禦：提示詞注入七層防線</a>：以 AI Exchange 最具體的縱深防禦範例，看多個控制如何疊成多層，以及為什麼要「假設會被突破」。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Exchange，0. AI Security Overview：Essentials、Controls overview（Scope of controls、Essential categories of controls）、Periodic table of AI security；<a href="https://owaspai.org/go/essentials">owaspai.org/go/essentials</a>、<a href="https://owaspai.org/go/controlsoverview">…/controlsoverview</a>、<a href="https://owaspai.org/go/periodictable">…/periodictable</a>；2026-10-25 快照；CC0 1.0。</li>
+    <li>OWASP AI Exchange 控制頁：<a href="https://owaspai.org/go/leastmodelprivilege">LEAST MODEL PRIVILEGE</a>、<a href="https://owaspai.org/go/oversight">OVERSIGHT</a>、<a href="https://owaspai.org/go/monitoruse">MONITOR USE</a>、<a href="https://owaspai.org/go/continuousvalidation">CONTINUOUS VALIDATION</a>、<a href="https://owaspai.org/go/devsecurity">DEV SECURITY</a>、<a href="https://owaspai.org/go/segregatedata">SEGREGATE DATA</a>、<a href="https://owaspai.org/go/dataqualitycontrol">DATA QUALITY CONTROL</a>。</li>
+    <li>官方控制示意圖（含 AI 專屬／傳統控制著色）：<a href="https://owaspai.org/images/threatscontrols.png">owaspai.org/images/threatscontrols.png</a>。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AI Exchange（owaspai.org）— CC0 1.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch3', topic: 'ai-exchange', mode: 'chapter',
+  questions: [
+    { id: 'c3q1', type: 'mc', lo: [3], refs: [{label: '3.2 四大控制類別', href: '03-control-map.html#cm-four'}],
+      stem: '一個團隊呼叫託管 LLM、不訓練模型。依本章，他們最常「自己直接掌握」的是哪些控制類別？',
+      options: [
+        { text: '四類都要同等投入，沒有優先順序可言。', why: '官方並未要求同等投入；它強調要依風險分析決定哪些威脅相關，再選控制。' },
+        { text: '只有 Manage，因為其他類別都屬於研究人員。', why: '過度簡化。Watch 與 Limit 的許多控制（監控、最小權限、輸出處理）正是應用開發者的日常工作。' },
+        { text: 'Watch 與 Limit，以及 Manage 裡的存取控制和增補資料保護。', correct: true, why: '這些是在應用層、執行期可以自己實作的控制（過濾與監控輸入輸出、限制模型權限與資料）。這是作者歸納，不是官方的閱讀建議。' },
+        { text: 'Have resilient models，因為所有 AI 團隊都要訓練出有韌性的模型。', why: '這一類是資料／模型工程手段，在模型開發階段進行。使用託管模型時多由供應商負責，團隊需要的是透過供應鏈管理取得保證。' }
+      ],
+      summary: '依你「擁有哪一段」決定：不訓練模型，就把重心放在應用層控制，並對供應商做保證管理。' },
+    { id: 'c3q2', type: 'match', lo: [3], refs: [{label: '3.2 四大控制類別', href: '03-control-map.html#cm-four'}],
+      stem: '把下列控制配對到它所屬的 Essentials 控制類別（依表 3-1）。',
+      cats: [
+        { id: 'manage', label: 'Manage', desc: '延伸治理、供應鏈與傳統安全控制' },
+        { id: 'resilient', label: 'Have resilient models', desc: '模型開發階段的資料／模型工程手段' },
+        { id: 'watch', label: 'Watch', desc: '執行期過濾、告警與監控' },
+        { id: 'limit', label: 'Limit', desc: '減少敏感資料；限制模型行為的後果' }
+      ],
+      items: [
+        { text: '<code class="ctl">SUPPLY CHAIN MANAGE</code>', answer: 'manage', why: '把供應鏈管理延伸到提供資料、模型與託管的供應商，屬 Manage。' },
+        { text: '<code class="ctl">DATA QUALITY CONTROL</code>', answer: 'resilient', why: '在模型開發階段偵測可疑訓練樣本，屬 Have resilient models。' },
+        { text: '<code class="ctl">MONITOR USE</code>', answer: 'watch', why: '執行期觀察、關聯與記錄模型使用，屬 Watch。' },
+        { text: '<code class="ctl">LEAST MODEL PRIVILEGE</code>', answer: 'limit', why: '限制模型行為的後果，屬 Limit。' },
+        { text: '<code class="ctl">DATA MINIMIZE</code>', answer: 'limit', why: '減少敏感資料（「不存在的資料就不會外洩」），屬 Limit 中的資料面。' }
+      ],
+      summary: '分類要看控制「在哪個階段、由誰」執行，而不是名字像不像。' },
+    { id: 'c3q3', type: 'scn', lo: [3], refs: [{label: '3.4 預防、偵測、回應', href: '03-control-map.html#cm-types'}, {label: '3.5 情境範例 A', href: '03-control-map.html#cm-scenario'}],
+      stem: '同事主張「我們只做 CONTINUOUS VALIDATION 就夠了」。依本章，哪個回應最合理？',
+      scenario: '宏遠物流（虛構）的分類器每週用一份固定測試集檢查準確率，團隊因此認為訓練資料投毒的風險已被處理。資安主管提出疑問：如果攻擊者是內部人員，且懂得讓模型通過這個測試集，會怎麼樣？',
+      options: [
+        { text: '持續驗證是偵測型控制，對後門型投毒效果有限；應補上預防型控制（如開發環境安全、資料隔離、資料品質控制）。', correct: true, why: '預防型控制減少被投毒的機會，偵測型控制抓「突然的行為變化」，兩者互補。這也與官方「兩者要搭配」的說法一致。' },
+        { text: '既然不能完全偵測，投毒風險就無法處理，只能接受。', why: '風險處理有多種方式；官方的作法是分層，並不是因為單一控制有限就放棄。' },
+        { text: '應該把測試集每週公開，增加透明度。', why: '公開測試集反而讓攻擊者更容易針對它設計能通過的資料，與目標相反。' },
+        { text: '持續驗證能抓到所有投毒攻擊，所以只做它就夠了。', why: '官方指出持續驗證通常不適合偵測後門型投毒，因為這類攻擊被設計成只對特定輸入觸發，並能通過驗證。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 持續驗證（<code class="ctl">CONTINUOUS VALIDATION</code>）的作用，是用固定測試集偵測「突然的行為變化」，可抓到持續性的投毒，但官方明說它通常抓不到設計成能通過驗證的後門型投毒。(2) 情境中的攻擊者是懂得通過測試集的內部人員，正好是這個限制所指的情況。(3) 因此應補上預防型控制，讓資料難以被改動：<code class="ctl">DEV SECURITY</code>、<code class="ctl">SEGREGATE DATA</code>，以及上線前的 <code class="ctl">DATA QUALITY CONTROL</code>。</p><p><strong>結論：</strong>持續驗證要留，但不能是唯一防線。對應教材：<a href="03-control-map.html#cm-types">3.4 節</a>、<a href="03-control-map.html#cm-scenario">3.5 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

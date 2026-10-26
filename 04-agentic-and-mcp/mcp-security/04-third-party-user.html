@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　第三方使用者視角｜MCP 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="使用別人開發的 MCP 伺服器時，官方的客戶端安全、探索與驗證、授權、治理工作流與角色；與 MCP Security Cheat Sheet 的 12 項實務如何補充；以及一個虛構的內部登錄與審核情境。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="mcp-security" data-page="04-third-party-user.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　第三方使用者視角</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="03-server-developer.html">第 3 章</a></li>
+</ul>
+<p class="lead">多數組織不會自己寫 MCP 伺服器，而是安裝別人做好的。這時你的問題從「怎麼寫得安全」變成「<strong>怎麼決定能不能信、怎麼持續管著它</strong>」。官方的第三方使用指南用一個「受信任的登錄」為核心，搭配客戶端防護、探索驗證、授權與一條五步驟的治理流程。本章把它和 MCP Security Cheat Sheet 的 12 項實務拼起來。</p>
+
+<h2 id="u-risks">4.1 使用者要面對的四種攻擊模式</h2>
+<p>第三方指南的「現況」一節把風險整理成四類，每類都附緩解。它們是上一章 Top 10 的「使用者視角」：</p>
+<div class="table-wrap"><table>
+<caption>表 4-1　第三方使用指南的四類攻擊模式與緩解（改寫）</caption>
+<thead><tr><th scope="col">攻擊模式</th><th scope="col">是什麼</th><th scope="col">官方的緩解（摘要）</th></tr></thead>
+<tbody>
+<tr><th scope="row">Tool Poisoning 與 Rug Pull</th><td>在工具描述或參數中埋入針對模型的指令（間接提示詞注入的一種）；Rug Pull 是合法工具被悄悄換成惡意版本</td><td><strong>完整工具透明</strong>（啟用前顯示完整的描述、參數與能力，避免縮短的摘要藏住注入）；淨化描述；<strong>固定版本並以雜湊／校驗和驗證</strong>，有未授權變更就告警；在伺服器邊界強制最小權限的執行期政策</td></tr>
+<tr><th scope="row">Prompt Injection</th><td>惡意輸入、工具擷取的內容或工具參數劫持模型脈絡</td><td>驗證不可信資料（含工具描述與伺服器回應）；強結構描述；切分脈絡，不同操作建立新連線／session</td></tr>
+<tr><th scope="row">Memory Poisoning</th><td>污染 agent 短期或長期記憶</td><td>每次記憶更新都驗證、要求來源、用雜湊；設 TTL；隔離記憶，避免 agent 寫入共享儲存</td></tr>
+<tr><th scope="row">Tool Interference</th><td>用多個 MCP 伺服器時，一個工具的輸出意外觸發另一個伺服器的工具，造成外洩、誤操作或拒絕服務迴圈</td><td>需要人在迴路；每次工具執行的脈絡分離，只傳必要資訊；設逾時</td></tr>
+</tbody></table></div>
+
+<h2 id="u-client">4.2 客戶端：信任最小化</h2>
+<p>官方對客戶端的定位很直接：<strong>客戶端是抵禦惡意伺服器的第一道防線</strong>。它的原則是不假設伺服器可信，包含：驗證 manifest、強制結構描述、使用允許清單；在受限環境（如限制檔案系統與網路的容器）執行客戶端與第三方伺服器；對工具授予即時、窄範圍、自動到期且可立即撤銷的權限；UI 透明（顯示完整的工具描述、權限與資料存取）；防止伺服器外洩客戶端的機密、歷史或快取記憶；偵測異常的工具呼叫（如大量讀檔、過多 API 呼叫）。</p>
+<p>探索與連線的做法則是「<strong>先驗證來源，再連</strong>」：只連受信任登錄上的伺服器；用 IP 允許清單與網路隔離避免連到未知伺服器；開源或本機伺服器要驗證來源、檢查簽章並掃描已知弱點；維持一個核准伺服器的中央登錄。傳輸選擇上，本機伺服器用 STDIO 當子程序（延遲最低、也較容易以沙箱、seccomp 或 AppArmor 強化）；遠端、多租戶或自動擴展的伺服器用 Streamable HTTP，搭配 TLS／mTLS 或 OAuth 2.1、WAF 與速率限制，並定期輪替憑證。</p>
+
+<h2 id="u-gov">4.3 治理：受信任的登錄與五步驟流程</h2>
+<div class="concept">
+<h3 id="c-registry">受信任登錄 (Trusted MCP Registry) 與治理工作流</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>官方的核心主張：建立一個正式的治理策略，確保只有<strong>經審查且受監控</strong>的 MCP 伺服器被使用；策略的核心是一個受信任登錄。登錄存放每個已核准伺服器的中繼資料並在執行期強制政策，讓主機與 agent 只看得到「經審查、最小權限、持續監控」的伺服器，並有政策即程式碼的關卡與稽核證據。</dd>
+  <dt data-n="2">為什麼需要</dt>
+  <dd>沒有登錄，任何開發者都可以自己裝一個 MCP 伺服器，這正是 MCP Top 10 的 MCP09 Shadow MCP Servers。登錄把「能不能用」變成可稽核的決定，並提供漂移偵測的基準。</dd>
+  <dt data-n="3">怎麼被忽略（概念層級）</dt>
+  <dd>只在導入時審查一次，之後版本升級、工具描述變更都不再檢查；或審查與批准都由同一個人完成，沒有領域負責人確認「真的需要」。</dd>
+  <dt data-n="4">怎麼做</dt>
+  <dd>官方的五步驟：<strong>(1) 提交</strong>：附文件與工具描述的雜湊；<strong>(2) 掃描</strong>：自動掃描惡意程式、隱藏指示與其他風險；<strong>(3) 審查與簽核</strong>：安全與領域專家審查掃描結果，核准的伺服器固定版本並加入登錄；<strong>(4) 部署與監控</strong>：先在預備環境，經試用期後才升到正式；<strong>(5) 定期重新驗證</strong>：定期或版本變更時自動重新掃描。角色：提交者（開發者）、安全審查員、領域負責人、核准者（安全與領域負責人必須<strong>都</strong>簽核才能啟用）、營運者 (SRE)（負責連線上線、監控與緊急關閉開關）。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「審查過就永遠可信。」官方在驗證段落明確要求<strong>固定版本、預備環境試用、自動回復</strong>，並監控與已核准清單的漂移；這代表信任是有期限、可撤銷的。</dd>
+</dl>
+</div>
+
+<h2 id="u-cs">4.4 與 MCP Security Cheat Sheet 的 12 項怎麼對</h2>
+<p>MCP Security Cheat Sheet（最近修改 2026-10-16）有 12 項實務。與第三方指南相比，它多了幾個細節，值得挑出來：</p>
+<ul>
+  <li><strong>授權不是協定的必選項：</strong>Cheat Sheet 指出「授權在協定中是選配」；使用 OAuth 時要依 MCP 的 OAuth 2.1 設定檔，用 <code>resource</code> 參數標明目標伺服器，驗證權杖的<strong>受眾</strong>，且<em>不要把 MCP 的存取權杖傳給上游 API</em>（與伺服器指南的「禁止直通」一致）。</li>
+  <li><strong>工具「可用」不等於「已被同意」：</strong>Cheat Sheet 在 2026-10-14 的修訂（closes #2761）新增：不要假設一個可用的 MCP 工具就代表使用者同意了某次具體呼叫；工具註記（如唯讀提示）除非來自可信伺服器，否則視為不可信；依風險決定要用使用者確認、窄範圍授權或執行時的政策檢查。</li>
+  <li><strong>多伺服器隔離 (第 8 項)：</strong>把每個伺服器視為不可信的獨立安全域，防止一個伺服器的描述引用或修改另一個的工具行為；監控跨伺服器的資料流（如伺服器 A 的憑證出現在對伺服器 B 的呼叫裡）；用 MCP 代理或閘道執行隔離。</li>
+  <li><strong>安裝與同意 (第 11 項)：</strong>連接新伺服器前顯示明確的同意對話；顯示將執行的完整指令（本機伺服器）；標明來源與發佈者；工具定義改變時重新請求同意；<strong>絕不讓網頁內容或不可信資料觸發 MCP 伺服器安裝</strong>。</li>
+  <li><strong>工具回傳值也是注入面 (第 12 項)：</strong>每個工具回應都是不可信資料，包含已核准伺服器的回應；標籤化並分離；過濾只能當附加手段；授權與後續工具呼叫要由可信的應用程式碼獨立驗證。</li>
+</ul>
+<p>這份 Cheat Sheet 還有一個值得注意的特性：它在 2026-10 內短短兩週修訂了至少三次，說明這個領域變動快。<strong>用它當最新實務的來源，但不要把細節抄成永久規則</strong>。</p>
+
+<h2 id="u-scenario">4.5 情境範例 B：內部 MCP 登錄的第一次審核</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：望海零售的 MCP 導入</h3>
+<p><span class="tag fiction">虛構</span> 望海零售是虛構的公司。行銷團隊想導入一個第三方 MCP 伺服器，讓助理能讀取行銷素材庫並發佈社群貼文。團隊在公開平台上找到一個下載量不少的套件，並直接用自己的桌面 AI 應用安裝：工具描述顯示「查詢素材、發佈貼文」，安裝過程沒有任何額外確認。以下為虛構，細節停在概念層級。</p>
+<p class="arch"><strong>架構：</strong>桌面 AI 應用（行銷人員的帳號）→ 第三方 MCP 伺服器（本機子程序，STDIO）→ 素材庫與社群平台 API。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>該套件在一次小版本更新後，在工具定義中新增了一個「同步設定」功能，並在描述中夾帶針對模型的額外指示，要求把近期對話內容一併傳送到外部端點。桌面應用沒有重新請求同意，也沒有顯示完整的定義變動。</li>
+  <li><strong>哪一環出問題：</strong>(a) 沒有登錄與審查流程，直接安裝（MCP09 Shadow MCP Servers，影子部署）；(b) 沒有固定版本與雜湊，小版本更新後工具定義改變了也不知道，這是 MCP03 的抽換 (Rug Pull)；(c) 本機伺服器以使用者的完整權限執行，沒有沙箱；(d) UI 沒有顯示完整描述，也沒有在定義變動時重新請求同意。</li>
+  <li><strong>對應條目：</strong>第三方指南的 Tool Poisoning 與 Rug Pull、Governance Workflow；Cheat Sheet 第 9（供應鏈）、第 11（同意與安裝）項；MCP Top 10：MCP03、MCP04、MCP09；Agentic Top 10：ASI04（供應鏈與動態載入）；T&amp;M：T17。LLM Top 10 2026：LLM04:2026 Supply Chain。</li>
+  <li><strong>該採什麼控制：</strong>
+    <ul>
+      <li>治理：所有第三方伺服器走登錄與五步驟：提交（附工具描述雜湊）→ 掃描 → 安全加領域負責人雙簽核 → 預備環境試用 → 定期重新驗證；</li>
+      <li>版本與完整性：核准時固定版本並雜湊完整的工具定義，定義一變就阻擋並重新審查；</li>
+      <li>執行環境：本機伺服器在容器或沙箱中執行，限制檔案系統與網路，對工具授予即時、窄範圍權限；</li>
+      <li>UI 與同意：顯示完整描述與將執行的指令，定義變動時重新請求同意，並由 SRE 備好緊急關閉開關；</li>
+      <li>偵測：監控異常工具呼叫（如大量資料外送）並告警。</li>
+    </ul>
+  </li>
+  <li><strong>學到什麼：</strong>這個情境的核心不是「這個套件是不是惡意的」，而是<strong>即使它起初是善意的，沒有登錄、沒有固定版本、沒有重新同意，也無法發現它後來變了</strong>。官方的五步驟與雜湊固定，就是把這個「後來變了」變成可偵測、可擋下的事件。</li>
+</ol>
+</div>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>使用者視角有四類攻擊模式：Tool Poisoning／Rug Pull、Prompt Injection、Memory Poisoning、Tool Interference。</li>
+  <li>客戶端原則是信任最小化：驗證 manifest、容器化、即時窄權限、完整透明的 UI、異常偵測。</li>
+  <li>治理的核心是受信任登錄與五步驟流程（提交、掃描、審查簽核、預備環境試用、定期重新驗證）；安全與領域負責人要都簽核。</li>
+  <li>Cheat Sheet 補充：授權選配、工具可用不等於被同意、多伺服器隔離、安裝同意、工具回傳值也是不可信資料。</li>
+  <li>信任有期限且可撤銷；Cheat Sheet 近期頻繁修訂，細節別抄成永久規則。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出五步驟流程與五個角色，並解釋為什麼要雙簽核。</li>
+  <li>我能對一個想安裝的第三方 MCP 伺服器，列出至少五個該先檢查的事項。</li>
+  <li>我知道「工具可用」不等於「使用者同意這次呼叫」。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p><a href="05-integration.html">第 5 章　跨文件整合與收尾</a>：把 MCP 的四份文件、MCP Top 10 的建議控制，以及它與 Agentic 系列、LLM Top 10 的關係收攏起來。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>CheatSheet – A Practical Guide for Securely Using Third-Party MCP Servers 1.0</em>, Version 1.0, October 23, 2025：<a href="https://genai.owasp.org/resource/cheatsheet-a-practical-guide-for-securely-using-third-party-mcp-servers-1-0/">資源頁</a>（顯示日期 2025-11-04）；2026-10-26 讀取；CC BY-SA 4.0。引用段落：Current Vulnerability Landscape、Client Security and Server Discovery、Authentication and Authorization、Governance。</li>
+    <li>OWASP Cheat Sheet Series, <em>MCP Security Cheat Sheet</em>：<a href="https://cheatsheetseries.owasp.org/cheatsheets/MCP_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；2026-10-26 讀取；GitHub 提交紀錄最近修改 2026-10-16（2026-10-14 的修訂新增了「工具可用不等於已被同意」）。</li>
+    <li>OWASP MCP Top 10：<a href="https://github.com/OWASP/www-project-mcp-top-10">GitHub 倉庫</a>；僅引用條目名稱與編號（<span class="tag nc">NC</span> 授權文字自相矛盾，保守視為非商業）。</li>
+    <li>OWASP Top 10 for Agentic Applications for 2026：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a>；ASI04；CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：第三方 MCP 使用 Cheat Sheet、Top 10 for Agentic Applications 2026 — CC BY-SA 4.0；MCP Security Cheat Sheet — Cheat Sheet Series 網站標示。<span class="tag nc">NC</span> 本頁僅引用 OWASP MCP Top 10 的條目名稱與編號；該專案授權文字自相矛盾，保守視為非商業。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'mcp-ch4', topic: 'mcp-security', mode: 'chapter',
+  questions: [
+    { id: 'm4q1', type: 'match', lo: [4], refs: [{label: '4.3 五步驟與角色', href: '04-third-party-user.html#c-registry'}],
+      stem: '把工作配對到官方治理流程中負責的角色。',
+      cats: [
+        { id: 'sub', label: '提交者（開發者）' },
+        { id: 'sec', label: '安全審查員' },
+        { id: 'dom', label: '領域負責人' },
+        { id: 'ops', label: '營運者 (SRE)' }
+      ],
+      items: [
+        { text: '提出新的第三方伺服器整合，並提供文件', answer: 'sub', why: '提交者的職責。' },
+        { text: '驗證安全控制、掃描與供應鏈完整性', answer: 'sec', why: '安全審查員的職責。' },
+        { text: '確認該伺服器在功能上確有必要，並核准其範圍', answer: 'dom', why: '領域負責人的職責。' },
+        { text: '管理連線上線、監控與緊急關閉開關', answer: 'ops', why: '營運者 (SRE) 的職責。' }
+      ],
+      summary: '雙簽核：安全與領域負責人都要核准。' },
+    { id: 'm4q2', type: 'mc', lo: [4], refs: [{label: '4.1 表 4-1', href: '04-third-party-user.html#u-risks'}],
+      stem: '依第三方指南，用戶端要「完整工具透明」，最主要的理由是？',
+      options: [
+        { text: '為了讓介面更美觀。', why: '理由是安全。' },
+        { text: '縮短的摘要可能藏住工具描述中夾帶的注入指示，使用者看不到模型看得到的完整內容。', correct: true, why: '指南：啟用前顯示完整 manifest，避免縮短的摘要藏住注入。' },
+        { text: '為了減少 token 用量。', why: '目的是讓人看到完整內容，與 token 無關。' },
+        { text: '因為協定規定一定要顯示。', why: '這是官方的建議做法，不是協定強制。' }
+      ],
+      summary: '模型看到的，人也要看得到。' },
+    { id: 'm4q3', type: 'mc', lo: [4], refs: [{label: '4.4 與 Cheat Sheet', href: '04-third-party-user.html#u-cs'}],
+      stem: '一個 MCP 工具的註記標示它是唯讀。依 Cheat Sheet，用戶端應如何看待這個標示？',
+      options: [
+        { text: '完全信任，因為是協定的一部分。', why: 'Cheat Sheet 明說除非來自可信伺服器，否則註記視為不可信。' },
+        { text: '視為提示而非強制；除非來自可信伺服器，否則不可信；需要依實際可能的影響決定是否要確認或授權。', correct: true, why: '2026-10-14 修訂：工具註記不是執行層的保證。' },
+        { text: '一律忽略所有註記，連顯示都不要。', why: '註記可作為提示，只是不可只靠它。' },
+        { text: '註記標唯讀就代表不用 HITL。', why: '讀取也可能是敏感讀取或資料外洩管道。' }
+      ],
+      summary: '註記是提示，不是保證。' },
+    { id: 'm4q4', type: 'scn', lo: [4], refs: [{label: '4.5 情境範例 B', href: '04-third-party-user.html#u-scenario'}, {label: '4.3 治理', href: '04-third-party-user.html#c-registry'}],
+      stem: '依本章，這個導入流程缺的最關鍵一環是？',
+      scenario: '星河保險（虛構）的資安長聽說行銷團隊自己安裝了一個第三方 MCP 伺服器。她詢問：「我們公司目前有多少個 MCP 伺服器在運作？」沒有人答得出來。團隊辯稱：「那個套件下載量很高，應該沒問題。」',
+      options: [
+        { text: '缺登錄與審核流程：沒有核准清單，無法回答有多少伺服器，也無法固定版本與重新驗證。', correct: true, why: '4.3 節：受信任登錄是核心；MCP09 Shadow MCP Servers 的典型症狀。' },
+        { text: '缺的是更高的下載量證明。', why: '下載量不等於安全，且不是官方流程的一環。' },
+        { text: '缺的是把所有 MCP 伺服器都封鎖。', why: '官方的做法是控管而非禁止。' },
+        { text: '缺的是向 OWASP 回報。', why: '不是組織內部治理要做的事。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 官方的核心主張是只有經審查且受監控的伺服器才能被使用，並以受信任登錄為核心。(2) 答不出數量，表示沒有登錄與探索掃描。(3) 下載量不是官方流程的一環。</p><p><strong>結論：</strong>先建立登錄與五步驟流程。對應教材：<a href="04-third-party-user.html#c-registry">4.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

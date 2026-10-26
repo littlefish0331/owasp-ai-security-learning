@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜GenAI 紅隊演練｜OWASP AI 資安學習教材</title>
+<meta name="description" content="GenAI 紅隊演練主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="genai-red-teaming" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 4.4 節與第 8 節）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以本教材回到一手來源（三份官方 PDF 與資源頁）重新核對。本頁列出：每個項目採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。舊版資訊只出現在版本演進與本頁。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">GenAI Red Teaming Manual</th><td>Version 1.0；<strong>2026-10-20</strong>；PDF 144 頁</td><td>資源頁 2026-10-20；PDF 封面只寫「Version 1.0、October 2026」，PDF 中繼資料建立日 2026-10-12（僅供參考，不作為出版日）</td><td>CC BY-SA 4.0（PDF 第 2 頁）</td></tr>
+<tr><th scope="row">GenAI Red Teaming Guide</th><td>Version 1.0；<strong>2025-01-23</strong>；PDF 77 頁</td><td>PDF 封面「January 23, 2025」；資源頁「January 22, 2025」。採較新的 01-23（見 R-3）</td><td>CC BY-SA 4.0；引用須含專案名稱與資產名稱（PDF 第 4 頁）</td></tr>
+<tr><th scope="row">Vendor Evaluation Criteria for AI Red Teaming Providers &amp; Tooling</th><td>v1.0（Public Release）；<strong>2026-02-04</strong>；PDF 32 頁</td><td>資源頁「February 4, 2026」；PDF 封面「January 13, 2026」。採較新的 02-04（見 R-3）</td><td>CC BY-SA 4.0；引用須含專案名稱與資產名稱（PDF 第 2 頁）</td></tr>
+<tr><th scope="row">AI Red Teaming Initiative 頁</th><td>2026-10-26 頁面為準；列出上述三份文件，另有紅隊 Landscape 與兩篇早期文章</td><td><a href="https://genai.owasp.org/initiatives/ai-red-teaming-initiative/">genai.owasp.org/initiatives/ai-red-teaming-initiative/</a></td><td>網站頁尾 CC BY-SA 4.0</td></tr>
+<tr><th scope="row">AI Red Teaming 詞彙頁</th><td>2026-10-26 頁面為準</td><td><a href="https://genai.owasp.org/glossary/ai-red-teaming/">genai.owasp.org/glossary/ai-red-teaming/</a>（用於傳統與 AI 紅隊的差異說法）</td><td>網站頁尾 CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0（沿用既有主題已放置的副本）</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正或補充）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">Manual 的八階段名稱</th><td>Planning、Reconnaissance、Attack surface mapping、Exploitation、Persistence、Impact assessment、Reporting、Remediation（資源頁摘要）</td><td>PDF 目錄是：Planning &amp; Scoping／Reconnaissance &amp; Fingerprinting／Surface Mapping／Exploitation &amp; Impact／Persistence &amp; Escalation／Post-Exploitation／Evaluation &amp; Reporting／Post-Engagement &amp; Remediation</td><td>教材用 PDF 目錄的名稱；兩者的逐項對應是作者整理</td></tr>
+<tr><th scope="row">Guide 的四大面向</th><td>model evaluation、implementation testing、infrastructure assessment、runtime behavior analysis</td><td>資源頁與 PDF Executive Summary 這樣寫；PDF 的藍圖 (Blueprint) 另寫 Model、Implementation、System、Run-time Human &amp; Agentic Interaction</td><td>第 1 章並列兩種寫法，逐項對應標作者整理</td></tr>
+<tr><th scope="row">Guide 日期</th><td>2025-01-22</td><td>PDF 封面 2025-01-23</td><td>採較新者</td></tr>
+<tr><th scope="row">Vendor 準則日期</th><td>2026-02-04</td><td>PDF 封面 2026-01-13（Version 1.0 – Public Release）</td><td>採較新的 02-04；封面較早日期可能是文件定稿日，原因未能確認</td></tr>
+<tr><th scope="row">Manual 與 Guide 的關係</th><td>「該頁未說明與 2025 年 Guide 的關係（是否為後繼），未能確認」</td><td>Manual 全文搜尋 "Red Teaming Guide"、"successor"、"supersede"、"predecessor"、"replaces" 皆無結果</td><td>仍為未能確認，不下結論</td></tr>
+<tr><th scope="row">Manual 的規模</th><td>（筆記未載）</td><td>PDF 144 頁、八階段共約 120 頁；階段 4 約 40 頁</td><td>教材只讀選定章節（見第 4 節與 L-06A1）</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">Guide 日期</th><td>資源頁 2025-01-22；PDF 封面 2025-01-23</td><td>採較新的 2025-01-23</td></tr>
+<tr><th scope="row">Vendor 準則日期</th><td>資源頁 2026-02-04；PDF 封面 2026-01-13</td><td>採較新的 2026-02-04（資源頁）</td></tr>
+<tr><th scope="row">Manual 日期</th><td>資源頁 2026-10-20；PDF 封面只寫 October 2026</td><td>採資源頁的 2026-10-20（較精確且不矛盾）</td></tr>
+<tr><th scope="row">授權</th><td>三份 PDF 封面均標 CC BY-SA 4.0；網站頁尾「除非另有說明」CC BY-SA 4.0</td><td>無衝突。Guide 與 Vendor 要求引用須含專案名稱與資產名稱，已在各章「本章來源」標示</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>Manual 是不是 Guide 的後繼：</strong>見 R-2。兩份都是 Version 1.0，Manual 全文沒有提到 Guide，官方資源頁也沒說明。</li>
+  <li><strong>Vendor 準則 PDF 封面日期（2026-01-13）與資源頁日期（2026-02-04）相差的原因：</strong>可能是定稿與發布之差；官方沒有說明。</li>
+  <li><strong>Manual 階段 4 各技術小節與 GenAI Red Team Lab：</strong>本教材只讀了階段 4 的概要與測試領域表，其餘技術細節與配套的 Lab 儲存庫沒有逐項閱讀。教材只引用概要。</li>
+  <li><strong>Manual 階段 5 的各載體測試案例（TC 系列）與階段 6.3 的殘留 AI 狀態測試方法：</strong>只讀了持久化的概述、五個載體名稱、三項授權檢查與報告公式，各案例的細節沒讀。</li>
+  <li><strong>Manual 6.5.4 引用的公開案例（EchoLeak、ShadowLeak、ForcedLeak、Denial of Wallet、Grok 等）：</strong>本教材只轉述 Manual 給的等級與理由，沒有獨立查證各案例的事實。</li>
+  <li><strong>Guide 的 Best Practices、Appendix A–D 與 Manual 的附錄 B：</strong>未閱讀；教材沒有引用。</li>
+  <li><strong>紅隊 Landscape 與 Red Teaming Taxonomy：</strong>本主題不展開（沿用 U-D14），只指向 GenAI Security Project 架構主題的第 4 章。</li>
+  <li><strong>Vendor 比較矩陣的儲存格：</strong>PDF 抽字後欄位被打散，表 4-2 的評級另對照 PDF 第 24 頁的圖確認。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<h3>官方 PDF 與資源頁</h3>
+<ul>
+  <li>GenAI Red Teaming Manual Version 1.0：<a href="https://genai.owasp.org/resource/genai-red-teaming-manual-version-1-0/">資源頁</a>（PDF 由頁面下載連結取得）</li>
+  <li>GenAI Red Teaming Guide：<a href="https://genai.owasp.org/resource/genai-red-teaming-guide/">資源頁</a></li>
+  <li>OWASP Vendor Evaluation Criteria for AI Red Teaming Providers &amp; Tooling v1.0：<a href="https://genai.owasp.org/resource/owasp-vendor-evaluation-criteria-for-ai-red-teaming-providers-tooling-v1-0/">資源頁</a></li>
+  <li>AI Red Teaming Initiative：<a href="https://genai.owasp.org/initiatives/ai-red-teaming-initiative/">…/initiatives/ai-red-teaming-initiative/</a>；詞彙頁：<a href="https://genai.owasp.org/glossary/ai-red-teaming/">…/glossary/ai-red-teaming/</a></li>
+</ul>
+<h3>相鄰文件（僅用於對照）</h3>
+<ul>
+  <li>OWASP Top 10 for LLM Applications 2026：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">2026/README.md</a>；OWASP Top 10 for Agentic Applications 2026：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a></li>
+  <li>OWASP AISVS（Manual 參考 [109]）：<a href="https://github.com/OWASP/AISVS">github.com/OWASP/AISVS</a></li>
+  <li>OWASP AI Testing Guide README（列出 GenAI Red Teaming Guide）：<a href="https://github.com/OWASP/www-project-ai-testing-guide">github.com/OWASP/www-project-ai-testing-guide</a></li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 1 章：用「由刻意想弄壞系統的人跑的整合測試」類比紅隊；Manual 十一種情境歸成四群；圖 1-1 的「需求」措辭與連到 Landscape／AI Testing Guide／AISVS 的三條；Guide 四面向兩種寫法的逐項對應。</li>
+  <li>第 2 章：八階段資源頁摘要名稱與 PDF 目錄的對應；圖 2-1 階段 8 回到階段 1 的虛線迴圈。</li>
+  <li>第 3 章：圖 3-1 中「修補、回歸、偵測規則、回到下一輪」的串接。</li>
+  <li>第 4 章：表 4-2 的讀法（兩者不是二選一）；圖 4-1 整張廠商評估決策流程；情境 B 中「優先考慮顧問」的判斷；四份文件的合用方式。</li>
+  <li>所有 Mermaid 圖與表都是依官方文字重新繪製或改寫的簡化版。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>三份 PDF（Manual、Guide、Vendor Evaluation Criteria）與 genai.owasp.org 網站：CC BY-SA 4.0。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>Guide 與 Vendor Evaluation Criteria 的署名要求：引用時必須包含專案名稱以及所參照資產的名稱。本教材已在各章「本章來源」標示。</li>
+  <li>OWASP Top 10 for LLM Applications 2026、Top 10 for Agentic Applications 2026：CC BY-SA 4.0（僅用於編號對照）。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：GenAI Red Teaming Manual、Guide、Vendor Evaluation Criteria、genai.owasp.org 網站、LLM Top 10 2026、Agentic Top 10 2026 — CC BY-SA 4.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

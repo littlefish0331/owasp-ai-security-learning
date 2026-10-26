@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　LLMSVS：V1–V8 與版本｜AISVS 與 LLMSVS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="LLMSVS v2.0 的八章、70 條需求與層級標示、v2.1 草稿的差異、版本標示不一致，以及 OWASP 對認證與審查方式的明文立場。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="aisvs-and-llmsvs" data-page="03-llmsvs.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　LLMSVS：V1–V8 與版本</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="01-verification-standards.html">第 1 章</a>；建議先讀 <a href="02-aisvs.html">第 2 章</a> 以便對照</li>
+</ul>
+<p class="lead">LLMSVS (Large Language Model Security Verification Standard) 是另一份驗證標準，範圍比 AISVS 窄：只談使用大型語言模型的應用。它更早出現、篇幅更短（70 條需求），但版本狀態比較容易搞混：現行發布、候選版、草稿在不同地方有不同的標示。本章教你怎麼讀它，以及怎麼在引用時避開陷阱。</p>
+
+<h2 id="ls-onepage">3.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 3-1　LLMSVS 一頁式全貌（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">是什麼</th><td>供使用 LLM 的應用程式用的安全需求目錄。架構師、開發者、測試者與資安團隊用它來約定「這個 LLM 功能被驗證過」是什麼意思。它不取代用於應用程式其餘部分的 ASVS。</td></tr>
+<tr><th scope="row">誰發布</th><td>OWASP 專案，GitHub README 標示 Incubator；負責人為 Vandana Verma Sehgal 與 Elliot Ward。結構與評估做法改編自 OWASP ASVS。</td></tr>
+<tr><th scope="row">起源</th><td>建立在 Snyk Security Labs 於 2023 年的研究之上；Snyk 支持了最初的需求，Lakera 審閱了早期草稿。首次公開文字是 2024 年 2 月的 0.1。</td></tr>
+<tr><th scope="row">採用版本</th><td><strong>v2.0（英文）</strong>：README 稱為「current release」，並要求「在專案接受更新版本前，引用 v2.0」。<strong>v2.1 是草稿，不是發布</strong>。</td></tr>
+<tr><th scope="row">授權</th><td>CC BY-SA 4.0（LICENSE.md；GitHub 偵測亦為 CC-BY-SA-4.0）。</td></tr>
+<tr><th scope="row">受眾</th><td>README 標示：Builders（建置者）、Breakers（攻擊者視角）、Defenders（防禦者）。</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：owasp.org 專案頁</p>
+  <p>README 與徽章指向 <code>owasp.org/www-project-llm-verification-standard/</code>，但讀取時該網址回傳 404，因此層級（GitHub README 標示 Incubator）只能以 GitHub README 為準。</p>
+</div>
+
+<h2 id="ls-chapters">3.2 八章 V1–V8 與 70 條需求</h2>
+<p>LLMSVS 把需求分成八章。下表的需求數是作者數 v2.0 文件得到的（總和 70）；「控制目標」是用自己的話整理官方每章的 Control objective。</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　LLMSVS v2.0 的八章（需求數為作者計數；控制目標為作者整理）</caption>
+<thead><tr><th scope="col">章</th><th scope="col">章名</th><th scope="col">需求數</th><th scope="col">控制目標（一句話）<span class="tag author">作者整理，非官方</span></th></tr></thead>
+<tbody>
+<tr><th scope="row">V1</th><td>安全設定與維護 <br>(Secure configuration and maintenance)</td><td>4</td><td>自建或雲端的 LLM 都被安全設定與維護，避免未授權存取與敏感資訊外洩</td></tr>
+<tr><th scope="row">V2</th><td>模型生命週期 <br>(Model lifecycle)</td><td>18</td><td>從資料集整理、訓練到驗證，整個機器學習生命週期都考慮到安全威脅</td></tr>
+<tr><th scope="row">V3</th><td>即時學習 <br>(Real time learning)</td><td>5</td><td>模型會依使用者互動即時微調時，該有的限制與介入手段</td></tr>
+<tr><th scope="row">V4</th><td>模型記憶與儲存 <br>(Model memory and storage)</td><td>6</td><td>RAG 與各類記憶機制安全地處理訓練之外的額外知識</td></tr>
+<tr><th scope="row">V5</th><td>安全的 LLM 整合 <br>(Secure LLM integration)</td><td>17</td><td>應用元件與 LLM 之間的互動與運作要有安全控制（提示的來源、輸出格式、不可信、速率與成本）</td></tr>
+<tr><th scope="row">V6</th><td>代理與外掛 <br>(Agents and plugins)</td><td>12</td><td>使用工具、外掛與遠端連接器（如 MCP 伺服器）的自主元件，把風險降到可接受</td></tr>
+<tr><th scope="row">V7</th><td>相依與元件 <br>(Dependency and component)</td><td>6</td><td>第三方元件與相依套件被安全處理，降低供應鏈風險</td></tr>
+<tr><th scope="row">V8</th><td>監控與異常偵測 <br>(Monitoring and anomaly detection)</td><td>2</td><td>持續監控使用，偵測可能代表安全事件或濫用的異常行為或輸出</td></tr>
+</tbody></table></div>
+<p>看幾條實際的需求（v2.0 原文意旨，標編號）：<code>V5.1</code> 與 <code>V5.2</code> 要求提示由受信任的伺服器端元件發出、且在伺服器端組成，而不是直接接受來自用戶端的完整提示（三級皆適用）；<code>V5.13</code> 要求把 LLM 輸出視為不可信，例如不要把輸出片段串接進 SQL，而是用參數化查詢或同等保護（三級皆適用）；<code>V6.7</code> 要求自訂外掛考慮目前已驗證主體的範圍，外掛不能存取超過該主體被授權的範圍（層級 2 起）；<code>V7.4</code> 要求備有軟體物料清單 (Software Bill of Materials, SBOM)，列出第三方元件、授權與版本（層級 2 起）。這些與前面主題的原則是同一回事：模型的輸入與輸出都不是信任邊界內的東西。</p>
+
+<h2 id="ls-levels">3.3 核心概念：層級標示，以及草稿為什麼要把它寫成「累積式」</h2>
+<div class="concept">
+<h3 id="c-level-marks">v2.0 的勾選表與 v2.1 草稿的累積式定義</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>v2.0 的每條需求有三欄（L1、L2、L3），在適用的層級打勾。LLMSVS 2.0 把三級描述為：層級 1 基本、層級 2 中等（敏感資料，如個人助理、處理客戶資料的 API、處理內部資料的系統）、層級 3 高保證（營運關鍵、金融交易、受特定產業規範如醫療資料）。</dd>
+  <dt data-n="2">從表裡看到什麼（作者計數）</dt>
+  <dd>作者數了 v2.0 的勾選：70 條裡，17 條勾在三級、33 條只勾 L2 與 L3、20 條只勾 L3；也就是 <strong>L1 欄 17 條、L2 欄 50 條、L3 欄 70 條</strong>，沒有「只勾 L1」或「只勾 L2」的列。換句話說，勾選形式上是巢狀的：層級 3 包含全部。<span class="tag author">作者整理，非官方</span>：這是作者從表格的勾選樣式推出的觀察，v2.0 文件沒有用文字明說「層級是累積的」。</dd>
+  <dt data-n="3">v2.1 草稿改了什麼</dt>
+  <dd>草稿的前言明文定義「層級是累積式：層級 2 包含層級 1，層級 3 包含層級 2」，並規定：先選層級再測試；不要因為不方便就拿掉層級 1 的列；功能不存在時，該列標為「不適用 (Not Applicable)」，並寫一行理由。</dd>
+  <dt data-n="4">為什麼這個差別重要</dt>
+  <dd>當報告只說「通過層級 2」時，讀者需要知道這代表什麼：是只做了標 L2 的列，還是包含 L1？草稿把它寫清楚，並讓「不適用」成為明確結果，避免「覺得很難所以沒做」被誤標成不適用——草稿也特別區分：「我們沒做檢索，所以 4.3 不適用」成立；「我們有做檢索，但 4.3 很難」是失敗 (Fail)。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「v2.1 已經是現行版本，直接引用它。」不行：README 明說草稿不是發布，要引用 v2.0，直到專案接受新版為止。</dd>
+</dl>
+</div>
+
+<h2 id="ls-versions">3.4 版本：v2.0 與 v2.1 草稿的差異，以及標示不一致</h2>
+<div class="table-wrap"><table>
+<caption>表 3-3　LLMSVS v2.0 與 v2.1 草稿比較（來源：CHANGELOG 與兩份文件；v2.1 是草稿，不能當作現行要求）</caption>
+<thead><tr><th scope="col">面向</th><th scope="col">v2.0（現行發布）</th><th scope="col">v2.1 草稿（待社群審閱）</th></tr></thead>
+<tbody>
+<tr><th scope="row">需求寫法</th><td>以「Ensure that …」為主，部分用「Consider …」（如 6.11 人工核准、5.7 金絲雀標記）</td><td>每條改為單一結果的「Verify that …」，附適用標籤與證據說明</td></tr>
+<tr><th scope="row">層級</th><td>每級一欄打勾；文字未明說累積</td><td>明文定義為累積式；「不適用」為明確結果</td></tr>
+<tr><th scope="row">章名調整</th><td>V3 即時學習、V4 模型記憶與儲存、V6 代理與外掛、V7 相依與元件、V8 監控與異常偵測</td><td>V3 線上學習、V4 模型記憶與檢索、V6 代理與工具、V7 相依與元件、V8 監控與回應（中文為作者暫譯）</td></tr>
+<tr><th scope="row">需求異動</th><td>70 條；識別碼承襲 0.1</td><td>撤回 8 列且識別碼保留不重用（2.7、2.11、2.14、2.15、5.3、5.6、5.7、5.8），新增 22 個識別碼（如 1.5、1.6、4.7–4.9、5.18–5.23、6.13–6.17、7.7、8.3–8.5）</td></tr>
+<tr><th scope="row">被降為「非驗證」的內容</th><td>授權／著作權審查（2.7）、浮水印（2.14）、公平性工具（2.15）、金絲雀標記（5.7）等</td><td>移至附錄 B「不驗證的指引」，不再是通過／失敗的列</td></tr>
+<tr><th scope="row">與 Top 10 的對照</th><td>—</td><td>草稿說有對 OWASP LLM Top 10 2026 與 Agentic Top 10 2026 的 crosswalk</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：Releases 標籤與 README 的落差；草稿附屬檔案</p>
+  <p><strong>(1) 標籤不一致：</strong>README 寫「v2.0 是 current release、v2.1 是草稿且不是發布」；但 GitHub Releases 頁把 2.0 標為「v2.0 release candidate」（預發布 prerelease，2026-05-11），把 2.1 標為「V2.1 Draft version」（2026-10-23，<em>未</em>標預發布）。同一天 2026-05-11 還建立了 1.0 release。哪一個標示才是專案的正式狀態，本教材無法判斷。教材依專案自己在 README 與 CHANGELOG 的明文，把 v2.0 當現行發布、v2.1 當草稿。</p>
+  <p><strong>(2) 附屬資料夾：</strong>README 提到草稿附有 <code>mappings/crosswalk.md</code>、<code>profiles/</code>、<code>examples/worked-assessment.md</code>、<code>catalog/llmsvs-draft.json</code>，但本教材在 main 讀取倉庫根目錄只看到檔案（CHANGELOG、CONTRIBUTING、LICENSE、三份標準文件、README、leaders），<code>mappings/crosswalk.md</code> 讀取為 404。所以草稿說的 crosswalk 與範例評估，<strong>無法確認它們存在</strong>，教材不引用其內容。</p>
+</div>
+
+<h2 id="ls-assess">3.5 官方對認證與審查方式的明文立場</h2>
+<p>LLMSVS 2.0 有一整節寫「評估與認證」，這些是官方明載、也是你引用時最容易被誤用的地方：</p>
+<ul>
+  <li><strong>OWASP 目前不認證任何廠商、驗證者或軟體。</strong>任何聲稱「LLMSVS 認證」的保證、信任標章或認證，都不是 OWASP 審核、註冊或認證的；信賴這類說法的組織要謹慎。官方也說這不該阻止組織提供保證服務，只要不聲稱是 OWASP 官方認證。</li>
+  <li><strong>建議「開書 (open book)」審查：</strong>讓評估者能接觸架構師、開發者、專案文件、原始碼與已驗證的介面，並每種使用者角色至少一個帳號。</li>
+  <li><strong>範圍：</strong>LLMSVS 只涵蓋與 LLM 使用及整合有關的需求；一般網路服務等非 LLM 特有的控制，要用 ASVS 等標準另外驗證。</li>
+  <li><strong>報告內容：</strong>清楚定義驗證範圍（特別是排除項）、概述通過與未通過的測試，並附上處理失敗的指引。</li>
+  <li><strong>證據：</strong>業界慣例要求詳細記錄驗證過程，包含工作底稿、截圖、重現問題的腳本、與 proxy 日誌等電子測試記錄；<strong>只靠自動化工具的結果不夠</strong>，文件必須能提供對所有控制都已被徹底測過的確切證據，發生爭議時要能證明每個被驗證的控制確實被測過。</li>
+</ul>
+<p>v2.1 草稿保留了同樣的原則：通過需要證據，廠商問卷或掃描報告單獨不構成通過。</p>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>LLMSVS v2.0：8 章、70 條需求，範圍只限 LLM 的使用與整合；起源於 Snyk Security Labs 2023 年研究。</li>
+  <li>引用請用 v2.0；v2.1 是草稿，不是發布（README 明文）。GitHub Releases 的標籤與 README 不一致，未能確認。</li>
+  <li>v2.0 的層級以勾選表呈現（L1 欄 17、L2 欄 50、L3 欄 70，作者計數）；v2.1 草稿明文定義為累積式並新增「不適用」結果。</li>
+  <li>OWASP 目前不認證任何廠商、驗證者或軟體；任何「LLMSVS 認證」宣稱都不是 OWASP 的。</li>
+  <li>官方建議開書審查，證據不能只靠自動化工具結果。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出 LLMSVS 的八章，以及它的範圍為什麼比 AISVS 窄。</li>
+  <li>我知道引用時該用 v2.0 還是 v2.1，並能說明原因。</li>
+  <li>我能解釋「不適用」和「失敗」的差別（草稿的規則）。</li>
+  <li>我能說出 OWASP 對認證與審查方式的明文立場。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-evidence-and-integration.html">第 4 章　把需求變成驗證證據與跨文件整合</a>：把兩份標準放到實際情境，學怎麼選層級、蒐證，並判斷供應商的「認證」宣稱。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP LLMSVS README（Current release、Next-edition draft、Classification and audience、Project leaders、Standard documents）：<a href="https://github.com/OWASP/www-project-llm-verification-standard">github.com/OWASP/www-project-llm-verification-standard</a>；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>LLMSVS v2.0：<a href="https://github.com/OWASP/www-project-llm-verification-standard/blob/main/LLMSVS-v2.0-en.md">LLMSVS-v2.0-en.md</a>（Utilizing the LLMSVS、Assumptions、Assessment and certification、V1–V8；<code>V5.1</code>、<code>V5.2</code>、<code>V5.13</code>、<code>V6.7</code>）。</li>
+    <li>LLMSVS v2.1 草稿：<a href="https://github.com/OWASP/www-project-llm-verification-standard/blob/main/LLMSVS-v2.1-draft-en.md">LLMSVS-v2.1-draft-en.md</a>（前言「What this draft changes」、層級、適用標籤與不適用規則、Appendix A／B；<strong>草稿，非發布</strong>）。</li>
+    <li>LLMSVS CHANGELOG：<a href="https://github.com/OWASP/www-project-llm-verification-standard/blob/main/CHANGELOG.md">CHANGELOG.md</a>（0.1 於 2024 年 2 月、2.0 於 2026、2.1 草稿）。</li>
+    <li>LLMSVS GitHub Releases：<a href="https://github.com/OWASP/www-project-llm-verification-standard/releases">releases</a>（標籤 1.0／2.0／2.1 及其發布日期與預發布標記）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP LLMSVS（GitHub 儲存庫，LICENSE.md）— CC BY-SA 4.0。需求數、勾選分佈與控制目標一句話為作者整理。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'v-ch3', topic: 'aisvs-and-llmsvs', mode: 'chapter',
+  questions: [
+    { id: 'v3q1', type: 'mc', lo: [3], refs: [{label: '3.1 一頁式全貌', href: '03-llmsvs.html#ls-onepage'}, {label: '3.4 版本', href: '03-llmsvs.html#ls-versions'}],
+      stem: '審查報告要引用 LLMSVS。GitHub 倉庫的主分支同時有 v2.0 與 v2.1 草稿。依本章，應該引用哪一個？',
+      options: [
+        { text: 'v2.1 草稿，因為編號較大、內容較新。', why: '草稿不是發布；README 明說在專案接受新版之前，引用 v2.0。' },
+        { text: 'v2.0，並在需要時說明 v2.1 只是草稿。', correct: true, why: 'README 明文：Cite v2.0 until the project accepts a newer edition。' },
+        { text: '1.0，因為最初版本最穩定。', why: '1.0 的文字其實是 2024 年 2 月 0.1 的 Markdown 複本；現行發布是 v2.0。' },
+        { text: '兩個一起列，讓讀者選。', why: '報告需要指明單一版本，才有可比較的結論。' }
+      ],
+      summary: 'LLMSVS 引用 v2.0；v2.1 只是草稿。' },
+    { id: 'v3q2', type: 'mc', lo: [3], refs: [{label: '3.5 認證與審查', href: '03-llmsvs.html#ls-assess'}],
+      stem: '下列關於「LLMSVS 認證」的說法，哪一項是 LLMSVS 2.0 官方明文寫出的立場？',
+      options: [
+        { text: '通過任何一家顧問公司的 LLMSVS 評估，就等於取得 OWASP 認證。', why: '官方說 OWASP 目前不認證任何廠商、驗證者或軟體。' },
+        { text: '只要自動化掃描工具全綠，就足以證明通過。', why: '官方指出自動化工具結果不夠，必須提供控制都被測過的證據。' },
+        { text: 'OWASP 目前不認證任何廠商、驗證者或軟體；任何聲稱的「LLMSVS 認證」都不是 OWASP 審核或註冊的。', correct: true, why: '3.5 節第一點，官方明載。' },
+        { text: 'OWASP 認證只授予層級 3 的系統。', why: '沒有這樣的規定；OWASP 不認證。' }
+      ],
+      summary: 'OWASP 不認證；「認證」宣稱要自行評估可信度。' },
+    { id: 'v3q3', type: 'scn', lo: [3], refs: [{label: '3.3 不適用與失敗', href: '03-llmsvs.html#ls-levels'}],
+      stem: '依 v2.1 草稿的規則，這份評估報告的處理哪裡有問題？',
+      scenario: '朝陽物流（虛構）的客服助理會檢索內部手冊再回答。評估員在報告中對「檢索內容與嵌入更新時，不能被注入任意文件」這類需求寫：「我們有做檢索，但這很難落實，所以標為不適用。」另一列「團隊沒有訓練或微調任何模型」則標為不適用並寫了一行理由。',
+      options: [
+        { text: '兩列都不能標不適用，所有列都必須通過。', why: '草稿規定：功能確實不存在時，可以標為不適用。' },
+        { text: '兩列都可以標為不適用，因為難以落實等同不適用。', why: '草稿明確區分：有做檢索卻覺得困難，是失敗，不是不適用。' },
+        { text: '第一列應標為失敗（有檢索卻未落實）；第二列標為不適用是對的，因為功能不存在，並已寫理由。', correct: true, why: '符合 3.3 節草稿的規則。' },
+        { text: '第二列才有問題：沒有訓練也要打勾通過。', why: '功能不存在時，標為不適用並寫理由才是草稿的做法。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 草稿的規則：標籤功能不存在，所有只適用該功能的列為不適用，並寫一行理由；(2) 「有檢索但很難」是失敗，不是不適用；(3) 「沒有訓練微調」功能不存在，標不適用合理。</p><p><strong>結論：</strong>第一列改為失敗並列入修補清單。注意這是 v2.1 <em>草稿</em>的規則；v2.0 本身沒有「不適用」這個明確結果。對應教材：<a href="03-llmsvs.html#ls-levels">3.3 節</a>。</p>' },
+    { id: 'v3q4', type: 'match', lo: [3], refs: [{label: '3.2 表 3-2', href: '03-llmsvs.html#ls-chapters'}],
+      stem: '把下列主題配對到 LLMSVS v2.0 最相關的章。',
+      cats: [
+        { id: 'v2', label: 'V2 模型生命週期' },
+        { id: 'v4', label: 'V4 模型記憶與儲存' },
+        { id: 'v5', label: 'V5 安全的 LLM 整合' },
+        { id: 'v6', label: 'V6 代理與外掛' },
+        { id: 'v7', label: 'V7 相依與元件' }
+      ],
+      items: [
+        { text: '把 LLM 的輸出當成不可信，不要串接進 SQL', answer: 'v5', why: 'V5.13。' },
+        { text: '外掛不能存取超過已驗證主體被授權的範圍', answer: 'v6', why: 'V6.7。' },
+        { text: '向量資料庫與快取需要驗證使用者', answer: 'v4', why: 'V4.4。' },
+        { text: '訓練資料集要來自可信來源並驗證', answer: 'v2', why: 'V2.3。' },
+        { text: '要有 SBOM 列出第三方元件、授權與版本', answer: 'v7', why: 'V7.4。' }
+      ],
+      summary: 'V2 生命週期、V4 記憶、V5 整合、V6 代理、V7 相依。' }
+  ]
+});
+</script>
+</body>
+</html>

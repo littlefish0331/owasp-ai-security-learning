@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　跨文件整合與收尾｜Agentic Skills Top 10｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AST10 與 Agentic Top 10 (ASI)、MCP Top 10、LLM Top 10 的對應：哪些是官方白皮書明載、哪些編號不能照用；何時該改用其他文件；全主題重點。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="agentic-skills-top-10" data-page="04-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　跨文件整合與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="03-controls-and-scenarios.html">第 3 章</a></li>
+</ul>
+<p class="lead">AST10 很少單獨使用。它自己就在每一條裡附了一段「OWASP Mapping」，對照到 Agentic Top 10、MCP Top 10、LLM Top 10 等。這一章整理這些對應：哪些是官方白皮書明載的、哪些編號有問題不能照抄、你拿到一個 Agent 系統時又該怎麼在幾份清單之間分流。</p>
+
+<h2 id="in-table">4.1 白皮書明載的對應</h2>
+<p>白皮書每條都有一段 OWASP Mapping，所以<strong>這些對應是官方寫的</strong>（但其中 LLM 編號有問題，見 4.2）。下表挑出和你已經讀過的清單最相關的幾條。ASI 名稱與本教材 <a href="../../01-overview/ai-exchange/05-agentic-genai.html">AI Exchange 第 5 章</a>採用的 Agentic Top 10 2026 名稱一致。</p>
+<div class="table-wrap"><table>
+<caption>表 4-1　AST10 白皮書 OWASP Mapping 中的 ASI 與 MCP 對應（官方明載；只列 AST01、02、03、05、06、09 六條，每列是白皮書該條所列的全部 ASI 與 MCP 對應）</caption>
+<thead><tr><th scope="col">AST 條目</th><th scope="col">對應的 Agentic Top 10 (ASI)</th><th scope="col">對應的 MCP Top 10</th></tr></thead>
+<tbody>
+<tr><th scope="row">AST01 惡意技能</th><td>ASI04 Agentic Supply Chain Vulnerabilities；ASI10 Rogue Agents；ASI03 Identity &amp; Privilege Abuse</td><td>MCP03:2025 Tool Poisoning；MCP04:2025；MCP05:2025；MCP10:2025</td></tr>
+<tr><th scope="row">AST02 供應鏈遭入侵</th><td>ASI04；ASI05 Unexpected Code Execution (RCE)；ASI03</td><td>MCP04:2025 Software Supply Chain Attacks &amp; Dependency Tampering；MCP03:2025；MCP05:2025</td></tr>
+<tr><th scope="row">AST03 權限過大</th><td>ASI03 Identity &amp; Privilege Abuse；ASI02 Tool Misuse &amp; Exploitation；ASI05</td><td>MCP02:2025 Privilege Escalation via Scope Creep；MCP07:2025；MCP01:2025</td></tr>
+<tr><th scope="row">AST05 外部指令</th><td>ASI01 Agent Goal Hijack；ASI06 Memory &amp; Context Poisoning；ASI04</td><td>MCP06:2025；MCP10:2025；MCP03:2025</td></tr>
+<tr><th scope="row">AST06 隔離薄弱</th><td>ASI03；ASI05；ASI08 Cascading Failures</td><td>MCP05:2025；MCP02:2025；MCP07:2025</td></tr>
+<tr><th scope="row">AST09 缺乏治理</th><td>ASI08；ASI09 Human-Agent Trust Exploitation；ASI10</td><td>MCP08:2025 Lack of Audit and Telemetry；MCP09:2025 Shadow MCP Servers；MCP07:2025</td></tr>
+</tbody></table></div>
+<p>AST09 與 MCP09:2025 Shadow MCP Servers 的對照特別有教學價值：兩者都在處理「影子」資產（沒人管的 MCP 伺服器、沒人管的技能），只是層不同。這個描述的措辭是<span class="tag author">作者整理，非官方</span>，但官方對照本身是白皮書寫的。</p>
+<div class="callout official unsure">
+  <p class="callout-title">MCP 條目名稱有一處出入</p>
+  <p>白皮書把 MCP06:2025 寫成 "Intent Flow Subversion"；本教材的調查筆記（取自 MCP Top 10 專案頁）把 MCP06:2025 寫成 "Prompt Injection via Contextual Payloads"。兩者不同，本教材沒有在本主題核對 MCP Top 10 原文（那是另一個主題），因此表中對 MCP06 只列編號，不列名稱，並把這個出入記在<a href="references.html">參考資料頁</a>。</p>
+</div>
+
+<h2 id="in-trap">4.2 不能照抄的地方：LLM 編號</h2>
+<p>AST10 白皮書對 LLM Top 10 的對應<strong>沒有帶年份</strong>，而且彼此不一致。下表把白皮書寫的編號，與本教材已核對過的 <a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 2025 和 2026</a> 並排：</p>
+<div class="table-wrap"><table>
+<caption>表 4-2　AST10 的 LLM 編號 vs. LLM Top 10 2025／2026（名稱取自既有主題已核對的內容）</caption>
+<thead><tr><th scope="col">AST10 寫的</th><th scope="col">LLM Top 10 2025 的該編號</th><th scope="col">LLM Top 10 2026 的該編號</th><th scope="col">是否對得上</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM03 (Supply Chain)</th><td>LLM03:2025 Supply Chain</td><td><a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a> 是 Excessive Agency；Supply Chain 是 <a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-supply">LLM04:2026</a></td><td>與 2025 版相符</td></tr>
+<tr><th scope="row">LLM04 (Data and Model Poisoning)</th><td>LLM04:2025 Data and Model Poisoning</td><td>Data and Model Poisoning 是 <a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-poison">LLM05:2026</a></td><td>與 2025 版相符</td></tr>
+<tr><th scope="row">LLM08 (Excessive Agency)</th><td>LLM08:2025 是 Vector and Embedding Weaknesses；Excessive Agency 是 LLM06:2025</td><td><a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-hidden">LLM08:2026</a> 是 Hidden Context Exposure；Excessive Agency 是 LLM03:2026</td><td><strong>兩版皆不符</strong></td></tr>
+<tr><th scope="row">LLM09 (Misinformation / Excessive Agency)</th><td>LLM09:2025 是 Misinformation</td><td><a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-vector">LLM09:2026</a> 是 Vector and Embedding Weaknesses；Misinformation 是 <a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-misinfo">LLM07:2026</a></td><td><strong>兩版皆不符</strong>，且把兩個不同風險寫在同一個編號</td></tr>
+</tbody></table></div>
+<div class="callout warn">
+  <p class="callout-title">怎麼處理（作者整理，非官方）</p>
+  <ul>
+    <li><strong>不要照抄 AST10 的 LLM 編號。</strong>要引用時，用條目<em>名稱</em>去查 LLM Top 10 2026，再寫成 LLMnn:2026。例如「Excessive Agency」在 2026 版是 LLM03:2026。</li>
+    <li>前兩列（LLM03、LLM04）和 2025 版的編號吻合，這提示白皮書的 LLM 對照可能是依 2025 版寫的；但白皮書沒有寫明年份，教材不能下這個結論，只是列為觀察。</li>
+    <li>同一個「Excessive Agency」在白皮書的不同條目對到 LLM08 與 LLM09，這在兩個年份都對不上，建議視為編號錯誤，而不是兩個不同的概念。教材不替官方更正它，只提醒讀者核對。</li>
+  </ul>
+</div>
+<p>第三項的做法有個重要的細節：本教材把它寫成「建議視為編號錯誤」，而不是「官方有錯」。本教材沒有辦法判斷白皮書的作者原意，所以只能指出「對不上」這件事。</p>
+
+<h2 id="in-flow">4.3 何時用哪一份</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程：先問系統是否讓 Agent 載入技能。若是，用 AST10 審查技能層；系統是否也使用 MCP 伺服器，若是，加看 MCP Top 10；若 Agent 能自主行動，加看 Agentic Top 10 2026；最後回到 AI Exchange 做威脅建模與選控制。若組織關心技能資產的盤點與審批，連到 AST09 與治理文件；若關心模型與套件來源追蹤，可看 AIBOM 主題。">
+flowchart TD
+  S["我要評估一個 Agent 系統"] --> Q1{"Agent 會載入技能嗎？"}
+  Q1 -->|"是"| A["AST10<br>審查技能層"]
+  Q1 -->|"否"| Q2
+  A --> Q2{"也用 MCP 伺服器？"}
+  Q2 -->|"是"| M["加看 MCP Top 10"]
+  Q2 -->|"否"| Q3
+  M --> Q3{"Agent 能自主行動？"}
+  Q3 -->|"是"| G["加看 Agentic Top 10 2026"]
+  Q3 -->|"否"| X
+  G --> X["AI Exchange<br>威脅建模、選控制"]
+  A -.-> H["AST09 治理：清單、審批、稽核<br>可延伸 AIBOM 主題"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q1,Q2,Q3,H author
+</pre>
+<figcaption><strong>圖 4-1　依系統特徵選擇文件。</strong>各文件的存在與用途是官方內容；「依是否載入技能、是否用 MCP、是否自主」分流，以及連到 AIBOM 主題的虛線，是<strong>作者整理，非官方</strong>（虛線框）。真實系統常同時符合多個分支，這張圖是入口，不是唯一路徑。</figcaption>
+</figure>
+
+<h2 id="ch4-summary">4.4 全主題重點與接下來讀什麼</h2>
+<div class="keypoints"><ul>
+  <li>AST10 的口訣：MCP 是模型怎麼跟工具說話；AST10 談那些工具（技能）實際做什麼。現行標示 Incubator、1.0-2026，白皮書 V1 公開審查中。</li>
+  <li>四個官方面向：來源與登錄信任、執行邊界、生命週期治理、跨平台重用。決策樹只有四步，多個條目同時成立時記主要根因。</li>
+  <li>緩解建議反覆圍繞六類主題；簽章證明作者不證明安全，掃描器結果只當參考，簽章與釘選管不到執行時才讀取的外部內容。</li>
+  <li>官方資料有兩處內部不一致：嚴重度（GitHub 有、白皮書說不指派）與 LLM 編號（沒有年份且彼此不一致）。</li>
+  <li>白皮書的 ASI 對應與 MCP 對應是官方明載的；LLM 對應別照抄，用名稱重新查 LLM Top 10 2026。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能為一個 Agent 平台寫出帶版本與「公開審查中」標示的 AST10 引用。</li>
+  <li>我能說出為什麼不照抄 AST10 的 LLM 編號，以及該怎麼做。</li>
+  <li>我能依系統特徵決定要看哪幾份清單。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p>先做<a href="quiz.html">總測驗</a>。接著可讀 07 延伸的 <a href="../agent-control-standard/index.html">Agent Control Standard</a>（Agent 執行期控制標準，其規格也包含技能生命週期的 hook），或回到<a href="../../index.html">首頁學習地圖</a>依你的系統選擇下一個主題。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Agentic Skills Top 10 白皮書 PDF 的 OWASP Mapping 區塊（各條）：<a href="https://owasp.github.io/www-project-agentic-skills-top-10/assets/publications/ast10-top10-whitepaper-2.pdf">ast10-top10-whitepaper-2.pdf</a>；2026-10-26 讀取；公開審查中的 V1。</li>
+    <li>OWASP Agentic Skills Top 10 GitHub 儲存庫的 ast01.md 至 ast10.md：<a href="https://github.com/OWASP/www-project-agentic-skills-top-10">github.com/OWASP/www-project-agentic-skills-top-10</a>；CC BY-SA 4.0。</li>
+    <li>LLM Top 10 2025／2026 的條目名稱與編號：沿用本教材 <a href="../../01-overview/genai-security-project/05-integration.html">GenAI Security Project 第 5 章</a>與 <a href="../../01-overview/ai-exchange/08-integration.html">AI Exchange 第 8 章</a>已核對的內容；Agentic Top 10 2026 的 ASI 名稱同樣沿用 AI Exchange 主題。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Agentic Skills Top 10 — CC BY-SA 4.0（README、專案頁、網站；白皮書 PDF 內文未見授權文字）；OWASP Top 10 for LLM Applications、Top 10 for Agentic Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源；MCP Top 10 僅引用條目編號。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'a-ch4', topic: 'agentic-skills-top-10', mode: 'chapter',
+  questions: [
+    { id: 'a4q1', type: 'mc', lo: [4], refs: [{label: '4.2 表 4-2', href: '04-integration.html#in-trap'}],
+      stem: '報告寫：「AST03 對應 LLM09 (Excessive Agency)，所以我們已用 LLM Top 10 2026 的 LLM09 檢查過了。」依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，LLM09 就是 Excessive Agency。', why: '在 2025 與 2026 兩版，LLM09 都不是 Excessive Agency。' },
+        { text: '不要照抄 AST10 的 LLM 編號：Excessive Agency 在 LLM Top 10 2026 是 LLM03:2026；LLM09:2026 是 Vector and Embedding Weaknesses。應該用名稱重新查，再寫帶年份的編號。', correct: true, why: '符合 4.2 節的處理方式。' },
+        { text: '應該改成 LLM08，因為 AST06 寫的是 LLM08。', why: '白皮書的 LLM08 (Excessive Agency) 在兩個年份也都對不上；兩者互相不一致，不能互相當作更正。' },
+        { text: '沒有問題，因為 AST10 的對應是官方白皮書寫的。', why: '官方明載不等於編號正確：白皮書的 LLM 編號沒有年份，且彼此不一致。' }
+      ],
+      summary: '用名稱重新查，寫成帶年份的編號。' },
+    { id: 'a4q2', type: 'match', lo: [4], refs: [{label: '4.2 表 4-2', href: '04-integration.html#in-trap'}],
+      stem: '把 AST10 白皮書寫的 LLM 編號，配對到它與 LLM Top 10 2025／2026 的關係。',
+      cats: [
+        { id: 'y25', label: '與 2025 版相符' },
+        { id: 'none', label: '兩版皆不符' }
+      ],
+      items: [
+        { text: 'LLM03 (Supply Chain)', answer: 'y25', why: 'LLM03:2025 Supply Chain 相符；2026 版是 LLM04。' },
+        { text: 'LLM04 (Data and Model Poisoning)', answer: 'y25', why: 'LLM04:2025 相符；2026 版是 LLM05。' },
+        { text: 'LLM08 (Excessive Agency)', answer: 'none', why: '2025 版 LLM08 是 Vector and Embedding Weaknesses；2026 版 LLM08 是 Hidden Context Exposure。' },
+        { text: 'LLM09 (Misinformation / Excessive Agency)', answer: 'none', why: '2025 版 LLM09 是 Misinformation；2026 版 LLM09 是 Vector and Embedding Weaknesses；且把兩個風險寫在同一個編號。' }
+      ],
+      summary: '前兩者像 2025 版編號；後兩者兩版皆不符。' },
+    { id: 'a4q3', type: 'scn', lo: [4], refs: [{label: '4.3 圖 4-1', href: '04-integration.html#in-flow'}, {label: '4.1 表 4-1', href: '04-integration.html#in-table'}],
+      stem: '依圖 4-1，這份評估應該怎麼選文件？',
+      scenario: '銀杏雲端（虛構）的內部開發 Agent：會載入公司維護的技能、透過 MCP 伺服器存取內部工具，並可自行執行多步驟任務。資安負責人想「只用 AST10，因為技能是最新的風險」。',
+      options: [
+        { text: '只用 AST10。', why: '系統同時用 MCP 伺服器且 Agent 能自主行動，只看 AST10 會漏掉 MCP 與 Agent 行為風險。' },
+        { text: '只用 MCP Top 10。', why: '技能層不在 MCP Top 10 的範圍。' },
+        { text: '用 AST10 審查技能層，加看 MCP Top 10 與 Agentic Top 10 2026，最後回到 AI Exchange 做威脅建模；白皮書明載的 ASI 與 MCP 對應可以輔助串接，LLM 編號則用名稱重查。', correct: true, why: '符合圖 4-1 與 4.2 節。' },
+        { text: '只用 Agentic Top 10，因為它涵蓋所有 Agent 風險。', why: '官方白皮書把技能層列為獨立的清單，Agentic Top 10 不是專門談技能。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 系統會載入技能，走 AST10。(2) 也用 MCP 伺服器，加看 MCP Top 10。(3) 能自主行動，加看 Agentic Top 10 2026。(4) 最後回到 AI Exchange 做威脅建模；LLM 編號不照抄白皮書。</p><p><strong>結論：</strong>四份搭配使用。對應教材：<a href="04-integration.html#in-flow">4.3 節</a>、<a href="04-integration.html#in-trap">4.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

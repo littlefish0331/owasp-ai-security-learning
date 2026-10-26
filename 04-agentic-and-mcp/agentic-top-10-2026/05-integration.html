@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 章　跨文件整合與收尾｜Top 10 for Agentic Applications 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Top 10 for Agentic Applications 2026 與 LLM Top 10 2025／2026 的編號換算、與 Non-Human Identities Top 10、AIVSS、CycloneDX 的關係，以及事故追蹤表的用法。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="agentic-top-10-2026" data-page="05-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 5 章　跨文件整合與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 5 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO5</li>
+  <li>前置：<a href="04-comm-cascade-human-rogue.html">第 4 章</a></li>
+</ul>
+<p class="lead">十項讀完了，剩下的是「它怎麼跟你手上的其他東西接起來」。你的內部規範可能引用 LLM Top 10 2026、你的身分團隊可能在用 NHI Top 10、你的風險團隊想用評分排序、你的供應鏈團隊已經在產 SBOM。本章把這些串起來，最重要的是處理好那個一直出現的問題：<strong>文件引用的 LLM 編號是 2025 版</strong>。</p>
+
+<h2 id="i-llm">5.1 與 LLM Top 10 的編號換算</h2>
+<p>Agentic Top 10 的每一條都寫了它延伸的 LLM 條目，用的是 2025 版編號。LLM Top 10 2026（2026-08-04）重新編號（完整換算見〈<a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 的版本演進</a>〉）。下表只列本主題常用的幾條（對應關係取自 GenAI 專案主題第 5 章的版本演進表，官方 What's New 與 2026 清單）。</p>
+<div class="table-wrap"><table>
+<caption>表 5-1　本主題常用的 LLM 條目：2025 編號 → 2026 編號</caption>
+<thead><tr><th scope="col">條目名稱</th><th scope="col">LLM Top 10 2025（文件引用）</th><th scope="col">LLM Top 10 2026</th></tr></thead>
+<tbody>
+<tr><th scope="row">Prompt Injection</th><td>LLM01:2025</td><td>LLM01:2026</td></tr>
+<tr><th scope="row">Sensitive Information Disclosure</th><td>LLM02:2025</td><td><a href="../../02-llm-applications/llm-top-10/06-disclosure.html#dc-what">LLM02:2026</a></td></tr>
+<tr><th scope="row">Supply Chain</th><td>LLM03:2025</td><td>LLM04:2026</td></tr>
+<tr><th scope="row">Data and Model Poisoning</th><td>LLM04:2025</td><td>LLM05:2026</td></tr>
+<tr><th scope="row">Improper Output Handling</th><td>LLM05:2025</td><td>LLM10:2026</td></tr>
+<tr><th scope="row">Excessive Agency</th><td>LLM06:2025</td><td>LLM03:2026</td></tr>
+<tr><th scope="row">Vector and Embedding Weaknesses</th><td>LLM08:2025</td><td><a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-vector">LLM09:2026</a></td></tr>
+<tr><th scope="row">Misinformation</th><td>LLM09:2025</td><td><a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-misinfo">LLM07:2026</a></td></tr>
+<tr><th scope="row">Unbounded Consumption</th><td>LLM10:2025</td><td><a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-consume">LLM06:2026</a></td></tr>
+</tbody></table></div>
+<p>本教材核對了 2026 清單的編號與名稱，來源是 GitHub 的 <code>2026/README.md</code>：LLM01 Prompt Injection、LLM02 Sensitive Information Disclosure、LLM03 Excessive Agency、LLM04 Supply Chain、LLM05 Data and Model Poisoning、LLM06 Unbounded Consumption、LLM07 Misinformation、LLM08 Hidden Context Exposure、LLM09 Vector and Embedding Weaknesses、LLM10 Improper Output Handling。2025 版的編號與名稱，本教材對照了官方 LLM Top 10 2025 首頁 genai.owasp.org/llm-top-10/ 的條目清單：LLM01 Prompt Injection、LLM02 Sensitive Information Disclosure、LLM03 Supply Chain、LLM04 Data and Model Poisoning、LLM05 Improper Output Handling、LLM06 Excessive Agency、LLM07 System Prompt Leakage、LLM08 Vector and Embedding Weaknesses、LLM09 Misinformation、LLM10 Unbounded Consumption。<span class="tag author">作者整理，非官方</span>：「2025→2026」這一欄是作者依條目名稱配對；官方 Agentic Top 10 沒有提供這個換算。</p>
+
+<h2 id="i-others">5.2 與其他文件的關係</h2>
+<div class="table-wrap"><table>
+<caption>表 5-2　Top 10 for Agentic Applications 2026 與相鄰文件（只列文件明文寫的；作者整理另標示）</caption>
+<thead><tr><th scope="col">相鄰文件</th><th scope="col">關係（文件明文）</th><th scope="col">怎麼用</th></tr></thead>
+<tbody>
+<tr><th scope="row">Non-Human Identities (NHI) Top 10 (2025)</th><td>附錄 C 把 NHI1–NHI10 逐項對照 ASI、T 編號與 AIVSS 核心風險，「顯示身分中心與 agent 行為中心風險的對齊」</td><td>身分團隊可從 NHI 風險找到相關的 ASI 條目，例如 NHI5 Overprivileged NHI ↔ ASI02／ASI03</td></tr>
+<tr><th scope="row">AIVSS</th><td>附錄 A 的「AIVSS 核心風險」欄，對應到評分與嚴重度排序的量化類別；ASI10 主要對應 Behavioral Integrity、Operational Security、Compliance Violations</td><td>要排序時用 AIVSS（本教材 06 評估與驗證階段有專屬主題）；Top 10 本身不給嚴重度順序</td></tr>
+<tr><th scope="row">CycloneDX／AIBOM</th><td>附錄 B：CycloneDX 回答「系統裡有哪些元件與工具」，Agentic Top 10 與 AIVSS 回答「這些元件與自主 agent 可能怎麼行為、互動、失效」</td><td>供應鏈團隊的 SBOM 與 ASI04 互補，不能取代</td></tr>
+<tr><th scope="row">ASI Agentic Exploits &amp; Incidents Tracker</th><td>附錄 D：參照真實事件與漏洞，每週更新，並把每個事件對到 ASI 條目；文件說這是補充而非取代既有的漏洞通報，事件應變相關請見 CTI 的應變指南</td><td>找實例時看追蹤表；本教材<strong>不</strong>逐一轉述事件細節</td></tr>
+<tr><th scope="row">Threats and Mitigations 1.1</th><td>「仍是這份 Top 10 所依賴的基礎且詳細的分類」</td><td>要深入某條時，沿附錄 A 的 T 編號回去（<a href="../agentic-threats-and-mitigations/index.html">前一個主題</a>）</td></tr>
+</tbody></table></div>
+<p>附錄 D 的追蹤表在 PDF 中列了 2025 年 6 月至 10 月的事件，例如惡意 MCP 套件後門、多個 Cursor 組態與工作區的遠端執行弱點、Salesforce Agentforce 的 ForcedLeak、Replit 的資料庫刪除事件，並標註每個事件對到的 ASI 條目。這些是文件整理的第三方事件，<strong>本教材沒有逐一查證原始報導</strong>，所以教材只用它們說明「一個事件常對到多條 ASI」，不把它當成獨立證據。</p>
+
+<h2 id="i-use">5.3 怎麼把 Top 10 用起來</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="使用 Agentic Top 10 的流程：先盤點你的 agent 擁有哪些能力輸入、記憶、工具、其他 agent、人類互動；把能力對到十項的位置；對每個命中的條目讀官方緩解並以最小自主權為原則檢視；需要深入時回 T&amp;M 或保護應用指南；需要排序時用 AIVSS；上線後用事件追蹤表更新認識。">
+flowchart TD
+  A["1 盤點 agent 的能力：<br>輸入、記憶、工具、其他 agent、人類互動"] --> B["2 對到十項的位置<br>圖 1-1"]
+  B --> C["3 對命中的條目讀官方緩解，<br>先問 Least Agency"]
+  C --> D{"需要深入？"}
+  D -->|"威脅細節"| E["T&amp;M 1.1"]
+  D -->|"落實到架構與開發"| F["Securing Agentic Applications"]
+  D -->|"排序"| G["AIVSS"]
+  C --> H["4 上線後對照事件追蹤表，<br>更新認識"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class A,B,C,D,H author
+</pre>
+<figcaption><strong>圖 5-1　使用 Agentic Top 10 的建議流程。</strong>整張流程是<strong>作者整理，非官方</strong>：官方描述了每個文件的用途，但沒有把它們串成一條建議的使用順序。</figcaption>
+</figure>
+
+<h2 id="ch5-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>Agentic Top 10 引用的 LLM 編號是 2025 版；換成 2026 版時，Excessive Agency 是 LLM03:2026、Supply Chain 是 LLM04:2026、Improper Output Handling 是 LLM10:2026。</li>
+  <li>附錄 A 對照 T&amp;M 與 AIVSS，附錄 C 對照 NHI Top 10，附錄 B 說明與 CycloneDX／AIBOM 互補，附錄 D 是持續更新的事件追蹤表。</li>
+  <li>Top 10 不給嚴重度順序；要排序用 AIVSS 或自己的風險分析。</li>
+  <li>一個事件常對到多條 ASI；歸屬問的是「最主要出問題的環節」，防線要疊加。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能把文件引用的 LLM 編號換成 2026 版，並知道這個換算是作者的整理。</li>
+  <li>我知道 NHI Top 10、AIVSS、CycloneDX 各自跟 ASI 的關係。</li>
+  <li>我能用「能力盤點 → 對位置 → 讀緩解 → 深入或排序」的流程使用 Top 10。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch5-next">接下來讀什麼</h2>
+<p>本主題的 <a href="quiz.html">總測驗（15 題）</a>；之後讀 <a href="../securing-agentic-applications/index.html">保護 Agentic 應用指南</a>，看如何把這些風險落實到架構與開發流程。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>OWASP Top 10 for Agentic Applications for 2026</em>, Version 2026, December 2025：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a>；2026-10-26 讀取；CC BY-SA 4.0。引用段落：Letter、Appendix A–D。</li>
+    <li>OWASP Top 10 for LLM Applications 2026 清單（Version 2026，2026-08-04）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">GitHub 2026/README.md</a>；2026-10-26 讀取。</li>
+    <li>OWASP Top 10 for LLM Applications 2025 首頁：<a href="https://genai.owasp.org/llm-top-10/">genai.owasp.org/llm-top-10/</a>；2026-10-26 讀取，用於核對 2025 版編號與名稱。</li>
+    <li>本教材 <a href="../../01-overview/genai-security-project/05-integration.html#int-evolution">GenAI 專案第 5 章版本演進</a>：2025→2026 編號對應所依據的整理。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Top 10 for Agentic Applications 2026、Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'asi-ch5', topic: 'agentic-top-10-2026', mode: 'chapter',
+  questions: [
+    { id: 's5q1', type: 'match', lo: [5], refs: [{label: '5.1 表 5-1', href: '05-integration.html#i-llm'}],
+      stem: '把文件引用的 LLM Top 10 2025 編號，配對到它在 2026 版的編號。',
+      cats: [
+        { id: 'l03', label: 'LLM03:2026' },
+        { id: 'l04', label: 'LLM04:2026' },
+        { id: 'l06', label: 'LLM06:2026' },
+        { id: 'l10', label: 'LLM10:2026' }
+      ],
+      items: [
+        { text: 'LLM06:2025 Excessive Agency', answer: 'l03', why: '2026 版 Excessive Agency 是 LLM03。' },
+        { text: 'LLM03:2025 Supply Chain', answer: 'l04', why: '2026 版 Supply Chain 是 LLM04。' },
+        { text: 'LLM10:2025 Unbounded Consumption', answer: 'l06', why: '2026 版 Unbounded Consumption 是 LLM06。' },
+        { text: 'LLM05:2025 Improper Output Handling', answer: 'l10', why: '2026 版 Improper Output Handling 是 LLM10。' }
+      ],
+      summary: '引用 LLM 編號一律帶年份。' },
+    { id: 's5q2', type: 'mc', lo: [5], refs: [{label: '5.2 表 5-2', href: '05-integration.html#i-others'}],
+      stem: '供應鏈團隊說：「我們已經產出 CycloneDX 的 SBOM，所以 ASI04 已經處理完了。」依附錄 B 的說法，最恰當的回應是？',
+      options: [
+        { text: '正確，SBOM 就是 ASI04 的全部要求。', why: '附錄 B 說明兩者回答不同的問題。' },
+        { text: '不完整：SBOM 回答「系統裡有哪些元件與工具」；ASI04 還要處理這些元件與自主 agent 在執行期可能怎麼行為、互動或失效。', correct: true, why: '附錄 B 的核心區分；SBOM 是起點，不是結論。' },
+        { text: '錯誤，SBOM 對 agent 完全沒用。', why: '文件認為 SBOM／AIBOM 是重要的基礎，只是不夠。' },
+        { text: 'ASI04 只涉及開源專案，SBOM 與它無關。', why: 'ASI04 涵蓋第三方的各種元件，且文件明確要求使用 SBOM 與 AIBOM。' }
+      ],
+      summary: '清單是起點；執行期行為還要另外處理。' },
+    { id: 's5q3', type: 'scn', lo: [5], refs: [{label: '5.1 編號換算', href: '05-integration.html#i-llm'}, {label: '5.2 表 5-2', href: '05-integration.html#i-others'}],
+      stem: '依本章，這份風險登記表有哪兩個需要修正的地方？',
+      scenario: '瑞豐銀行（虛構）把 agent 風險登記進風險登記冊，其中一列寫：「ASI03 Identity and Privilege Abuse ← 對應 LLM06（Excessive Agency）；嚴重度：高（因為 ASI03 排第三）。」審查者要求依官方文件核對。',
+      options: [
+        { text: '「LLM06」應改為 LLM06:2025，並在引用 2026 版時改為 LLM03:2026；「排第三所以嚴重度高」沒有依據，Top 10 不給嚴重度順序。', correct: true, why: '5.1 節的編號換算；5.3 節與重點：要排序用 AIVSS 或自己的風險分析。' },
+        { text: '兩處都正確，ASI 的順序就是嚴重度。', why: '官方沒有說順序代表嚴重度。' },
+        { text: '只需要把 LLM06 改成 LLM03，不必寫年份。', why: '沒有年份，讀者無法區分兩個版本。' },
+        { text: '應該刪除對應欄，因為 ASI 與 LLM 無關。', why: '附錄 A 明文有對照。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 文件引用的 LLM06 是 2025 版 Excessive Agency；2026 版已是 LLM03:2026，不寫年份會誤導。(2) 官方沒有說 ASI 編號代表嚴重度；排序要用 AIVSS 或組織自己的風險分析。</p><p><strong>結論：</strong>改為「LLM06:2025（2026 版為 LLM03:2026）Excessive Agency」，並移除或另行依據評分給嚴重度。對應教材：<a href="05-integration.html#i-llm">5.1 節</a>、<a href="05-integration.html#i-others">5.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

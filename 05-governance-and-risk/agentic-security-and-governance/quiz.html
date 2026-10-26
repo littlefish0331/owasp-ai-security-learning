@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜Agentic 安全與治理現況｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Agentic 安全與治理現況主題總測驗：14 題，涵蓋五個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="agentic-security-and-governance" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：Agentic 安全與治理現況</h1>
+<ul class="meta-row">
+  <li>14 題（選擇題 5、情境判斷題 5、配對題 4）</li>
+  <li>預估時間：約 20 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO5</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–5 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位：</strong>說明報告是什麼、版本與日期、v1.0 到 v2 的變化，以及它不是什麼。</li>
+  <li><strong>分類與威脅：</strong>用三個維度加自主程度分類 agent，並說明提示詞注入與供應鏈兩條主要路徑。</li>
+  <li><strong>安全與安全性：</strong>區分 AI Security 與 AI Safety，並說明為什麼在部署層必須一起治理。</li>
+  <li><strong>身分與協定：</strong>區分 NHI 與 Agent 身分，說明三類協定的風險與供應鏈要求。</li>
+  <li><strong>成熟度與法規：</strong>用採用層級 × 治理成熟度矩陣判斷治理是否足夠，並說明法規地圖的讀法與限制。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：State of Agentic AI Security and Governance 2.01、genai.owasp.org 網站 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-position-and-findings.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-taxonomy-and-threats.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-safety-security.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-protocols-identity.html', a, '第 4 章 ' + l); };
+  var C5 = function (a, l) { return R('05-maturity-model.html', a, '第 5 章 ' + l); };
+  var C6 = function (a, l) { return R('06-regulation-and-integration.html', a, '第 6 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('pf-onepage', '1.1 表 1-1'), C1('pf-v2', '1.2 表 1-2')],
+    stem: '下列哪一種對這份報告的引用方式最準確？',
+    options: [
+      { text: '「OWASP 在 2025 年 7 月發布的 Agentic 治理標準」', why: '2025 年 7 月是 v1.0；而且這是報告，不是標準。' },
+      { text: '「OWASP 的 agent 認證框架」', why: '報告不是認證框架。' },
+      { text: '「OWASP GenAI Security Project 2026 年版」', why: '專案沒有整體版本；這句話沒有指到具體產出。' },
+      { text: '「State of Agentic AI Security and Governance，Version 2.01，2026 年 6 月，出自 Agentic Security Initiative」', correct: true, why: '帶上名稱、版本、日期與出處。' }
+    ],
+    summary: '引用：名稱 + 版本 + 日期 + 出處。' },
+
+  { id: 'q02', type: 'scn', lo: [1], refs: [C1('pf-evidence', '1.4 表 1-3'), C1('c-three', '1.3')],
+    stem: '依本教材，簡報引用報告的方式有哪些問題？',
+    scenario: '東瀛證券（虛構）的合規簡報寫：「依 OWASP 報告，2026 年的 agent 事故資料經 OWASP 認證，我們因此可以確定 agent 風險已經普遍化，且報告列出的所有法規就是我們必須遵守的清單。」',
+    options: [
+      { text: '沒有問題，這是官方報告。', why: '報告自己聲明事件追蹤表是策展的快照，且不是法律意見。' },
+      { text: '至少三處需修正：報告沒有「認證」事故資料，追蹤表是策展快照；「普遍化」是作者群的判斷，須標明；法規附錄聲明不是法律意見，且是 2026 年 4 月前的快照，不能當成必須遵守的清單。', correct: true, why: '對應表 1-3 與第 5 章對法規的讀法。' },
+      { text: '只有「認證」一詞需要更正，其餘都對。', why: '「法規清單」與「普遍化」的說法也有問題。' },
+      { text: '應刪除所有關於事故的內容。', why: '事故資料可以引用，只要標明來源與性質。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 報告說事件追蹤表是「策展的快照，不是窮盡的檔案」，納入不代表指責，也沒有認證。(2) 「風險普遍化」是報告的三個發現之一，屬作者群的論證，引用時要標明是報告的主張。(3) 法規章節與附錄開頭都聲明「不是法律意見」，狀態驗證至 2026 年 4 月 4 日，且應諮詢法律顧問。</p><p><strong>結論：</strong>改為「報告指出……」，把追蹤表寫成策展快照，並把法規交給法務確認。對應教材：<a href="01-position-and-findings.html#pf-evidence">1.4 節</a>。</p>' },
+
+  { id: 'q03', type: 'match', lo: [1], refs: [C1('pf-v2', '1.2 表 1-2')],
+    stem: '把下列內容配對到它是 v2 新增（或升級）的章節，還是報告原有的主題。',
+    cats: [
+      { id: 'new', label: 'v2 新增或升級' },
+      { id: 'old', label: '報告延續的主題（非 v2 特有）' }
+    ],
+    items: [
+      { text: 'AI Safety vs AI Security 專章', answer: 'new', why: '報告列為 v2 新增的專章。' },
+      { text: 'Enterprise Adoption Maturity Model', answer: 'new', why: 'v2 新增。' },
+      { text: 'Agent Identity 與 NHI 專章', answer: 'new', why: '升為專章，並把身分視為新的控制平面。' },
+      { text: '呼籲治理跟上 agentic 風險的核心訴求', answer: 'old', why: 'v1.0 就以「呼籲治理跟上」為主軸，v2 的「治理必須跟上部署」是延續。' }
+    ],
+    summary: 'v2 的新增重點：事故為基礎的威脅分析、Safety vs Security、成熟度模型、身分與 SBOM 專章。' },
+
+  /* ================= LO2 分類與威脅 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C2('tx-dims', '2.1 表 2-1')],
+    stem: '一個團隊說：「我們所有 agent 都用同一個編排框架，所以對它們的能見度很完整。」依報告的實作維度，這個假設的問題是？',
+    options: [
+      { text: '沒有問題，編排框架提供完整稽核。', why: '報告明說不要假設採用框架就等於有能見度。' },
+      { text: '編排框架一定比低程式碼平台不安全。', why: '報告的重點是能見度與稽核面，而不是誰更不安全。' },
+      { text: '框架只是三種實作模式之一，輕量函式庫組合與低程式碼平台上的 agent 不在其中，而且這兩類的稽核面更弱、影子 AI 風險更高。', correct: true, why: '表 2-1 的實作維度。' },
+      { text: '實作模式只影響效能，不影響治理。', why: '報告說實作模式決定稽核面與組織能見度。' }
+    ],
+    summary: '採用框架 ≠ 有能見度。' },
+
+  { id: 'q05', type: 'match', lo: [2], refs: [C2('tx-threat', '2.3')],
+    stem: '把下列做法或框架配對到報告所述的威脅路徑或設計框架。',
+    cats: [
+      { id: 'pi', label: '提示詞注入路徑' },
+      { id: 'sc', label: '供應鏈路徑' },
+      { id: 'df', label: '設計約束框架' }
+    ],
+    items: [
+      { text: '工具描述欄位中藏有人類看不到的惡意指令', answer: 'sc', why: '工具投毒屬供應鏈路徑的新攻擊面。' },
+      { text: '共享檔案內的指令讓 agent 改變目標', answer: 'pi', why: '提示詞注入是 agentic 攻擊的主要傳遞機制。' },
+      { text: '同一對話中至多滿足三個性質中的兩個', answer: 'df', why: 'Rule of Two，說明結構性問題，但不是完整防線。' }
+    ],
+    summary: '提示詞注入與供應鏈是兩條主路徑；Rule of Two 是設計約束，不是完整防線。' },
+
+  { id: 'q06', type: 'scn', lo: [2], refs: [C2('c-autonomy', '2.2'), C2('tx-dims', '2.1')],
+    stem: '依本章，這個程式碼 agent 的治理需求最可能是什麼？',
+    scenario: '木棉軟體（虛構）有一個程式碼 agent：它在 CI 流程中自動審查外部貢獻者的 pull request、自己修正並合併，不需人工核准，並持有部署金鑰。團隊認為「它只是個開發工具，用一般的應用程式安全做法就夠了」。',
+    options: [
+      { text: '一般應用程式安全做法就夠，因為它只是開發工具。', why: '報告說標準應用程式控制只適用於受監督的 agent。' },
+      { text: '這是完全自主的程度，需要確定性強制（掛鉤、熔斷器）、持續行為監控與停止開關，並把它當高風險主體納入身分管理，設預算上限；因為 CI 中的 agent 會讀取不受信任的外部輸入，不能套用信任開發者的假設。', correct: true, why: '對應 2.2 的自主程度治理含義；CI 常駐 agent 為報告「新興威脅」之一。' },
+      { text: '只要把模型換成更大的模型即可。', why: '風險來自自主程度與權限，而非模型大小。' },
+      { text: '只要禁止它合併就沒有風險。', why: '禁止合併是一種降低自主程度的選擇，但題目問的是完全自主下的治理需求。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 它自己審查、修正、合併且不需核准，屬完全自主；報告要求確定性強制、持續行為監控、停止開關，以及執行時間／API／成本的預算上限。(2) 它持有部署金鑰，應有專屬身分、明確權限邊界與獨立稽核紀錄。(3) 它讀取外部貢獻者的輸入，是攻擊者可直接面對的介面；報告提醒，為受信任開發者設計的控制不能直接搬到 CI 常駐的 agent。</p><p><strong>結論：</strong>提高治理或降低自主程度，不能只用一般應用程式安全。對應教材：<a href="02-taxonomy-and-threats.html#c-autonomy">2.2 節</a>。</p>' },
+
+  /* ================= LO3 安全與安全性 ================= */
+  { id: 'q07', type: 'mc', lo: [3], refs: [C3('ss-defs', '3.1 表 3-1')],
+    stem: '依報告，下列哪一項最符合「AI Security」而非「AI Safety」？',
+    options: [
+      { text: '攻擊者在郵件中埋入指令，使 agent 外洩機密。', correct: true, why: '信任邊界被違反，屬資安。' },
+      { text: '助理沒有被攻擊，但回答了不該提供的危險資訊。', why: '傷害來自系統是什麼、沒有攻擊者，屬安全性。' },
+      { text: '程式碼助理無視凍結指令，刪掉了資料庫。', why: '報告把這類歸為安全性例子，儘管預設權限過大讓它同時是資安缺口。' },
+      { text: '模型因輿論回饋迴圈而穩定出不當人格。', why: '無攻擊者參與，屬安全性。' }
+    ],
+    summary: '資安：信任邊界被違反；安全性：正常運作中的有害結果。' },
+
+  { id: 'q08', type: 'scn', lo: [3], refs: [C3('c-collapse', '3.2'), C3('ss-limits', '3.3')],
+    stem: '依報告的論證，下列哪一個回應最恰當？',
+    scenario: '北辰醫療（虛構）的病歷整理 agent 在週一誤刪了一批資料。安全性團隊說：「這是模型可靠性問題，我們已重啟並檢查模型漂移，結案。」一週後同樣的異常再度發生。資安團隊事後調查才發現，三週前有一封帶有指令的外部郵件被寫入了 agent 的持久記憶。',
+    options: [
+      { text: '安全性團隊的處理是對的，只是運氣不好。', why: '報告正是以這種案例說明：把看似可靠性的問題只當安全性處理，可能漏掉持久機制而再次被入侵。' },
+      { text: '兩種原因在 agent 身上難以區分；應在回應時就同時假設兩種可能，檢查輸入、記憶與檢索內容，並縮小共同的權限面。', correct: true, why: '3.2 節：看似可靠性故障的現象可能是持久入侵；分類不該決定誰來回應。' },
+      { text: '以後所有異常都交給資安團隊，安全性團隊不再參與。', why: '報告說雙方都有落差，需要整合，不是由一方取代。' },
+      { text: '這是模型層的問題，與部署組織無關。', why: '報告把模型層安全性歸供應商，但部署層的權限、記憶與監督是部署組織的責任。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 報告第二個例子：持久記憶被先前的對抗互動污染，數日後 agent 才出現異常；團隊若只當安全性處理（重啟、查漂移），可能漏掉持久機制而再次被入侵。(2) 報告的結論是部署層的安全性與資安難以操作性地區分，回應時應同時處理。(3) 共同的權限面（誤刪資料的能力）是兩種原因的共同根因。</p><p><strong>結論：</strong>兩種假設並行調查，檢查記憶與輸入，並縮小權限面。對應教材：<a href="03-safety-security.html#c-collapse">3.2 節</a>。</p>' },
+
+  { id: 'q09', type: 'mc', lo: [3], refs: [C3('ss-limits', '3.3')],
+    stem: '關於報告的「收斂論證」，下列哪一項是它自己劃出的邊界？',
+    options: [
+      { text: '它適用於所有 AI 系統，包括沒有工具的純文字模型。', why: '報告說對受限或有人類介入的 agent，兩類仍可有用地分開。' },
+      { text: '它主張資安與安全性應立即合併成同一部門。', why: '報告說的是不能再作為平行的、各自獨立回報的職能。' },
+      { text: '它主張分類不再有任何用途。', why: '報告說分類仍可用於分析原因，只是不該決定誰來回應。' },
+      { text: '它主張部署層的收斂；模型層的安全性仍是供應商的獨立學科；對自主程度有限的 agent 仍可分開。', correct: true, why: '3.3 節的三個邊界。' }
+    ],
+    summary: '邊界：部署層、模型層不在內、受限 agent 仍可分開、分類仍可用於分析。' },
+
+  /* ================= LO4 身分與協定 ================= */
+  { id: 'q10', type: 'match', lo: [4], refs: [C4('c-identity', '4.2 表 4-2')],
+    stem: '把下列特徵配對到「傳統 NHI」或「Agent 身分」。',
+    cats: [
+      { id: 'nhi', label: '傳統 NHI（服務帳號）' },
+      { id: 'agent', label: 'Agent 身分' }
+    ],
+    items: [
+      { text: '長效的靜態憑證，輪替前一直有效', answer: 'nhi', why: '表 4-2：壽命長效。' },
+      { text: '短暫、即時簽發，隨任務動態縮減權限', answer: 'agent', why: '表 4-2：壽命短暫／即時；範圍依意圖、細粒度。' },
+      { text: '委派以基本的 OAuth 範圍表示', answer: 'nhi', why: '傳統 NHI 的委派方式。' },
+      { text: '委派鏈保留脈絡，稽核綁定意圖', answer: 'agent', why: 'Agent 身分的委派與可稽核性。' }
+    ],
+    summary: 'NHI：憑證有效嗎？Agent 身分：持有者現在該做這件事嗎？' },
+
+  { id: 'q11', type: 'mc', lo: [4], refs: [C4('pi-protocols', '4.1 表 4-1')],
+    stem: '依報告，部署標準化 agent 協定的組織，至少要能證明下列哪一項？',
+    options: [
+      { text: '所有 agent 都使用同一個廠商的協定。', why: '報告沒有這樣的要求。' },
+      { text: '所有協定訊息都以明文儲存以便稽核。', why: '稽核要求的是稽核等級的遙測與可追溯性，不是明文。' },
+      { text: 'agent 與工具有可密碼學驗證的身分，並對委派與自主設有明確限制與升級路徑。', correct: true, why: '報告「2026 年最低期望」的前兩項。' },
+      { text: '不需要撤銷機制，因為 agent 是短暫的。', why: '報告要求快速撤銷與圍堵。' }
+    ],
+    summary: '最低期望：可驗證身分、委派與自主限制、驗證脈絡、最小權限、供應鏈控制、稽核遙測、快速撤銷。' },
+
+  { id: 'q12', type: 'scn', lo: [4], refs: [C4('pi-supply', '4.3 表 4-3'), C4('c-identity', '4.2')],
+    stem: '依本章，這家公司的供應鏈治理缺了什麼？',
+    scenario: '潮間製造（虛構）已為所有應用程式產生 SBOM 並每週掃描弱點。他們的客服 agent 會在執行期從外部登錄庫挑選工具、呼叫第三方 MCP 伺服器，並在必要時把子任務委派給另一個廠商的 agent。稽核人員問：「如果出事，你們能重建這次結果用了哪些工具、是誰的權限嗎？」沒有人答得出來。',
+    options: [
+      { text: '不缺什麼，SBOM 與每週掃描已符合所有要求。', why: 'SBOM 只記錄「裝了什麼」；agent 的有效相依圖是執行期才建起來的。' },
+      { text: '缺了對執行期組合的治理：要把工具登錄庫、外部伺服器與被委派的 agent 納入供應鏈範圍，建立 AI 與 agentic 元件的正式清冊，並對高影響流程要求能重建哪些元件、工具與子 agent 貢獻結果的決策層級可追溯性。', correct: true, why: '對應表 4-3 的要求 3、4、5。' },
+      { text: '只要換成更大的掃描預算。', why: '預算不是缺口；缺的是範圍與可追溯性。' },
+      { text: '只要停止使用外部登錄庫。', why: '報告的重點是治理執行期組合，不是禁用。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 報告：agentic 系統在執行期動態發現並呼叫外部能力，有效相依圖在執行期才建立。(2) 要求：把供應鏈治理擴大到執行期組合（工具登錄庫、外掛生態、被委派的 agent、外部脈絡來源）、正式清冊（只要能影響 agent 行為就必須盤點）、高影響流程的決策層級可追溯性。(3) 題目中的缺口正是「無法重建」。</p><p><strong>結論：</strong>補上執行期組合治理與可追溯性。對應教材：<a href="04-protocols-identity.html#pi-supply">4.3 節</a>。</p>' },
+
+  /* ================= LO5 成熟度與法規 ================= */
+  { id: 'q13', type: 'scn', lo: [5], refs: [C5('c-matrix', '5.1'), C5('mm-matrix', '5.2 表 5-2')],
+    stem: '依本章的矩陣，這家公司的處境與該做的決定是什麼？',
+    scenario: '大湖電信（虛構）自評治理成熟度為等級 2。他們要上線的 agent 會連到多個外部 MCP 伺服器並呼叫第三方 API（屬 AT6）。另外，網路監控顯示員工仍在用個人 AI 帳號處理客戶資料（AT0）。資安長要向董事會說明。',
+    options: [
+      { text: '等級 2 對所有層級都足夠，可以直接上線。', why: '矩陣顯示 AT6 在等級 2 為 INSUFFICIENT：定期稽核跟不上外部工具變動與供應鏈風險。' },
+      { text: 'AT6 在等級 2 治理不足，應提高治理成熟度（至少等級 3，含供應鏈驗證、MCP 認證、agent 對 agent 認證）或降低採用層級；AT0 則只有一條路：消除，移入受管層級或封鎖。矩陣是建議姿態，不是合規判定。', correct: true, why: '5.1、5.2 節。' },
+      { text: '把 AT0 與 AT6 都視為「可以治理」，各自提高等級即可。', why: '報告說 AT0 需要主動消除而非治理。' },
+      { text: '矩陣的結論具有法律效力，只要判定為不足就不能上線。', why: '報告明說格子標籤不是具約束力的合規判定。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 矩陣：AT6–AT7 在等級 2 為 INSUFFICIENT；等級 3 為「最低可行」，需供應鏈驗證、MCP 認證與 agent 對 agent 認證。(2) 步驟 3：不足的格子有兩個選項，提高成熟度或降低層級。(3) AT0 只有一個選項：消除。(4) 標籤是建議姿態，不是合規判定。</p><p><strong>結論：</strong>先處理 AT0 並決定提升到等級 3 或降低 AT6 的層級。對應教材：<a href="05-maturity-model.html#mm-matrix">5.2 節</a>。</p>' },
+
+  { id: 'q14', type: 'match', lo: [5], refs: [C5('mm-model', '5.1 表 5-1')],
+    stem: '把下列部署配對到最接近的採用層級。',
+    cats: [
+      { id: 'at1', label: 'AT1 供應商內建助理' },
+      { id: 'at3', label: 'AT3 公民開發者 agent' },
+      { id: 'at6', label: 'AT6 對外延伸 agent' },
+      { id: 'at8', label: 'AT8 聯邦／跨邊界' }
+    ],
+    items: [
+      { text: '全公司使用的 Microsoft 365 Copilot', answer: 'at1', why: '完全由供應商控制；你只消費。' },
+      { text: '業務人員在低程式碼平台上拉的自動化流程，作用於真實組織資料', answer: 'at3', why: '低／無程式碼平台，使用者設定流程與提示詞。' },
+      { text: '連接多個外部 MCP 伺服器並呼叫第三方 API 的 agent', answer: 'at6', why: '跨信任邊界連接外部工具與服務。' },
+      { text: '跨組織供應鏈的 agent 網路', answer: 'at8', why: 'agent 跨組織邊界運作。' }
+    ],
+    summary: '採用層級依信任邊界與自主特性排列；層級越高，啟動的 ASI 風險越多。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'agentic-security-and-governance', mode: 'final',
+    los: [
+      { n: 1, text: '定位：說明報告是什麼、版本與日期、v1.0 到 v2 的變化，以及它不是什麼。' },
+      { n: 2, text: '分類與威脅：用三個維度加自主程度分類 agent，並說明提示詞注入與供應鏈兩條主要路徑。' },
+      { n: 3, text: '安全與安全性：區分 AI Security 與 AI Safety，並說明為什麼在部署層必須一起治理。' },
+      { n: 4, text: '身分與協定：區分 NHI 與 Agent 身分，說明三類協定的風險與供應鏈要求。' },
+      { n: 5, text: '成熟度與法規：用採用層級 × 治理成熟度矩陣判斷是否足夠，並說明法規地圖的讀法與限制。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　跨文件整合與收尾｜AI 成熟度評估（AIMA）｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP AI 資源裡四種「成熟度」工具的區分（AIMA、Agentic 成熟度模型、COMPASS 的威脅排序、SAMM）；與 05 階段其他主題的串接；限制；一個虛構情境與全主題及全階段重點。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="ai-maturity-assessment" data-page="04-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　跨文件整合與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4、LO5</li>
+  <li>前置：第 1–3 章</li>
+</ul>
+<p class="lead">到這裡，你在 05 階段已經看過好幾個帶有「成熟度」字樣的東西：AIMA、Agentic 報告的 Enterprise Adoption Maturity Model、CoE 的 12 個月階段、COMPASS 的「風險等級」。它們名字相近，問的問題卻完全不同。這一章把它們區分清楚，並把整個 05 階段收成一條工作流。</p>
+
+<h2 id="ai-four">4.1 四個容易混淆的「成熟度」</h2>
+<div class="table-wrap"><table>
+<caption>表 4-1　OWASP AI 資源裡四個「成熟度」相關的東西（作者整理，各列事實取自該文件）</caption>
+<thead><tr><th scope="col">文件</th><th scope="col">它問的問題</th><th scope="col">評的對象</th><th scope="col">結果長什麼樣</th></tr></thead>
+<tbody>
+<tr><th scope="row">AIMA</th><td>我們的 AI 治理與保證<strong>實務</strong>做到第幾級？</td><td>組織（或事業單位、專案）在 8 領域 24 實務上的做法</td><td>每個實務 0–3（含 +），雷達圖或計分卡</td></tr>
+<tr><th scope="row">Agentic 報告的 Enterprise Adoption Maturity Model</th><td>我們部署的<strong>最進階的 agent</strong>，治理夠不夠？</td><td>採用層級 AT0–AT8 對治理等級 0–4</td><td>矩陣上的格子：足夠／不足／不要部署</td></tr>
+<tr><th scope="row">COMPASS 的風險等級</th><td>某個<strong>威脅</strong>有多嚴重、先處理哪個？</td><td>個別威脅（可能性 × 衝擊）</td><td>分數與等級：Critical 到 Minimal</td></tr>
+<tr><th scope="row">OWASP SAMM</th><td>我們的<strong>軟體安全開發</strong>實務到第幾級？</td><td>組織的安全軟體開發生命週期</td><td>（AIMA 的前身結構）</td></tr>
+<tr><th scope="row">CoE 的 12 個月階段</th><td>卓越中心<strong>怎麼建起來</strong>？</td><td>CoE 本身的建置進度</td><td>四個階段，不是評分</td></tr>
+</tbody></table></div>
+<p>用一句話區分：<strong>AIMA 評「你的做法」，Agentic 模型評「你的部署對你的治理」，COMPASS 評「個別威脅」，CoE 階段是「建置進度」</strong>。這四種「成熟度」或「等級」不能互換，也不能相加。</p>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：同一個詞，四種意思</p>
+  <p>表中的「評的對象」欄是作者對各文件的歸納。官方文件各自只講自己；<strong>沒有任何一份提到其他的</strong>：AIMA 的 PDF 與 Crosswalk 都沒提 Agentic 報告，反之亦然。作者有逐份搜尋確認：前面各主題的 PDF 都不含「AIMA」一詞，AIMA 的簡介也沒有列出 05 階段的其他文件。因此這個區分完全是教材整理。</p>
+</div>
+
+<h2 id="ai-flow">4.2 05 階段五個主題怎麼串成一條工作流</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="治理工作流：先用治理檢核表盤點要想清楚的面向；用 CoE 指南組成跨部門團隊讓每個區塊有人認領；用 AIMA 評估各實務的成熟度找出缺口；用 COMPASS 把具體威脅排優先順序；若有 agent，用 Agentic 成熟度模型判斷部署與治理是否匹配；用 Crosswalk 把風險對到要滿足的外部框架；最後回到標準原文與自己系統的實際證據。">
+flowchart TD
+  A["治理檢核表<br>導入前有哪些面向要想清楚"] --> B["CoE 指南<br>誰來認領每個面向"]
+  B --> C["AIMA<br>各實務的做法到第幾級"]
+  C --> D["COMPASS<br>具體威脅先處理哪個"]
+  D --> E{"有 agent 嗎？"}
+  E -->|"有"| F["Agentic 成熟度模型<br>部署與治理是否匹配"]
+  E -->|"沒有"| G
+  F --> G["Crosswalk<br>風險對到要滿足的框架"]
+  G --> H["回到標準原文<br>＋自己系統的實際證據"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class A,B,C,D,E,F,G,H author
+</pre>
+<figcaption><strong>圖 4-1　05 階段的治理工作流（作者整理，非官方）。</strong>整張圖是教材作者把五個主題串成的建議順序；官方沒有這樣寫。順序可以調整，例如先做 AIMA 再組 CoE，也是合理的。</figcaption>
+</figure>
+
+<h2 id="ai-table">4.3 與其他文件的對應：官方寫了什麼、作者整理了什麼</h2>
+<div class="table-wrap"><table>
+<caption>表 4-2　AIMA 與其他文件的對應</caption>
+<thead><tr><th scope="col">文件</th><th scope="col">對應（來源的說法，改寫）</th><th scope="col">性質</th></tr></thead>
+<tbody>
+<tr><th scope="row">OWASP SAMM</th><td>AIMA 前言：改編 SAMM 的基礎概念；簡介與評估方法一再說「與 SAMM 的方法類似」</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">OWASP AI Exchange、LLM Top 10、ML Security Top 10、AI Security and Privacy Guide</th><td>AIMA 簡介稱它們為「姊妹專案」，提供互補的指引，共同構成 AIMA 的威脅模型、範圍與社群做法的骨幹</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">EU AI Act、OECD AI 原則、NIST AI RMF、ISO 42001</th><td>AIMA 簡介與 Governance 領域導言提及它們是「持續變動的法規與標準」，要求可追溯的風險控制（教材未逐一查證它們的內容）</td><td><span class="tag official">官方</span>（提及）</td></tr>
+<tr><th scope="row">Governance Checklist、CoE、COMPASS、Agentic 報告、Crosswalk</th><td>AIMA 與 Crosswalk 的文件都沒有提到彼此；串接是教材整理</td><td><span class="tag author">作者整理，非官方</span></td></tr>
+</tbody></table></div>
+
+<h2 id="ai-limits">4.4 它的限制，以及如何使用才誠實</h2>
+<div class="concept">
+<h3 id="c-honest">自評的三個限制</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>AIMA 的評估是組織對自己做法的陳述：Yes／No 問卷由組織內的人回答。它的設計是漸進、可自評的工具，不是外部認證。</dd>
+  <dt data-n="2">限制一：輕量評估不等於已驗證</dt>
+  <dd>只做問卷的結果是受訪者的說法。文件自己區分輕量與詳細，並指出詳細評估才是用證據確認「不是紙面合規」（第 3 章）。</dd>
+  <dt data-n="3">限制二：級別是順序，不是比較</dt>
+  <dd>不同組織評出的 Level 2，並不保證意思相同：問題是 Yes／No，標準由回答者自己判斷。因此不要用 AIMA 分數去比較不同組織，或當作供應商資格的唯一依據。這是作者的觀察，文件沒有明說。</dd>
+  <dt data-n="4">限制三：它評「做法」，不評「系統是否安全」</dt>
+  <dd>一個組織可以在所有實務到 Level 3，而某個具體系統仍有漏洞。具體系統要用測試與驗證（06 階段）。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「AIMA 分數高，所以我們的 AI 是安全的。」分數高表示做法完整，不保證每個系統都安全。</dd>
+</dl>
+</div>
+
+<h2 id="ai-scenario">4.5 情境範例 B：把成熟度帶進董事會</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：蒼松控股的年度 AI 報告</h3>
+<p><span class="tag fiction">虛構</span> 蒼松控股是虛構的公司。年度董事會要看「AI 風險管理進度」。資安長手上有四份東西：AIMA 輕量評估（Governance 領域：Strategy 1+、Policy 1、Education 0）、COMPASS 的威脅排序（前五名）、Agentic 成熟度矩陣（有一個 AT6 的 agent，治理等級 2）、以及 Crosswalk 對 ISO/IEC 42001 的對照表。她要用一頁紙說清楚。</p>
+<ol class="steps">
+  <li><strong>先分清四份各回答什麼：</strong>AIMA 說「做法到哪」；COMPASS 說「先處理哪些威脅」；矩陣說「那個 AT6 的 agent 治理不足」；Crosswalk 說「對 42001 的哪些控制相關」。不把它們寫成同一個分數。</li>
+  <li><strong>用 AIMA 報告進度，但誠實標示：</strong>寫「Governance：策略 Level 1+、政策 Level 1、教育 Level 0（輕量評估，未經證據驗證）」，並說明下一步：建立正式 AI 政策，並做詳細評估。</li>
+  <li><strong>用矩陣報告一個具體決定：</strong>AT6 在等級 2 為治理不足，要在提升到等級 3 或降低採用層級之間選一個。</li>
+  <li><strong>用 COMPASS 報告優先序：</strong>前五名威脅與負責人、期限。</li>
+  <li><strong>用 Crosswalk 當附錄：</strong>標明「候選控制，待回標準原文確認」。</li>
+  <li><strong>這個情境的提醒：</strong>董事會最容易誤解的是「Level 2」這種詞。她在簡報第一頁寫明：「本頁所有『級別』與『等級』來自四個不同的工具，不能相加或互相比較。」</li>
+</ol>
+</div>
+
+<h2 id="ch4-key">全主題重點整理</h2>
+<div class="keypoints"><ul>
+  <li><strong>定位：</strong>AIMA V1.0（2025-08-11，76 頁）加 Excel 工具包 v1.0.1，Incubator 專案，仿 OWASP SAMM；專案頁寫五個領域，模型是八個。</li>
+  <li><strong>結構：</strong>8 個領域 × 3 個實務＝24；每個實務兩個流、三個級別。</li>
+  <li><strong>記分：</strong>Yes／No 問卷；全部 Yes 才算達到該級；部分達到下一級記「+」；輕量與詳細評估。</li>
+  <li><strong>限制：</strong>自評是陳述；級別是順序不是比較；評做法不評具體系統。</li>
+  <li><strong>整合：</strong>AIMA 評做法、Agentic 模型評部署對治理、COMPASS 評個別威脅、CoE 階段是建置進度；四者不可互換。</li>
+</ul></div>
+
+<h2 id="ch4-stage">05 階段總回顧</h2>
+<div class="table-wrap"><table>
+<caption>表 4-3　05 治理與風險：五個主題各回答什麼</caption>
+<thead><tr><th scope="col">主題</th><th scope="col">一句話</th></tr></thead>
+<tbody>
+<tr><th scope="row"><a href="../governance-checklist-and-coe/index.html">治理檢核表與卓越中心</a></th><td>導入前要想清楚什麼、由誰來做</td></tr>
+<tr><th scope="row"><a href="../threat-defense-compass/index.html">Threat Defense COMPASS</a></th><td>威脅先處理哪個（可能性 × 衝擊）</td></tr>
+<tr><th scope="row"><a href="../agentic-security-and-governance/index.html">Agentic 安全與治理現況</a></th><td>agent 部署的治理夠不夠（採用層級 × 治理等級）</td></tr>
+<tr><th scope="row"><a href="../framework-crosswalk-and-standards/index.html">框架對照與標準</a></th><td>OWASP 風險對到哪些外部框架控制（不是合規證明）</td></tr>
+<tr><th scope="row">AI 成熟度評估 (AIMA)</th><td>我們的 AI 治理做法到第幾級</td></tr>
+</tbody></table></div>
+
+<h2 id="ch4-self">自我檢核清單</h2>
+<ul class="checklist">
+  <li>我能說出 AIMA 的結構（8 × 3＝24、兩個流、三個級別）與版本日期。</li>
+  <li>我能用工作表算出一個實務的級別，包含「+」。</li>
+  <li>我能區分輕量與詳細評估，並知道輕量結果的限制。</li>
+  <li>我能區分 AIMA、Agentic 模型、COMPASS、CoE 階段這四種「成熟度」。</li>
+  <li>我知道專案頁的五個領域與 PDF 的八個領域的出入。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4、LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<ul>
+  <li>先做本主題的 <a href="quiz.html">總測驗（13 題）</a>。</li>
+  <li>想把「評做法」接到「驗具體系統」：<strong>06 評估與驗證</strong>階段（紅隊、AI Testing Guide、AISVS 與 AIVSS）。</li>
+  <li>想逐條認識 LLM Top 10 2026 與版本演進：<strong>02 LLM 應用</strong>階段。</li>
+  <li>想補 agent 與 MCP：<strong>04 Agentic 與 MCP</strong>階段。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Maturity Assessment V1（PDF，Version V1.0 — August 11, 2025）：Preface、Introduction、Conducting AIMA Assessments；GitHub 儲存庫 <code>index.md</code>、<code>source/latest/</code>；CC BY-SA 4.0；<a href="https://github.com/OWASP/www-project-ai-maturity-assessment">github.com/OWASP/www-project-ai-maturity-assessment</a>；2026-10-26 讀取。</li>
+    <li>與本階段其他主題的對應：沿用 <a href="../agentic-security-and-governance/05-maturity-model.html">Agentic 成熟度模型</a>、<a href="../threat-defense-compass/02-observe-orient.html">COMPASS 評分</a>與 <a href="../governance-checklist-and-coe/04-coe.html">CoE 階段</a>各章已核對的內容。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AIMA — CC BY-SA 4.0（儲存庫 LICENSE.md；GitHub 偵測值為 NOASSERTION）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'am-ch4', topic: 'ai-maturity-assessment', mode: 'chapter',
+  questions: [
+    { id: 'am4q1', type: 'match', lo: [5], refs: [{label: '4.1 表 4-1', href: '04-integration.html#ai-four'}],
+      stem: '把下列「想回答的問題」，配對到最適合回答它的工具。',
+      cats: [
+        { id: 'aima', label: 'AIMA' },
+        { id: 'agentic', label: 'Agentic 報告的 Enterprise Adoption Maturity Model' },
+        { id: 'compass', label: 'COMPASS 的風險等級' },
+        { id: 'coe', label: 'CoE 的 12 個月階段' }
+      ],
+      items: [
+        { text: '我們的 AI 治理與保證做法，在各個實務做到第幾級？', answer: 'aima', why: '表 4-1：AIMA 評組織在 8 領域 24 實務上的做法，結果是每個實務 0–3（含 +）。' },
+        { text: '我們部署的最進階的 agent，現有的治理夠不夠？', answer: 'agentic', why: '表 4-1：Agentic 模型把採用層級 AT0–AT8 對上治理等級 0–4，結果是矩陣上的格子。' },
+        { text: '這個威脅有多嚴重、先處理哪一個？', answer: 'compass', why: '表 4-1：COMPASS 的風險等級評個別威脅（可能性 × 衝擊）。' },
+        { text: '卓越中心這個團隊要怎麼一步步建起來？', answer: 'coe', why: '表 4-1：CoE 的 12 個月階段是建置進度，分四個階段，不是評分。' }
+      ],
+      summary: 'AIMA 評做法；Agentic 模型評部署對治理；COMPASS 評個別威脅；CoE 階段是建置進度。' },
+    { id: 'am4q2', type: 'mc', lo: [4], refs: [{label: '4.4 自評的限制', href: '04-integration.html#c-honest'}, {label: '4.1 表 4-1', href: '04-integration.html#ai-four'}],
+      stem: '某採購單位打算比較兩家供應商自報的 AIMA 分數：「Level 2 比 Level 1 好，就選 Level 2 的那家。」依 4.4 節，下列哪一個回應最適當？',
+      options: [
+        { text: '不宜這樣用：Yes／No 由回答者自己判斷，不同組織的 Level 2 不保證意思相同；分數不該當作供應商資格的唯一依據。', correct: true, why: '4.4 節限制二：級別是順序，不是比較。這是作者的觀察，文件沒有明說。' },
+        { text: '可以，AIMA 是外部認證，分數已經過獨立稽核。', why: '4.4 節開頭：AIMA 是漸進、可自評的工具，不是外部認證。' },
+        { text: '可以，只要兩家都做過詳細評估，分數就能直接互相比較。', why: '詳細評估增加證據、信心較高（第 3 章），但 4.4 節建議不要用 AIMA 分數去比較不同組織，或當作供應商資格的唯一依據。' },
+        { text: '可以，但要再加上對方的 COMPASS 風險等級，把兩個分數相加得到總分。', why: '表 4-1 之後的說明：這幾種「成熟度」或「等級」來自不同工具，不能互換，也不能相加。' }
+      ],
+      summary: '自評的級別是順序，不是比較；不要用它排名或當作唯一的資格依據。' },
+    { id: 'am4q3', type: 'scn', lo: [5], refs: [{label: '4.2 圖 4-1', href: '04-integration.html#ai-flow'}],
+      stem: '依圖 4-1，下列哪一個做法最適當？',
+      scenario: '星潮電商（虛構）目前只有一個 RAG 客服機器人，沒有部署任何 agent。資安長想用 05 階段的五個主題，建立年度的治理工作，想知道這張工作流該怎麼用在他們身上。另外，團隊覺得應該先做 AIMA 評估現況，再組成卓越中心 (CoE)，與圖上的順序不同。',
+      options: [
+        { text: '五個主題一律都要走一遍，包含 Agentic 成熟度模型，因為圖上每一步都是必經。', why: '圖 4-1 在「有 agent 嗎？」分流，沒有 agent 的分支直接接到 Crosswalk，Agentic 成熟度模型不是必經的一步。' },
+        { text: '整個流程都不適用，因為這張圖是為 agent 設計的。', why: '圖中只有 Agentic 成熟度模型那一步取決於是否有 agent；治理檢核表、CoE、AIMA、COMPASS、Crosswalk 都不以 agent 為前提。' },
+        { text: '沒有 agent 就略過 Agentic 成熟度模型，其餘照走並可調整順序（例如先做 AIMA 再組 CoE），最後回到標準原文與自己系統的實際證據。', correct: true, why: '圖 4-1 的分流與圖說：順序是作者整理的建議，可以調整。' },
+        { text: '圖的順序是固定的，先做 AIMA 再組 CoE 就不能使用這張圖。', why: '圖說明寫明順序可以調整，例如先做 AIMA 再組 CoE 也是合理的；這張圖是作者整理的建議，不是官方規定。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 圖 4-1 的決策點只有一個：「有 agent 嗎？」有就加上 Agentic 成熟度模型（判斷部署與治理是否匹配），沒有就直接到 Crosswalk。(2) 其餘步驟（治理檢核表、CoE、AIMA、COMPASS）都不以 agent 為前提。(3) 圖說明這是作者整理的建議順序，官方沒有這樣寫，順序可以調整。(4) 所有路徑最後都回到標準原文與自己系統的實際證據。</p><p><strong>結論：</strong>選 C。對應教材：<a href="04-integration.html#ai-flow">4.2 節</a>。</p>' },
+    { id: 'am4q4', type: 'mc', lo: [4], refs: [{label: '4.4 自評的限制', href: '04-integration.html#c-honest'}],
+      stem: '某團隊的 AIMA 自評，所有實務都達到 Level 3。主管說：「所以我們新上線的客服 LLM 系統，不用再做測試與驗證了。」依 4.4 節，下列哪一個回應最適當？',
+      options: [
+        { text: '同意，Level 3 是最高保證，系統必然安全。', why: '分數高表示做法完整，不保證每個系統都安全。' },
+        { text: '不同意：AIMA 評的是組織的「做法」，不是某個具體系統是否安全；具體系統仍要靠測試與驗證（06 階段）。', correct: true, why: '4.4 節限制三：一個組織可以在所有實務到 Level 3，而某個具體系統仍有漏洞。' },
+        { text: '部分同意：只要分數是 3+ 而不是 3，就可以免做。', why: '3 或 3+ 都是在評做法；「+」是記錄對下一級的部分達成，不是對具體系統的保證。' },
+        { text: '不同意：因為這是輕量評估的結果，改做詳細評估就能證明系統安全。', why: '輕量與詳細的差別是有沒有證據支持，不是評的對象；詳細評估評的仍是做法，不評具體系統。' }
+      ],
+      summary: 'AIMA 評「做法」，不評具體系統；高分不等於系統安全。' }
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　BOM 家族與整合｜AIBOM｜OWASP AI 資安學習教材</title>
+<meta name="description" content="區分 SBOM、AIBOM、DBOM、AgBOM 四種物料清單，整理各份官方文件對 BOM 的要求，並說明 CycloneDX 版本在不同文件中的差異；全主題重點。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="aibom" data-page="03-bom-family.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　BOM 家族與整合</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-why-and-what.html">第 2 章</a></li>
+</ul>
+<p class="lead">讀到這裡，你已經遇到四個長得很像的縮寫：SBOM、AIBOM、DBOM、AgBOM。它們出自不同文件，各自管不同範圍，卻都用同一種「物料清單」的概念。這一章把它們並排，整理其他官方文件對 BOM 的要求，並指出一個容易忽略的細節：<strong>OWASP 自己的文件引用的 CycloneDX 版本並不一致</strong>。</p>
+
+<h2 id="bf-table">3.1 四種清單，管不同範圍</h2>
+<div class="table-wrap"><table>
+<caption>表 3-1　SBOM、AIBOM、DBOM、AgBOM 比較（範圍欄依各官方文件描述；對照方式為作者整理，非官方）</caption>
+<thead><tr><th scope="col">清單</th><th scope="col">範圍</th><th scope="col">出自</th><th scope="col">格式（官方文件所述）</th></tr></thead>
+<tbody>
+<tr><th scope="row">SBOM <br>(Software Bill of Materials)</th><td>軟體元件與相依</td><td>一般軟體供應鏈實務；IR 指南建議 AI-BOM 要與傳統 SBOM 工具整合</td><td>—（本教材不展開）</td></tr>
+<tr><th scope="row">AIBOM／AI-BOM／ML-BOM <br>(AI Bill of Materials)</th><td>AI 模型及其相依：模型來源與中繼資料、依賴函式庫、授權等</td><td>OWASP AIBOM Initiative 與 Generator；IR 指南</td><td>AIBOM Generator 輸出 <strong>CycloneDX 1.6</strong> JSON，相容於 SPDX AI Profile</td></tr>
+<tr><th scope="row">DBOM <br>(Data / Dataset Bill of Materials)</th><td>資料與血緣：來源雜湊、授權、貢獻者；訓練運行到資料集版本的連結；RAG 索引重建到語料版本的標記；每個向量資料庫的嵌入模型版本；分類標籤傳遞到衍生物</td><td>資料安全 2026（AI-DSPM、DSGAI04、DSGAI10、DSGAI21）</td><td>以 <strong>CycloneDX ML-BOM（ECMA-424，v1.7）</strong>為基礎格式</td></tr>
+<tr><th scope="row">AgBOM <br>(Agent Bill of Materials)</th><td>Agent 的即時清單：模型、工具、相依；工作階段中可變動（可換模型、工具、MCP 伺服器）</td><td>Agent Control Standard 的 Inspect 支柱</td><td>Guardian 依請求序列化為 <strong>CycloneDX 1.6、SPDX 3.0 或 SWID</strong> 之一</td></tr>
+</tbody></table></div>
+
+<div class="callout official unsure">
+  <p class="callout-title">三份文件，三個 CycloneDX 版本</p>
+  <p>AIBOM Generator 輸出 CycloneDX <strong>1.6</strong>；ACS 規格寫 AgBOM 可序列化為 CycloneDX <strong>1.6</strong>、SPDX 3.0 或 SWID；資料安全 2026 建議 DBOM 以 CycloneDX <strong>ML-BOM（ECMA-424，v1.7）</strong>為基礎。這<strong>不一定是矛盾</strong>：一個是工具實際輸出，一個是規格允許的序列化，一個是建議的基礎格式。但如果你要把三種清單串在同一條管線，就要確認版本相容。官方沒有說明三者如何互通，本教材<strong>未能確認</strong>。</p>
+</div>
+
+<h2 id="bf-demand">3.2 各份官方文件對 BOM 的要求</h2>
+<p>本階段涵蓋的 OWASP 文件中，有四份對物料清單提出了明確的要求。下表依「要求的強度」整理，用詞盡量貼近官方原意：</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　各份官方文件對 BOM 的要求</caption>
+<thead><tr><th scope="col">文件</th><th scope="col">清單種類</th><th scope="col">官方怎麼說</th></tr></thead>
+<tbody>
+<tr><th scope="row">GenAI Incident Response Guide 1.0</th><td>AI-BOM</td><td>設計階段建立產生要求；建置時<strong>自動產生並在 CI/CD 閘門強制執行</strong>；靜態偵測的基礎技術，<strong>視為高信任環境的前提</strong>；事件後<strong>重新產生</strong>驗證；事後更新</td></tr>
+<tr><th scope="row">Data Security Risks and Mitigations 2026</th><td>DBOM</td><td>在 DSGAI04 稱它是「讓其他每一項緩解措施都可追溯與可稽核的<strong>基礎產物</strong>」，歸 Tier 2、範圍為 Build；DSGAI10 的 Tier 1 有「Dataset Bill of Materials」；DSGAI21 要求加上完整性證明記錄</td></tr>
+<tr><th scope="row">Agent Control Standard v0.1.0</th><td>AgBOM</td><td>屬 <strong>ACS-Inspect 設定檔，不屬 ACS-Core</strong>（Core 明確不要求 AgBOM）；宣告 ACS-Inspect 的部署要在每個工作階段、內容相關鉤子觸發之前，送出一次 <code>agbom/snapshot</code>；工作階段中換模型、工具或 MCP 伺服器的部署，要用 ACS-Inspect-Dynamic 的 <code>agbom/changed</code>。「當 Guardian 的政策依賴元件清單時為必要」</td></tr>
+<tr><th scope="row">Agentic Skills Top 10 白皮書</th><td>簽署的 AI BOM</td><td>在 AST02 的 OWASP Mapping 引用 AISVS v1.0-C6.2.2 (signed AI BOMs)；AST09 的治理建議含技能清單（名稱、版本、雜湊、安裝者…）</td></tr>
+</tbody></table></div>
+<p>有一個細節值得停下來想：<strong>「清單」在不同文件的強制程度很不一樣</strong>。IR 指南說它是「高信任環境的前提」；資料安全把 DBOM 放在 Tier 2（需要架構調整，而不是一個 sprint 的事）；ACS 則把 AgBOM 放在選用設定檔，而且 ACS 的符合性是自行宣告、無人驗證。換句話說，「要有物料清單」這個共識很強，但「何時該做到、做到多細」並沒有統一標準。</p>
+
+<h2 id="bf-concept">3.3 核心概念：清單回答的是「靜態」還是「動態」</h2>
+<div class="concept">
+<h3 id="c-static">靜態清單與即時清單</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>AIBOM Generator 產生的是<strong>某個時間點對某個模型</strong>的清單；ACS 的 AgBOM 是 Agent 的<strong>即時</strong>清單，在 Agent 運作中隨元件變動而更新。前者像出貨時的裝箱單，後者像會隨時修改的庫存系統。</dd>
+  <dt data-n="2">為什麼這個差別重要</dt>
+  <dd>Agent 可以在執行中載入技能、連到新的 MCP 伺服器、換模型。ACS 因此特別設了 <code>agbom/changed</code>：官方說，對「Agent 會熱插拔模型、工具或 MCP 伺服器」的部署，這是必要的。如果只有出貨時的靜態清單，這些執行期變動就看不見。</dd>
+  <dt data-n="3">對安全的含意（概念層級）</dt>
+  <dd>技能與 MCP 伺服器的變動，正是 <a href="../agentic-skills-top-10/index.html">Agentic Skills Top 10</a> 的更新漂移 (AST07) 和供應鏈 (AST02) 所關注的面向。把 AgBOM 的動態更新與 AST07 連起來看，是作者整理，非官方：官方沒有寫兩者的對應。</dd>
+  <dt data-n="4">怎麼用</dt>
+  <dd>看你的系統是否在執行期改變組成。若是，只靠建置時的清單不夠；若否（模型與依賴固定），建置時產生並在 CI/CD 強制，已經涵蓋大部分情況。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「AgBOM 就是 AIBOM 的新名字。」兩者範圍不同：AIBOM Generator 針對 Hugging Face 上的模型；AgBOM 是 ACS 的 Agent 即時清單，描述 Agent 用的模型、工具與相依。官方頁面沒有說明兩者的關係，<strong>未能確認</strong>它們是否會互通。</dd>
+</dl>
+</div>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程：先問你想盤點的是什麼。盤點開源模型（特別是 Hugging Face）及其相依：用 AIBOM。盤點資料集、RAG 語料版本與嵌入模型版本、分類標籤傳遞：用 DBOM。盤點 Agent 執行期的模型、工具與技能，且組成會變動：用 AgBOM 的動態更新。盤點一般軟體相依：用 SBOM，並與 AIBOM 整合。事件發生時，重新產生相關清單並比對差異。">
+flowchart TD
+  S["我要盤點什麼？"] --> Q{"範圍"}
+  Q -->|"模型與其相依（Hugging Face）"| A["AIBOM<br>CycloneDX 1.6"]
+  Q -->|"資料集、RAG 語料、嵌入模型版本"| D["DBOM<br>建議 ML-BOM v1.7"]
+  Q -->|"Agent 的模型、工具、技能（組成會變）"| G["AgBOM<br>ACS-Inspect-Dynamic"]
+  Q -->|"一般軟體相依"| B["SBOM<br>與 AIBOM 整合"]
+  A --> R["事件發生：重新產生並比對差異"]
+  D --> R
+  G --> R
+  B --> R
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q,R author
+</pre>
+<figcaption><strong>圖 3-1　依盤點範圍選擇清單。</strong>各清單的範圍與格式是官方內容（表 3-1）；依「要盤點什麼」分流，以及彙整到「事件發生重新產生並比對」的串接，是<strong>作者整理，非官方</strong>（虛線框）。真實系統常需要多種清單並用，這張圖是入口，不是唯一路徑。</figcaption>
+</figure>
+
+<h2 id="bf-link">3.4 與本階段其他主題的連結</h2>
+<ul>
+  <li><strong><a href="../ml-security-top-10/index.html">ML Top 10</a>：</strong>ML06（AI 供應鏈攻擊）談攻擊面，條目頁沒有提到物料清單。官方沒有把 AIBOM 對映 ML06，兩者概念相鄰是作者整理，非官方。</li>
+  <li><strong><a href="../agentic-skills-top-10/index.html">Agentic Skills Top 10</a>：</strong>見表 3-2；技能清單（AST09）與簽署的 AI BOM（AST02 對應 AISVS C6.2.2）。</li>
+  <li><strong><a href="../agent-control-standard/index.html">Agent Control Standard</a>：</strong>AgBOM 的出處；ACS 的 conformance 文件寫道：AgBOM 已列出 <code>skill</code> 元件的部署「應該」(SHOULD) 發出技能生命週期鉤子，免得 Guardian 對清單已經暴露的組合面毫無所知。這代表清單與執行期控制點可以互相支撐。</li>
+  <li><strong><a href="../data-security/index.html">資料安全</a>：</strong>DBOM 的出處；刪除請求後的衍生物難題，正好是 DBOM 想回答的「這個嵌入來自哪筆來源」。</li>
+  <li><strong><a href="../incident-response-and-deepfake/index.html">事件應變</a>：</strong>在事件的每個階段使用 AI-BOM，見表 3-2。</li>
+</ul>
+
+<h2 id="ch3-key">3.5 全主題重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>AIBOM 是物料清單，不是安全檢測；完整度分數衡量文件完整度，不是模型安全。</li>
+  <li>OWASP AIBOM Generator 輸出 CycloneDX 1.6，只涵蓋 Hugging Face 上的模型，版本未能確認，現行入口 owasp-genai-aibom.org，授權 Apache-2.0。</li>
+  <li>四種清單：SBOM（軟體）、AIBOM（模型與相依）、DBOM（資料與血緣）、AgBOM（Agent 即時組成）；各自範圍與格式不同。</li>
+  <li>IR 指南稱 AI-BOM 是高信任環境的前提並要求事件後重新產生；資料安全稱 DBOM 是其他緩解的基礎；ACS 的 AgBOM 屬選用設定檔。</li>
+  <li>三份文件引用的 CycloneDX 版本不同（1.6、1.6、1.7），互通性官方未說明。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出四種清單各管什麼，以及各出自哪份文件。</li>
+  <li>我能說明為什麼 Agent 需要「即時」清單。</li>
+  <li>我知道哪些 BOM 對映是官方明載，哪些是作者整理。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p>先做<a href="quiz.html">總測驗</a>。接著建議讀 <a href="../incident-response-and-deepfake/index.html">事件應變與 Deepfake</a>，看事件發生時這些清單怎麼被用上。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AIBOM Generator 資源頁與儲存庫 README（CycloneDX 1.6）：<a href="https://genai.owasp.org/resource/owasp-aibom-generator/">資源頁</a>、<a href="https://github.com/GenAI-Security-Project/aibom-generator">github.com/GenAI-Security-Project/aibom-generator</a>；2026-10-26 讀取。</li>
+    <li>OWASP GenAI Data Security Risks and Mitigations 2026（DBOM；AI-DSPM；DSGAI04、DSGAI10、DSGAI21）：<a href="https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/">genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/</a>；Version 1.0，March 2026；CC BY-SA 4.0。</li>
+    <li>Agent Control Standard 的 Conformance Profiles（ACS-Core、ACS-Inspect、ACS-Inspect-Dynamic）：<a href="https://github.com/GenAI-Security-Project/agent-control-standard/blob/main/docs/spec/conformance.md">docs/spec/conformance.md</a>；規格 v0.1.0，儲存庫 0.1.4；2026-10-26 讀取；說明文件 CC BY-SA 4.0。</li>
+    <li>OWASP GenAI Incident Response Guide 1.0：<a href="https://genai.owasp.org/resource/genai-incident-response-guide-1-0/">genai.owasp.org/resource/genai-incident-response-guide-1-0/</a>；July 28, 2025；PDF 內文未見授權文字，以網站頁尾 CC BY-SA 4.0 為準。</li>
+    <li>OWASP Agentic Skills Top 10 白皮書（AST02 的 OWASP Mapping）：<a href="https://owasp.github.io/www-project-agentic-skills-top-10/assets/publications/ast10-top10-whitepaper-2.pdf">ast10-top10-whitepaper-2.pdf</a>；公開審查中的 V1；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：AIBOM Generator 儲存庫 — Apache-2.0；ACS 規格 — Apache-2.0，說明文件 — CC BY-SA 4.0；OWASP GenAI Data Security Risks and Mitigations 2026 — CC BY-SA 4.0；OWASP Agentic Skills Top 10 — CC BY-SA 4.0（白皮書 PDF 內文未見授權文字）；OWASP GenAI Incident Response Guide 1.0 — PDF 內文未見授權文字，以 genai.owasp.org 網站頁尾 CC BY-SA 4.0 為準。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'b-ch3', topic: 'aibom', mode: 'chapter',
+  questions: [
+    { id: 'b3q1', type: 'match', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-bom-family.html#bf-table'}],
+      stem: '把下列盤點需求配對到最貼近的清單。',
+      cats: [
+        { id: 'aibom', label: 'AIBOM' },
+        { id: 'dbom', label: 'DBOM' },
+        { id: 'agbom', label: 'AgBOM' }
+      ],
+      items: [
+        { text: '記錄一個從 Hugging Face 下載的模型的來源、相依與授權', answer: 'aibom', why: 'AIBOM Generator 針對 Hugging Face 上的模型。' },
+        { text: '記錄每個向量庫用了哪一版嵌入模型，並把分類標籤傳遞到衍生物', answer: 'dbom', why: '資料安全 2026 的 DBOM 項目。' },
+        { text: '在 Agent 執行中，隨模型、工具或 MCP 伺服器的變動更新清單', answer: 'agbom', why: 'ACS-Inspect-Dynamic 的 agbom/changed。' }
+      ],
+      summary: 'AIBOM：模型；DBOM：資料與血緣；AgBOM：Agent 即時組成。' },
+    { id: 'b3q2', type: 'mc', lo: [3], refs: [{label: '3.2 表 3-2', href: '03-bom-family.html#bf-demand'}],
+      stem: '關於 ACS 對 AgBOM 的要求，下列哪一項是規格明載的？',
+      options: [
+        { text: 'AgBOM 是 ACS-Core 的強制項目，所有符合者都必須提供。', why: 'ACS-Core 明確不要求 AgBOM。' },
+        { text: 'AgBOM 屬 ACS-Inspect 設定檔，是選用的；宣告 ACS-Inspect 的部署要在每個工作階段送出一次 agbom/snapshot；工作階段中換元件的部署用 ACS-Inspect-Dynamic 的 agbom/changed。', correct: true, why: '符合表 3-2 的 ACS 列。' },
+        { text: 'AgBOM 只能序列化為 CycloneDX 1.7。', why: '規格寫的是 CycloneDX 1.6、SPDX 3.0 或 SWID 之一。' },
+        { text: 'ACS 沒有任何物料清單的要求。', why: 'Inspect 支柱就是 AgBOM。' }
+      ],
+      summary: 'AgBOM = ACS-Inspect 設定檔，選用；動態更新用 ACS-Inspect-Dynamic。' },
+    { id: 'b3q3', type: 'scn', lo: [3], refs: [{label: '3.1 CycloneDX 版本', href: '03-bom-family.html#bf-table'}, {label: '3.2 表 3-2', href: '03-bom-family.html#bf-demand'}],
+      stem: '依本章，這份整合計畫的假設哪裡需要小心？',
+      scenario: '清水製藥（虛構）打算把三種清單串在同一條 CI 管線：用 OWASP AIBOM Generator 產生模型清單，用資料血緣工具產生資料集清單（依資料安全文件建議的格式），再讓 Agent 平台輸出 AgBOM。團隊假設：「三種都是 CycloneDX，所以直接合併就好，不會有版本問題。」',
+      options: [
+        { text: '假設正確，CycloneDX 沒有版本之分。', why: '三份文件引用的 CycloneDX 版本不同。' },
+        { text: '需小心：AIBOM Generator 輸出 CycloneDX 1.6；ACS 的 AgBOM 允許 CycloneDX 1.6、SPDX 3.0 或 SWID；資料安全建議 DBOM 以 ML-BOM（ECMA-424，v1.7）為基礎。三者是否互通官方沒有說明，合併前要先確認版本與格式。', correct: true, why: '符合 3.1 節的警示。' },
+        { text: '假設正確，因為三份文件都由同一個專案維護。', why: '它們分屬不同 Initiative 與文件，版本標示不同。' },
+        { text: '不需要任何清單，直接上線即可。', why: '與計畫目的相反，也違背官方對清單的要求。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) AIBOM Generator 的 README：CycloneDX 1.6。(2) ACS conformance：CycloneDX 1.6、SPDX 3.0 或 SWID。(3) 資料安全 2026：ML-BOM ECMA-424 v1.7 為基礎格式。(4) 官方未說明互通。</p><p><strong>結論：</strong>合併前確認版本與格式相容；互通性未能確認。對應教材：<a href="03-bom-family.html#bf-table">3.1 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

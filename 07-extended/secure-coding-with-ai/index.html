@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 輔助寫程式與模型營運安全｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Secure Coding with AI 與 Secure AI/ML Model Ops 兩份 Cheat Sheet 的主題首頁：學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="secure-coding-with-ai" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>AI 輔助寫程式與模型營運安全</h1>
+<ul class="meta-row">
+  <li>07 延伸主題｜主題 3</li>
+  <li>預估學習時間：約 70–80 分鐘（5 章閱讀約 39 分鐘；章末檢核與總測驗約 32–40 分鐘）</li>
+  <li>採用來源：OWASP Cheat Sheet Series 的 Secure Coding with AI Cheat Sheet 與 Secure AI/ML Model Ops Cheat Sheet（兩份都沒有版本號；2026-10-26 讀取；GitHub 最後修改皆為 2026-10-04）</li>
+</ul>
+<p class="lead">你每天用 AI 助理寫程式，助理會讀議題、裝套件、跑指令，有時還開著自動接受；寫完之後，你的團隊還要把模型訓練、存放、包成 API 上線。OWASP Cheat Sheet Series 剛好有兩份速查表各守一端：<strong>開發迴圈裡的信任邊界在哪</strong>，以及<strong>模型從訓練到執行期該怎麼營運</strong>。這個主題帶你讀這兩份，並說明哪些對應是官方寫的、哪些是本教材的整理。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>定位與版本：</strong>說出兩份速查表各自的讀者與守的迴圈，正確標示沒有版本號的文件（讀取日加提交日）與授權，並分辨控制清單與風險清單。<br><small>對應：<a href="01-position.html">第 1 章</a></small></li>
+  <li id="lo2"><strong>開發迴圈的信任邊界：</strong>說出五類威脅來源，區分幻覺依賴與過期依賴的檢查時點，並判斷哪些文字會變成助理的指令。<br><small>對應：<a href="02-dev-loop-trust.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>工具、沙箱與規則檔：</strong>收窄助理能碰到的工具、環境與憑證，並解釋規則檔為什麼要比照 CI/CD 管線審查。<br><small>對應：<a href="03-tools-sandbox-rules.html">第 3 章</a></small></li>
+  <li id="lo4"><strong>模型營運：</strong>把 Model Ops 九節放回生命週期，並判斷推論 API 的成本控制與執行期隔離該怎麼做。<br><small>對應：<a href="04-model-ops.html">第 4 章</a></small></li>
+  <li id="lo5"><strong>跨文件整合：</strong>分辨官方寫的對應與作者整理的對應，並把開發迴圈的疏漏與營運面的控制串成一條線。<br><small>對應：<a href="05-integration.html">第 5 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>建議先讀 <a href="../../02-llm-applications/llm-top-10/index.html">LLM Top 10 2026 主題</a>第 3 章（供應鏈與投毒）與第 4 章（過度授權與不當輸出處理）；本主題反覆拿它們當相鄰文件。</li>
+  <li>建議先看 <a href="../../03-prompt-injection-rag-practice/prompt-injection/index.html">提示詞注入防護主題</a>（間接提示詞注入、Rule of Two）與 <a href="../../04-agentic-and-mcp/mcp-security/index.html">MCP 安全主題</a>（工具投毒與抽換）；第 2、3 章會連到它們。</li>
+  <li>第 4 章會用到 <a href="../ml-security-top-10/index.html">ML Top 10 主題</a>的生命週期分組與 <a href="../data-security/index.html">資料安全主題</a>的最少日誌原則，不熟時可回頭查。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>（約 10 分鐘）。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="01-position.html">第 1 章　全貌與定位</a></span><span class="p-state" data-file="01-position.html"></span><span class="p-desc">兩份速查表的讀者、版本與授權的標示方式、控制清單與風險清單的差別。表 2 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="02-dev-loop-trust.html">第 2 章　開發迴圈的信任邊界</a></span><span class="p-state" data-file="02-dev-loop-trust.html"></span><span class="p-desc">五類威脅來源；幻覺依賴與過期依賴；開發流程中的間接提示詞注入。表 3 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-tools-sandbox-rules.html">第 3 章　工具、沙箱與規則檔</a></span><span class="p-state" data-file="03-tools-sandbox-rules.html"></span><span class="p-desc">把助理能碰到的東西逐項收窄；規則檔為什麼是持久化的指示來源。情境 A。表 1 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="04-model-ops.html">第 4 章　模型營運的九節</a></span><span class="p-state" data-file="04-model-ops.html"></span><span class="p-desc">九節放回生命週期；推論 API 的成本控制；執行期與硬體隔離。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="05-integration.html">第 5 章　跨文件整合與收尾</a></span><span class="p-state" data-file="05-integration.html"></span><span class="p-desc">其餘八節速覽；與其他 OWASP 文件的對應（官方與作者整理分欄）；一個從依賴到 API 的虛構情境 B。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（15 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO5，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">版本與日期對照、授權、衝突與取捨、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>兩份速查表守不同的兩端：<strong>Secure Coding with AI 守開發迴圈</strong>（助理讀進什麼、能碰到什麼、被什麼規則檔持續影響），<strong>Secure AI/ML Model Ops 守模型的營運生命週期</strong>（訓練、成品、推論 API、部署、執行期）。</li>
+  <li>它們是<strong>控制清單</strong>，不是風險分類或驗證標準；沒有版本號，引用要帶讀取日與提交日，節號也會變。</li>
+  <li>兩份文件自己寫出的對應不多（Top 10 對照表與指向其他 Cheat Sheet）；與 LLM Top 10 2026 等清單的對應，本教材一律標「作者整理，非官方」。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是本教材加的類比、歸類、對應或流程。</li>
+  <li>第 3、5 章的兩個情境（A、B）都是 <span class="tag fiction">虛構</span> 的公司與系統，不含可直接使用的攻擊手法；本教材也不提供任何注入文字或惡意套件範例。</li>
+  <li>文件中的程式碼區塊與指令範例沒有收錄；需要時用文字描述它示範的差別。</li>
+  <li>Cheat Sheet 隨時會改：兩份在 2026-10-04 都還有修訂。本教材寫的是 2026-10-26 讀到的狀態。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；無法使用時，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>圖表以本地 Mermaid 繪製；若圖沒有顯示，每張圖下方都有文字說明。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：OWASP Cheat Sheet Series — CC BY-SA 4.0（網站頁尾與儲存庫 LICENSE）；引用的 OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

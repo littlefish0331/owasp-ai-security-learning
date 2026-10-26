@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>受管制領域的 AI 安全｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP Cheat Sheet Series 的兩份領域專用 AI 速查表（廣告系統、AML 與制裁）主題首頁：學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="ai-in-regulated-industries" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>受管制領域的 AI 安全：廣告系統與 AML／制裁合規</h1>
+<ul class="meta-row">
+  <li>07 延伸主題｜主題 8</li>
+  <li>預估學習時間：約 90–100 分鐘（5 章閱讀約 42 分鐘；章末檢核與總測驗約 45–55 分鐘）</li>
+  <li>採用來源：OWASP Cheat Sheet Series 的 AI-Powered Advertising Systems Security Cheat Sheet（GitHub 首次提交 2026-09-14、最近修改 2026-10-04）與 AML and Sanctions Compliance for AI Agent Payments Cheat Sheet（首次提交 2026-06-03、最近修改 2026-10-18）；兩份皆無版本號，2026-10-26 讀取</li>
+</ul>
+<p class="lead">前面的主題談的多半是通用控制。這個主題讀的是兩份<strong>領域專用</strong>的速查表：一份給廣告平台，一份給處理 AI agent 支付的金融機構。它們不是在教新的資安原則，而是示範同一批原則放進特定行業之後長什麼樣子：誰能碰到 AI、拿什麼證明控制有效、失敗時要拒絕還是放行。學完你要能把通用控制「翻譯」到自己的領域，同時分得出文件寫了什麼、哪些是教材自己的讀法。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>定位與讀法：</strong>說明兩份領域專用速查表各是什麼、日期與授權，以及領域文件與通用文件的分工（「同一個控制換上領域情境」）；知道法規內容只能當作文件的陳述，不是法律意見。<br><small>對應：<a href="01-position.html">第 1 章</a></small></li>
+  <li id="lo2"><strong>廣告系統五節：</strong>說明同意作為授權檢查的位置、結果回呼為什麼要簽署事件類型與內容，並能分辨文件標出的「邊界」與「縱深」。<br><small>對應：<a href="02-advertising.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>AML 與制裁（上）：</strong>區分軟體身分與法律客戶、說明先確認 agent 身分與營運者再篩查，並能解釋「篩查未完成＝未解決，不是放行」。<br><small>對應：<a href="03-aml-identity-and-failclosed.html">第 3 章</a></small></li>
+  <li id="lo4"><strong>AML 與制裁（下）：</strong>說明簽署收據能證明與不能證明什麼、驗證者每一跳要驗證什麼，以及名單新鮮度為什麼要綁進收據。<br><small>對應：<a href="04-aml-receipt-and-freshness.html">第 4 章</a></small></li>
+  <li id="lo5"><strong>共同模式與翻譯：</strong>辨認兩份文件共有的三個模式（可稽核的證據、預設拒絕、失敗時的姿態），分清哪些銜接是文件原文、哪些是作者整理，並能用五個步驟把通用控制翻譯到另一個領域。<br><small>對應：<a href="05-integration.html">第 5 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>建議先讀 <a href="../../01-overview/ai-exchange/index.html">OWASP AI Exchange 主題</a>第 4–5 章（縱深防禦與 agentic 風險），知道「降低機率」和「限縮後果」的區別。</li>
+  <li>建議先讀 <a href="../agent-control-standard/index.html">Agent Control Standard 主題</a>第 3 章（失敗姿態）；本主題第 3 章會與它對照。<a href="../incident-response-and-deepfake/index.html">事件應變與 Deepfake 主題</a>與<a href="../data-security/index.html">資料安全主題</a>可選讀，第 5 章會銜接。</li>
+  <li>建議先讀 <a href="../../04-agentic-and-mcp/mcp-security/index.html">MCP 安全主題</a>第 5 章；AML 文件把訊息簽章指回 MCP Security Cheat Sheet。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>（約 10 分鐘），特別是最小權限、預設拒絕與失效安全。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="01-position.html">第 1 章　全貌與定位</a></span><span class="p-state" data-file="01-position.html"></span><span class="p-desc">兩份速查表的一頁式全貌；為什麼有領域專用文件；「同一個控制換上領域情境」的讀法；法規內容的處理方式。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="02-advertising.html">第 2 章　廣告系統：五道關卡</a></span><span class="p-state" data-file="02-advertising.html"></span><span class="p-desc">同意、語料、推論與提示邊界、結果事件與 agentic 行動、供應鏈與生成內容的來源證明；文件自己標出的「不是邊界」。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-aml-identity-and-failclosed.html">第 3 章　AML 與制裁（上）</a></span><span class="p-state" data-file="03-aml-identity-and-failclosed.html"></span><span class="p-desc">軟體身分不是法律客戶；agent 身分、實體篩查、操作者篩查；簽署稽核軌跡；失效即拒絕與它和失效安全、ACS 預設放行的關係。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="04-aml-receipt-and-freshness.html">第 4 章　AML 與制裁（下）</a></span><span class="p-state" data-file="04-aml-receipt-and-freshness.html"></span><span class="p-desc">信任分級速率限制；自建或託管篩查；收據的規範化與跨 agent 傳遞；名單新鮮度綁定收據；文件自己的法規對照表與它被改保守的方向。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="05-integration.html">第 5 章　兩個領域的共同模式與收尾</a></span><span class="p-state" data-file="05-integration.html"></span><span class="p-desc">三個共同模式；與前面主題的銜接（標明文件原文或作者整理）；翻譯五步驟；情境 A（偽造的轉換回呼）、情境 B（文件沒有寫到的領域）。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（15 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO5，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">核對清單、版本與日期對照、授權、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>領域專用速查表是「通用控制加領域情境」：它們自己把通用機制指回 RAG、提示詞注入、MCP 等速查表，補上的是這個行業的威脅、證據與執行期訊號。</li>
+  <li>兩份文件都反覆標出控制的限制：廣告文件寫「這是縱深，不是邊界」；AML 文件寫「簽章不證明篩查做對」「未解決不是放行」。把限制讀進去，比背控制清單重要。</li>
+  <li>法規內容只是<strong>文件的陳述</strong>：教材不查證、不補充，也不是法律意見；要知道自己的義務，請找合格法務。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的類比、歸類、模式或流程。</li>
+  <li>情境 A、B 是 <span class="tag fiction">虛構</span> 的公司與系統，不含可直接使用的攻擊手法。</li>
+  <li>文件中的程式碼區塊本教材不貼；教材用文字描述它示範的差別。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；無法使用時，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>圖表以本地 Mermaid 繪製；若圖沒有顯示，每張圖下方都有文字說明。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：OWASP Cheat Sheet Series 的兩份速查表 — CC BY-SA 4.0（站台頁尾與儲存庫 LICENSE.md、README）。本主題未使用 NC（非商業）授權的來源。法規相關內容為文件陳述的轉述，不是法律意見。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

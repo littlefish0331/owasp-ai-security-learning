@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌與定位｜AIBOM｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP AIBOM Initiative 與 AIBOM Generator 是什麼、現行入口與資源頁連結的不一致、授權、只涵蓋 Hugging Face 模型的範圍限制，以及版本未能確認。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="aibom" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌與定位</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 5 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="index.html">主題首頁</a></li>
+</ul>
+<p class="lead">「AIBOM」這個詞在 OWASP 底下指的其實有兩件事：一個是<strong>專案</strong> (AI SBOM Initiative)，一個是這個專案維護的<strong>工具</strong> (AIBOM Generator)。這一章把兩者分開、說明工具的範圍，並指出幾個你可能踩到的坑：入口網址有兩個、版本不明、以及「完整度分數」的真正意思。</p>
+
+<h2 id="ab-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　OWASP AIBOM 一頁式全貌（2026-10-26 讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">名稱與別名</th><td>OWASP AIBOM Initiative（網站選單寫 AI Bill of Materials；專案頁標題 AI SBOM Initiative）；工具為 OWASP AIBOM Generator。官方說 AIBOM 也稱為 AI Software Bills of Materials (AI SBOMs)、ML-BOMs 或 SBOMs for AI</td></tr>
+<tr><th scope="row">所屬</th><td>OWASP GenAI Security Project 的八個 Initiatives 之一（見 <a href="../../01-overview/genai-security-project/03-initiatives.html">GenAI Security Project 第 3 章</a>）</td></tr>
+<tr><th scope="row">工具資源頁</th><td>genai.owasp.org，日期 <strong>2025-12-17</strong>，分類 Tools；未標版本號</td></tr>
+<tr><th scope="row">工具做什麼</th><td>針對 Hugging Face 上的模型，產生 CycloneDX 格式的 AIBOM（JSON）；提供人類可讀的檢視、欄位檢核表與完整度評分</td></tr>
+<tr><th scope="row">輸出格式</th><td>儲存庫 README 寫 CycloneDX <strong>1.6</strong>，並「相容於 SPDX AI Profile」；資源頁寫「CycloneDX 格式，與 SPDX 標準對齊」</td></tr>
+<tr><th scope="row">授權</th><td>儲存庫為 <strong>Apache-2.0</strong>（LICENSE 與 README）；網站內容（資源頁、部落格）頁尾為 CC BY-SA 4.0</td></tr>
+<tr><th scope="row">儲存庫</th><td>GitHub：GenAI-Security-Project/aibom-generator；2026-10-26 讀取時有 201 個提交，最近提交 2026-10-17，另見 2026-07 的 v0.2 分支合併與 release SBOM 的 CI 流程</td></tr>
+<tr><th scope="row">版本</th><td><strong>未能確認</strong>：資源頁與 README 都沒有標示工具版本，儲存庫沒有 CHANGELOG 檔；提交紀錄有 v0.2 分支合併的痕跡，但本教材沒有看到 release 標籤或版本檔。注意 README 範例指令裡的 <code>--version "1.0.0"</code> 只是用來覆寫<strong>輸出清單中元件版本</strong>的示範參數，不是工具本身的版本</td></tr>
+</tbody></table></div>
+
+<h2 id="ab-entry">1.2 現行入口：兩個網址，哪個才對</h2>
+<p>這是一個典型的「官方資料互相不一致」的小例子。本教材比對了三處：</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　AIBOM Generator 的入口在三處的寫法</caption>
+<thead><tr><th scope="col">來源</th><th scope="col">日期</th><th scope="col">入口</th></tr></thead>
+<tbody>
+<tr><th scope="row">工具資源頁（下載連結）</th><td>2025-12-17</td><td>Hugging Face Space（<code>huggingface.co/spaces/GenAISecurityProject/OWASP-AIBOM-Generator</code>）</td></tr>
+<tr><th scope="row">官方部落格</th><td>2025-12-18</td><td><code>owasp-genai-aibom.org</code>：「現在以 OWASP AIBOM Generator (owasp-genai-aibom.org) 的形式存在」</td></tr>
+<tr><th scope="row">GitHub README</th><td>最近提交 2026-10-17</td><td><code>owasp-genai-aibom.org</code>（「Try the tool live」）</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">怎麼處理</p>
+  <p>依「以最新來源為準」，本教材把 <code>owasp-genai-aibom.org</code> 當作<strong>現行入口</strong>（部落格 2025-12-18 與 README 一致，且都晚於或等於資源頁），並註明資源頁的下載連結仍指向較早的 Hugging Face Space。本教材<strong>沒有</strong>開啟這兩個網站比對內容，不知道兩者是否一致，也不知道 Space 是否仍在更新。部落格文末還殘留「Initiative URL – tbd」，也是未收尾的痕跡。</p>
+</div>
+
+<h2 id="ab-scope">1.3 範圍：只涵蓋 Hugging Face 上的模型</h2>
+<p>官方在多處反覆強調同一個範圍：工具「<strong>從開源的 Hugging Face 模型開始</strong>」(starting with open models on Hugging Face)。它從模型卡 (model card)、設定檔與儲存庫檔案抽取中繼資料。換句話說，它<strong>不是通用的 AI 物料清單產生器</strong>：</p>
+<ul>
+  <li>它不涵蓋你自己訓練、沒放在 Hugging Face 的模型。</li>
+  <li>它不涵蓋 RAG 語料、向量資料庫、嵌入模型的版本連結（這些屬資料安全文件提出的 DBOM，見第 3 章）。</li>
+  <li>它不涵蓋 Agent 的工具與技能組成（這些屬 ACS 的 AgBOM，見第 3 章）。</li>
+</ul>
+<p>CLI 還有兩個選項值得知道：<code>--inference</code> 可以「用 AI 推論強化中繼資料」（需要 API 金鑰），<code>--summarize</code> 可以做描述摘要。也就是說，產出的清單中，<strong>某些欄位可能是由 AI 推論補上的，而不是模型卡原本就寫的</strong>。官方 README 沒有說推論補上的欄位是否有特別標示，本教材也沒有實際執行比對，這一點<strong>未能確認</strong>；使用時應自行檢查來源。</p>
+
+<h2 id="ab-concept">1.4 核心概念：完整度分數衡量的是「文件完整度」</h2>
+<div class="concept">
+<h3 id="c-score">分數高 ≠ 模型安全</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>工具會對產生的 AIBOM 做「欄位檢核」並給出<strong>完整度分數 (completeness score)</strong> 與改善建議。官方資源頁的說法是用來「評估 AIBOM 的品質與覆蓋度」。</dd>
+  <dt data-n="2">為什麼會有人誤解</dt>
+  <dd>「分數」很容易讀成「評分」。但這個分數衡量的是：模型卡等來源<strong>有沒有把該填的欄位填齊</strong>，也就是物料清單這份文件本身完整不完整，不是模型有沒有後門、資料有沒有被投毒。</dd>
+  <dt data-n="3">對安全的含意（概念層級）</dt>
+  <dd>一份資料齊全的清單，可以在一個被投毒的模型上拿滿分；反過來，一個很安全的模型也可能因為模型卡寫得簡略而分數低。清單提供的是<strong>可追溯性</strong>：出事時你能回答「用了什麼、從哪來」。這與 LLM Top 10 供應鏈主題的原則一致：<em>簽署證明來源，不證明安全</em>。</dd>
+  <dt data-n="4">怎麼用</dt>
+  <dd>把它當作「補欄位的工作清單」與「盤點的起點」，而不是「通過／不通過」的門檻。官方沒有公布評分公式，所以你也不能把分數當成可比較的量化指標。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「我們模型的 AIBOM 完整度 95 分，所以供應鏈是安全的。」分數只反映文件完整度。另一個誤解是：「有了 AIBOM 就不用做模型掃描與簽章驗證。」物料清單與簽章、掃描是不同的控制，第 3 章會說明各文件怎麼要求。</dd>
+</dl>
+</div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>OWASP AIBOM 有兩個層次：專案（AI SBOM Initiative，屬 GenAI Security Project）與工具（AIBOM Generator，儲存庫授權 Apache-2.0）。</li>
+  <li>工具現行入口是 owasp-genai-aibom.org（部落格與 README），資源頁下載連結仍指向 Hugging Face Space；版本未能確認。</li>
+  <li>工具只支援 Hugging Face 上的模型，輸出 CycloneDX 1.6；不涵蓋資料、RAG 或 Agent 組成。</li>
+  <li>完整度分數衡量的是文件完整度，不是安全性；官方沒有公布評分公式。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能分辨 AIBOM Initiative 與 AIBOM Generator。</li>
+  <li>我知道工具的範圍限制，以及為什麼不能用它盤點整個 AI 系統。</li>
+  <li>我能說明完整度分數為什麼不等於安全。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-why-and-what.html">第 2 章　為什麼需要、要記什麼</a>：從 SBOM 延伸到 AI，並看官方文件怎麼用物料清單。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AIBOM Generator 資源頁（2025-12-17）：<a href="https://genai.owasp.org/resource/owasp-aibom-generator/">genai.owasp.org/resource/owasp-aibom-generator/</a>；2026-10-26 讀取；網站頁尾 CC BY-SA 4.0。</li>
+    <li>AI SBOM Initiative 頁：<a href="https://genai.owasp.org/initiatives/ai-sbom-initiative/">genai.owasp.org/initiatives/ai-sbom-initiative/</a>；2026-10-26 讀取。</li>
+    <li>官方部落格〈Evolving AI Transparency: The Journey of the AIBOM Generator and Its New Home at OWASP〉（2025-12-18）：<a href="https://genai.owasp.org/2025/12/18/evolving-ai-transparency-the-journey-of-the-aibom-generator-and-its-new-home-at-owasp/">genai.owasp.org/2025/12/18/…</a>；2026-10-26 讀取。</li>
+    <li>GitHub 儲存庫 aibom-generator（README、LICENSE、提交紀錄）：<a href="https://github.com/GenAI-Security-Project/aibom-generator">github.com/GenAI-Security-Project/aibom-generator</a>；2026-10-26 讀取；Apache-2.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：AIBOM Generator 儲存庫 — Apache-2.0；genai.owasp.org 資源頁與部落格 — CC BY-SA 4.0（網站頁尾，除非另有說明）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'b-ch1', topic: 'aibom', mode: 'chapter',
+  questions: [
+    { id: 'b1q1', type: 'mc', lo: [1], refs: [{label: '1.3 範圍', href: '01-position.html#ab-scope'}],
+      stem: '一家公司說：「我們用 OWASP AIBOM Generator 盤點了整個 AI 系統，包括自己訓練的模型、RAG 語料與 Agent 的工具。」依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，AIBOM Generator 是通用的 AI 系統盤點工具。', why: '官方範圍是從 Hugging Face 上的開源模型開始。' },
+        { text: '不完全：工具目前針對 Hugging Face 上的模型；自己訓練但未上傳的模型、RAG 語料與向量庫、Agent 的組成不在它的範圍，需要其他做法（例如 DBOM、AgBOM）。', correct: true, why: '符合 1.3 節。' },
+        { text: '不正確，因為 AIBOM Generator 只能產生 PDF，不能產生 JSON。', why: '工具產生 CycloneDX 格式的 JSON。' },
+        { text: '不正確，因為這個工具已被官方停用。', why: '儲存庫在 2026-10-17 仍有提交，沒有停用的官方說法。' }
+      ],
+      summary: '工具範圍：Hugging Face 上的模型；其餘需其他做法。' },
+    { id: 'b1q2', type: 'mc', lo: [1], refs: [{label: '1.4 完整度分數', href: '01-position.html#ab-concept'}],
+      stem: '供應商提供一份 AIBOM，完整度分數 98。採購主管說：「分數這麼高，所以這個模型沒有供應鏈風險。」依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，高分代表安全。', why: '分數衡量的是文件完整度，不是模型安全。' },
+        { text: '不正確：分數衡量的是物料清單的完整度（欄位有沒有填齊），不是模型有沒有後門或投毒；清單提供可追溯性，仍需簽章驗證與掃描等控制；官方也沒有公布評分公式。', correct: true, why: '符合 1.4 節。' },
+        { text: '不正確，因為分數必須是 100 才有意義。', why: '問題不在分數是否滿分，而在分數衡量的對象。' },
+        { text: '正確，因為分數越高代表模型越新。', why: '分數與模型新舊無關。' }
+      ],
+      summary: '完整度分數 ≠ 安全；它衡量文件完整度。' },
+    { id: 'b1q3', type: 'scn', lo: [1], refs: [{label: '1.2 現行入口', href: '01-position.html#ab-entry'}, {label: '1.1 版本', href: '01-position.html#ab-onepage'}],
+      stem: '依本章，這份內部規範的引用有哪些問題？',
+      scenario: '落日金融（虛構）的規範寫：「依 OWASP AIBOM Generator v1.0，下載連結為 Hugging Face Space，授權為 CC BY-SA 4.0。」審查人員查到：資源頁沒有版本號；README 沒有版本號；部落格與 README 的入口是 owasp-genai-aibom.org；儲存庫授權是 Apache-2.0。',
+      options: [
+        { text: '沒有問題，一切與官方一致。', why: '版本、入口與授權三處都與官方資料不符。' },
+        { text: '三處要修正：版本 v1.0 沒有官方依據（版本未能確認）；現行入口以 owasp-genai-aibom.org 為準，並可註明資源頁連結仍指向 Hugging Face Space；工具儲存庫授權是 Apache-2.0，網站內容才是 CC BY-SA 4.0。', correct: true, why: '符合 1.1、1.2 節。' },
+        { text: '只需要把版本改成 v0.2。', why: 'v0.2 只是分支合併的痕跡，不是官方標示的版本；版本仍未能確認。' },
+        { text: '只需要刪掉授權。', why: '授權應如實標示；問題在於標錯了授權與版本。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 資源頁與 README 都沒有版本號，v1.0 無依據；v0.2 只是分支痕跡，也不能當版本。(2) 部落格（2025-12-18）與 README 的入口是 owasp-genai-aibom.org，資源頁（2025-12-17）的連結較早。(3) 儲存庫 LICENSE 與 README 為 Apache-2.0。</p><p><strong>結論：</strong>改成「版本未能確認」、入口以 owasp-genai-aibom.org 為準、授權標 Apache-2.0。對應教材：<a href="01-position.html#ab-onepage">1.1 節</a>、<a href="01-position.html#ab-entry">1.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

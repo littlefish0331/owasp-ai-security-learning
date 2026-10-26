@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　Guardian、鉤子與五種處置｜Agent Control Standard｜OWASP AI 資安學習教材</title>
+<meta name="description" content="ACS 的核心設計：Observed Agent 與 Guardian Agent 兩個角色、Guardian 的確定性層與 Agent 層、19 個原生鉤子、五種處置，以及三支柱與符合性設定檔。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="agent-control-standard" data-page="02-guardian-and-hooks.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　Guardian、鉤子與五種處置</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position.html">第 1 章</a></li>
+</ul>
+<p class="lead">這一章打開 ACS 的引擎蓋。你會看到兩個角色怎麼分工、Agent 在哪些時間點停下來問、Guardian 有哪五種回答，以及一個設計上的巧思：Guardian 自己也分成「規則」與「LLM」兩層，而且 LLM 那層看不到規則。</p>
+
+<h2 id="gh-roles">2.1 兩個角色與兩層 Guardian</h2>
+<ul>
+  <li><strong>被觀察的 Agent (Observed Agent)：</strong>以 LLM 為核心、受監控的系統。它在每個鉤子點送出請求。</li>
+  <li><strong>守衛 Agent (Guardian Agent)：</strong>政策執行點，決定該怎麼辦。它自己分兩層：
+    <ul>
+      <li><strong>確定性層 (deterministic layer)：</strong>用 Cedar 或 Rego 這類政策引擎，<strong>永遠先跑</strong>。</li>
+      <li><strong>Agent 層 (agent layer)：</strong>一個 LLM，只在確定性層的設定把它委派時才被叫用；它看到的只有確定性層交給它的中間輸出，<strong>看不到政策原始碼</strong>，而且它的答案還要回到確定性層通過一次。</li>
+    </ul>
+  </li>
+</ul>
+<p>只用確定性層的部署同樣完全符合規格；委派給 LLM 是選項。這個設計的理由，用你熟悉的語言說：<strong>規則負責「一定要擋的」，LLM 只負責規則判斷不了的灰色地帶，而且不讓 LLM 知道規則長什麼樣子</strong>，以免它被說服去繞過規則。這句解讀是<span class="tag author">作者整理，非官方</span>；官方寫的是結構，沒有這樣明白講理由。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="流程：被觀察的 Agent 在鉤子點送出請求給 Guardian Agent。Guardian 內部確定性層先評估，必要時委派給 Agent 層的 LLM，LLM 只看到中間輸出、看不到政策原始碼，答案回到確定性層。最後 Guardian 回傳五種處置之一：允許、拒絕、修改、詢問、延後。Agent 必須等待並照做，並寫入稽核紀錄。">
+flowchart LR
+  OA["被觀察的 Agent<br>在鉤子點停下來"] -->|"請求 (JSON-RPC)"| DET
+  subgraph GA["Guardian Agent"]
+    DET["確定性層<br>Cedar / Rego<br>永遠先跑"]
+    LLM["Agent 層 (LLM)<br>看不到政策原始碼"]
+    DET -.->|"選擇性委派：只給中間輸出"| LLM
+    LLM -.->|"回答，仍要過確定性層"| DET
+  end
+  DET -->|"允許 / 拒絕 / 修改 / 詢問 / 延後"| OA
+  OA --> LOG["稽核紀錄"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class LOG author
+</pre>
+<figcaption><strong>圖 2-1　ACS 的決策路徑。</strong>兩個角色、Guardian 的兩層與委派方式、五種處置，都是官方規格（儲存庫 README 與 Instrument 規格的架構圖）的內容，圖為依其<strong>重新繪製的簡化版</strong>；「稽核紀錄」一格是作者為了呈現「Agent 必須照做並留痕」加上的，屬作者整理，非官方畫法。</figcaption>
+</figure>
+
+<h2 id="gh-hooks">2.2 鉤子：Agent 在哪裡停下來問</h2>
+<p><strong>鉤子 (hook)</strong> 是 Agent 執行過程中的一個點：到這裡它必須先停下來，把「我打算做什麼」交給 Guardian，等答案再繼續。規格定義了 <strong>19 個原生鉤子</strong>，外加「包裝後的 MCP」、Inspect 支柱的 AgBOM 方法與一個存活探測，共 22 個方法。下表依作者整理的類別，列出 19 個原生鉤子（類別是作者整理，非官方；官方的圖分成七類，大致相同）。</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　ACS 19 個原生鉤子（分類為作者整理，非官方）</caption>
+<thead><tr><th scope="col">類別</th><th scope="col">鉤子</th><th scope="col">什麼時候觸發</th></tr></thead>
+<tbody>
+<tr><th scope="row">工作階段與回合</th><td><code>sessionStart</code>、<code>agentTrigger</code>、<code>turnStart</code>、<code>turnEnd</code>、<code>sessionEnd</code></td><td>工作階段開始／結束；由事件或排程啟動 Agent；每個回合的開始與結束</td></tr>
+<tr><th scope="row">訊息進出</th><td><code>userMessage</code>、<code>agentResponse</code></td><td>收到使用者輸入；Agent 輸出送給使用者之前</td></tr>
+<tr><th scope="row">知識與記憶</th><td><code>knowledgeRetrieval</code>、<code>memoryContextRetrieval</code>、<code>memoryStore</code></td><td>RAG／知識查詢；讀取記憶；寫入記憶</td></tr>
+<tr><th scope="row">工具執行</th><td><code>toolCallRequest</code>、<code>toolCallResult</code></td><td>執行工具之前；工具回傳、Agent 讀進脈絡之前</td></tr>
+<tr><th scope="row">脈絡壓縮</th><td><code>preCompact</code>、<code>postCompact</code></td><td>脈絡視窗壓縮前後</td></tr>
+<tr><th scope="row">子 Agent</th><td><code>subagentStart</code>、<code>subagentStop</code></td><td>行程內子 Agent 產生與結束</td></tr>
+<tr><th scope="row">技能生命週期</th><td><code>skillRegister</code>、<code>skillLoad</code>、<code>skillUnload</code></td><td>技能進入可用集合、啟用到工作階段、離開</td></tr>
+</tbody></table></div>
+<p><strong>不是 19 個都必須實作。</strong>ACS-Core 的最低要求只有 7 個：<code>sessionStart</code>、<code>userMessage</code> 或 <code>agentTrigger</code>（二擇一）、<code>toolCallRequest</code>、<code>toolCallResult</code>、<code>agentResponse</code>、<code>sessionEnd</code>，以及（能產生子 Agent 的框架必須實作）<code>subagentStart</code>。其餘如記憶、知識查詢、脈絡壓縮與技能生命週期的鉤子，規格寫「應該實作」，條件是框架觀察得到對應的事件。規格對 <code>subagentStart</code> 給了理由：缺了它，Guardian 看不見跨 Agent 的傳播（混淆代理人 (Confused Deputy) 這類攻擊）。技能鉤子則是：若 AgBOM 已列出技能元件，就應該發出技能生命週期鉤子，免得 Guardian 對清單已經暴露的組合面毫無所知。</p>
+<p>並非每個鉤子都能被「決定」。官方表格標示：<code>postCompact</code>、<code>subagentStop</code>、<code>skillUnload</code>、<code>turnEnd</code>、<code>sessionEnd</code> 不是決定點，只做稽核與紀錄；其餘多數鉤子可以被 Guardian 決定。另外，<code>toolCallResult</code> 這一個很有意思：它在「工具結果被 Agent 讀進脈絡之前」就觸發，正好是間接提示詞注入進來的路口，Guardian 可以在這裡檢查。這個觀察是作者整理，非官方。</p>
+
+<h2 id="gh-disp">2.3 五種處置</h2>
+<div class="table-wrap"><table>
+<caption>表 2-2　Guardian 的五種處置 (disposition)</caption>
+<thead><tr><th scope="col">處置</th><th scope="col">意思</th><th scope="col">必要欄位（規格）</th><th scope="col">Agent 的行為</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>ALLOW</code><br>允許</th><td>繼續</td><td>無（有稽核需求時建議附理由）</td><td>照常進行</td></tr>
+<tr><th scope="row"><code>DENY</code><br>拒絕</th><td>阻擋</td><td>理由</td><td>不執行該動作</td></tr>
+<tr><th scope="row"><code>MODIFY</code><br>修改</th><td>改過之後繼續（含遮蔽）</td><td>理由與修改內容</td><td>用修改後的內容繼續；若客戶端做不到修改，規格要求以 <code>DENY</code> 取代並記稽核（Guardian 不得回 MODIFY；<code>postCompact</code> 是例外）</td></tr>
+<tr><th scope="row"><code>ASK</code><br>詢問</th><td>暫停，請求核准</td><td>理由與詢問細節</td><td>等核准者回覆；做不到的客戶端要改成延後或拒絕</td></tr>
+<tr><th scope="row"><code>DEFER</code><br>延後</th><td>目前還下不了結論</td><td>理由與延後細節（含解決方式、逾時、逾時後的處置，預設拒絕）</td><td>暫停到問題被解決；過了期限預設拒絕</td></tr>
+</tbody></table></div>
+<p>三個細節值得記住。第一，<strong>Agent 必須等決定並照做</strong>：規格寫道，一個發出鉤子卻不套用判決的框架「不符合規範」；鉤子要成為控制點，Agent 必須真的等。第二，<strong>修改的規則很嚴</strong>：兩種修改形式（整段替換、結構化編輯）不能混用，目標也不能重疊；Guardian 若送出違反規則的修改，Agent 看不出它的意圖，就必須當成拒絕處理並記稽核。第三，<strong>延後過期預設是拒絕</strong>，這與下一章的失敗姿態預設剛好相反，原因第 3 章會說明。</p>
+
+<h2 id="gh-pillars">2.4 核心概念：三支柱與設定檔</h2>
+<div class="concept">
+<h3 id="c-pillars">Instrument、Trace、Inspect</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>ACS 把需求組織成<strong>三個支柱</strong>：Instrument（鉤子與處置，也就是前面三節）、Trace（把每個鉤子與每個決定記成 OpenTelemetry 的 span 與 OCSF 事件，讓既有資安工具讀得懂）、Inspect（產出 AgBOM，即時盤點 Agent 用了哪些模型、工具與相依，可序列化為 CycloneDX、SPDX 或 SWID）。</dd>
+  <dt data-n="2">為什麼這樣切</dt>
+  <dd>官方用語是讓 Agent「可檢視、可追蹤、可操控」(inspectable, traceable, instrumentable)：先能看見它是什麼 (Inspect)、再記錄它做了什麼 (Trace)、最後才能在執行期操控它 (Instrument)。這個對應是依官方措辭整理的。</dd>
+  <dt data-n="3">怎麼組裝（概念層級）</dt>
+  <dd><strong>ACS-Core</strong> 是強制基線：Instrument 加上線路格式與稽核鏈。Trace、Inspect、來源證明 (Provenance)、密碼學簽章、強化稽核等是<strong>設定檔 (profile)</strong>，部署在握手時各自宣告，可以獨立加上。</dd>
+  <dt data-n="4">怎麼防（它如何限制風險）</dt>
+  <dd>ACS-Core 保證兩件事：通道是被認證的，而且被觀察的 Agent 會遵守 Guardian 在四種「必須支援」（ALLOW、DENY、ASK、DEFER）的處置上的決定。規格也說清楚它<strong>不保證什麼</strong>：不保證政策寫得嚴格，也不保證稽核鏈能防得住被攻破的 Guardian（那是 ACS-Crypto 與 ACS-Audit 設定檔的事，因為基線的 HMAC 是對稱式）。規格的說法是：一個寬鬆的 Guardian 是「符合但寬鬆」的部署，不算違規。另外注意：<strong>修改 (MODIFY) 在 0.1.3 版之後從「必須支援」降為「應該支援」</strong>，CHANGELOG 的理由是有些框架（例如 shell 鉤子整合、沒有改參數介面的 IDE 外掛）根本做不到。所以「最低限度符合」的部署可以允許或拒絕一個動作，但<strong>不能改動它</strong>；要做遮蔽之類的內容改寫，就需要支援 MODIFY。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「ACS 的三個支柱都是必須實作的。」不是。只有 ACS-Core 是強制的。其餘是自行宣告的設定檔，而且前一章說過，宣告不經任何人驗證。另一個誤解是：「Guardian 是個 LLM 在判斷。」規格的預設是確定性層先評估，LLM 層是可選的委派。</dd>
+</dl>
+</div>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>兩個角色：被觀察的 Agent 送請求、Guardian Agent 決定；Guardian 內部確定性層（Cedar／Rego）先跑，LLM 層是選擇性的委派，且看不到政策原始碼。</li>
+  <li>19 個原生鉤子，涵蓋工作階段、訊息、知識與記憶、工具、脈絡壓縮、子 Agent、技能生命週期；ACS-Core 只強制其中最低限度的 7 個（其餘「應該實作」）；部分鉤子只做稽核，不是決定點。</li>
+  <li>五種處置：允許、拒絕、修改、詢問、延後。Agent 必須等並照做；修改的規則嚴格；延後過期預設拒絕。</li>
+  <li>三支柱 Instrument、Trace、Inspect；ACS-Core 是強制基線，其餘是自行宣告的設定檔。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能畫出 Observed Agent、Guardian 兩層與五種處置的關係。</li>
+  <li>我能說出至少三類鉤子，以及哪些鉤子不是決定點。</li>
+  <li>我能說明 ACS-Core 與設定檔的差別。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-failure-posture.html">第 3 章　失敗姿態與情境</a>：當 Guardian 掛了，Agent 該怎麼辦？這個預設值藏著 ACS 最重要的取捨。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>ACS Instrument Specification（§1 設計原則、§2 架構、§6 處置詞彙與規範性規則）：<a href="https://github.com/GenAI-Security-Project/agent-control-standard/blob/main/docs/spec/instrument/specification.md">docs/spec/instrument/specification.md</a>；2026-10-26 讀取；說明文件 CC BY-SA 4.0，規格 Apache-2.0。</li>
+    <li>ACS Hooks 目錄：<a href="https://github.com/GenAI-Security-Project/agent-control-standard/blob/main/docs/spec/instrument/hooks.md">docs/spec/instrument/hooks.md</a>；2026-10-26 讀取。</li>
+    <li>ACS Conformance Profiles：<a href="https://github.com/GenAI-Security-Project/agent-control-standard/blob/main/docs/spec/conformance.md">docs/spec/conformance.md</a>；README；CHANGELOG（0.1.3、0.1.4）；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：ACS 儲存庫的規格 — Apache-2.0；說明文件（docs 與 README）— CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'c-ch2', topic: 'agent-control-standard', mode: 'chapter',
+  questions: [
+    { id: 'c2q1', type: 'mc', lo: [2], refs: [{label: '2.1 兩個角色與兩層 Guardian', href: '02-guardian-and-hooks.html#gh-roles'}],
+      stem: '關於 Guardian 的兩層，下列哪一項是規格明載的？',
+      options: [
+        { text: 'LLM 層先評估，確定性層負責在最後確認。', why: '順序相反：確定性層永遠先跑。' },
+        { text: '確定性層永遠先跑；LLM 層只在確定性層的設定把它委派時才被叫用，看不到政策原始碼，其答案仍要通過確定性層。', correct: true, why: '符合 2.1 節與圖 2-1。' },
+        { text: 'Guardian 必須包含 LLM 層，否則不符合規格。', why: '只用確定性層的部署完全符合規格。' },
+        { text: 'LLM 層可以直接讀政策原始碼，以便判斷。', why: '規格刻意讓 LLM 層看不到政策原始碼。' }
+      ],
+      summary: '確定性層先跑；LLM 層是可選委派、看不到政策原始碼。' },
+    { id: 'c2q2', type: 'match', lo: [2], refs: [{label: '2.3 表 2-2', href: '02-guardian-and-hooks.html#gh-disp'}],
+      stem: '把下列情況配對到 Guardian 最貼近的處置。',
+      cats: [
+        { id: 'deny', label: 'DENY 拒絕' },
+        { id: 'modify', label: 'MODIFY 修改' },
+        { id: 'ask', label: 'ASK 詢問' },
+        { id: 'defer', label: 'DEFER 延後' }
+      ],
+      items: [
+        { text: '政策判定該指令屬於破壞性操作，直接阻擋', answer: 'deny', why: '拒絕：阻擋，需附理由。' },
+        { text: '查詢沒有筆數上限，Guardian 把它改成最多取 100 筆再放行', answer: 'modify', why: '修改：改過之後繼續。' },
+        { text: '高風險動作需要人工核准後才能繼續', answer: 'ask', why: '詢問：暫停並請求核准。' },
+        { text: '資訊不足、政策衝突，暫時下不了結論，設定逾時後預設拒絕', answer: 'defer', why: '延後：目前還下不了結論，過期預設拒絕。' }
+      ],
+      summary: '五種處置中，ASK 與 DEFER 會暫停；ALLOW、DENY、MODIFY 立即結案。' },
+    { id: 'c2q3', type: 'mc', lo: [2], refs: [{label: '2.4 三支柱與設定檔', href: '02-guardian-and-hooks.html#gh-pillars'}],
+      stem: '依規格，下列哪一項屬於 ACS-Core（強制基線），而不是自行宣告的設定檔？',
+      options: [
+        { text: 'Inspect 支柱產出的 AgBOM 序列化', why: 'AgBOM 序列化屬 Inspect 設定檔，是選用的。' },
+        { text: 'Instrument 支柱的鉤子與處置，加上線路格式與稽核鏈', correct: true, why: 'ACS-Core = Instrument + 線路格式 + 稽核鏈。' },
+        { text: 'Trace 支柱的 OpenTelemetry 與 OCSF 輸出', why: 'Trace 是設定檔，需自行宣告。' },
+        { text: '非對稱簽章與後量子簽章', why: 'ACS-Core 要求的是基線簽章；更進階的密碼學屬設定檔。' }
+      ],
+      summary: '只有 Instrument 加線路格式與稽核鏈是強制基線。' },
+    { id: 'c2q4', type: 'scn', lo: [2], refs: [{label: '2.2 鉤子', href: '02-guardian-and-hooks.html#gh-hooks'}, {label: '2.3 處置', href: '02-guardian-and-hooks.html#gh-disp'}],
+      stem: '依本章，這個團隊的做法有什麼問題？',
+      scenario: '泰山保險（虛構）採用了一個 Agent 框架，它的整合只有一個外部指令鉤子，沒有改動工具參數的介面。團隊的 Guardian 政策寫成：「查詢客戶資料時，如果沒有筆數上限，就回傳 MODIFY，把上限改成 100 筆」。上線後，稽核發現有些查詢沒有被改、直接被擋下，而且稽核日誌裡有「modify_unsupported」的紀錄。團隊認為這是 Guardian 的錯誤。',
+      options: [
+        { text: '這是 Guardian 的實作錯誤，應修正 Guardian。', why: '規格明確定義了這個行為。' },
+        { text: '客戶端做不到修改（沒有改參數的介面）。規格規定：Guardian 判斷客戶端做不到時不得回 MODIFY，要改回 DENY 並記稽核；萬一客戶端收到 MODIFY，也必須當成 DENY。MODIFY 從 0.1.3 起是「應該支援」而非「必須支援」。團隊應檢查客戶端的能力，必要時把政策改成直接 DENY 或 ASK。', correct: true, why: '符合 2.3 與 2.4 節。' },
+        { text: '應該把 MODIFY 改成 ALLOW，這樣所有查詢都能執行。', why: '這會放掉原本想限制的筆數上限，是降低控制，不是修復。' },
+        { text: '這是 ACS-Core 的缺陷，因此 ACS 不能使用。', why: 'MODIFY 降為「應該支援」正是為了讓這類框架仍然可以符合 ACS-Core；行為是規格內的退回規則，不是缺陷。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 客戶端只有外部指令鉤子，無法修改參數，屬「MODIFY-incapable」。(2) 規格規定：Guardian 判斷客戶端做不到修改時，不得回 MODIFY，而要以 DENY 取代並記稽核；萬一客戶端收到它做不到的 MODIFY，也必須當成 DENY 並記稽核（日誌裡的 modify_unsupported 就是這個）。(3) MODIFY 自 0.1.3 起降為 SHOULD-support，所以這類部署仍符合 ACS-Core。</p><p><strong>結論：</strong>檢查客戶端能力，把政策改成這類客戶端做得到的處置。對應教材：<a href="02-guardian-and-hooks.html#gh-disp">2.3 節</a>、<a href="02-guardian-and-hooks.html#gh-pillars">2.4 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

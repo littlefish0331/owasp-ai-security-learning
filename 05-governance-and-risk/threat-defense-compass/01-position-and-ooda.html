@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌與定位：OODA 循環｜Threat Defense COMPASS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Threat Defense COMPASS 是什麼、版本與日期、資源頁與 RunBook 與試算表三份資料的差異、OODA 四階段，以及它自己承認的限制。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="threat-defense-compass" data-page="01-position-and-ooda.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌與定位：OODA 循環</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../governance-checklist-and-coe/01-position.html">治理檢核表與卓越中心 第 1 章</a>（建議先讀）</li>
+</ul>
+<p class="lead">一位資安長拿到檢核表的盤點結果：十幾個 AI 專案、幾十個缺口。預算只夠先處理五個。哪五個？Governance Checklist 沒有回答這題。Threat Defense COMPASS 想回答的就是這個：<strong>在有限的時間裡，先處理哪些 AI 威脅</strong>。</p>
+
+<h2 id="pos-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　Threat Defense COMPASS 一頁式全貌（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">名稱</th><td>OWASP GenAI Security Project – Threat Defense COMPASS 1.0（含 RunBook）；RunBook 封面稱 OWASP GenAI COMPASS Play Book</td></tr>
+<tr><th scope="row">形式</th><td>一份 Google 試算表範本（19 個分頁）加一本 RunBook（PDF，37 頁）；官方稱它「既是方法論，也是實用的試算表工具」</td></tr>
+<tr><th scope="row">發布者</th><td>OWASP GenAI Security Project，AI Security Governance Initiative；培訓影片標示 Sandy Dunn（CISO 暨 COMPASS 負責人）</td></tr>
+<tr><th scope="row">版本與日期</th><td>1.0。資源頁日期 2025-09-10；RunBook 封面 Version 1.0、July 4, 2025（兩者不同，見 1.2）</td></tr>
+<tr><th scope="row">給誰用</th><td>試算表 About 分頁列出五種使用者：CISO、AI 紅隊人員、資安工程師、威脅情資分析師、開發者／AI 工程師</td></tr>
+<tr><th scope="row">要解決什麼</th><td>把 AI 威脅、弱點、防禦與對策整合進單一儀表板（官方稱 AI Threat Resilience Strategy Dashboard），用於快速排序威脅與策略決策</td></tr>
+<tr><th scope="row">授權</th><td>CC BY-SA 4.0（RunBook 與試算表 About 分頁皆載明）</td></tr>
+</tbody></table></div>
+<p>官方把它能評估的對象分成三種：運用 AI 的外部攻擊者、組織內部導入的 Microsoft Copilot 或 Google Gemini 等工具，以及計畫中的 GenAI 或 Agent 專案。它「為反覆使用而設計」，也就是跑完一輪後，隨著新資訊再回頭修正。</p>
+
+<h2 id="pos-sources">1.2 三份資料各說各話：發布日與分頁</h2>
+<p>COMPASS 的資料分散在三處：資源頁（兩筆，一筆工具、一筆 RunBook）、RunBook PDF、試算表。它們彼此有不一致，依「以最新者為準」，本教材的處理如下：</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　三份資料的版本與日期核對</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">各處標示</th><th scope="col">教材採用</th></tr></thead>
+<tbody>
+<tr><th scope="row">發布日</th><td>資源頁（工具與 RunBook 兩筆）與培訓影片頁：2025-09-10；RunBook PDF 封面：July 4, 2025；PDF 檔案建立時間 2025-09-11</td><td>標 2025-09-10（較新）；封面的 2025-07-04 註明為 PDF 封面日期。調查筆記說兩者「同日」，不正確</td></tr>
+<tr><th scope="row">試算表的版本</th><td>About 分頁標題 V 1.0；FAQ 標題 v.1；資源頁 1.0</td><td>1.0</td></tr>
+<tr><th scope="row">分頁編號</th><td>RunBook 把路線圖稱作「Tab 5 / Step 7」；試算表 About 分頁在快速開始寫「Tab 9 Act」，但導覽表與實際分頁名是「5 Act Strategy &amp; Roadmap」；RunBook 範例有時稱「Tab 3 Observe」</td><td>以實際分頁名稱為準（見 1.3）</td></tr>
+<tr><th scope="row">試算表的內容時間</th><td>弱點分頁的表頭標「OWASP LLM Category (2025)」，並有「OWASP Agentic Top 15」欄；2b 分頁的威脅名單用 LLM01:2025 等標籤</td><td>COMPASS 的風險標籤停在 LLM Top 10 2025 版（編號與 2026 版不同，見第 4 章）</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：RunBook 與試算表是否為同一個發布時點</p>
+  <p>RunBook 封面寫 2025 年 7 月 4 日，資源頁寫 2025 年 9 月 10 日。可能是封面沿用初稿日期、資源頁是上架日，但<strong>官方沒有說明</strong>。教材兩個日期都列出，不推測。</p>
+</div>
+
+<h2 id="pos-ooda">1.3 OODA：四個階段與 19 個分頁</h2>
+<p>OODA 原本是決策循環（Observe、Orient、Decide、Act）。RunBook 說採用它，是因為團隊需要「快速移動」，而 OODA 提供「可重複的方法，在不確定中排優先順序與下判斷」。試算表的分頁就是依這四階段排列，加上參考分頁：</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="OODA 循環與試算表分頁：觀察階段包含 2 儀表板、2a 威脅檔案、2b 攻擊面分析；定位階段包含 3 摘要、3a 已知弱點、3b 已知事件、3c 事件應變準備度、3d 紅隊審查問題、3e 紅隊結果；決策階段是 4 紅隊或弱點對防禦與緩解；行動階段是 5 策略與路線圖。四階段形成循環，結果回到觀察階段更新儀表板。六個參考分頁（6、6a、6b、6c）支援各階段。">
+flowchart LR
+  O["觀察 Observe<br>分頁 2、2a、2b<br>儀表板、威脅檔案、攻擊面分析"] --> R["定位 Orient<br>分頁 3、3a–3e<br>已知弱點、事件、應變準備度、紅隊"]
+  R --> D["決策 Decide<br>分頁 4<br>弱點對防禦與緩解"]
+  D --> A["行動 Act<br>分頁 5<br>策略與路線圖"]
+  A -.->|"更新儀表板，重複"| O
+  REF["參考分頁 6、6a、6b、6c<br>AI 資安矩陣、防禦與緩解、<br>事件監控、第三方問題"] -.-> R
+  REF -.-> D
+</pre>
+<figcaption><strong>圖 1-1　OODA 四階段與試算表分頁（重新繪製）。</strong>分頁名稱取自試算表實際分頁；階段歸屬依 About 分頁的導覽表。試算表另有「0 Getting The Compass」與「1 About／FAQ」，未畫入。參考分頁支援哪些階段是 RunBook 在各步驟中的引用，圖上的虛線為簡化。</figcaption>
+</figure>
+<p>試算表共 <strong>19 個分頁</strong>：0 起手、1 About、1 FAQ、2、2a、2b、3、3a、3b、3c、3d、3e、4、5、6、6a、6b、6c，外加一頁「Notes Uses Cases」。RunBook 的 Quick Start 只講到 About 與 FAQ，之後依七個 Step 展開，下一章走一遍。</p>
+
+<h2 id="pos-limit">1.4 它自己承認的限制</h2>
+<p>COMPASS 的 FAQ 與 RunBook 有幾句很誠實的話，使用前要先知道：</p>
+<ul>
+  <li><strong>不是精確工具：</strong>FAQ 寫「COMPASS 設計用於快速評估與快速答案；若需要完整且精確的資訊，應使用其他工具、資料與專家指導」。</li>
+  <li><strong>不涵蓋全部的 AI 安全與隱私：</strong>FAQ 說它只從「AI 事件與財務衝擊」的角度處理 AI 安全與隱私；倫理、安全與隱私的細節要找其他資源。</li>
+  <li><strong>不是模型提供者的完整指南：</strong>Profile 3（模型建置者）只在「作為第三方」對部署者的影響上被處理；針對模型提供者的具體指引不在範圍內。</li>
+  <li><strong>鼓勵客製：</strong>RunBook 的成功要素第一條就是「鼓勵客製」，包含 5 分制可以換成適合自己團隊的尺度。</li>
+</ul>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：它在治理工具鏈裡的位置</p>
+  <p>作者的看法是：Checklist 偏「全面性」（有沒有漏掉面向），COMPASS 偏「優先序」（先處理哪些）。這兩個角色不同，但官方沒有寫「先用哪個再用哪個」。這是作者讀完兩份文件後整理的定位，不是官方說法。</p>
+</div>
+
+<h2 id="pos-misc">1.5 常見誤解</h2>
+<div class="concept">
+<h3 id="c-misc">三個容易混淆的地方</h3>
+<dl>
+  <dt data-n="1">誤解</dt>
+  <dd class="misc">「COMPASS 是一個可以安裝的軟體。」不是。它是一份要「複製一份自己用」的 Google 試算表加一本 RunBook；官方的取得說明就是：到選單做「檔案 → 建立副本」。</dd>
+  <dt data-n="2">誤解</dt>
+  <dd class="misc">「跑完一輪 COMPASS 就等於做完威脅建模。」不是。FAQ 明說它是快速評估；需要精確結果時要搭配其他工具與專家。</dd>
+  <dt data-n="3">誤解</dt>
+  <dd class="misc">「OODA 的四階段是一次性的流程。」RunBook 與 About 分頁都說工作簿「為反覆使用而設計」，評分隨新資訊修正。</dd>
+</dl>
+</div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>COMPASS 1.0 = Google 試算表（19 個分頁）加 RunBook（PDF）；形式是方法加工具，要複製後自用。</li>
+  <li>發布日：資源頁 2025-09-10，RunBook 封面 2025-07-04；教材標前者並註明後者，筆記說「同日」並不正確。</li>
+  <li>四階段 OODA：觀察、定位、決策、行動；結果回到儀表板、重複。</li>
+  <li>它的風險標籤停在 LLM Top 10 2025 版；FAQ 明說它是快速評估而非精確工具。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出 COMPASS 由什麼組成，以及怎麼取得。</li>
+  <li>我能說出 OODA 四階段各有哪些分頁。</li>
+  <li>我知道它自己承認的三個限制。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-observe-orient.html">第 2 章　觀察與定位：威脅檔案與評分</a>：走一遍 Observe 與 Orient 的工作內容，並學會怎麼算分。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，Threat Defense COMPASS 1.0 資源頁（2025-09-10）：<a href="https://genai.owasp.org/resource/owasp-genai-security-project-threat-defense-compass-1-0/">genai.owasp.org/resource/owasp-genai-security-project-threat-defense-compass-1-0/</a>；2026-10-26 讀取。</li>
+    <li>OWASP GenAI Security Project，Threat Defense COMPASS RunBook（資源頁 2025-09-10；PDF 封面 Version 1.0、July 4, 2025；37 頁；CC BY-SA 4.0）：<a href="https://genai.owasp.org/resource/owasp-genai-security-project-threat-defense-compass-runbook/">genai.owasp.org/resource/owasp-genai-security-project-threat-defense-compass-runbook/</a>；2026-10-26 讀取。</li>
+    <li>COMPASS 試算表（About、FAQ 與各分頁，匯出為 xlsx 讀取文字；V 1.0；CC BY-SA 4.0）：資源頁提供的 Google 試算表連結；2026-10-26 讀取。</li>
+    <li>OWASP GenAI Security Project，Introduction – Threat Defense COMPASS（培訓頁，2025-09-10）：<a href="https://genai.owasp.org/learning/introduction-owasp-genai-security-project-threat-defense-compass/">genai.owasp.org/learning/introduction-owasp-genai-security-project-threat-defense-compass/</a>。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：COMPASS RunBook 與試算表、genai.owasp.org 網站 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'tc-ch1', topic: 'threat-defense-compass', mode: 'chapter',
+  questions: [
+    { id: 'tc1q1', type: 'mc', lo: [1], refs: [{label: '1.1 表 1-1', href: '01-position-and-ooda.html#pos-onepage'}],
+      stem: '依本章，Threat Defense COMPASS 1.0 的形式是什麼？',
+      options: [
+        { text: '一套可安裝的資安掃描軟體。', why: '它不是軟體；官方取得說明是到試算表選單做「建立副本」。' },
+        { text: '一份 Google 試算表範本加一本 RunBook（PDF），要複製後自行使用。', correct: true, why: '官方描述它既是方法論也是實用的試算表工具，並提供 RunBook。' },
+        { text: '一份只含理論的白皮書，沒有任何工具。', why: '它的核心是可操作的試算表，並非只有論述。' },
+        { text: '一個雲端服務，需要註冊帳號才能使用。', why: '官方沒有這樣的服務；試算表自行複製使用。' }
+      ],
+      summary: 'COMPASS = Google 試算表 + RunBook，複製後自用。' },
+    { id: 'tc1q2', type: 'match', lo: [1], refs: [{label: '1.3 圖 1-1', href: '01-position-and-ooda.html#pos-ooda'}],
+      stem: '把下列試算表分頁配對到它所屬的 OODA 階段。',
+      cats: [
+        { id: 'o', label: '觀察 Observe' },
+        { id: 'r', label: '定位 Orient' },
+        { id: 'd', label: '決策 Decide' },
+        { id: 'a', label: '行動 Act' }
+      ],
+      items: [
+        { text: '2b 攻擊面分析', answer: 'o', why: '2、2a、2b 屬觀察階段。' },
+        { text: '3a 已知 AI 弱點', answer: 'r', why: '3、3a 到 3e 屬定位階段。' },
+        { text: '4 紅隊或弱點對防禦與緩解', answer: 'd', why: '分頁 4 是決策階段。' },
+        { text: '5 策略與路線圖', answer: 'a', why: '分頁 5 是行動階段。' }
+      ],
+      summary: '觀察 2/2a/2b；定位 3/3a–3e；決策 4；行動 5。' },
+    { id: 'tc1q3', type: 'scn', lo: [1], refs: [{label: '1.2 表 1-2', href: '01-position-and-ooda.html#pos-sources'}, {label: '1.4 限制', href: '01-position-and-ooda.html#pos-limit'}],
+      stem: '依本章，這份簡報的說法哪裡需要修正？',
+      scenario: '雲杉電信（虛構）的風險簡報寫：「COMPASS 1.0 由 OWASP 於 2025 年 7 月 4 日發布，RunBook 和試算表同日上架。我們已用 COMPASS 完成精確的威脅建模，不需再做其他風險評估。」審查人員覺得可疑。',
+      options: [
+        { text: '只有日期需要修正，其他都對。', why: '「精確的威脅建模」也有問題：官方 FAQ 明說 COMPASS 是快速評估而非精確工具。' },
+        { text: '日期要如實寫：資源頁 2025-09-10，RunBook PDF 封面 2025-07-04，兩者不同；而且 COMPASS 是快速排序工具，官方 FAQ 說需要精確結果要搭配其他工具與專家，不能宣稱已完成精確威脅建模。', correct: true, why: '對應表 1-2 與 1.4 節的限制。' },
+        { text: '應該刪掉「RunBook」，因為它不屬於 COMPASS。', why: '官方資源頁同時提供工具與 RunBook。' },
+        { text: '兩者都正確，因為是官方工具。', why: '官方工具也有自己明說的限制。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 日期：資源頁（工具與 RunBook 兩筆）都是 2025-09-10，RunBook PDF 封面是 2025-07-04；依「以最新者為準」標 2025-09-10 並註明封面日期；不能說「同日上架」。(2) 精確度：FAQ 的原意是設計用於快速評估與快速答案；需要精確資訊要用其他工具與專家。</p><p><strong>結論：</strong>改寫日期，並把 COMPASS 定位為排序工具；精確的威脅建模另做。對應教材：<a href="01-position-and-ooda.html#pos-sources">1.2 節</a>、<a href="01-position-and-ooda.html#pos-limit">1.4 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

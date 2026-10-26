@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　Solutions Landscape｜GenAI Security Project｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Solutions Landscape 是什麼、SecOps 九階段、四種應用型態、線上目錄的篩選方式，以及使用它時必須知道的限制（非完整、非背書、贊助標示）。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="01-overview" data-topic="genai-security-project" data-page="04-landscape.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　Solutions Landscape</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="03-initiatives.html">第 3 章</a>；<a href="../../primer-security-for-developers.html#p-did">縱深防禦</a>（可略讀）</li>
+</ul>
+<p class="lead">LLM Top 10 告訴你「有哪些風險」。下一個很自然的問題是：「市面上有哪些工具能處理它？」Solutions Landscape 就是 GenAI Security Project 對這個問題的回答。本章教你怎麼讀它、怎麼用它，以及它<strong>不能</strong>做什麼。</p>
+
+<h2 id="ls-what">4.1 它是什麼</h2>
+<div class="table-wrap"><table>
+<caption>表 4-1　Solutions Landscape 一頁式全貌（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">定位</th><td>AI Security Solutions Initiative 的產出：一組可下載的指南／速查表，加上一份線上可搜尋的目錄。官方形容它是「社群資源」，收錄傳統與新興的資安控制 (controls)，涵蓋 GenAI、Agentic 與 AI 紅隊。</td></tr>
+<tr><th scope="row">更新頻率</th><td>官方寫「每季更新 (Updated Quarterly)」。</td></tr>
+<tr><th scope="row">三個領域</th><td>GenAI LLM、Agentic、Red Teaming（線上目錄的「Landscape」篩選器）。</td></tr>
+<tr><th scope="row">授權</th><td>各 PDF 封面標示 CC BY-SA 4.0。Reference Guide 另外要求引用時「必須包含專案名稱以及所參照資產的名稱」。</td></tr>
+<tr><th scope="row">官方入口</th><td><a href="https://genai.owasp.org/ai-security-solutions-landscape/">線上目錄</a>；<a href="https://genai.owasp.org/initiatives/ai-security-solutions/">Initiative 頁</a>。</td></tr>
+</tbody></table></div>
+
+<h3 id="ls-versions">目前有哪些文件、版本與日期（採最新者）</h3>
+<div class="table-wrap"><table>
+<caption>表 4-2　Solutions Landscape 系列文件（資源頁日期；2026-10-26 讀取）</caption>
+<thead><tr><th scope="col">文件</th><th scope="col">資源頁日期</th><th scope="col">頁數與備註</th></tr></thead>
+<tbody>
+<tr><th scope="row">AI Security Solutions Landscape for LLM and Gen AI Apps Q2 2026</th><td>2026-03-17</td><td>PDF 16 頁。資源頁與頁面標題寫「Q2 2026」（官方標題把 AI 拼成 "Al"）；<strong>PDF 封面同時出現「Q2 2026」與「Q2/Q3 2026」</strong>。</td></tr>
+<tr><th scope="row">AI Security Solutions Landscape for Agentic AI Q2 2026</th><td>2026-03-17</td><td>PDF 17 頁</td></tr>
+<tr><th scope="row">AI Security Solutions Landscape for AI and Agentic Red Teaming Q2 2026</th><td>2026-04-09</td><td>PDF 15 頁</td></tr>
+<tr><th scope="row">Solutions Landscape – Red Teaming Taxonomy</th><td>2026-06-28</td><td>PDF 13 頁。資源頁沒有版本號；檔名裡的 v1.0 是從檔名推測</td></tr>
+<tr><th scope="row">Solutions Reference Guide Q2_Q3'25</th><td>2025-11-04</td><td>PDF 101 頁。<strong>這是前期較早、內容最完整的一份</strong>（含 LLMOps 生命週期說明）</td></tr>
+<tr><th scope="row">更早的版本</th><td>2025-08-12 起，一直到 2024-10-24 首版</td><td>只出現在版本演進，不作為現行依據</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：LLM 版是 Q2 還是 Q2/Q3</p>
+  <p>LLM 版 PDF 的封面頁寫「Q2 2026」，下一頁的標題又寫「Q2/Q3 2026」，頁面標題與資源頁則是「Q2 2026」。本教材無法判斷哪個才是正式的版本標示，教材使用「Q2 2026」（與資源頁一致），並在此註明。三份系列文件的標題都以「Q2 2026」標示。</p>
+</div>
+
+<h2 id="ls-secops">4.2 核心：SecOps 九階段</h2>
+<p>Landscape 的目錄並不是依「攻擊類型」排列，而是依 <strong>LLM／GenAI 應用的生命週期階段</strong>排列。這是它和 LLM Top 10 最不同的地方。Reference Guide 說明：它以 DevOps → DataOps → MLOps → LLMOps 為基礎，並在 LLMOps 上加上資安 (LLMSecOps)。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="九階段生命週期：Scope and Plan、Augment and Fine-Tune Data、Develop and Experiment、Test and Evaluate、Release、Deploy、Operate、Monitor、Govern。Govern 與 Monitor 貫穿整個運作期。">
+flowchart LR
+  A["1 Scope &amp; Plan<br>範圍與規劃"] --> B["2 Augment &amp; Fine-Tune Data<br>資料擴充與微調"]
+  B --> C["3 Develop &amp; Experiment<br>開發與實驗"]
+  C --> D["4 Test &amp; Evaluate<br>測試與評估"]
+  D --> E["5 Release<br>發布"]
+  E --> F["6 Deploy<br>部署"]
+  F --> G["7 Operate<br>運作"]
+  G --> H["8 Monitor<br>監控"]
+  H --> I["9 Govern<br>治理"]
+  I -.->|"迭代"| A
+</pre>
+<figcaption><strong>圖 4-1　SecOps 九階段（LLM 與 Agentic 的 Landscape 使用同樣的階段名稱，Agentic 版的名稱略有不同寫法，如「Augment &amp; Fine Tune Data」）。</strong>Reference Guide 說明這是迭代的方法，不論你採用瀑布式、敏捷或混合式，每個階段都可以套用。階段中文名稱為暫譯。</figcaption>
+</figure>
+<div class="table-wrap"><table>
+<caption>表 4-3　九階段各階段的重點（Reference Guide 的階段說明，改寫；階段中的具體安全任務請看官方 PDF）</caption>
+<thead><tr><th scope="col">階段</th><th scope="col">重點（官方描述，改寫）</th></tr></thead>
+<tbody>
+<tr><th scope="row">Scope &amp; Plan</th><td>定義應用的目標與要解決的需求、決定預訓練模型如何整合進整體系統；蒐集需求、評估倫理與合規考量、訂出效能／擴展／互動目標</td></tr>
+<tr><th scope="row">Augment &amp; Fine-Tune Data</th><td>客製化預訓練模型：用領域資料擴充原始資料集，再以重新訓練（微調）最佳化</td></tr>
+<tr><th scope="row">Develop &amp; Experiment</th><td>把微調後的模型整合進應用架構：建置介面、互動與工作流，並實驗不同設定、依回饋改進</td></tr>
+<tr><th scope="row">Test &amp; Evaluate</th><td>嚴格評估效能、安全與可靠性：功能、安全與可用性測試，確認 LLM 與應用整合順暢並符合需求</td></tr>
+<tr><th scope="row">Release</th><td>把完成的應用推向正式環境：最終部署策略、為擴展性與安全配置基礎設施、確認元件整合正確，設定監控與告警</td></tr>
+<tr><th scope="row">Deploy</th><td>安全地啟動 LLM 與相關元件：配置基礎設施、確認各項安全措施到位、驗證 LLM 與其他元件的整合</td></tr>
+<tr><th scope="row">Operate</th><td>管理並維護運作中的應用：持續監控效能、安全與使用者互動；回應事件、套用更新與修補</td></tr>
+<tr><th scope="row">Monitor</th><td>即時持續觀察效能、安全與使用者互動：追蹤指標、偵測異常、確認元件正常；也蒐集資料作為持續改進之用</td></tr>
+<tr><th scope="row">Govern</th><td>建立並落實政策、標準與最佳實務，確保應用在整個生命週期中安全且合乎倫理：資料使用、模型管理、合規與安全控制的治理框架</td></tr>
+</tbody></table></div>
+<p>各階段在官方 PDF 速查表裡還有「具體安全任務清單」（例如 Test &amp; Evaluate 階段：對抗式測試、偏誤與公平性測試、滲透測試等）。這些任務逐項列在官方圖上，本教材<strong>不逐項複製</strong>，請看原文。</p>
+
+<h3 id="ls-types">四種應用型態</h3>
+<p>Reference Guide 把 GenAI 應用分成四種型態，因為不同型態的資安重點不同：</p>
+<div class="table-wrap"><table>
+<caption>表 4-4　四種應用型態（Reference Guide，改寫）</caption>
+<thead><tr><th scope="col">型態</th><th scope="col">特徵</th><th scope="col">官方點出的資安挑戰（摘要）</th></tr></thead>
+<tbody>
+<tr><th scope="row">靜態提示詞增強應用 <br>(Static Prompt Augmentation)</th><td>用靜態的自然語言輸入引導 LLM；人與模型互動；例如聊天機器人、問答、摘要、翻譯</td><td>提示詞注入、因提示詞設計不佳導致資料外洩；缺乏上下文或狀態管理可能產生非預期輸出</td></tr>
+<tr><th scope="row">Agentic 應用</th><td>LLM 自主或半自主執行任務、做決策、與使用者或其他系統互動；具記憶、跨系統整合與 agent 間通訊</td><td>因自主性與對多個系統的存取，需謹慎處理</td></tr>
+<tr><th scope="row">模型外掛／擴充 <br>(Plug-ins, Extensions)</th><td>把 LLM 整合進既有應用或平台的附加元件；官方也承認 agent 與外掛之間有時難以劃線，並以「預先建好、被明確呼叫」來區分外掛</td><td>（教材未逐項整理）</td></tr>
+<tr><th scope="row">複雜應用 <br>(Complex Applications)</th><td>把 LLM 作為核心元件深度整合的複雜軟體系統；多元件架構、整合多個技術與模型；例如法律文件分析、財報系統、醫療診斷</td><td>與多系統整合及大量資料處理帶來的重大挑戰</td></tr>
+</tbody></table></div>
+
+<h2 id="ls-directory">4.3 線上目錄怎麼讀</h2>
+<p>線上目錄 (Solutions Directory) 的畫面左側是篩選器。下表是本教材在 2026-10-26 讀到的內容（數字是當時頁面顯示的，會變動）：</p>
+<div class="table-wrap"><table>
+<caption>表 4-5　線上目錄的篩選維度（2026-10-26 頁面顯示）</caption>
+<thead><tr><th scope="col">維度</th><th scope="col">選項（頁面顯示的數量）</th></tr></thead>
+<tbody>
+<tr><th scope="row">Landscape（領域）</th><td>GenAI LLM (145)、Agentic (84)、Red Teaming (39)</td></tr>
+<tr><th scope="row">Solution Type（類型）</th><td>Commercial 商業 (238)、Open Source 開源 (40)</td></tr>
+<tr><th scope="row">SecOps Stages（階段）</th><td>Test &amp; Evaluate (110)、Monitor (93)、Operate (85)、Govern (71)、Deploy (59)、Develop &amp; Experiment (55)、Scope &amp; Plan (45)、Augm &amp; Fine Tune Data (27)、Release (23)</td></tr>
+<tr><th scope="row">風險標籤</th><td>可依 LLM Top 10（2025 與 2023 兩種版本標籤）、Agentic Top 10（ASI01:26 等格式）篩選；紅隊領域另有 Red／Blue／Purple 分類</td></tr>
+</tbody></table></div>
+<p>每張解決方案卡片會顯示：公司或開源專案名稱、類型、所屬領域、涵蓋的 SecOps 階段、簡短描述、涵蓋的風險標籤，以及連到廠商的連結。</p>
+<div class="callout official unsure">
+  <p class="callout-title">觀察到的不一致，請自行留意</p>
+  <ul>
+    <li><strong>風險標籤版本落後：</strong>目錄的 LLM 風險篩選器仍然是 LLM Top 10 <strong>2025</strong>（頁面以 LLM01:25 這種縮寫格式顯示，意思是 LLM01:2025 …）與 <strong>2023</strong> 兩種，沒有看到 2026 版標籤。LLM Top 10 2026 的編號與 2025 不同（例如 2025 的 LLM06 是 Excessive Agency，2026 的 LLM03 才是）。所以用目錄的風險標籤對照 2026 版時，不能直接套用同樣的編號。</li>
+    <li><strong>Agentic 標籤的數量懸殊：</strong>篩選器顯示 ASI04 只有 1 筆，其他多為 60–85 筆；原因本教材無法確認，不做推論。</li>
+    <li><strong>目錄的 HTML 一次只載入部分卡片：</strong>本教材讀到的原始碼中只有 21 張卡片可見，數字（278 筆）來自篩選器計數；細節與完整性無法用本方法核對。</li>
+  </ul>
+</div>
+
+<h2 id="ls-limits">4.4 使用限制：這一節最重要</h2>
+<div class="concept">
+<h3 id="c-landscape-limits">不要把目錄當成「推薦清單」</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>Landscape 是一份社群資源，列出了開源與商業的資安解決方案，並依生命週期階段與風險對照。</dd>
+  <dt data-n="2">官方明說的限制</dt>
+  <dd>線上目錄頁寫：「這<strong>不是完整清單，也不是背書</strong> (It is not a comprehensive list or an endorsement)。」Reference Guide 也寫：OWASP 不推薦或背書第三方網站的內容；它「並非設計成包羅萬象」。</dd>
+  <dt data-n="3">官方沒有說、但資料裡看得到的事（需自行留意）</dt>
+  <dd>(a) 2026 Q2 的各份速查表 PDF，圖例上把開源、金級贊助商 (Gold Sponsors)、銀級贊助商 (Silver Sponsors) 分開標示。(b) 2025 年的 Reference Guide 在部分商業解決方案後面直接註明「(Silver Sponsor)」。(c) 線上目錄頁本身本教材沒有看到贊助欄位，也沒有看到贊助對收錄或排序是否有影響的說明。<strong>所以本教材無法判斷贊助關係是否影響收錄，教材不做任何推論</strong>；你只需要知道這個標示存在。</dd>
+  <dt data-n="4">所以怎麼用</dt>
+  <dd>把它當成「縮小候選的起點」：用領域、階段、風險標籤篩出類別，再自行評估。你仍然需要：確認產品實際涵蓋的風險與階段（目錄只是自述）、評估成本與整合、必要時做驗證測試（紅隊或廠商評估，見第 3 章的 AI Red Teaming）。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「在目錄上的產品就代表通過 OWASP 的認證／審核。」官方明確說不是背書。另一個誤解是「目錄上沒有的產品不好」：官方說目錄不完整，沒收錄不代表什麼。</dd>
+</dl>
+</div>
+<p>另外值得知道的是，目錄頁有一個「Submit an Entry」的連結，指向 <code>staging-b66e-genaiowasp.wpcomstaging.com/solution-submission/</code>，這是一個 <strong>staging（測試環境）網址</strong>，疑似官方站設定問題；教材不建議你直接使用，要提交時請先與官方確認。這是 2026-10-26 的觀察，之後可能已修正。</p>
+
+<h2 id="ls-scenario">4.5 情境範例 B：用 Landscape 縮小候選</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：弘毅醫療的客服 agent 採購評估</h3>
+<p><span class="tag fiction">虛構</span> 弘毅醫療是虛構的公司。他們要為客服 agent（會讀病患來信、查詢排程系統、代為預約）採購一套「執行期防護」產品。採購主管打開線上目錄，看到幾百筆解決方案，不知從何下手；另一位同事提議：「就挑目錄裡涵蓋最多風險標籤的那一個。」</p>
+<ol class="steps">
+  <li><strong>先用領域與階段篩選：</strong>選「Agentic」領域；需求是執行期防護，對應階段是 Operate 與 Monitor（目錄顯示各約 85、93 筆）。這一步把候選縮小到「在這兩個階段有宣稱涵蓋」的產品。</li>
+  <li><strong>再用風險標籤篩選：</strong>agent 會讀外部來信（不可信輸入）、查詢內部系統（敏感資料）、代為預約（變更狀態）。這三件事的風險，Agentic 標籤對應的是 Agentic Top 10 的條目。用 ASI 標籤把有宣稱涵蓋的產品列出。</li>
+  <li><strong>哪裡會出問題：</strong>(a) 「涵蓋最多標籤」是廠商自述的涵蓋範圍，不等於實際防得住；(b) 目錄不是背書，不是 OWASP 的評比；(c) 圖例上有贊助商標示，但目錄並沒有說明贊助是否影響收錄，你不能據此判斷產品好壞。</li>
+  <li><strong>該怎麼做：</strong>把篩選結果當成「長名單」，再自行訂定評估標準：先對自家系統做威脅建模（AI Exchange 的風險分析），確定需要防的是哪些風險；對候選產品要求提供證據；必要時用紅隊（AI Red Teaming 的評估廠商指引，Vendor Evaluation Criteria）驗證其宣稱。</li>
+  <li><strong>學到什麼：</strong>目錄回答的是「有誰宣稱做什麼」，不是「誰做得好」。</li>
+</ol>
+</div>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>Solutions Landscape = 每季更新的解決方案指南（PDF 速查表）加線上目錄；官方稱它「不是完整清單，也不是背書」。</li>
+  <li>它依 SecOps 九階段與四種應用型態組織：Scope &amp; Plan → Augment &amp; Fine-Tune Data → Develop &amp; Experiment → Test &amp; Evaluate → Release → Deploy → Operate → Monitor → Govern。</li>
+  <li>線上目錄依領域、類型、階段與風險標籤篩選；風險標籤仍停在 LLM Top 10 2025／2023，且 2025 與 2026 編號不同。</li>
+  <li>贊助商標示存在於 PDF 圖例與較早的 Reference Guide；贊助是否影響收錄，官方沒有說明，教材不推論。</li>
+  <li>用它縮小候選；實際評估仍要自己做。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能依序說出 SecOps 九階段。</li>
+  <li>我能解釋為什麼「在目錄上」不等於「經過 OWASP 認證」。</li>
+  <li>我知道目錄的風險標籤版本與 LLM Top 10 2026 對不上，並知道該怎麼處理。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p><a href="05-integration.html">第 5 章　跨文件整合與收尾</a>：把 GenAI Security Project 的地圖，和你已學過的 AI Exchange 接起來。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>AI Security Solutions Landscape 目錄頁與 Initiative 頁：<a href="https://genai.owasp.org/ai-security-solutions-landscape/">genai.owasp.org/ai-security-solutions-landscape/</a>、<a href="https://genai.owasp.org/initiatives/ai-security-solutions/">…/initiatives/ai-security-solutions/</a>；2026-10-26 讀取；頁尾授權 CC BY-SA 4.0。</li>
+    <li>AI Security Solutions Landscape For LLM and Gen AI Apps Q2 2026：<a href="https://genai.owasp.org/resource/al-security-solutions-landscape-for-llm-and-gen-al-apps-q2-2026/">資源頁</a>（2026-03-17）、PDF 16 頁，封面標示 CC BY-SA 4.0。</li>
+    <li>AI Security Solutions Landscape for Agentic AI Q2 2026：<a href="https://genai.owasp.org/resource/ai-security-solutions-landscape-for-agentic-ai-q2-2026/">資源頁</a>（2026-03-17）、PDF 17 頁，CC BY-SA 4.0。</li>
+    <li>AI Security Solutions Landscape For AI and Agentic Red Teaming Q2 2026：<a href="https://genai.owasp.org/resource/ai-security-solutions-landscape-for-ai-and-agentic-red-teaming-q2-2026/">資源頁</a>（2026-04-09）、PDF 15 頁。</li>
+    <li>Solutions Landscape – Red Teaming Taxonomy：<a href="https://genai.owasp.org/resource/solutions-landscape-red-teaming-taxonomy/">資源頁</a>（2026-06-28）、PDF 13 頁。</li>
+    <li>OWASP GenAI Security Project – Solutions Reference Guide Q2_Q3'25：<a href="https://genai.owasp.org/resource/owasp-genai-security-project-solutions-reference-guide-q2_q325/">資源頁</a>（2025-11-04）、PDF 101 頁，CC BY-SA 4.0（引用要求：必須包含專案名稱與所參照資產名稱）。本教材引用它的階段說明、四種應用型態與矩陣欄位定義，皆為改寫。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Solutions Landscape 各 PDF 與 Reference Guide — CC BY-SA 4.0；genai.owasp.org 網站 — CC BY-SA 4.0。依 Reference Guide 的署名要求，本頁標示為參照：「OWASP GenAI Security Project – Solutions Reference Guide」與「OWASP GenAI Security Project – AI Security Solutions Landscape」。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'g-ch4', topic: 'genai-security-project', mode: 'chapter',
+  questions: [
+    { id: 'g4q1', type: 'mc', lo: [4], refs: [{label: '4.4 使用限制', href: '04-landscape.html#ls-limits'}],
+      stem: '採購主管說：「這家廠商的產品在 OWASP 的 Solutions Landscape 目錄裡，所以它已經通過 OWASP 的審核。」依官方說明，這個說法哪裡有問題？',
+      options: [
+        { text: '沒有問題，收錄就代表通過審核。', why: '官方明確說：目錄不是完整清單，也不是背書。' },
+        { text: '問題只在於應該看開源產品，商業產品不會被收錄。', why: '目錄同時收錄商業與開源；頁面顯示商業 238 筆、開源 40 筆。' },
+        { text: '問題在於目錄還在草稿階段，尚未正式發布。', why: '沒有這種說法；目錄與系列文件都有正式的資源頁與日期。' },
+        { text: '官方明說目錄「不是完整清單，也不是背書」；收錄只代表被列在社群資源中，不代表通過 OWASP 審核。', correct: true, why: '這是線上目錄頁的原文。Reference Guide 也說 OWASP 不推薦或背書第三方內容。' }
+      ],
+      summary: '目錄 ≠ 背書 ≠ 完整清單。' },
+    { id: 'g4q2', type: 'match', lo: [4], refs: [{label: '4.2 SecOps 九階段', href: '04-landscape.html#ls-secops'}],
+      stem: '把下列活動配對到它最主要屬於的 SecOps 階段（依 Reference Guide 的階段說明）。',
+      cats: [
+        { id: 'scope', label: 'Scope & Plan' },
+        { id: 'test', label: 'Test & Evaluate' },
+        { id: 'deploy', label: 'Deploy' },
+        { id: 'monitor', label: 'Monitor' },
+        { id: 'govern', label: 'Govern' }
+      ],
+      items: [
+        { text: '評估倫理與合規考量、訂出效能與擴展目標', answer: 'scope', why: 'Scope & Plan 階段包含蒐集需求、評估倫理與合規並訂出目標。' },
+        { text: '做功能、安全與可用性測試，確認 LLM 與應用整合順暢', answer: 'test', why: 'Test & Evaluate 階段的內容。' },
+        { text: '配置基礎設施、確認各項安全措施到位後正式啟動', answer: 'deploy', why: 'Deploy 階段：安全地啟動 LLM 與相關元件，確認安全措施到位。' },
+        { text: '即時追蹤指標、偵測異常並確認元件如預期運作', answer: 'monitor', why: 'Monitor 階段的內容。' },
+        { text: '建立並落實政策與標準，涵蓋資料使用、模型管理與合規', answer: 'govern', why: 'Govern 階段：治理框架，涵蓋資料使用、模型管理、合規與安全控制。' }
+      ],
+      summary: '九階段是迭代的生命週期，不是單向的流程。' },
+    { id: 'g4q3', type: 'scn', lo: [4], refs: [{label: '4.3 觀察到的不一致', href: '04-landscape.html#ls-directory'}, {label: '4.5 情境範例 B', href: '04-landscape.html#ls-scenario'}],
+      stem: '這位工程師的做法有什麼問題？',
+      scenario: '松濤銀行（虛構）的工程師在線上目錄用「LLM Top 10 2025」標籤篩選，看到一個產品標示涵蓋「LLM06:25」，就向主管報告：「它涵蓋 LLM Top 10 的 LLM06，也就是 Excessive Agency，我們依據 LLM Top 10 2026 的要求，這就夠了。」主管不確定，要你確認。',
+      options: [
+        { text: '把 2025 版的編號直接套用到 2026 版；兩版編號不同（2025 的 LLM06 是 Excessive Agency，2026 版的 Excessive Agency 是 LLM03）。應改用名稱比對，並向廠商確認它對 2026 版的涵蓋。', correct: true, why: '目錄的風險標籤仍是 2025／2023 版，直接套用編號會對錯條目。' },
+        { text: '沒有問題，LLM06 在 2025 與 2026 版都是 Excessive Agency。', why: '編號不同：2025 版的 LLM06 是 Excessive Agency，但 2026 版的 LLM06 是 Unbounded Consumption，Excessive Agency 在 2026 版是 LLM03。' },
+        { text: '問題在於目錄不應該有風險標籤。', why: '目錄有風險標籤沒有問題，問題在於版本對應。' },
+        { text: '問題在於「Excessive Agency」已被移除，2026 版不再列入。', why: '沒有被移除。2026 版把 Excessive Agency 升到第 3 名。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 線上目錄的 LLM 風險篩選器是 LLM Top 10 2025 與 2023 兩種標籤。(2) 兩版編號不同：2025 版 LLM06 = Excessive Agency；2026 版 Excessive Agency = LLM03、LLM06 = Unbounded Consumption。(3) 若直接把「LLM06:25」讀成 2026 版的 LLM06，就會把產品涵蓋的風險認錯。</p><p><strong>結論：</strong>改用名稱比對，並向廠商確認對 2026 版各條目的涵蓋。教材的編號對照依據 LLM Top 10 2026 的官方條目清單。對應教材：<a href="04-landscape.html#ls-directory">4.3 節</a>。</p>' },
+    { id: 'g4q4', type: 'mc', lo: [4], refs: [{label: '4.4 使用限制', href: '04-landscape.html#ls-limits'}],
+      stem: '你在 Landscape 的 PDF 圖例看到「Open Source / Gold Sponsors / Silver Sponsors」。依本章，最恰當的處理方式是？',
+      options: [
+        { text: '金級贊助商的產品品質比較好，優先採購。', why: '教材沒有任何依據說贊助等級與產品品質有關；這是沒有根據的推論。' },
+        { text: '圖例是裝飾，可以忽略。', why: '它是官方圖例，表示資訊存在；忽略它等於少一項你可以知道的資訊。' },
+        { text: '贊助商的產品都有偏見，應該全部排除。', why: '同樣是沒有依據的推論；官方沒有說贊助商產品有偏見。' },
+        { text: '把這個標示當成需要自己留意的資訊：知道贊助標示存在，但官方沒說明它是否影響收錄，所以不據此判斷產品好壞，並自行評估產品。', correct: true, why: '符合 4.4 節：教材明說無法判斷贊助關係是否影響收錄，不做推論。' }
+      ],
+      summary: '知道標示存在、不替它加上沒有依據的意義，並自己評估。' }
+  ]
+});
+</script>
+</body>
+</html>

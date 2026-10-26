@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌與定位｜GenAI Security Project｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP GenAI Security Project 是什麼、誰發布、給誰用、層級標示與日期，以及它和 AI Exchange、LLM Top 10、Agentic Top 10 的關係。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="01-overview" data-topic="genai-security-project" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌與定位</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../ai-exchange/01-position.html">AI Exchange 第 1 章</a>（建議先讀）</li>
+</ul>
+<p class="lead">你在 AI Exchange 主題已經知道，OWASP 有兩個並列的旗艦 AI 專案。本章看另一個：OWASP GenAI Security Project。它不是一份文件，而是一個「傘」，底下有治理模型、八個工作小組，和一批持續產出的指南與工具。</p>
+
+<h2 id="pos-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　OWASP GenAI Security Project 一頁式全貌（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">是什麼</th><td>全球性、社群驅動、由專家主導的開源計畫，目標是提供免費的指引與資源，協助理解與降低生成式 AI (Generative AI) 應用與導入時的資安與安全 (safety) 疑慮。範圍涵蓋 LLM、agentic AI 系統與 AI 驅動的應用。</td></tr>
+<tr><th scope="row">誰發布</th><td>OWASP 基金會旗下專案。官方站 <a href="https://genai.owasp.org/">genai.owasp.org</a>；程式與文件分散在 GitHub 組織 <a href="https://github.com/GenAI-Security-Project">GenAI-Security-Project</a>。專案創辦人 Steve Wilson（官方 Initiatives 頁列為 Board Co-Chair、Project Founder）。</td></tr>
+<tr><th scope="row">給誰用</th><td>官方章程列出的參與對象：AI 資安研究者、工程師與從業人員；導入生成式 AI 的組織；資安專業人員、紅隊與 AI 治理專家；負責 AI 風險管理的政策制定者、監管者與合規人員。</td></tr>
+<tr><th scope="row">起源</th><td>2023 年 5 月以「OWASP Top 10 for LLM Application Security Project」啟動，後來擴大成包含多個工作小組與多項產出的總傘。</td></tr>
+<tr><th scope="row">版本與日期</th><td><strong>沒有整體版本號</strong>：這是持續運作的專案，各產出各有版本與日期。本教材以 genai.owasp.org 與 GitHub 組織在 <strong>2026-10-26</strong> 的內容為準（GitHub 組織最後更新 2026-10-01，各儲存庫最近推送在 2026-10-23 之前）。</td></tr>
+<tr><th scope="row">授權</th><td>genai.owasp.org 頁尾：除非另有說明，網站內容為 CC BY-SA 4.0。各產出另有各自授權，例如 Solutions Landscape 的 PDF 封面標示 CC BY-SA 4.0。</td></tr>
+</tbody></table></div>
+
+<h3 id="pos-numbers">關於規模的數字：哪些可以引用</h3>
+<p>官方介紹頁寫「截至 2024 年初，已有超過 600 位貢獻專家、18 國以上、130 家以上公司、近 8,000 位活躍社群成員」。這是<strong>當時的數字</strong>，官方自己標了時間，不能當成現況。2026 年 8–9 月的新聞稿標題另寫「社群突破 30,000 名成員」，但那是新聞稿標題，教材不把它當作可核對的統計。所以本教材不引用任何成員數字。</p>
+
+<h2 id="pos-level">1.2 專案層級：不同來源怎麼說</h2>
+<p>你會在不同地方看到不同的層級標示。這是蒐集資料時發現的實際狀況：</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　各來源對 GenAI Security Project 層級的標示（2026-10-26 實測）</caption>
+<thead><tr><th scope="col">來源</th><th scope="col">標示</th></tr></thead>
+<tbody>
+<tr><td>GitHub 組織 GenAI-Security-Project 的描述</td><td>「An OWASP Flagship Project」</td></tr>
+<tr><td>GitHub 組織的 .github 設定檔 README</td><td>「OWASP Flagship Project」</td></tr>
+<tr><td>AI Exchange 總覽頁</td><td>稱它與 AI Exchange 是「兩個旗艦 OWASP AI 專案」；AI Exchange 的 About 頁說兩者於 2025 年 3 月一起獲旗艦地位</td></tr>
+<tr><td>genai.owasp.org 的首頁、介紹頁、Initiatives 頁</td><td>三頁都<strong>沒有</strong>出現 Flagship 一詞</td></tr>
+<tr><td>owasp.org 的「Top 10 for Large Language Model Applications」專案頁</td><td>「Lab Project」（這是 Top 10 那個子專案的登記頁，不一定等於整個傘專案）</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：現行有效的層級</p>
+  <p>GitHub 與 AI Exchange 說旗艦；owasp.org 的 LLM Top 10 專案頁說 Lab。可能的解釋之一是「傘專案」與「LLM Top 10 子專案」在 owasp.org 上分開登記，但本教材沒有找到官方文字說明這點，所以這只是推測，不下結論。本教材描述它時用「GitHub 與 AI Exchange 稱為旗艦」，不單獨說它「是」旗艦。</p>
+</div>
+
+<h2 id="pos-compare">1.3 它和 AI Exchange 的分工</h2>
+<p>AI Exchange 對兩個專案的分工說得很明確，這也是你判斷「該去哪裡找」的起點：</p>
+<div class="table-wrap"><table>
+<caption>表 1-3　兩個旗艦 AI 專案的分工（依 AI Exchange 的說明整理）</caption>
+<thead><tr><th scope="col">面向</th><th scope="col">AI Exchange</th><th scope="col">GenAI Security Project</th></tr></thead>
+<tbody>
+<tr><th scope="row">官方形容</th><td>AI 資安基礎的完整框架，涵蓋所有 AI，與標準對齊並餵入標準制定</td><td>專談生成式 AI 安全的文件集合，涵蓋 LLM Top 10 等多個主題</td></tr>
+<tr><th scope="row">形式</th><td>一個持續更新、結構連貫的知識庫</td><td>一把傘：多個工作小組各自產出獨立的文件、工具與清單</td></tr>
+<tr><th scope="row">AI 範圍</th><td>所有 AI（含非生成式）</td><td>生成式 AI、LLM、agentic AI</td></tr>
+<tr><th scope="row">版本方式</th><td>無版本號，用快照日期引用</td><td>每個產出自己有版本與日期（如 LLM Top 10 2026、Landscape Q2 2026）</td></tr>
+<tr><th scope="row">授權</th><td>CC0 1.0</td><td>多為 CC BY-SA 4.0（各產出標示為準）</td></tr>
+</tbody></table></div>
+<p>AI Exchange 還給了一個使用建議：如果你想弄清楚怎麼確保 AI 系統的安全或隱私，用 AI Exchange，並由它帶你去相關的 GenAI 專案資料；如果你想快速掌握 LLM 最重要的資安疑慮，看 GenAI 專案的 LLM Top 10。</p>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程：想為任何 AI 做完整威脅與控制分析，先讀 AI Exchange；想快速認識 LLM 風險，讀 LLM Top 10；想找某個資安領域的指南，到 GenAI Security Project 的對應 Initiative；想找工具，查 Solutions Landscape；想看治理檢核，找 Governance 類產出。">
+flowchart TD
+  S["我想做的事"] --> Q{"需求類型"}
+  Q -->|"為任何 AI 做威脅與控制分析、對照標準"| A1["AI Exchange"]
+  Q -->|"快速認識 LLM 應用最重要的風險"| A2["GenAI Security Project 的 LLM Top 10"]
+  Q -->|"某個主題的專門指南：agentic、紅隊、資料、事件應變…"| A3["GenAI Security Project 的對應 Initiative"]
+  Q -->|"找對應風險的工具或解決方案"| A4["Solutions Landscape（第 4 章）"]
+  Q -->|"給管理層的導入與治理資源"| A5["AI Security Governance 類產出（第 3 章）"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class A3,A4,A5 author
+</pre>
+<figcaption><strong>圖 1-1　該去 AI Exchange 還是 GenAI Security Project。</strong>前兩條對應 AI Exchange 對這兩個專案的用途說明；<strong>虛線框的三條是作者整理，非官方</strong>，是作者把官方 Initiative 的名稱接到「需求」上。這張圖只是入口導引。</figcaption>
+</figure>
+
+<h2 id="pos-history">1.4 專案怎麼長大：官方介紹頁的時間線</h2>
+<p>官方介紹頁列出幾個里程碑。教材只收有日期的事件，並以較新的官方資源頁日期為準（見<a href="references.html">參考資料頁</a>的差異說明）：</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="時間軸：2023 年 5 月 LLM Top 10 專案啟動；2024 年 4 月 CISO Checklist；2024 年 9 月 Deepfake 指南；2024 年 10 月 CoE Guide 與第一版 Solutions Landscape；2024 年 11 月 LLM Top 10 2025；2024 年 12 月 Agentic AI Security Initiative 啟動；2025 年 1 月 Red Teaming Guide；2026 年 LLM Top 10 2026 與 Agent Control Standard。">
+flowchart LR
+  A["2023-05<br>LLM Top 10 專案啟動"] --> B["2024-04<br>CISO Checklist"]
+  B --> C["2024-09<br>Deepfake 指南"]
+  C --> D["2024-10<br>CoE Guide 與第一版 Solutions Landscape"]
+  D --> E["2024-11<br>LLM Top 10 2025"]
+  E --> F["2024-12<br>Agentic AI Security Initiative 啟動"]
+  F --> G["2025-01<br>Red Teaming Guide"]
+  G --> H["2026<br>LLM Top 10 2026、Agent Control Standard 等"]
+</pre>
+<figcaption><strong>圖 1-2　專案演進（取自官方介紹頁與資源庫）。</strong>介紹頁寫「2024 年 4 月 CISO Checklist」，而資源庫裡該 Checklist 英文版的頁面日期是 2024-05-07；「2024 年 9 月 Deepfake 指南」資源頁日期是 2024-09-23，與介紹頁一致。兩處對 Checklist 的日期不同，詳見參考資料頁，教材圖上採介紹頁的年月寫法並在此註明。</figcaption>
+</figure>
+
+<h2 id="pos-misc">1.5 常見誤解</h2>
+<div class="table-wrap"><table>
+<caption>表 1-4　常見誤解與釐清</caption>
+<thead><tr><th scope="col">誤解</th><th scope="col">釐清</th></tr></thead>
+<tbody>
+<tr><th scope="row">「GenAI Security Project 就是 LLM Top 10。」</th><td>LLM Top 10 只是它最早、最知名的一個產出。官方自己寫：專案起源於 Top 10，但已擴大到多個工作小組與多項專案。</td></tr>
+<tr><th scope="row">「它有一個整體版本號，我可以說『GenAI Security Project v2』。」</th><td>沒有。引用時要指到具體產出，並帶上該產出的版本與日期。</td></tr>
+<tr><th scope="row">「它是 OWASP 的一個文件。」</th><td>它是一個專案傘，有自己的治理模型與工作小組（第 2 章）。</td></tr>
+<tr><th scope="row">「它的內容和 AI Exchange 重複。」</th><td>範圍有重疊，但形式不同：AI Exchange 是統一的知識庫；GenAI 專案是多份獨立產出。兩者相互引用，並非複製。</td></tr>
+</tbody></table></div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>GenAI Security Project 是 OWASP 的傘專案，起源於 2023 年的 LLM Top 10，現有治理模型與八個 Initiatives。</li>
+  <li>沒有整體版本號；引用要指到具體產出與其版本、日期。</li>
+  <li>層級標示不一致（GitHub 與 AI Exchange 稱旗艦，owasp.org 的 LLM Top 10 登記頁稱 Lab），現行有效標示未能確認。</li>
+  <li>與 AI Exchange 分工：AI Exchange 是涵蓋所有 AI 的統一知識庫；GenAI 專案是生成式 AI 領域的一組獨立產出。</li>
+  <li>規模數字（成員數、國家數）官方自己標明是舊的，教材不引用。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出 GenAI Security Project 與 AI Exchange 的分工。</li>
+  <li>我知道為什麼不能說「GenAI Security Project 的版本是 X」。</li>
+  <li>我知道層級標示在不同來源不一致，並能說出是哪幾處。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-governance.html">第 2 章　治理與組織</a>：這個傘專案怎麼決策、誰負責、一個新的 Initiative 怎麼成立。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>GenAI Security Project 官方站：<a href="https://genai.owasp.org/">genai.owasp.org</a>（首頁）、<a href="https://genai.owasp.org/introduction-genai-security-project/">Introduction and Background</a>、<a href="https://genai.owasp.org/initiatives/">Initiatives</a>、<a href="https://genai.owasp.org/project-mission-and-charter/">Mission and Charter</a>；2026-10-26 讀取；頁尾授權 CC BY-SA 4.0。</li>
+    <li>GitHub 組織：<a href="https://github.com/GenAI-Security-Project">GenAI-Security-Project</a>（描述、建立日期 2025-12-11、公開儲存庫 16 個）及 <a href="https://github.com/GenAI-Security-Project/.github/blob/main/profile/README.md">.github/profile/README.md</a>。</li>
+    <li>OWASP AI Exchange，0. AI Security Overview：Relevant OWASP AI initiatives、About：<a href="https://owaspai.org/go/aiatowasp">owaspai.org/go/aiatowasp</a>；2026-10-25 快照；CC0 1.0。</li>
+    <li>owasp.org 專案登記頁（LLM Top 10）：<a href="https://owasp.org/projects/top-10-for-large-language-model-applications">owasp.org/projects/top-10-for-large-language-model-applications</a>（標示 Lab Project）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：genai.owasp.org 網站內容 — CC BY-SA 4.0；OWASP AI Exchange（owaspai.org）— CC0 1.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'g-ch1', topic: 'genai-security-project', mode: 'chapter',
+  questions: [
+    { id: 'g1q1', type: 'mc', lo: [1], refs: [{label: '1.1 一頁式全貌', href: '01-position.html#pos-onepage'}, {label: '1.5 常見誤解', href: '01-position.html#pos-misc'}],
+      stem: '同事在簡報裡寫「我們依據 OWASP GenAI Security Project v2 設計控制」。依本章，這個寫法最大的問題是什麼？',
+      options: [
+        { text: '應該改寫成 AI Exchange 的版本，因為兩者是同一個專案。', why: '兩者是並列的兩個專案；AI Exchange 本身也沒有版本號。' },
+        { text: 'GenAI Security Project 是傘專案，沒有整體版本；應指到具體產出（如 LLM Top 10 2026）並帶上版本與日期。', correct: true, why: '官方資源庫的每一項產出都有自己的版本或日期；整個專案則是持續運作的傘。' },
+        { text: '沒有問題，專案有版本號就該寫版本。', why: '這個專案沒有整體版本號；各產出各有版本與日期。' },
+        { text: '應該改寫成「OWASP Top 10 v2」，因為專案其實就是那份清單。', why: 'LLM Top 10 只是專案最早的產出，專案現已有八個 Initiatives 和多項產出。' }
+      ],
+      summary: '傘專案 = 沒有整體版本；引用要指到具體產出。' },
+    { id: 'g1q2', type: 'mc', lo: [1], refs: [{label: '1.3 表 1-3', href: '01-position.html#pos-compare'}],
+      stem: '依 AI Exchange 對兩個旗艦專案的說明，下列哪一種需求最適合「先去 AI Exchange」？',
+      options: [
+        { text: '想找 LLM 應用最重要的十項風險清單。', why: '那是 GenAI Security Project 的 LLM Top 10，偏重提升認知。' },
+        { text: '想查某個資安廠商的產品是否涵蓋 LLM Top 10 的風險。', why: '那是 Solutions Landscape 的用途（第 4 章）。' },
+        { text: '想為一個含傳統機器學習模型與 LLM 的系統做威脅建模，並對照 AI 資安標準。', correct: true, why: 'AI Exchange 涵蓋所有 AI、提供威脅與控制全集，並自述與標準對齊。這是它的定位。' },
+        { text: '想下載給主管看的 LLM 導入治理檢核表。', why: '那是 GenAI Security Project 中治理類產出的內容（第 3 章）。' }
+      ],
+      summary: '全面的威脅與控制分析 → AI Exchange；專門領域的指南與清單 → GenAI Security Project 的對應產出。' },
+    { id: 'g1q3', type: 'scn', lo: [1], refs: [{label: '1.2 專案層級', href: '01-position.html#pos-level'}],
+      stem: '依本教材的處理原則，你在報告裡該怎麼描述 GenAI Security Project 的層級？',
+      scenario: '雲杉資安（虛構）要在給客戶的投影片上寫一頁「我們依據的 OWASP 資源」。同事主張寫「OWASP GenAI Security Project（Flagship）」，因為 GitHub 組織這樣寫；另一位同事反對，指出 owasp.org 上 LLM Top 10 的專案頁標的是 Lab Project。兩人都沒有找到官方文字說明兩者的差別。你被問到該怎麼寫才不會誤導客戶。',
+      options: [
+        { text: '完全不提層級，只寫專案名稱。', why: '不提也可以避免錯誤，但這樣少了讀者需要的資訊；而且題目問的是「怎麼描述層級」。可行時應如實呈現。' },
+        { text: '寫「GitHub 與 AI Exchange 稱為旗艦專案；owasp.org 的 LLM Top 10 登記頁標示 Lab，現行有效標示未能確認」。', correct: true, why: '這是如實呈現證據與不確定性的寫法，也符合「無法判斷時標示未能確認，不自行擇一」的規則。' },
+        { text: '只寫「Flagship」，因為 GitHub 組織是專案的原始碼所在，最可信。', why: '教材沒有採用單一來源擇一的做法；各來源不一致時，在無法判斷哪個較新時應標示未能確認。' },
+        { text: '只寫「Lab Project」，因為 owasp.org 是 OWASP 的官方網站。', why: '同理，擇一不妥；而且那一頁是 LLM Top 10 子專案的登記頁，不一定代表整個傘專案。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 表 1-2 列出的來源互相不一致：GitHub 與 AI Exchange 稱旗艦，owasp.org 的 LLM Top 10 登記頁稱 Lab。(2) 兩者誰較新無法判斷，也沒有官方文字說明差異。(3) 教材的規則是不自行擇一。</p><p><strong>結論：</strong>如實並列各來源的說法，並標示「現行有效標示未能確認」。對應教材：<a href="01-position.html#pos-level">1.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

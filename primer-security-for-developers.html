@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>資安前置觀念（給開發者）｜OWASP AI 資安學習教材</title>
+<meta name="description" content="用開發者熟悉的類比，說明威脅建模、攻擊面、信任邊界、最小權限、縱深防禦、預防／偵測／回應類控制與 CIA 三要素，並比較 SQL Injection 與 Prompt Injection。">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="" data-page="primer-security-for-developers.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"><noscript><p><a href="index.html">回首頁</a>（此頁導覽需要 JavaScript）</p></noscript></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>資安前置觀念（給開發者）</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 10 分鐘（不含 3 題自我檢核）</li>
+  <li>前置知識：會寫 Web 後端、用過資料庫；LLM／RAG／Agent 的運作不必再解釋</li>
+  <li>用途：後續所有主題都會連到這一頁，不重複講</li>
+</ul>
+<p class="lead">你熟悉 AI 與軟體開發，但可能沒受過資安訓練。這一頁把後面反覆出現的資安詞彙，翻成你已經有的工程直覺。每個概念都用同一個格式：一句話定義、開發者類比、在 AI 系統裡長什麼樣子。</p>
+
+<div class="callout author">
+  <p class="callout-title">怎麼讀這一頁</p>
+  <p>標示 <span class="tag official">官方</span> 的是 OWASP 文件有寫的內容；標示 <span class="tag author">作者整理，非官方</span> 的是作者為了方便理解而加的類比或分類。類比有其限制，本教材會在該處說明。</p>
+</div>
+
+<h2 id="p-risk">1. 資產、威脅、漏洞與風險</h2>
+<p><strong>資產 (Asset)</strong> 是值得保護的東西，例如資料庫、API 金鑰、模型權重、system prompt。<strong>威脅 (Threat)</strong> 是「可能發生的壞事」加上做這件事的人或手法。<strong>漏洞 (Vulnerability)</strong> 是系統的弱點。<strong>風險 (Risk)</strong> 則是威脅真的利用漏洞、造成影響的可能性與大小。</p>
+<p>OWASP AI Exchange 用一句話講得很清楚：威脅在利用一個或多個漏洞時，才變成風險。這句話是後面「風險分析」那章的基礎：<strong>一份威脅清單不等於一份待辦清單</strong>。</p>
+<ul>
+  <li><strong>開發者類比</strong>：資產是 production 資料庫；威脅是有人想把它拖走；漏洞是某支沒有參數化的查詢；風險是這個組合被利用的機率乘上資料外流的代價。</li>
+  <li><strong>在 AI 系統裡</strong>：資產除了傳統的資料與帳號，還多了訓練資料、模型參數、system prompt、檢索用的語料。</li>
+</ul>
+
+<h2 id="p-cia">2. CIA 三要素 (CIA Triad)</h2>
+<p>CIA 是三個要保護的性質：<strong>機密性 (Confidentiality)</strong>，不該看的人看不到；<strong>完整性 (Integrity)</strong>，資料與行為不被未授權修改；<strong>可用性 (Availability)</strong>，該能用的時候能用。</p>
+<div class="table-wrap"><table>
+<caption>CIA 三要素：開發者類比與 AI 版本</caption>
+<thead><tr><th scope="col">要素</th><th scope="col">你熟悉的對應</th><th scope="col">在 AI 系統裡</th></tr></thead>
+<tbody>
+<tr><th scope="row">機密性</th><td>ACL、加密、金鑰管理</td><td>訓練資料、system prompt、使用者輸入、模型本身被外洩</td></tr>
+<tr><th scope="row">完整性</th><td>checksum、簽章、輸入驗證</td><td>模型的<em>行為</em>被操縱（資料被投毒、被提示詞注入 (Prompt Injection)）</td></tr>
+<tr><th scope="row">可用性</th><td>rate limit、autoscaling、DoS 防護</td><td>模型被大量請求拖垮，或推論成本被刻意推高</td></tr>
+</tbody></table></div>
+<p>AI Exchange 把攻擊者的目標分成三類：揭露 (disclose)、欺騙 (deceive)、破壞 (disrupt)，剛好對應 C、I、A。這個對應在第 2 章會用到。</p>
+
+<h2 id="p-surface">3. 攻擊面與信任邊界</h2>
+<p><strong>攻擊面 (Attack Surface)</strong> 是外界能碰到、並能影響系統的所有入口：API、表單、上傳檔、第三方回呼、開發環境、相依套件。OWASP 的攻擊面分析指引把它描述為「盤點系統中哪些部分需要被審查與測試」。</p>
+<p><strong>信任邊界 (Trust Boundary)</strong> 是一條線：資料或控制權從「較不可信」的一側，跨到「較可信」的一側。跨線的東西必須驗證或授權。OWASP 的威脅建模 (Threat Modeling) 指引把「資料流與信任邊界」列為理解系統時必須掌握的內容。</p>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="信任邊界示意圖：使用者輸入與外部文件都跨越信任邊界，進入提示詞組裝與模型，模型輸出再決定是否呼叫工具。">
+flowchart LR
+  subgraph untrusted["較不可信：外部可以影響"]
+    U["使用者輸入"]
+    W["外部文件、網頁、郵件"]
+  end
+  subgraph app["你的應用程式：較可信"]
+    R["檢索並組裝提示詞"]
+    L["LLM"]
+    T["工具、資料庫"]
+  end
+  U -->|"跨越信任邊界"| R
+  W -->|"跨越信任邊界，常被忽略"| R
+  R --> L
+  L -->|"模型輸出決定要不要呼叫"| T
+</pre>
+<figcaption><strong>圖 P-1　一個典型 RAG 應用的信任邊界。</strong>傳統 Web 應用的不可信來源主要是使用者輸入；LLM 應用多了一條常被忽略的路：被檢索回來的外部內容，同樣會跨過邊界進到提示詞。（作者整理，示意圖）</figcaption>
+</figure>
+
+<ul>
+  <li><strong>開發者類比</strong>：瀏覽器送到後端的請求、第三方 webhook，都在邊界的另一側。你不會直接把 query string 拼進 SQL，同樣的紀律也適用於「別人寫的文件」。</li>
+  <li><strong>在 AI 系統裡</strong>：AI Exchange 的工程入門說得直接：使用者輸入、被檢索的文件、工具輸出、儲存的記憶，即使工程師原意只當成資料，也可能影響模型行為。<span class="tag official">官方</span></li>
+</ul>
+
+<h2 id="p-tm">4. 威脅建模與攻擊鏈</h2>
+<p><strong>威脅建模</strong> 是在寫程式之前，先系統化地問「這個東西可能怎麼被弄壞」。OWASP 的威脅建模指引引用 Threat Modeling Manifesto，把過程濃縮成四個問題：</p>
+<ol>
+  <li>我們在做什麼？（畫出系統與資料流）</li>
+  <li>什麼可能出錯？</li>
+  <li>我們打算怎麼處理？</li>
+  <li>我們做得夠好嗎？</li>
+</ol>
+<p><strong>攻擊鏈 (Attack Chain)</strong> 指攻擊者把好幾個步驟串起來才達成目的。AI Exchange 自己就舉了兩例：先駭進訓練資料庫放入毒樣本、等模型訓練完再送出特定輸入；或是先闖進開發環境偷走模型，離線研究怎麼騙它，再對線上系統出手。這兩例在第 2 章會畫成圖。</p>
+<ul>
+  <li><strong>開發者類比</strong>：入侵很少一步到位，常見是拿到一個低權限帳號、再往旁邊移動、最後碰到資料庫。這是通用的資安說法，不是 OWASP AI 文件的原話。<span class="tag author">類比</span></li>
+  <li><strong>防禦的含義</strong>：鏈上每一環都可以設關卡，鏈斷一環攻擊就失敗。這也是縱深防禦 (Defense in Depth) 的來源（見第 6 節）。</li>
+</ul>
+
+<h2 id="p-lp">5. 最小權限、預設拒絕與爆炸半徑</h2>
+<p><strong>最小權限 (Least Privilege)</strong>：只給完成工作所需的最小存取。OWASP 的安全產品設計指引把它列為基本原則；授權指引則把「強制最小權限」與「預設拒絕」並列為建議做法。</p>
+<p><strong>爆炸半徑 (Blast Radius)</strong>：一旦某個元件出錯或被攻破，最壞能壞到哪裡。最小權限就是在縮小爆炸半徑。AI Exchange 稱這類做法為爆炸半徑控制 (blast radius control)，後面會一直出現。<span class="tag official">官方</span></p>
+<p><strong>混淆代理人 (Confused Deputy)</strong>：一個權限高的服務，被權限低的一方誘導，去做它自己本不該做的事。AI Exchange 在 agentic 與 RAG 的說明裡都用到這個詞：agent 以使用者或服務帳號的權限行動，一旦被操縱，就替攻擊者行事。</p>
+<ul>
+  <li><strong>開發者類比</strong>：IAM role 只給單一 bucket 的唯讀，對比給 AdministratorAccess；資料庫帳號用唯讀對比用 root。混淆代理人則像 CSRF：瀏覽器帶著你的 cookie，替別人送出請求。<span class="tag author">類比</span></li>
+</ul>
+
+<h2 id="p-did">6. 縱深防禦與失效安全</h2>
+<p><strong>縱深防禦</strong>：用多層控制保護資產，其中一層失效時，其他層仍能擋住。OWASP 的安全產品設計指引也提到，目標是讓環境有韌性，並能快速偵測與回應事件。</p>
+<p><strong>失效安全</strong>：出錯時要落在安全的狀態，而不是把弱點暴露出來。AI Exchange 在 RAG 一節的例子是：檢索或權限檢查失敗時，如果系統退回「不過濾、直接用模型記憶回答」，上游所有控制就被悄悄繞過。第 5 章會再談。</p>
+<ul>
+  <li><strong>開發者類比</strong>：CI 裡多道 gate；熔斷器開啟時預設拒絕，而不是預設放行。<span class="tag author">類比</span></li>
+</ul>
+
+<h2 id="p-pdr">7. 預防、偵測、回應類控制</h2>
+<div class="callout author">
+  <p class="callout-title">這是一般資安實務的分類</p>
+  <p>下表的三分法是通用資安用語，由作者整理成表。AI Exchange 本身不是用這三類組織控制（它用 Manage、Have resilient models、Watch、Limit，見第 3 章），但它對少數控制有明確說「這是預防型」或「這是偵測型」。</p>
+</div>
+<div class="table-wrap"><table>
+<caption>三類控制的目的與例子（作者整理，非官方）</caption>
+<thead><tr><th scope="col">類型</th><th scope="col">目的</th><th scope="col">開發者熟悉的例子</th><th scope="col">AI 系統的例子</th></tr></thead>
+<tbody>
+<tr><th scope="row">預防型 (Preventive)</th><td>讓壞事做不到，或不容易發生</td><td>參數化查詢、輸入驗證、最小權限帳號</td><td>最小模型權限 (Least Model Privilege)、資料最小化、限制誰能呼叫模型</td></tr>
+<tr><th scope="row">偵測型 (Detective)</th><td>發現壞事正在或已經發生</td><td>日誌、告警、異常偵測</td><td>使用監控、對輸入與輸出做異常偵測</td></tr>
+<tr><th scope="row">回應型 (Responsive)</th><td>發現後止血、復原、留證據</td><td>撤銷金鑰、回滾、事件應變流程</td><td>停止 agent 執行、回滾被污染的狀態、交給人處理</td></tr>
+</tbody></table></div>
+<p>三類要搭配使用。只靠預防，一旦被突破就沒有後續計畫；只靠偵測，等你看到告警時傷害可能已經造成。這也是為什麼對提示詞注入這種「很難根治」的威脅，官方建議的是多層並用。</p>
+
+<h2 id="sqli-vs-pi">8. SQL Injection 與 Prompt Injection：同源，但解法不同</h2>
+<p>這是整份教材最重要的一個類比。兩者的共同點是：<strong>不可信的資料，被系統當成指令執行了</strong>。</p>
+<ul>
+  <li><strong>SQL Injection</strong>：OWASP 的防護指引說明，它發生在不可信資料成為查詢「語法」的一部分時。根本的解法是參數化查詢 (parameterized query)：把查詢結構與資料值分開，由資料庫介面把綁定的值當成資料，而不是語法。再搭配固定的查詢結構與最小權限，限縮萬一出事的傷害。</li>
+  <li><strong>Prompt Injection</strong>：OWASP LLM Top 10 2026 在 LLM01 開頭就指出，LLM 在架構上不區分「指令」與「資料」，兩者都是同一串 token，因此沒有乾淨等價於參數化查詢的做法。<span class="tag official">官方</span></li>
+</ul>
+
+<pre><code># 傳統資料庫：結構與資料值在介面層分離
+cur.execute("SELECT balance FROM accounts WHERE owner = ?", (owner,))
+
+# LLM 應用：規則、檢索到的文件、使用者問題，最後都是同一串文字
+prompt = SYSTEM_RULES + "\n" + retrieved_doc + "\n" + user_question</code></pre>
+<p>第一行的 <code>?</code> 與綁定值，是資料庫「保證」資料不會變成語法的機制。第二行沒有這樣的機制：模型只看到一串文字，沒有一條硬性的界線告訴它「這段是資料、那段是指令」。把外部內容用標記或結構化欄位包起來（AI Exchange 稱為輸入隔離）只能降低模型聽從它的機率，不是像參數化查詢那樣由介面保證。</p>
+
+<div class="table-wrap"><table>
+<caption>SQL Injection 與 Prompt Injection 對照</caption>
+<thead><tr><th scope="col">面向</th><th scope="col">SQL Injection</th><th scope="col">Prompt Injection</th></tr></thead>
+<tbody>
+<tr><th scope="row">問題核心</th><td>不可信資料成為查詢語法</td><td>不可信內容改變模型行為</td></tr>
+<tr><th scope="row">為什麼會發生</th><td>字串拼接，結構與資料混在一起</td><td>指令與資料在同一個 token 流，模型本質上就是這樣運作</td></tr>
+<tr><th scope="row">有沒有根治機制</th><td>有：參數化查詢</td><td>目前沒有；LLM Top 10 2026 稱沒有可靠的預防機制</td></tr>
+<tr><th scope="row">實務上怎麼防</th><td>參數化 + 固定結構 + 最小權限</td><td>多層並用：降低成功率，並假設會被突破、限縮後果</td></tr>
+<tr><th scope="row">傷害大小由誰決定</th><td>資料庫帳號的權限</td><td>模型能呼叫什麼工具、能碰什麼資料</td></tr>
+</tbody></table></div>
+
+<div class="callout author">
+  <p class="callout-title">類比的限制</p>
+  <p>SQL Injection 一旦用參數化查詢堵住，這個弱點就算解決；Prompt Injection 沒有這種「修好了」的狀態。所以 AI 資安更強調兩件事：<strong>假設防線會被突破</strong>，以及<strong>把模型能做的事限制到最小</strong>。這就是第 3 章「七層防線」的邏輯。（作者整理）</p>
+</div>
+
+<h2 id="p-shared">9. 共同責任</h2>
+<p>你用過雲端的 IaaS、PaaS、SaaS，就懂共同責任：供應商顧好底層，你顧好自己放上去的東西。AI 也一樣：用託管模型時，供應商負責模型與服務基礎設施，你仍要負責自己的應用、提示詞、被檢索的資料、身分、工具權限與輸出處理。AI Exchange 的工程入門把這點講得很明確，第 4 章會用到。<span class="tag official">官方</span></p>
+
+<h2 id="p-keypoints">重點整理與自我檢核清單</h2>
+<div class="keypoints">
+<ul>
+  <li>威脅清單不等於待辦清單；威脅要碰到漏洞才成為風險。</li>
+  <li>CIA 對應到 AI：機密性是資料與模型外洩，完整性是行為被操縱，可用性是被打爆或成本被推高。</li>
+  <li>LLM 應用的不可信來源不只使用者輸入，還包括檢索結果、工具輸出、記憶。</li>
+  <li>最小權限縮小爆炸半徑；縱深防禦讓單一防線失效時還有後備。</li>
+  <li>Prompt Injection 沒有等價於參數化查詢的根治法，所以要多層並用，並假設會被突破。</li>
+</ul>
+</div>
+<ul class="checklist">
+  <li>我能用自己的話說出資產、威脅、漏洞、風險的差別。</li>
+  <li>我能說出一個 LLM 應用裡，至少三個跨越信任邊界的內容來源。</li>
+  <li>我能解釋為什麼參數化查詢有效，而 LLM 沒有對應物。</li>
+  <li>我能把一個控制歸類為預防、偵測或回應型，並說明理由。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">自我檢核（3 題）</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="next">接下來讀什麼</h2>
+<p>前往 <a href="01-overview/ai-exchange/index.html">OWASP AI Exchange 主題首頁</a>。遇到不熟的詞，隨時查 <a href="glossary.html">詞彙表</a>。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <p>核對日：2026-10-26。下列 OWASP Cheat Sheet 頁面均未載明版本與發布日期，以核對當日內容為準。</p>
+  <ul>
+    <li>OWASP Cheat Sheet Series，Secure Product Design（最小權限、縱深防禦、失效安全）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_Product_Design_Cheat_Sheet.html">cheatsheetseries.owasp.org/…/Secure_Product_Design_Cheat_Sheet.html</a></li>
+    <li>OWASP Cheat Sheet Series，Threat Modeling（四個問題、資料流與信任邊界）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html">…/Threat_Modeling_Cheat_Sheet.html</a></li>
+    <li>OWASP Cheat Sheet Series，Attack Surface Analysis：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Attack_Surface_Analysis_Cheat_Sheet.html">…/Attack_Surface_Analysis_Cheat_Sheet.html</a></li>
+    <li>OWASP Cheat Sheet Series，Authorization（最小權限、預設拒絕）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html">…/Authorization_Cheat_Sheet.html</a></li>
+    <li>OWASP Cheat Sheet Series，SQL Injection Prevention（參數化查詢）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html">…/SQL_Injection_Prevention_Cheat_Sheet.html</a></li>
+    <li>OWASP AI Exchange，0. AI Security Overview（2026-10-25 快照）：<a href="https://owaspai.org/go/about/">owaspai.org/go/about/</a></li>
+    <li>OWASP Top 10 for LLM Applications 2026，LLM01:2026 Prompt Injection（Version 2026）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM01_PromptInjection.md">GitHub 原始檔</a></li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁引用的來源與授權（以來源頁面標示為準）：OWASP Cheat Sheet Series 各頁 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0；OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="assets/sitemap.js"></script>
+<script src="assets/vendor/mermaid.min.js"></script>
+<script src="assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'primer', topic: 'primer', mode: 'chapter',
+  questions: [
+    { id: 'p1', type: 'mc', lo: [], refs: [{label: '本頁 §8', href: '#sqli-vs-pi'}],
+      stem: '為什麼 LLM 沒有像「參數化查詢」那樣的根治機制？',
+      options: [
+        { text: '因為 LLM 是黑箱，沒有人知道它內部怎麼運作。', why: '可解釋性不是重點。就算模型完全可解釋，指令與資料仍然混在同一串 token 裡，這才是問題所在。' },
+        { text: '因為指令與資料都以同一串 token 進入模型，沒有一條硬性的界線把兩者分開。', correct: true, why: '這正是 LLM01 開頭的說法。參數化查詢有效，是因為資料庫介面保證綁定值只會被當成資料；LLM 沒有這種保證。' },
+        { text: '因為 LLM 供應商沒有提供結構化的 API 欄位。', why: '即使把外部內容放進結構化欄位或加上標記（輸入隔離），那也只能降低模型聽從它的機率，不是由介面保證，所以仍不等於參數化查詢。' },
+        { text: '因為提示詞通常太長，無法逐字檢查。', why: '長度不是原因。就算只有一句話，模型也沒有機制區分「這句是指令、那句是資料」。' }
+      ],
+      summary: 'SQL Injection 有根治機制（參數化查詢）；Prompt Injection 沒有，所以要多層並用並假設會被突破。' },
+    { id: 'p2', type: 'mc', lo: [], refs: [{label: '本頁 §7', href: '#p-pdr'}],
+      stem: '下列哪一項屬於「偵測型」控制，而不是「預防型」控制？',
+      options: [
+        { text: '讓資料庫帳號只有唯讀權限。', why: '這是最小權限，目的是讓寫入這件事根本做不到，屬預防型。' },
+        { text: '記錄每一次模型呼叫，並在行為異常時發出告警。', correct: true, why: '日誌與告警的目的是「發現」壞事正在發生，屬偵測型。它不會阻止事情發生。' },
+        { text: '用參數化查詢組 SQL。', why: '它在結構上讓資料無法變成語法，屬預防型。' },
+        { text: '預設拒絕所有未明確授權的呼叫。', why: '預設拒絕是在請求進來時就擋掉，屬預防型。' }
+      ],
+      summary: '預防是讓事情做不到；偵測是發現事情發生；兩者要搭配，並另外準備回應。' },
+    { id: 'p3', type: 'mc', lo: [], refs: [{label: '本頁 §3', href: '#p-surface'}],
+      stem: '你的 RAG 應用會把一份「合作廠商也能編輯」的文件檢索出來，放進提示詞。從信任邊界的角度，這份內容應該怎麼看待？',
+      options: [
+        { text: '它存放在公司內部系統，所以可以視為可信。', why: '可信與否取決於「誰能影響內容」，不是存放位置。廠商能編輯，就表示有人能把內容放進你的提示詞。' },
+        { text: '它跨過信任邊界進入提示詞，應視為不可信輸入。', correct: true, why: '只要內容的作者不是你能完全控制的，就該視為不可信，無論它存在哪裡。' },
+        { text: '只有使用者在對話框輸入的文字才需要當作不可信。', why: '這是常見誤解。檢索結果、工具輸出、記憶同樣可能影響模型行為。' },
+        { text: '只要經過向量化，內容就變成安全的。', why: '向量化是資料表示方式的轉換，並不會移除其中的語意內容，也不會改變來源的可信度。' }
+      ],
+      summary: '不可信來源 = 你無法完全控制內容的任何來源，不只是使用者輸入。' }
+  ]
+});
+</script>
+</body>
+</html>

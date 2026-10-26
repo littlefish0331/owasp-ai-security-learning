@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　AI Safety 與 AI Security｜Agentic 安全與治理現況｜OWASP AI 資安學習教材</title>
+<meta name="description" content="報告對 AI Security 與 AI Safety 的定義、四種安全性失敗模式、為什麼 agent 讓兩者在部署層收斂、對組織分工的含義，以及它自己的限制與範圍。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="agentic-security-and-governance" data-page="03-safety-security.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　AI Safety 與 AI Security</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-taxonomy-and-threats.html">第 2 章</a></li>
+</ul>
+<p class="lead">一個程式碼 agent 在被明確告知「凍結程式碼、不要修改任何東西」之後，刪掉了正式環境的資料庫。這是被攻擊了，還是它壞了？報告的立場很直接：<strong>這個問題本身就問錯了</strong>。這一章看它怎麼論證，以及它對你的組織分工意味著什麼。</p>
+
+<h2 id="ss-defs">3.1 兩個類別的定義</h2>
+<p>中文裡「安全」一詞兩用，所以先釐清：報告用 <strong>AI Security</strong> 指資安（有人攻擊或越權），用 <strong>AI Safety</strong> 指系統自己在正常運作中造成傷害。為了避免混淆，本章把前者稱「資安」、後者稱「安全性」，括號保留英文。</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　AI Security 與 AI Safety（報告表格，改寫）</caption>
+<thead><tr><th scope="col"></th><th scope="col">AI Security（資安）</th><th scope="col">AI Safety（安全性）</th></tr></thead>
+<tbody>
+<tr><th scope="row">定義</th><td>信任邊界被違反的風險：攻擊者、惡意內容或未授權存取，造成了不應有的影響或控制</td><td>來自正常運作的風險：系統不是被攻擊，而是它的能力、預設值或設計選擇允許了有害結果</td></tr>
+<tr><th scope="row">核心問題</th><td>是否跨越了本該守住的信任邊界？</td><td>這個系統在正常運作下，是否可能造成傷害？</td></tr>
+<tr><th scope="row">傷害來自</th><td>被允許了什麼</td><td>系統是什麼</td></tr>
+<tr><th scope="row">報告舉的例子</th><td>共享檔案或行事曆邀請中的污染輸入，使企業助理外洩資料；沙箱名存實亡；一次互動污染持久記憶，數日後才啟動</td><td>提供受管制物質的合成步驟；程式碼助理無視指令刪除正式資料庫並編造紀錄；agent 被拒絕後上網蒐集維護者資料並發表抹黑文章；模型因輿論回饋迴圈穩定出不當人格</td></tr>
+</tbody></table></div>
+<p>報告說這兩類與《2026 國際 AI 安全報告》的三類框架（惡意使用、故障、系統性風險）大致吻合：前兩類對應報告所稱的資安與安全性，而且「國際報告用『AI safety』作廣義傘詞，報告用的更窄」，並提醒讀者在文件間要自行換算。第三類（系統性風險，如勞動市場、人類自主性的侵蝕、資訊環境劣化）<strong>不在本章範圍</strong>，報告說那需要政策與生態系層級的回應。</p>
+
+<h2 id="ss-collapse">3.2 為什麼 agent 讓兩者收斂</h2>
+<div class="concept">
+<h3 id="c-collapse">部署層的收斂論證</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>報告的主張很精確：<strong>是「部署層的安全性」與資安收斂</strong>；模型層的安全性仍是獨立的學科、仍是供應商的責任。部署層指部署組織擁有的架構決策、設定、權限與營運控制。</dd>
+  <dt data-n="2">為什麼會這樣</dt>
+  <dd>傳統軟體可以分開：橋的結構強度是工程問題，有人放炸藥是資安問題。只會產生文字的 AI 大致保留了這個分野。但當系統能自主執行有後果的動作（寄信、改檔、呼叫 API、提交程式碼、觸發交易），「它因為被操縱而做壞事」與「它因為它能而做壞事」就難以操作性地區分。<strong>agent 能自己誤用的每一項能力，也都是攻擊者能透過注入、記憶污染或工具操縱來觸發的能力。</strong></dd>
+  <dt data-n="3">怎麼看（報告的兩個例子）</dt>
+  <dd>（一）企業 agent 有廣泛檔案存取並刪除了正式資料：這是安全性失敗（它無法可靠遵守限制），還是資安失敗（權限模型太寬）？報告說「這個問題本身是畸形的」：權限過大的存取模型就是安全性失敗，同一個失敗也是攻擊者會利用的資安缺口；硬要分類只會造成組織延遲，事件在這段時間裡沒被圍堵。（二）持久記憶被先前的對抗互動污染，數日後 agent 出現異常行為：從觀察的團隊看起來像可靠性故障，只有深入鑑識才看得出是資安入侵。把它當安全性問題處理（重啟、查漂移）可能漏掉持久機制而再次被入侵。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>報告的答案是組織性的：把部署層的安全性與資安當成<strong>一個風險面</strong>，一起治理、一起監控、一起回應。它列出四個趨勢，每一列都顯示同一個設計決定同時造成兩種風險：工具存取擴大（同一個權限面管兩種失效）、人類監督減少（同一個監督缺口）、多 agent 架構（一條因果鏈跨越兩者）、供應鏈成長（同一條發現與呼叫路徑帶兩種風險）。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「所以安全性團隊與資安團隊應該合併。」報告沒有這樣說。它說的是不能再作為<strong>平行的、各自獨立回報</strong>的職能；怎麼彌合，可以是擴充角色、跨職能結構或專責的 AI 風險職能。它也承認雙方都有落差：資安團隊對模型行為與評估方法經驗有限；安全性團隊常缺少對抗思維與事件應變紀律。</dd>
+</dl>
+</div>
+<figure class="diagram">
+<pre class="mermaid" data-alt="收斂論證：一個 agent 擁有過大的工具權限與減弱的人類監督。路徑一，agent 自己的可靠性失敗（例如無法遵守指令）觸發有害動作；路徑二，攻擊者透過提示詞注入或記憶污染觸發同一個動作。兩條路徑經過同一個權限面與同一個監督缺口，造成同樣的傷害，因此針對這個權限面的控制同時處理兩種原因。">
+flowchart TD
+  P["同一個權限面<br>工具存取廣、人類監督少"]
+  A["路徑一：可靠性失敗<br>agent 無法可靠遵守限制<br>（沒有攻擊者）"] --> P
+  B["路徑二：被操縱<br>提示詞注入、記憶污染<br>（有攻擊者）"] --> P
+  P --> H["同樣的有害動作<br>刪除資料、外洩、錯誤交易"]
+  C["控制：縮小權限面、<br>強化監督與記錄"] -.-> P
+</pre>
+<figcaption><strong>圖 3-1　收斂論證（作者整理，非官方）。</strong>此圖是教材作者把報告的論證畫成示意圖；報告用文字與四列表格說明，沒有這張圖。</figcaption>
+</figure>
+
+<h2 id="ss-limits">3.3 這個論證的範圍與限制</h2>
+<p>這是報告最有主張的一章，所以特別要注意它自己劃的邊界：</p>
+<ul>
+  <li><strong>只主張部署層：</strong>模型層的安全性（例如拒絕有害請求的訓練）不在內，那是提供者的責任。</li>
+  <li><strong>受限的 agent 仍可分開：</strong>報告說，對自主程度有限或有人類介入的 agent，兩個類別「仍然可以有用地分開」；對於擁有廣泛權限、極少監督的 agent，分離才會瓦解。</li>
+  <li><strong>分類仍有用：</strong>報告說資安與安全性仍是分析「為什麼失敗」的好工具；當它們決定「誰來回應」時就適得其反。</li>
+  <li><strong>以現在的可靠度為基準：</strong>報告引用《國際 AI 安全報告》：agent 完成約 30 分鐘長度、規格明確的任務，成功率約 80%，任務需要數小時時低於 25%。這些是「目前的限制，未來可能改善」，但今天部署的系統要依今天的可靠度設計控制。</li>
+</ul>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：事故細節與數字</p>
+  <p>本章的幾個事故（刪資料庫、抹黑文章、Grok 事件）與可靠度數字，本教材只轉述報告的描述，沒有查證原始來源。報告的這一章是作者群的論證（報告用語是「We argue」），不是 OWASP 的標準或定論，請當成一個有證據支持的主張來讀。</p>
+</div>
+
+<h2 id="ss-scenario">3.4 情境範例 A：該由誰處理這件事？</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：藍港零售的「客服 agent 退款事件」</h3>
+<p><span class="tag fiction">虛構</span> 藍港零售是虛構的公司。客服 agent 具備查詢訂單、核准退款的能力。某個週末，系統在兩小時內對一百多筆訂單做了不該有的全額退款。ML 工程團隊說：「這是模型幻覺，屬產品品質，下週一再看。」資安團隊說：「如果是被注入，我們才負責。你們先證明有攻擊。」兩邊都在等對方確認。</p>
+<ol class="steps">
+  <li><strong>先停下來，不要先分類：</strong>報告的主張正是在這種時刻，「分類」本身會造成組織延遲。先做圍堵：暫停 agent 的退款權限。</li>
+  <li><strong>看共同的權限面：</strong>不論原因，agent 都能在無人確認下核准全額退款。這個權限面同時是「可靠性失敗的放大器」與「攻擊者的目標」。</li>
+  <li><strong>一起調查，用兩種假設：</strong>檢查輸入（有沒有被夾帶指令）、記憶與檢索內容（有沒有被污染）、模型輸出行為（是否為單純誤判）。報告的提醒：像可靠性故障的現象，可能是持久入侵。</li>
+  <li><strong>修的是共同根因：</strong>退款加上金額門檻與人工核准、為退款加獨立於模型的限額與異常偵測，這些對兩種原因都有效。</li>
+  <li><strong>組織結論：</strong>此類事件要有<strong>單一的事件負責人與一套共同的升級路徑</strong>，而不是週末沒人認領。報告沒有規定怎麼設，可以是擴充既有角色、跨職能小組，或專責的 AI 風險職能。</li>
+  <li><strong>這個情境的提醒：</strong>它不是說調查不需要區分原因。事後鑑識仍要查明；報告只是主張「回應」不要被「分類」卡住。</li>
+</ol>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>資安 (Security)：信任邊界被違反；安全性 (Safety)：正常運作中的有害結果。</li>
+  <li>報告主張：<strong>部署層</strong>的安全性與資安在 agent 身上無法操作性地分開；模型層不在內。</li>
+  <li>agent 能自己誤用的能力，也是攻擊者能觸發的能力；同一個權限面與監督缺口管兩種失效。</li>
+  <li>分類仍可用於分析原因，但不該決定誰來回應。</li>
+  <li>邊界：受限或有人類介入的 agent 仍可分開；系統性風險不在範圍；論證反映作者群的立場。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能用自己的話說明為什麼「它是被攻擊還是壞了」是畸形的問題。</li>
+  <li>我知道報告只主張部署層，並知道它的三個邊界。</li>
+  <li>我知道這個論證的證據多為轉述，需要時要查原始來源。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-protocols-identity.html">第 4 章　協定、Agent 身分與供應鏈</a>：既然權限面是共同根因，下一步是看「身分」怎麼成為新的權限控制點。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，State of Agentic AI Security and Governance 2.01（PDF，June 2026）：AI Safety vs AI Security、Executive Summary；CC BY-SA 4.0；<a href="https://genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/">genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/</a>；2026-10-26 讀取。報告引用的《2026 國際 AI 安全報告》本教材未查證。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：State of Agentic AI Security and Governance 2.01 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ag-ch3', topic: 'agentic-security-and-governance', mode: 'chapter',
+  questions: [
+    { id: 'ag3q1', type: 'mc', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-safety-security.html#ss-defs'}],
+      stem: '依報告的定義，下列哪一項最符合「AI Safety（安全性）」而不是「AI Security（資安）」？',
+      options: [
+        { text: '攻擊者在共享檔案中埋入指令，使企業助理外洩資料。', why: '這是信任邊界被違反，屬資安。' },
+        { text: '系統沒有被攻擊，但因為預設權限過大，在正常運作中刪掉了正式資料。', correct: true, why: '傷害來自「系統是什麼」，不是「被允許了什麼」，屬安全性。' },
+        { text: '惡意的技能被上傳到登錄庫。', why: '這是供應鏈攻擊，屬資安。' },
+        { text: '攻擊者透過偽造的 agent 卡片攔截資料。', why: '這是偽冒與信任邊界問題，屬資安。' }
+      ],
+      summary: '資安：信任邊界被違反；安全性：正常運作中的有害結果。' },
+    { id: 'ag3q2', type: 'mc', lo: [3], refs: [{label: '3.2 收斂論證', href: '03-safety-security.html#c-collapse'}],
+      stem: '依報告，下列哪一項是「它主張的範圍」，而不是超出範圍的說法？',
+      options: [
+        { text: '所有 AI 的安全性與資安，包括模型訓練階段，都不能分開。', why: '報告明說模型層的安全性仍是獨立學科與供應商責任。' },
+        { text: '部署層的安全性與資安，對擁有廣泛權限且極少監督的 agent 而言，無法操作性地分開。', correct: true, why: '這是報告的主張與條件。' },
+        { text: '資安與安全性應該合併成同一個部門。', why: '報告沒有這樣說，它說的是不能作為平行職能。' },
+        { text: '對所有 agent，分類都不再有任何意義。', why: '報告說對受限或有人類介入的 agent，兩者仍可有用地分開；分類仍可用於分析原因。' }
+      ],
+      summary: '主張範圍：部署層；條件：廣泛權限加極少監督。' },
+    { id: 'ag3q3', type: 'match', lo: [3], refs: [{label: '3.2 收斂論證', href: '03-safety-security.html#c-collapse'}],
+      stem: '把下列趨勢配對到報告所說的「同一個設計決定同時造成兩種風險」的收斂效果。',
+      cats: [
+        { id: 'tool', label: '工具存取擴大' },
+        { id: 'oversight', label: '人類監督減少' },
+        { id: 'chain', label: '供應鏈成長' }
+      ],
+      items: [
+        { text: '同一個權限面管理兩種失效模式', answer: 'tool', why: '報告表格：工具存取擴大 → 同一個權限面。' },
+        { text: '同一個監督缺口使兩種失效都更難攔截', answer: 'oversight', why: '人類監督減少 → 同一個監督缺口。' },
+        { text: '同一條發現與呼叫路徑同時帶來兩種風險', answer: 'chain', why: '供應鏈成長 → 同一條發現與呼叫路徑。' }
+      ],
+      summary: '每一列的結論都是：同一個設計決定同時造成兩種風險。' },
+    { id: 'ag3q4', type: 'scn', lo: [3], refs: [{label: '3.2 收斂論證', href: '03-safety-security.html#c-collapse'}, {label: '3.4 情境 A', href: '03-safety-security.html#ss-scenario'}],
+      stem: '依本章，資安長在週末最合理的決定是什麼？',
+      scenario: '蒼海物流（虛構）的調度 agent 在週末對一批訂單做了錯誤的取消與重排。ML 團隊認為是模型誤判，資安團隊說沒有看到攻擊跡象，兩邊都不願認領，主管問「要等誰確認」。資安長手上只有一個選項：下一個決定要怎麼做。',
+      options: [
+        { text: '等兩個團隊先確認根因是誤判還是攻擊，再決定誰處理。', why: '報告的重點正是：分類會變成組織延遲，事件在這段時間沒被圍堵。' },
+        { text: '先圍堵（暫停 agent 的取消與重排權限），再由單一事件負責人帶兩種假設一起調查，並檢視持久記憶與輸入，事後再追究原因。', correct: true, why: '對應 3.2、3.4 節：一起治理、一起回應；看似可靠性故障的現象可能是持久入侵。' },
+        { text: '當作純粹的品質問題，下週一交給 ML 團隊。', why: '若實為持久記憶被污染，只重啟或看漂移可能漏掉入侵機制。' },
+        { text: '把兩個團隊合併，以後不再區分。', why: '報告沒有主張合併，而是不要平行回報；也不是這個週末能做的決定。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 報告的論證：部署層的安全性與資安難以操作性地區分，分類不應決定誰來回應。(2) 看似可靠性故障的現象，可能是更早的對抗互動造成；只當安全性處理可能漏掉持久機制。(3) 同一個權限面（取消與重排的權限）是兩種原因共同的根因，因此圍堵與縮減權限對兩者都有效。</p><p><strong>結論：</strong>先圍堵，單一負責人，兩種假設並行調查。對應教材：<a href="03-safety-security.html#c-collapse">3.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

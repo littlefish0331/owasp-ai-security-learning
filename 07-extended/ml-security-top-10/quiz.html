@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜Machine Learning Security Top 10｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Machine Learning Security Top 10 主題總測驗：14 題，涵蓋四個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="ml-security-top-10" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：Machine Learning Security Top 10</h1>
+<ul class="meta-row">
+  <li>14 題（選擇題 6、情境判斷題 5、配對題 3）</li>
+  <li>預估時間：約 18 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO4</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–4 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位與版本：</strong>說明 ML Top 10 是什麼、範圍、版本與成熟度，並寫出正確的引用方式。</li>
+  <li><strong>風險分辨：</strong>依生命週期分辨 ML01–ML10，並區分容易混淆的條目。</li>
+  <li><strong>防禦選擇：</strong>面對 ML 系統情境，指出涉及哪些條目，並選出對應的防禦類型。</li>
+  <li><strong>跨文件整合：</strong>知道何時改用 AI Exchange 或 LLM Top 10 2026，並正確處理名稱、編號與年份差異。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：OWASP Machine Learning Security Top 10 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0；OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-position.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-lifecycle-map.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-defenses-and-scenarios.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-integration.html', a, '第 4 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位與版本 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('pos-concept', '1.5 引用 Version 0.3 Draft'), C1('pos-onepage', '1.1')],
+    stem: '下列哪一種寫法，最能正確地引用這份清單？',
+    options: [
+      { text: '「OWASP ML Top 10 是 2026 年的最新正式標準」', why: '官方標示是 2023 edition、Version 0.3 Draft；沒有任何官方文字稱它是 2026 年的正式標準。' },
+      { text: '「OWASP Machine Learning Security Top 10（2023 edition，Version 0.3 Draft）的 ML05:2023」，並註明讀取日期', correct: true, why: '帶版本、草稿標示與條目年份，讀者才能核對。' },
+      { text: '「OWASP 的 ML 安全 Top 10，排名第五的風險是模型竊取」', why: '官方沒有說明排序依據，不能把編號寫成排名。' },
+      { text: '「OWASP 已定稿的機器學習十大風險」', why: '官方自己寫「頻繁修改中」，是草稿，不是定稿。' }
+    ],
+    summary: '引用要帶版本與草稿標示，不誇大成熟度，不把編號當排名。' },
+
+  { id: 'q02', type: 'mc', lo: [1], refs: [C1('pos-scope', '1.2 範圍')],
+    stem: '一位工程師說：「ML Top 10 只談對抗性攻擊，我們團隊的問題是訓練管線沒人顧，所以這份清單跟我們無關。」依官方 Scope，最恰當的回應是？',
+    options: [
+      { text: '同意：它只談對抗性攻擊。', why: '官方 Scope 明說也涵蓋非對抗情境。' },
+      { text: '不同意：官方 Scope 明寫範圍也涵蓋非對抗情境，例如 ML 營運與工程流程的安全衛生，管線沒人顧正好在範圍內。', correct: true, why: '對應 1.2 節。' },
+      { text: '不同意：因為它談的是生成式 AI 的訓練管線。', why: '官方範圍是機器學習系統，不限於生成式 AI。' },
+      { text: '同意：訓練管線屬於 AI Exchange，不屬於任何 OWASP 清單。', why: '沒有這樣的官方分工說法；ML Top 10 的 Scope 已包含營運與工程衛生。' }
+    ],
+    summary: '範圍包含非對抗的營運與工程衛生。' },
+
+  { id: 'q03', type: 'scn', lo: [1], refs: [C1('pos-concept', '1.5'), C1('pos-compare', '1.3 表 1-2')],
+    stem: '依本教材，這份採購條款的引用有哪些問題？',
+    scenario: '沙棠資訊（虛構）在給供應商的條款寫：「供應商須符合 OWASP ML Top 10 第 3 名風險（模型反推）的所有控制，並以最新版 LLM Top 10 為準。」供應商回覆：「ML Top 10 是 2023 草稿，LLM Top 10 是另一份清單，而且官方沒有說過第 3 名。」',
+    options: [
+      { text: '供應商說得不對，OWASP 的清單一定有排名。', why: '官方沒有說明排序依據；供應商的說法與官方一致。' },
+      { text: '只有「LLM Top 10」需要修正。', why: '「第 3 名」與沒有標示版本也有問題。' },
+      { text: '條款有三處要改：編號不是排名（寫成 ML03:2023 即可）；要標示版本與草稿狀態（2023 edition，Version 0.3 Draft）；ML Top 10 與 LLM Top 10 範圍不同，要說明供應商的系統該對照哪一份。', correct: true, why: '符合 1.2、1.3、1.5 節。' },
+      { text: '條款沒有問題，供應商只是在規避責任。', why: '供應商指出的三點都符合教材。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 官方沒有說明十項的排序依據，所以「第 3 名」不成立，應寫 ML03:2023。(2) 版本是 2023 edition、Version 0.3 Draft，條款應標明，且其成熟度不等於定稿標準。(3) ML Top 10 談機器學習系統，LLM Top 10 談 LLM 應用，範圍不同，要依供應商的系統類型指定。</p><p><strong>結論：</strong>改寫條款。對應教材：<a href="01-position.html#pos-concept">1.5 節</a>、<a href="01-position.html#pos-compare">1.3 節</a>。</p>' },
+
+  /* ================= LO2 風險分辨 ================= */
+  { id: 'q04', type: 'match', lo: [2], refs: [C2('lc-map', '2.2 圖 2-1')],
+    stem: '把下列條目配對到最典型的生命週期組（作者整理的分組）。',
+    cats: [
+      { id: 'train', label: '資料與訓練期' },
+      { id: 'supply', label: '模型與供應鏈' },
+      { id: 'infer', label: '部署後的推論期' }
+    ],
+    items: [
+      { text: 'ML08:2023 Model Skewing（改變訓練資料分佈）', answer: 'train', why: '改變的是訓練資料分佈（入口是回饋迴路）。' },
+      { text: 'ML05:2023 Model Theft', answer: 'supply', why: '攻擊者取得模型的參數。' },
+      { text: 'ML03:2023 Model Inversion Attack', answer: 'infer', why: '對模型查詢、從輸出推回資訊。' },
+      { text: 'ML07:2023 Transfer Learning Attack', answer: 'train', why: '在一個任務訓練再微調到另一任務，屬訓練期。' }
+    ],
+    summary: '依「攻擊者最先碰到系統的哪一段」記憶；分組為作者整理。' },
+
+  { id: 'q05', type: 'mc', lo: [2], refs: [C2('lc-confuse', '2.3 表 2-2')],
+    stem: '資料投毒（ML02）與模型投毒（ML10）最根本的差別是什麼？',
+    options: [
+      { text: '資料投毒發生在推論期，模型投毒發生在訓練期。', why: '剛好相反：資料投毒動的是訓練資料。' },
+      { text: '兩者其實是同一個條目的兩個名稱。', why: '兩者是清單中不同編號的條目。' },
+      { text: '資料投毒是攻擊者只對模型提問；模型投毒是攻擊者取得模型參數。', why: '前者動的是訓練資料；「只對模型提問」是模型反推或成員推論，「取得參數」是模型竊取。' },
+      { text: '資料投毒動的是訓練資料，讓模型自己學壞；模型投毒是直接竄改模型參數，不經過學習。', correct: true, why: '2.3 節的「污染食材 vs. 直接改食譜」。' }
+    ],
+    summary: '動資料 = ML02；直接動參數 = ML10。' },
+
+  { id: 'q06', type: 'scn', lo: [2], refs: [C2('lc-confuse', '2.3'), C2('lc-concept', '2.4')],
+    stem: '依本章，資安顧問最可能怎麼分類這個事件？',
+    scenario: '潮間生技（虛構）的藥物反應預測模型以 API 提供給合作夥伴。日誌顯示，某合作夥伴的帳號在兩週內針對同一批病患 ID 送出大量查詢，並且持續比對輸出的信心分數。模型檔案、訓練資料與回饋流程都沒有被動過。',
+    options: [
+      { text: 'ML10 Model Poisoning，因為模型被改了。', why: '日誌顯示模型檔案沒有被動過。' },
+      { text: 'ML02 Data Poisoning，因為有人動了訓練資料。', why: '訓練資料沒有被動過。' },
+      { text: 'ML09 Output Integrity，因為輸出被改了。', why: '日誌只顯示大量查詢，沒有證據顯示輸出被竄改。' },
+      { text: 'ML04 Membership Inference 或 ML03 Model Inversion：攻擊者只透過查詢與輸出（信心分數）嘗試推論訓練資料的資訊，沒有改動任何東西。', correct: true, why: '符合 2.3 與 2.4 節：這兩個條目都只靠查詢與輸出。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 模型檔案、訓練資料與回饋流程都沒被動過，排除 ML02、ML08、ML10。(2) 沒有證據顯示輸出被改，排除 ML09。(3) 大量查詢加上比對輸出信心，符合「只對模型提問、從輸出推論訓練資料」的 ML03 / ML04。</p><p><strong>結論：</strong>歸為 ML04 或 ML03，需要更多資訊才能分辨攻擊者的目標是「某筆資料在不在」還是「取回資訊內容」。對應教材：<a href="02-lifecycle-map.html#lc-confuse">2.3 節</a>、<a href="02-lifecycle-map.html#lc-concept">2.4 節</a>。</p>' },
+
+  { id: 'q07', type: 'match', lo: [2], refs: [C2('lc-list', '2.1 表 2-1'), C2('lc-confuse', '2.3')],
+    stem: '把下列官方情境配對到最貼近的條目。',
+    cats: [
+      { id: 'ml01', label: 'ML01 輸入操縱' },
+      { id: 'ml06', label: 'ML06 AI 供應鏈攻擊' },
+      { id: 'ml09', label: 'ML09 輸出完整性' },
+      { id: 'ml10', label: 'ML10 模型投毒' }
+    ],
+    items: [
+      { text: '攻擊者用精心微調的圖片，讓影像分類器把貓判斷成狗', answer: 'ml01', why: '官方 ML01 的情境。' },
+      { text: '攻擊者改動專案依賴的開源套件並上傳到公共套件庫', answer: 'ml06', why: '官方 ML06 的情境。' },
+      { text: '攻擊者修改醫院診斷模型的輸出，使病患得到錯誤診斷', answer: 'ml09', why: '官方 ML09 的情境。' },
+      { text: '攻擊者改動支票手寫辨識模型的參數，使數字 5 被辨成 2', answer: 'ml10', why: '官方 ML10 的情境。' }
+    ],
+    summary: '每個條目有一個官方範例情境可作為記憶錨點。' },
+
+  /* ================= LO3 防禦選擇 ================= */
+  { id: 'q08', type: 'mc', lo: [3], refs: [C3('df-themes', '3.1 表 3-1')],
+    stem: '依表 3-1，下列哪一組「條目 ↔ 官方預防措施的獨立項目」是正確的？',
+    options: [
+      { text: 'ML05 Model Theft ↔ 浮水印與法律保護', correct: true, why: '浮水印 (Watermarking) 與法律保護 (Legal protection) 出現在 ML05 的預防清單。' },
+      { text: 'ML09 Output Integrity ↔ 對抗訓練', why: '對抗訓練是 ML01 的預防措施。' },
+      { text: 'ML02 Data Poisoning ↔ 差分隱私', why: '差分隱私出現在 ML04 與 ML07，不在 ML02。' },
+      { text: 'ML10 Model Poisoning ↔ 驗證回饋資料的真實性', why: '驗證回饋資料是 ML08 的措施。' }
+    ],
+    summary: '每個條目有幾項特徵性的官方預防措施。' },
+
+  { id: 'q09', type: 'scn', lo: [3], refs: [C3('df-scn-a', '3.4 情境 A'), C3('df-flow', '3.3 圖 3-1')],
+    stem: '依本章，這個團隊最先該補的是什麼？',
+    scenario: '梧桐叫車（虛構）的派車模型每晚用當天乘客的「路線評分」重新訓練。最近發現某些路線的評分異常高，且來自同一批新帳號。團隊想把模型換成更大的架構來「提高穩健性」。',
+    options: [
+      { text: '換成更大的架構，穩健性就會提高。', why: '教材與官方 ML08 都沒有這樣的說法；問題在資料進入訓練的環節。' },
+      { text: '停止所有重新訓練。', why: '官方並未建議停止重新訓練；要的是用已驗證的資料重新訓練。' },
+      { text: '在評分進入訓練集之前加上驗證：限制寫入、驗證真實性、清理與異常偵測（例如少數新帳號的集中評分）；再用已驗證的資料重新訓練。', correct: true, why: '符合 3.4 節與官方 ML08 的預防清單。' },
+      { text: '改成每小時重新訓練，讓模型更快自我修正。', why: '沒有驗證就加快頻率，會讓被操縱的資料更快進入模型。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 評分異常且來自新帳號，對照圖 3-1 屬 ML08 模型偏斜。(2) 出問題的環節是回饋資料直接進入訓練。(3) 更大的架構不處理資料來源問題。</p><p><strong>結論：</strong>先補回饋資料的驗證與異常偵測。對應教材：<a href="03-defenses-and-scenarios.html#df-scn-a">3.4 節</a>。</p>' },
+
+  { id: 'q10', type: 'scn', lo: [3], refs: [C3('df-scn-b', '3.5 情境 B'), C3('df-themes', '3.1')],
+    stem: '依本章，團隊從這個事件得到的最重要教訓是什麼？',
+    scenario: '柳川醫材（虛構）上線前驗證了從公開模型庫下載的預訓練模型，驗證集表現正常。八個月後，資安人員發現正式環境的模型檔案雜湊值與下載時紀錄的不一致，而同一時期沒有任何人發佈過新版本。主管說：「上線前驗證過了，一定是雜湊紀錄寫錯。」',
+    options: [
+      { text: '主管說得對，驗證通過就不需要再檢查。', why: '驗證通過只證明當時的表現；上線後的改動需要持續的完整性檢查。' },
+      { text: '雜湊不符是供應鏈（ML06）與模型投毒（ML10）都可能涉及的訊號：不能先假設是紀錄錯誤，應調查來源與完整性，並持續做完整性驗證。', correct: true, why: '符合 3.5 節：驗證通過只代表當時；雜湊不符是需要調查的訊號。' },
+      { text: '應立刻改用另一個模型庫，問題就解決。', why: '還不知道問題的來源；換模型庫不是調查。' },
+      { text: '這是 ML03 的典型症狀。', why: 'ML03 是只透過查詢推論資訊，不涉及模型檔案被改。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 雜湊與下載時不一致且沒有新版本，對照圖 3-1 指向 ML06 / ML10。(2) 上線前驗證只證明當時的表現。(3) 不能憑猜測認定是紀錄錯誤。</p><p><strong>結論：</strong>調查來源與完整性，並建立持續的完整性驗證。對應教材：<a href="03-defenses-and-scenarios.html#df-scn-b">3.5 節</a>。</p>' },
+
+  /* ================= LO4 跨文件整合 ================= */
+  { id: 'q11', type: 'match', lo: [4], refs: [C4('int-table', '4.1 表 4-1')],
+    stem: '把下列說法配對到「官方明載」或「作者整理」。',
+    cats: [
+      { id: 'off', label: '官方明載（AI Exchange 參考區塊）' },
+      { id: 'auth', label: '作者整理，非官方' }
+    ],
+    items: [
+      { text: 'ML01 對應 AI Exchange 的規避', answer: 'off', why: 'AI Exchange 威脅頁參考區塊列出 ML01。' },
+      { text: 'ML09 與 LLM10:2026 是同一回事', answer: 'auth', why: '兩者名稱相近但不同，且官方沒有明載對應；教材明確指出不同。' },
+      { text: 'ML06 對應 LLM04:2026 Supply Chain', answer: 'auth', why: '兩者談同一類問題，但官方條目沒有寫對應關係。' },
+      { text: 'ML02 對應 AI Exchange 的資料投毒', answer: 'off', why: 'AI Exchange 威脅頁參考區塊列出 ML02。' }
+    ],
+    summary: '官方明載的對應只有 ML01、ML02、ML05。' },
+
+  { id: 'q12', type: 'mc', lo: [4], refs: [C4('int-trap', '4.2 三個陷阱')],
+    stem: '關於 ML02 與 LLM05:2026 Data and Model Poisoning 的關係，依本章，最正確的描述是？',
+    options: [
+      { text: 'LLM05:2026 的範圍寬得多（預訓練、微調、嵌入與 RAG、模型重用、持續學習管線等），大致涵蓋 ML02，但反過來不成立。', correct: true, why: '符合 4.2 節的第三點。' },
+      { text: 'ML02 的範圍比 LLM05:2026 更寬。', why: 'ML02 的描述只談訓練資料。' },
+      { text: '兩者範圍完全相同，只是年份不同。', why: 'LLM05:2026 條目自己列出更多環節。' },
+      { text: '兩者無關，因為一個是傳統 ML、一個是 LLM。', why: '名稱與概念高度相近；差別是範圍，不是無關。' }
+    ],
+    summary: '名稱相近但範圍不同；LLM05:2026 較寬。' },
+
+  { id: 'q13', type: 'scn', lo: [4], refs: [C4('int-flow', '4.3 圖 4-1'), C4('int-table', '4.1')],
+    stem: '依圖 4-1，這份風險評估應該怎麼選文件？',
+    scenario: '寒山物流（虛構）有兩個系統：甲是用感測器資料預測設備故障的模型（沒有生成式模型）；乙是客服 LLM 助理，可以呼叫訂單修改工具。資安負責人打算「兩個系統都用 ML Top 10，因為它是 OWASP 的 ML 清單」。',
+    options: [
+      { text: '兩個都用 ML Top 10。', why: '乙是 LLM 助理且能呼叫工具，ML Top 10 沒有涵蓋 LLM 特有與 agent 風險。' },
+      { text: '甲用 ML Top 10 認識風險類別；乙用 LLM Top 10 2026，並因能呼叫工具加看 Agentic Top 10 2026；兩者最後回到 AI Exchange 做威脅建模。', correct: true, why: '符合圖 4-1（分流為作者整理）。' },
+      { text: '兩個都用 LLM Top 10 2026。', why: '甲沒有生成式模型。' },
+      { text: '兩個都不需要清單，直接用 AI Exchange。', why: '清單提供條目語言與引用，與 AI Exchange 互補。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 甲沒有生成式模型，走 ML Top 10。(2) 乙含 LLM，走 LLM Top 10 2026；能呼叫工具，加看 Agentic Top 10 2026。(3) 最後都回到 AI Exchange 做威脅建模。</p><p><strong>結論：</strong>依系統類型分流。對應教材：<a href="04-integration.html#int-flow">4.3 節</a>。</p>' },
+
+  { id: 'q14', type: 'mc', lo: [4], refs: [C4('int-trap', '4.2 三個陷阱')],
+    stem: '審查報告寫：「ML09 已處理，所以 LLM10:2026 Improper Output Handling 也涵蓋了。」依本章，最大的問題是？',
+    options: [
+      { text: '兩者防的問題不同：ML09 是輸出在途中被竄改（官方預防：簽章、安全通道），LLM10:2026 是下游沒有妥善處理模型輸出；要分別評估。', correct: true, why: '符合 4.2 節第一點。' },
+      { text: '問題只在 LLM10:2026 屬於 2025 版。', why: 'LLM10:2026 是 2026 版的條目。' },
+      { text: '沒有問題，兩者都是輸出相關條目。', why: '名稱相近不代表同一件事。' },
+      { text: '問題在於 ML09 已被官方移除。', why: '官方沒有移除 ML09。' }
+    ],
+    summary: '名稱相近 ≠ 同一件事。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'ml-security-top-10', mode: 'final',
+    los: [
+      { n: 1, text: '定位與版本：說明 ML Top 10 是什麼、範圍、版本與成熟度，並寫出正確的引用方式。' },
+      { n: 2, text: '風險分辨：依生命週期分辨 ML01–ML10，並區分容易混淆的條目。' },
+      { n: 3, text: '防禦選擇：面對 ML 系統情境，指出涉及哪些條目，並選出對應的防禦類型。' },
+      { n: 4, text: '跨文件整合：知道何時改用 AI Exchange 或 LLM Top 10 2026，並正確處理名稱、編號與年份差異。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

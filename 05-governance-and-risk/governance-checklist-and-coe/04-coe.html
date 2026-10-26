@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　卓越中心 (CoE)｜治理檢核表與卓越中心｜OWASP AI 資安學習教材</title>
+<meta name="description" content="CoE Guide 的結構：跨部門領導團隊與工作小組、五個目標與 KPI、十一種角色的職責、12 個月的實施階段，以及一個虛構情境。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="governance-checklist-and-coe" data-page="04-coe.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　卓越中心 (CoE)</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="03-checklist-areas.html">第 3 章</a></li>
+</ul>
+<p class="lead">檢核表的 13 個區塊要有人認領。CoE Guide 的答案是：不要靠一個人，也不一定要新設一個部門，而是把資安、法務、資料科學、營運與使用者的代表放進同一個跨部門結構，給它明確的目標與衡量方式。這一章看它的結構、五個目標、十一種角色與 12 個月的做法。</p>
+
+<h2 id="coe-structure">4.1 CoE 的結構與它面對的困難</h2>
+<p>CoE Guide 的設計很簡單：<strong>領導團隊</strong>由資安、法務、資料科學與營運的主管組成，負責策略決定與方向；底下依重點設<strong>工作小組</strong>，文件舉的領域是資安與合規、法律與法規事務、資料管理與分析、營運整合，以及使用者參與。整個團隊負責五類工作：政策制定、風險評估與管理、訓練與意識、研究與開發、利害關係人參與。文件強調結構要有彈性，並定期檢視角色、責任與流程。</p>
+<p>跨領域團隊本身就會遇到困難。文件列了四種內部挑戰，並建議借助外部力量：</p>
+<ul>
+  <li><strong>溝通障礙：</strong>各領域用不同的專業語言，需要建立共同詞彙。</li>
+  <li><strong>抗拒改變：</strong>不同部門可能抗拒打亂傳統流程的新工作方式。</li>
+  <li><strong>資源分配：</strong>部門之間爭資源，需要透明且公平的分配規則。</li>
+  <li><strong>技能落差：</strong>生成式 AI 新且變動快，現有人員可能缺乏必要技能。</li>
+</ul>
+<p>外部力量包括：AI 資安、AI 法規與資料倫理的顧問；外部訓練機構（補技能落差）；技術夥伴與廠商；學術與研究機構；產業團體與網絡。</p>
+
+<h2 id="coe-okr">4.2 五個目標與 KPI</h2>
+<p>文件把 CoE 的營運計畫起點寫成五個目標 (Objectives)，每個附上範例的 OKR（目標與關鍵結果）與 KPI。這是「起點範例」，不是規定：</p>
+<div class="table-wrap"><table>
+<caption>表 4-1　CoE 的五個目標與範例 KPI（官方，改寫）</caption>
+<thead><tr><th scope="col">目標</th><th scope="col">想達成什麼</th><th scope="col">範例 KPI（改寫）</th></tr></thead>
+<tbody>
+<tr><th scope="row">1　強化生成式 AI 的資安框架</th><td>制定並落實針對生成式 AI 的資安政策；符合國內外法規；降低 AI 相關資安事件</td><td>政策制定與落實的數量；法規遵循率；AI 相關資安事件的頻率與嚴重度</td></tr>
+<tr><th scope="row">2　促進協作與知識傳遞</th><td>定期工作坊與訓練、集中的知識庫、增加跨部門專案</td><td>跨部門研討與訓練場次；知識庫的使用率；跨部門專案數</td></tr>
+<tr><th scope="row">3　與利害關係人建立信任與透明</th><td>發布季報、每半年與利害關係人開會、推動溝通計畫</td><td>季報數量；新推動的 AI 資安計畫數；會議次數與蒐集到的疑慮數；參與度與回饋分數</td></tr>
+<tr><th scope="row">4　推進倫理與資安實務</th><td>制定倫理與資安準則、每年稽核、提升員工意識</td><td>準則數量；完成訓練的員工比例；稽核結果；意識測驗分數的提升</td></tr>
+<tr><th scope="row">5　優化 AI 效能與可靠度</th><td>降低錯誤率、持續監控與即時分析、部署改善效率與可靠度的工具</td><td>錯誤率降低幅度；監控系統的實作狀態；部署工具或更新的數量與影響</td></tr>
+</tbody></table></div>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：KPI 的類型要自己分辨</p>
+  <p>表中的 KPI 有兩種性質：一種衡量「做了多少」（政策數、場次數、報告數），一種衡量「效果如何」（法規遵循率、事件頻率與嚴重度、稽核結果、錯誤率降低）。文件沒有區分這兩種；作者的觀察是前者佔了不少比例。<strong>挑選 KPI 時，每個目標最好至少放一個衡量效果的指標</strong>，否則 CoE 可能很忙但看不出是否有用。這是作者的建議，不是官方說法。</p>
+</div>
+
+<h2 id="coe-roles">4.3 十一種角色：誰負責哪一類工作</h2>
+<p>文件把成員分成兩大類。<strong>建置與營運群 (Builders and Operating Groups)</strong> 有八種角色；<strong>使用者與消費者群 (User and Consumer Groups)</strong> 有三種。每種角色在文件裡都有「為什麼要納入」和一張「COE 責任」表，下表只抓每種角色最具代表性的責任：</p>
+<div class="table-wrap"><table>
+<caption>表 4-2　十一種角色與代表性責任（官方，改寫）</caption>
+<thead><tr><th scope="col">群</th><th scope="col">角色（官方名稱）</th><th scope="col">代表性責任</th></tr></thead>
+<tbody>
+<tr><th scope="row" rowspan="8">建置與營運</th><td>AI and ML Developers <br>（AI 與 ML 開發者）</td><td>針對 AI 的安全開發實務、早期的弱點評估與威脅建模、安全測試、文件與稽核紀錄</td></tr>
+<tr><td>Cybersecurity Team <br>（資安團隊）</td><td>持續辨識與分析威脅、制定針對 AI 的安全協定、自動化監控與事件應變；點名 AI 輔助的釣魚與深偽</td></tr>
+<tr><td>IT and Operations <br>（IT 與營運）</td><td>基礎設施管理、系統安全、營運支援、測試與稽核、事件應變與復原</td></tr>
+<tr><td>Legal and Compliance <br>（法務與合規）</td><td>法規遵循（文中舉歐盟 AI 法案、加州 SB 1047、GDPR、CCPA）、政策制定、契約治理、法律風險與事件的法律應對</td></tr>
+<tr><td>Ethics and Governance <br>（倫理與治理）</td><td>倫理準則、治理框架、與法務和政策團隊整合、教育與倡導。文件注明不是每個組織都有專責的倫理與治理團隊</td></tr>
+<tr><td>Human Resources <br>（人資）</td><td>訓練與發展、組織文化與變革管理、員工參與和溝通、合規與倫理</td></tr>
+<tr><td>Risk Management <br>（風險管理）</td><td>風險辨識、分析與評估、緩解策略、監控與報告、與利害關係人溝通</td></tr>
+<tr><td>Data Science Team <br>（資料科學團隊）</td><td>資料分析與監控、模型開發與測試、演算法稽核（準確、公平、偏誤）、與風險團隊協作</td></tr>
+<tr><th scope="row" rowspan="3">使用者與消費者</th><td>Marketing and Communications <br>（行銷與傳播）</td><td>客戶洞察須遵守 GDPR 等隱私規範、自動化行銷的監控與退出機制、內容原創性與避免侵權</td></tr>
+<tr><td>Customer Support <br>（客戶支援）</td><td>客戶資料隱私與透明（互動前告知是 AI、可選擇真人）、監控與人工監督、客戶回饋循環</td></tr>
+<tr><td>Line of Business Representation <br>（業務單位代表）</td><td>讓資安計畫對齊業務目標、分配資源、參與政策制定、領導變革管理</td></tr>
+</tbody></table></div>
+<p>要注意的是：文件在總結寫明，<strong>不是每家公司都需要所有角色與功能</strong>，應依組織能力與需求裁剪。這十一種是「藍圖」，不是人員編制。</p>
+<div class="callout official unsure">
+  <p class="callout-title">觀察到的不一致：兩處責任描述重複</p>
+  <p>在 PDF 的角色表裡，IT and Operations 的「Compliance and Protocols」與「Incident Response and Recovery」兩列的說明文字幾乎相同；Human Resources 的「Training and Development」與「Organizational Culture and Change Management」兩列也相同。看起來像是複製貼上時沒改。上表只用不重複、能對得上列名的描述，並把這個現象記在<a href="references.html">參考資料頁</a>。</p>
+</div>
+
+<h2 id="coe-phases">4.4 12 個月的實施階段</h2>
+<p>文件給了一個「範例」時程，並強調要依自己公司的流程與資源調整：</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="四個階段：第一階段第 1 到 3 個月規劃與建置，組成領導團隊、定義角色、制定初步資安框架；第二階段第 4 到 6 個月整合與開發，訓練、把 AI 安全協定整合進現有系統、啟動跨部門專案；第三階段第 7 到 9 個月營運化，常態監控與報告、首輪稽核與風險評估；第四階段第 10 到 12 個月評估與擴展，檢討成效、調整政策、規劃擴大範圍。一年後進入持續改善。">
+flowchart LR
+  P1["階段 1（第 1–3 月）<br>規劃與建置<br>組領導團隊、定角色、<br>初步框架與合規準則"] --> P2["階段 2（第 4–6 月）<br>整合與開發<br>訓練、整合 AI 安全協定、<br>啟動跨部門專案"]
+  P2 --> P3["階段 3（第 7–9 月）<br>營運化<br>常態監控與報告、<br>首輪稽核與風險評估"]
+  P3 --> P4["階段 4（第 10–12 月）<br>評估與擴展<br>成效檢討、調整政策、<br>規劃納入更多專案"]
+  P4 -.->|"一年後"| P5["持續改善<br>更新訓練、協定與措施"]
+</pre>
+<figcaption><strong>圖 4-1　CoE 的 12 個月範例階段（官方，重新繪製）。</strong>階段名稱、月份與重點取自官方 PDF；官方明說這是「範例時程」，需依企業自身流程與資源調整。</figcaption>
+</figure>
+<p>文件還列了七項「新興趨勢」讓 CoE 持續追蹤：AI 輔助的資安、對抗式 AI、聯邦學習、抗量子密碼學、倫理 AI 法規、AI 供應鏈安全，以及可解釋 AI。這是 2024 年的觀察清單，不是完整的威脅模型。</p>
+
+<h2 id="coe-scenario">4.5 情境範例 B：沒有人整體負責的三個 AI 專案</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：千帆製造的 AI 專案分散</h3>
+<p><span class="tag fiction">虛構</span> 千帆製造是虛構的公司。一年內，行銷部門自己導入文案生成、客服部門導入對話助理、研發部門在內部用程式碼助理。三個專案各有各的供應商，法務常在上線前一週才被通知，資安在事件後才被找去；某次客服助理回答了錯誤的保固條件，沒有人能說清楚該由誰負責。資安長決定參考 CoE Guide，但預算有限，只能先投入少量人力。</p>
+<ol class="steps">
+  <li><strong>先確認問題屬於組織，而非單一技術：</strong>三個專案的缺口不是同一個漏洞，而是「沒有人整體負責」。這正是 CoE 要解的問題，也對應檢核表的治理區塊（RACI）。</li>
+  <li><strong>階段 1 只做三件事：</strong>由資安、法務、資料與營運主管組成領導團隊；把客服與行銷的主管（相當於業務單位代表）也邀進來，因為保固條件錯誤就是使用者端的事件；寫下初步的 AI 使用規範。</li>
+  <li><strong>角色要裁剪：</strong>公司沒有專責的倫理與治理團隊，便依文件所說，由法務、風險與業務分擔；不需要為了符合藍圖而硬設一個新部門。</li>
+  <li><strong>選 KPI：</strong>目標 1 選「AI 相關事件的頻率與嚴重度」（效果），再加一個「上線前完成法務審閱的專案比例」（過程）；避免只放「開了幾次會」。第二項是作者建議的指標，不是文件範例。</li>
+  <li><strong>階段 2–3：</strong>用檢核表做第一輪盤點與準備度評估（第 3 章），把三個專案納入統一的上線流程，並訓練客服人員在互動前告知客戶這是 AI。</li>
+  <li><strong>這個情境的提醒：</strong>CoE 不是一次完成的專案，文件的範例是 12 個月加持續改善。千帆製造第一年的目標是「讓每個專案上線前都有人看過」，不是「消除所有風險」。</li>
+</ol>
+</div>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>CoE 的結構：由資安、法務、資料科學與營運主管組成的領導團隊，加上依重點設置的工作小組；結構要有彈性並定期檢視。</li>
+  <li>五個目標：強化資安框架、協作與知識傳遞、信任與透明、倫理與資安實務、效能與可靠度；每個附範例 OKR 與 KPI。</li>
+  <li>十一種角色：八種建置與營運群、三種使用者與消費者群；可依組織裁剪。</li>
+  <li>範例時程為四個階段、共 12 個月，之後持續改善。</li>
+  <li>KPI 要同時有「做了多少」與「效果如何」是作者建議。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出 CoE 領導團隊由哪四類主管組成。</li>
+  <li>給我一項責任（如「演算法稽核」），我能指出它屬於哪一種角色。</li>
+  <li>我知道 12 個月計畫是範例，必須依組織調整。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p><a href="05-integration.html">第 5 章　跨文件整合與收尾</a>：判斷組織現況該先用哪一份、它們如何接到其他 OWASP 文件，並做全主題總整理。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，LLM and Generative AI Security Center of Excellence Guide（PDF 內頁 Version 1.0rc；資源頁日期 2024-10-06）：Creating the COE Structure、COE Considerations、Setting Overall Objectives and KPIs、Working Group Roles and Responsibilities、Example Implementation Phases &amp; Timeline、Emerging Trends、Summary；CC BY-SA 4.0；<a href="https://genai.owasp.org/resource/llm-and-generative-ai-security-center-of-excellence-guide/">genai.owasp.org/resource/llm-and-generative-ai-security-center-of-excellence-guide/</a>；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：CoE Guide — CC BY-SA 4.0；引用須包含專案名稱與所參照資產名稱（OWASP Top 10 for LLMs - LLM AI Security Center of Excellence Guide）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'gc-ch4', topic: 'governance-checklist-and-coe', mode: 'chapter',
+  questions: [
+    { id: 'gc4q1', type: 'mc', lo: [4], refs: [{label: '4.1 結構', href: '04-coe.html#coe-structure'}],
+      stem: '依 CoE Guide，CoE 的領導團隊由哪些主管組成？',
+      options: [
+        { text: '只有資安主管，其他部門以顧問身分參與。', why: '文件明說領導團隊是跨領域的，不是單一部門。' },
+        { text: '資安、法務、資料科學與營運的主管。', correct: true, why: '這是文件對領導團隊的描述；底下依重點設工作小組。' },
+        { text: '董事會成員與外部稽核人員。', why: '文件沒有這樣的規定。' },
+        { text: '所有部門的全部員工。', why: '領導團隊是主管層級；使用者代表透過工作小組參與。' }
+      ],
+      summary: 'CoE 領導團隊：資安、法務、資料科學、營運主管。' },
+    { id: 'gc4q2', type: 'match', lo: [4], refs: [{label: '4.3 表 4-2', href: '04-coe.html#coe-roles'}],
+      stem: '把下列責任配對到 CoE 文件中最相關的角色。',
+      cats: [
+        { id: 'ds', label: 'Data Science Team（資料科學）' },
+        { id: 'legal', label: 'Legal and Compliance（法務與合規）' },
+        { id: 'cs', label: 'Customer Support（客戶支援）' },
+        { id: 'dev', label: 'AI and ML Developers（開發者）' }
+      ],
+      items: [
+        { text: '定期稽核演算法的準確、公平與偏誤', answer: 'ds', why: '演算法稽核是資料科學團隊的責任之一。' },
+        { text: '確認契約對資料安全與智慧財產有適當保障', answer: 'legal', why: '契約治理屬法務與合規。' },
+        { text: '互動前告知客戶這是 AI，並提供真人選項', answer: 'cs', why: '資料隱私與透明是客戶支援的責任。' },
+        { text: '在開發早期做威脅建模與弱點評估', answer: 'dev', why: '弱點評估含早期威脅建模，屬開發者的責任。' }
+      ],
+      summary: '十一種角色各有代表性責任；不必全部納入。' },
+    { id: 'gc4q3', type: 'mc', lo: [4], refs: [{label: '4.4 圖 4-1', href: '04-coe.html#coe-phases'}],
+      stem: '依 CoE Guide 的範例時程，「首輪安全稽核與風險評估」最適合放在哪個階段？',
+      options: [
+        { text: '階段 1（第 1–3 月）規劃與建置。', why: '階段 1 是組團隊、定角色與初步框架，還沒有可稽核的營運。' },
+        { text: '階段 2（第 4–6 月）整合與開發。', why: '階段 2 是訓練、整合協定與啟動跨部門專案。' },
+        { text: '階段 3（第 7–9 月）營運化。', correct: true, why: '官方階段 3 的關鍵行動包含：完全營運化、開始常態監控與報告、進行首輪安全稽核與風險評估。' },
+        { text: '階段 4（第 10–12 月）評估與擴展。', why: '階段 4 是評估整體成效、調整政策與規劃擴大，而不是首輪稽核。' }
+      ],
+      summary: '階段 3 營運化：監控、報告、首輪稽核與風險評估。' },
+    { id: 'gc4q4', type: 'scn', lo: [4], refs: [{label: '4.2 KPI', href: '04-coe.html#coe-okr'}, {label: '4.3 角色', href: '04-coe.html#coe-roles'}],
+      stem: '依本章，這份 CoE 計畫最需要修正的是什麼？',
+      scenario: '遠航電子（虛構）要成立 CoE。計畫書寫：「成員必須涵蓋文件列出的全部十一種角色，並新設專責的倫理與治理部門；成功指標為：本年度舉辦 12 場訓練、發布 4 份季報、開 6 次利害關係人會議。」資安長覺得這份計畫看起來很完整，但不太確定。',
+      options: [
+        { text: '沒有問題，這完全照文件的要求。', why: '文件明說不是每家公司都需要所有角色；而且沒有要求新設倫理與治理部門。' },
+        { text: '兩點需要修正：角色應依組織需求裁剪，不必硬設新部門；指標都是「做了多少」，應加入衡量效果的指標（如事件頻率與嚴重度、法規遵循率、稽核結果）。', correct: true, why: '前半對應文件總結的「不需要所有角色」；後半是 4.2 節作者建議的 KPI 分辨（標為作者整理）。' },
+        { text: '應該把 12 個月縮短成 3 個月，才夠敏捷。', why: '文件的範例是 12 個月四階段，並說明要依組織調整；沒有說越短越好。' },
+        { text: '應該刪掉所有 KPI，只保留 OKR。', why: '文件的 OKR 與 KPI 是搭配的，範例中兩者並列。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 文件的 Summary 明說不是每家公司都需要所有角色，應依組織調整；Ethics and Governance 一節也承認不是每個組織都有專責團隊，可由法務、風險、營運與業務分擔。(2) 計畫的三項指標（場次、份數、次數）都衡量活動量；文件的範例 KPI 也包含法規遵循率、事件頻率與嚴重度、稽核結果等效果指標。把效果與活動量並用是作者建議。</p><p><strong>結論：</strong>裁剪角色、不硬設部門；每個目標至少放一個效果指標。對應教材：<a href="04-coe.html#coe-okr">4.2 節</a>、<a href="04-coe.html#coe-roles">4.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

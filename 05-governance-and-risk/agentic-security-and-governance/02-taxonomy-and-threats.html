@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　Agent 分類與 2025–2026 威脅｜Agentic 安全與治理現況｜OWASP AI 資安學習教材</title>
+<meta name="description" content="報告的三維度 agent 分類（類型、實作、組合）加自主程度；提示詞注入與供應鏈兩條主要路徑；致命三要素與 Rule of Two 的限制；事件追蹤表如何對映 ASI 條目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="agentic-security-and-governance" data-page="02-taxonomy-and-threats.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　Agent 分類與 2025–2026 威脅</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position-and-findings.html">第 1 章</a></li>
+</ul>
+<p class="lead">「我們有幾個 agent？」這個問題很難回答，因為「agent」可以是員工桌面上的個人助理、CI 流程裡的程式碼審查機器人、也可以是低程式碼平台上業務人員拉出來的自動化流程。報告的第一個貢獻，就是給你一套把它們分開來看的方法；第二個貢獻，是說明 2025–2026 年的攻擊大多走哪兩條路。</p>
+
+<h2 id="tx-dims">2.1 三個獨立維度與一個貫穿維度</h2>
+<p>報告把 agent 分類拆成三個彼此獨立的維度，並說「任何類型的 agent 都可以用任何實作方式建置、參與任何組合模式」。這很重要：它避免你把「它是程式碼 agent」誤當成「所以我知道它怎麼被建、怎麼被編排」。</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　三個維度與治理意義（報告 Agents Taxonomy，改寫）</caption>
+<thead><tr><th scope="col">維度</th><th scope="col">它回答什麼</th><th scope="col">分類</th><th scope="col">治理上最影響什麼</th></tr></thead>
+<tbody>
+<tr><th scope="row">類型 <br>(Agent Type)</th><td>它做什麼、在哪裡運作</td><td>五類：企業內部 (Enterprise)、程式碼 (Coding)、面向客戶 (Client-Facing)、個人 (Personal)、基礎設施／營運 (Infrastructure / Ops)</td><td>信任邊界、適用的法規、主要治理挑戰</td></tr>
+<tr><th scope="row">實作 <br>(Implementation Pattern)</th><td>它是怎麼被建出來的</td><td>完整編排框架、輕量函式庫組合、平台原生／低程式碼</td><td>稽核面與組織能見度：你能不能盤點、能不能監控</td></tr>
+<tr><th scope="row">組合 <br>(Composition Pattern)</th><td>agent 彼此怎麼安排</td><td>單一 agent 加工具、多 agent 系統、分散式 agent 鏈、agent 生成架構</td><td>信任邊界結構與連鎖失效風險</td></tr>
+<tr><th scope="row">自主程度 <br>(Autonomy，貫穿)</th><td>沒有人確認它能自己做什麼</td><td>受監督、半自主、完全自主</td><td>人類偵測與介入的時間窗</td></tr>
+</tbody></table></div>
+<p>五個類型各有最突出的治理挑戰（報告原表）：企業 agent 是「權限與脈絡不一致」，程式碼 agent 是「自主程度超過圍堵能力」，面向客戶的 agent 是「對抗性暴露加法規負擔」，個人 agent 是「超出企業治理的能見度缺口」，基礎設施 agent 是「爆炸半徑」。</p>
+
+<div class="callout official">
+  <p class="callout-title">實作維度的關鍵警告</p>
+  <p>報告說：<strong>不要以為採用框架就等於有能見度。</strong>完整編排框架提供追蹤與一些內建的安全掛鉤點；輕量函式庫組合的安全特性「完全由建置者決定」，除非刻意加入，否則沒有標準的掛鉤、遙測或稽核點；平台原生與低程式碼則「治理完全取決於平台能力」，建置者最不容易理解繼承來的風險，是影子 AI 風險最高的一類。</p>
+</div>
+
+<h2 id="tx-autonomy">2.2 自主程度：真正的問題是「沒有人確認時它能做什麼」</h2>
+<div class="concept">
+<h3 id="c-autonomy">自主程度為什麼是貫穿維度</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>三個等級：<strong>受監督</strong>（人類核准每個動作，agent 只建議）、<strong>半自主</strong>（agent 執行例行動作，人類審查被標記的項目）、<strong>完全自主</strong>（agent 自己規劃、執行並反覆迭代）。</dd>
+  <dt data-n="2">為什麼重要</dt>
+  <dd>報告的說法是：自主程度升高，風險變大「不是因為威脅格局改變，而是因為人類偵測與介入的時間窗變窄」。同一個程式碼 agent，受監督與完全自主的風險完全不同。</dd>
+  <dt data-n="3">治理含義</dt>
+  <dd>受監督：標準應用程式安全控制即可。半自主：需要依風險分級的審查，且監控必須抓得到人沒審的部分。完全自主：需要<strong>確定性的強制機制</strong>（掛鉤、熔斷器 (Circuit Breaker)）、持續的行為監控與停止開關。另外有兩項額外要求：對執行時間、API 呼叫與運算成本設預算上限，以圍堵失控的自主迴圈；並把它當成高風險主體納入身分管理，擁有專屬的 agent 身分、明確的權限邊界與和部署它的人分開的稽核紀錄。</dd>
+  <dt data-n="4">怎麼用</dt>
+  <dd>盤點每一個 agent 時，問兩題而非一題：它是什麼類型？它沒有人確認時能做什麼？</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「自主程度高的 agent 才危險。」報告觀察到：資安公告數量與<strong>採用程度</strong>相關，而不是與自主程度相關。公告最多的專案都是半自主框架或程式碼 agent，因為它們被廣泛部署且是高價值目標（報告同時提醒這部分是通報偏差：社群大就多人通報）。</dd>
+</dl>
+</div>
+
+<h2 id="tx-threat">2.3 兩條主要路徑：提示詞注入與供應鏈</h2>
+<p>報告把 2025–2026 的威脅格局歸納為六個面向：自主程度擴張、提示詞注入、agent 供應鏈、影子 AI 與 vibe coding、agent 身分、以及分層攻擊面模型。其中兩條是「幾乎所有事故都走過」的路徑。</p>
+<p><strong>路徑一：提示詞注入。</strong>報告稱它是 agentic 攻擊的「主要傳遞機制」。一個在單純模型上只改變一則回覆的注入，在 agent 上可以改寫目標、破壞多步驟計畫、偽造 agent 間訊息，並連鎖成跨系統的工具動作；這也是它對映到 ASI 十個類別中的六個的原因。報告的說法是這是<strong>架構問題</strong>：LLM 把資料平面與控制平面塞進同一個通道，沒有可靠的機制在系統提示詞、使用者請求與外部取得的內容之間強制權限邊界。因此實務者的方向已經改變：<strong>從試圖阻止注入，轉為限制被注入的 agent 能做什麼</strong>。你在 <a href="../../01-overview/ai-exchange/04-seven-layers.html">AI Exchange 第 4 章</a> 看過的縱深防禦，就是這個方向。</p>
+<p>為了討論「限制能做什麼」，報告引用兩個設計框架，並指出它們的限制：</p>
+<ul>
+  <li><strong>致命三要素</strong>（Simon Willison 提出）：agent 同時具備「存取私有資料」「暴露於不受信任的內容」「能對外溝通」三個性質時，單一注入就能走完整條攻擊鏈。</li>
+  <li><strong>Agents Rule of Two</strong>（Meta，2025 年 10 月）：在不需要人類核准的對話中，agent 至多滿足這三個性質中的兩個；三個都滿足時，要有人類核准才能行動。</li>
+  <li><strong>報告的保留：</strong>Rule of Two「適合用來說明結構性問題，但不是完整防線」；它引用的行事曆邀請攻擊，在只滿足兩個性質時仍然可行。</li>
+</ul>
+<p><strong>路徑二：agent 供應鏈。</strong>報告稱它在 2025–2026 成為「agentic 生態中演變最快的攻擊途徑」，攻擊者瞄準每一層：協定基礎設施、技能登錄庫與核心 AI 套件。它指出一個傳統供應鏈沒有的攻擊面：<strong>「工具投毒」</strong>，也就是惡意指令藏在工具描述欄位中，人類審查看不到，但 AI 模型把它當作可信脈絡處理；payload 不在程式碼裡，而在元資料裡。相關手法還有「描述在核准後被更改」與「惡意伺服器遮蔽可信伺服器的工具」。報告歸納的共同模式是：<strong>攻擊者瞄準 agent 隱含信任的元件，爆炸半徑隨相依圖放大。</strong></p>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：為什麼這兩條路徑有共同點</p>
+  <p>兩條路徑看似不同（一個是輸入，一個是元件），但報告用「AI Agent Traps」框架把它們串起來：攻擊者的目標不是 agent，而是 <strong>agent 所消費的資訊環境</strong>，包括工具描述、檢索語料、持久記憶、技能登錄庫與網頁內容。本教材把這整理成：提示詞注入與供應鏈投毒，是同一件事的兩種進入點，就是讓 agent 信任了不該信任的東西。這是作者對報告論述的簡化，報告本身沒有這樣兩句話概括。</p>
+</div>
+
+<h2 id="tx-tracker">2.4 事件追蹤表怎麼讀</h2>
+<p>報告的 Real-World Incidents and Exploits Tracker 在正文裡列了五個事件，每個都標注對映的 ASI 條目。這張表的價值不在事件本身，而在<strong>示範一個事件如何對映到多個條目</strong>：</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　報告正文列出的五個事件（改寫；日期與對映取自報告）</caption>
+<thead><tr><th scope="col">時間</th><th scope="col">事件（報告用語）</th><th scope="col">失敗模式（教材轉述）</th><th scope="col">報告對映的 ASI</th></tr></thead>
+<tbody>
+<tr><th scope="row">2025-12</th><td>Claude Skills 部署勒索軟體，來源 Cato CTRL</td><td>可下載、修改再上傳的技能被加入惡意程式碼，自主執行</td><td>ASI04、ASI05</td></tr>
+<tr><th scope="row">2025-09</th><td>OpenAI Codex CLI 沙箱繞過，來源 NVD</td><td>模型產生的工作目錄被當作沙箱的可寫根目錄</td><td>ASI02、ASI05</td></tr>
+<tr><th scope="row">2025-05</th><td>EchoLeak，零點擊提示詞注入，來源 Microsoft</td><td>一封電子郵件就讓 Copilot 外洩機密資料</td><td>ASI01、ASI02、ASI06</td></tr>
+<tr><th scope="row">2025-04</th><td>Agent-in-the-Middle，A2A 協定偽冒</td><td>惡意 agent 在開放目錄發布偽造的 agent 卡片，被評判 agent 選中</td><td>ASI03、ASI06、ASI07、ASI08、ASI10</td></tr>
+<tr><th scope="row">2025-03</th><td>GitHub Copilot 與 Cursor 程式碼 agent 漏洞，來源 Pillar Security</td><td>被操縱的 AI 程式碼建議植入後門、洩漏 API 金鑰</td><td>ASI04、ASI08、ASI09</td></tr>
+</tbody></table></div>
+<p>你可以從表中學到兩件事。第一，<strong>一個事件常橫跨多個 ASI 條目</strong>：Agent-in-the-Middle 就對映到五個。第二，條目標籤是報告作者群的判斷；官方 Top 10 本身的條目內容，見〈<a href="../../04-agentic-and-mcp/agentic-top-10-2026/index.html">Top 10 for Agentic Applications 2026</a>〉的逐條講解。</p>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：事件細節與日期</p>
+  <p>本教材沒有逐一去查表中事件的原始來源（Cato、NVD、Microsoft、Trustwave、Pillar）。表中內容是轉述報告的摘要，<strong>包含日期與對映</strong>。報告自己說這是策展的快照、納入不代表指責特定廠商。需要正確性時，請以原始公告為準。</p>
+</div>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>分類有三個獨立維度（類型、實作、組合）加貫穿的自主程度；任何類型可搭配任何實作與組合。</li>
+  <li>採用框架不等於有能見度；低程式碼與平台原生的影子 AI 風險最高。</li>
+  <li>自主程度升高是因為偵測與介入的時間窗變窄；完全自主需要確定性強制、行為監控與停止開關。</li>
+  <li>提示詞注入是架構問題；實務方向是限制被注入的 agent 能做什麼。致命三要素與 Rule of Two 有用但不是完整防線。</li>
+  <li>供應鏈的新攻擊面是工具描述等元資料（工具投毒）。</li>
+  <li>一個事件可對映多個 ASI 條目；教材的事件表只轉述報告。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能用三個維度加自主程度描述一個 agent。</li>
+  <li>我能解釋為什麼「採用框架就有能見度」是誤解。</li>
+  <li>我知道報告對 Rule of Two 的保留。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-safety-security.html">第 3 章　AI Safety 與 AI Security</a>：報告最有主張的一章。為什麼「它被操縱」與「它就是能做」在 agent 身上分不開？</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，State of Agentic AI Security and Governance 2.01（PDF，June 2026）：Agents Taxonomy、Notable Agentic Projects Survey and Key Trends、Threat Analysis、Real-World Incidents and Exploits Tracker；CC BY-SA 4.0；<a href="https://genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/">genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/</a>；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：State of Agentic AI Security and Governance 2.01 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ag-ch2', topic: 'agentic-security-and-governance', mode: 'chapter',
+  questions: [
+    { id: 'ag2q1', type: 'match', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-taxonomy-and-threats.html#tx-dims'}],
+      stem: '把下列描述配對到報告的三個分類維度。',
+      cats: [
+        { id: 'type', label: '類型（它做什麼、在哪運作）' },
+        { id: 'impl', label: '實作（它怎麼被建）' },
+        { id: 'comp', label: '組合（agent 怎麼安排）' }
+      ],
+      items: [
+        { text: '個人 agent 與基礎設施 agent', answer: 'type', why: '五類 agent 是按營運角色分的類型維度。' },
+        { text: '低程式碼平台上的流程', answer: 'impl', why: '平台原生／低程式碼是實作模式之一。' },
+        { text: '多 agent 系統與分散式 agent 鏈', answer: 'comp', why: '這是 agent 彼此安排的組合模式。' },
+        { text: '輕量函式庫組合的自訂控制流', answer: 'impl', why: '輕量函式庫組合是實作模式之一。' }
+      ],
+      summary: '類型、實作、組合彼此獨立，任一類型可搭配任一實作與組合。' },
+    { id: 'ag2q2', type: 'mc', lo: [2], refs: [{label: '2.2 自主程度', href: '02-taxonomy-and-threats.html#c-autonomy'}],
+      stem: '依報告，agent 的自主程度升高之所以讓風險變大，主要是因為什麼？',
+      options: [
+        { text: '攻擊者的手法變得更複雜了。', why: '報告明說不是威脅格局改變。' },
+        { text: '人類偵測與介入的時間窗變窄。', correct: true, why: '報告原話的意思：風險變大不是因為威脅格局改變，而是因為時間窗變窄。' },
+        { text: '自主的 agent 一定會背叛使用者。', why: '報告沒有這樣的主張。' },
+        { text: '自主程度越高，使用的模型越大。', why: '兩者沒有這樣的關係。' }
+      ],
+      summary: '自主程度升高，人類偵測與介入的時間窗變窄。' },
+    { id: 'ag2q3', type: 'mc', lo: [2], refs: [{label: '2.3 兩條主要路徑', href: '02-taxonomy-and-threats.html#tx-threat'}],
+      stem: '關於致命三要素與 Rule of Two，報告對它們的看法是？',
+      options: [
+        { text: '只要遵守 Rule of Two，agent 就完全安全。', why: '報告說它不是完整防線，並引用只滿足兩個性質仍可行的攻擊。' },
+        { text: 'Rule of Two 適合說明結構性問題，但不是完整防線。', correct: true, why: '這是報告對它的保留。' },
+        { text: '致命三要素已經被證明無效。', why: '報告把它當作解釋「單一注入如何走完整條攻擊鏈」的框架。' },
+        { text: 'Rule of Two 由 OWASP 提出。', why: '報告說它是 Meta 在 2025 年 10 月發表的；致命三要素則出自 Simon Willison。' }
+      ],
+      summary: 'Rule of Two：說明結構的好框架，但不是完整防線。' },
+    { id: 'ag2q4', type: 'scn', lo: [2], refs: [{label: '2.1 實作維度', href: '02-taxonomy-and-threats.html#tx-dims'}, {label: '2.2 自主程度', href: '02-taxonomy-and-threats.html#c-autonomy'}],
+      stem: '依本章，這個團隊的盤點有什麼盲點？',
+      scenario: '霧島物流（虛構）要盤點公司的 agent。IT 部門回報：「我們全部都用同一個編排框架，所以所有 agent 都在清單上，而且都有追蹤。」但資安團隊在網路流量中發現，業務部門在低程式碼平台上自行拉了十幾個自動化流程，連接到電子郵件與客戶資料庫，並不在清單裡。',
+      options: [
+        { text: '沒有盲點，採用框架就等於有能見度。', why: '報告明說不要假設採用框架等於有能見度。' },
+        { text: '把低程式碼流程也納入盤點：實作模式不同，能見度也不同；平台原生與低程式碼治理取決於平台能力、影子 AI 風險最高；同時還要問每個 agent 在無人確認時能做什麼。', correct: true, why: '對應 2.1 的實作警告與 2.2 的自主程度。' },
+        { text: '只要禁止業務部門使用低程式碼平台即可。', why: '報告的重點是「發現後治理」，並指出 AT0 這類影子使用要被消除或移進受管層級，而不是只靠禁令。' },
+        { text: '不需處理，因為低程式碼不算 agent。', why: '報告把平台原生與低程式碼列為實作模式之一，並點出它是影子 AI 風險最高的一類。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 報告在實作維度明說：不要假設採用框架等於有能見度；平台原生與低程式碼的治理完全取決於平台能力，建置者最不了解繼承來的風險，影子 AI 風險最高。(2) 盤點要同時看實作維度（它怎麼被建，決定你能不能看到它）與自主程度（沒人確認時它能做什麼）。(3) 這些流程連到電子郵件與客戶資料庫，屬於「在真實組織資料上採取行動」。</p><p><strong>結論：</strong>把低程式碼流程納入盤點，並為每一個標出類型與自主程度；第 5 章的成熟度模型會把這件事正式化。對應教材：<a href="02-taxonomy-and-threats.html#tx-dims">2.1 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

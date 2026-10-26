@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　Crosswalk 的全貌與定位｜框架對照與標準｜OWASP AI 資安學習教材</title>
+<meta name="description" content="GenAI Security Industry Framework Crosswalk 是什麼、來源清單、26 個框架、版本與日期、數字出入（25 與 26、41 與 51、20 與 26）以及授權。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="framework-crosswalk-and-standards" data-page="01-crosswalk-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　Crosswalk 的全貌與定位</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../governance-checklist-and-coe/index.html">治理檢核表與卓越中心</a>（建議先讀）</li>
+</ul>
+<p class="lead">稽核人員要的是「你的 AI 系統符合 ISO/IEC 42001 的哪些控制」；工程師手上的卻是「LLM01 Prompt Injection」。兩邊講不同的語言。Crosswalk 就是翻譯表。這一章看它是什麼、涵蓋什麼，以及它自己的數字為什麼對不起來。</p>
+
+<h2 id="cw-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　GenAI Security Industry Framework Crosswalk 一頁式全貌（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">名稱</th><td>GenAI Security Industry Framework Crosswalk（資源頁）；GitHub 儲存庫 <code>GenAI-Security-Project/crosswalk</code>，README 標題「GenAI Security Crosswalk」</td></tr>
+<tr><th scope="row">形式</th><td>開源儲存庫（Markdown 對照檔為權威來源，JSON 由腳本產生）加上互動網頁與 npm 套件、多種匯出格式（OSCAL、CSV、JSON、STIX 2.1）</td></tr>
+<tr><th scope="row">要回答的問題</th><td>「框架 X 的哪個控制，涵蓋 OWASP GenAI 的哪個風險 Y？」</td></tr>
+<tr><th scope="row">版本與日期</th><td>資源頁 2026-09-01；儲存庫版本 4.0.0（2026-08-28 發布；變更記錄另有尚未發布的更新）；儲存庫最近推送 2026-10-09</td></tr>
+<tr><th scope="row">建立與維護</th><td>README 寫由 Emmanuel Guilherme Junior 建立並領導，他同時領導 OWASP GenAI Data Security Initiative；GOVERNANCE.md 列他為主要維護者</td></tr>
+<tr><th scope="row">授權</th><td>CC BY-SA 4.0（README 與 LICENSE.md，著作權人為 OWASP GenAI Data Security Initiative）；GitHub 自動偵測為 NOASSERTION</td></tr>
+<tr><th scope="row">在 OWASP AI 資源中的位置</th><td>跨 Initiative 的產出：以四份 OWASP 清單為輸入，對映到業界框架（<a href="../../01-overview/genai-security-project/03-initiatives.html">GenAI Security Project 第 3 章</a>）</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：它的專案層級</p>
+  <p>README 的徽章寫「OWASP Lab」，同一徽章的文字是「GenAI Data Security」。儲存庫以 CC BY-SA 4.0 授權但 GitHub 偵測值為 NOASSERTION。教材沒有查證它在 owasp.org 的專案登記，也不推測。<a href="../../01-overview/genai-security-project/index.html">GenAI Security Project 主題</a>登記過的「GenAI Security Project 層級標示不一致」問題在這裡同樣適用。</p>
+</div>
+
+<h2 id="cw-inputs">1.2 它對映「什麼」到「什麼」</h2>
+<p>Crosswalk 的輸入是<strong>四份 OWASP 風險清單</strong>，輸出是對 <strong>26 個外部框架</strong>的控制對映。</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　四份來源清單（README 的 Source lists 表與 stats.json）</caption>
+<thead><tr><th scope="col">來源清單</th><th scope="col">條目</th><th scope="col">版本</th><th scope="col">已對映的框架數</th></tr></thead>
+<tbody>
+<tr><th scope="row">OWASP Top 10 for LLM Applications</th><td>LLM01–LLM10（10 條）</td><td>2026</td><td>26</td></tr>
+<tr><th scope="row">OWASP Top 10 for Agentic Applications</th><td>ASI01–ASI10（10 條）</td><td>2026</td><td>26</td></tr>
+<tr><th scope="row">OWASP GenAI Data Security Risks &amp; Mitigations</th><td>DSGAI01–DSGAI21（21 條）</td><td>2026</td><td>24</td></tr>
+<tr><th scope="row">OWASP Agentic Skills Top 10</th><td>AST01–AST10（10 條）</td><td>2026</td><td>1（只有 MAESTRO，且僅有草稿列）</td></tr>
+</tbody></table></div>
+<p>合計 <strong>51 個條目</strong>（10＋10＋21＋10）、<strong>77 個對照檔</strong>、<strong>3,771 條對映</strong>（stats.json）。把 51 這個數字對上資源頁「51 項弱點」，兩者一致。資源頁寫「來自四份清單」，也與表 1-2 一致，也就是 GenAI Security Project 主題的 U-D5 無法讀取的「四份來源清單」現在可以確認。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="Crosswalk 的資料流：四份 OWASP 風險清單（LLM、Agentic、DSGAI、Skills）與業界框架登錄庫、事件記錄三種輸入，經腳本產生出條目資料、網頁、npm 套件與匯出格式（OSCAL、CSV、JSON、STIX）。Markdown 對照檔是權威來源。">
+flowchart LR
+  S["OWASP 四份清單<br>LLM、Agentic、DSGAI、Skills"] --> M["Markdown 對照檔<br>每清單 × 每框架一份（權威來源）"]
+  M --> G["腳本產生"]
+  R["框架登錄庫<br>27 個"] --> G
+  I["事件記錄<br>147 起"] --> G
+  G --> E["條目資料 JSON"]
+  G --> W["互動網頁"]
+  G --> N["npm 套件"]
+  G --> X["匯出：OSCAL、CSV、<br>JSON、STIX 2.1"]
+</pre>
+<figcaption><strong>圖 1-1　Crosswalk 的資料流（儲存庫 README 的「How it fits together」，重新繪製）。</strong>README 原圖用 Mermaid 畫成，這裡是簡化版；「Markdown 為權威來源、JSON 由腳本產生」來自 RATIONALE.md 的品質管控一節。</figcaption>
+</figure>
+
+<h2 id="cw-frameworks">1.3 26 個框架，以及不要被數字騙到</h2>
+<p>README 的覆蓋矩陣列出 <strong>21 個框架</strong>（三份主要清單的欄位全部打勾），stats.json 計 <strong>26 個已對映</strong>，框架登錄庫有 <strong>27 個</strong>。三個數字都對，只是在數不同的東西：</p>
+<div class="table-wrap"><table>
+<caption>表 1-3　框架數字的三種算法（儲存庫 stats.json 與 README，教材整理）</caption>
+<thead><tr><th scope="col">數字</th><th scope="col">是什麼</th><th scope="col">差在哪</th></tr></thead>
+<tbody>
+<tr><th scope="row">21</th><td>README「Framework coverage matrix」的列數</td><td>只列在三份主要清單都有完整對映的框架</td></tr>
+<tr><th scope="row">26</th><td>stats.json 的 mapped（至少對映一份清單）</td><td>把矩陣外的 CWE/CVE、STRIDE、OWASP AI Testing Guide 等也算入</td></tr>
+<tr><th scope="row">27</th><td>stats.json 的 registries（框架登錄庫）</td><td>多一個 NIST AI 600-1：已登錄但未對映 (unmapped)</td></tr>
+<tr><th scope="row">25</th><td>資源頁（2026-09-01）的「25 個框架」</td><td>早於儲存庫後續新增的 OWASP AISVS 1.0（變更記錄的 Unreleased 區：25→26）</td></tr>
+</tbody></table></div>
+<p>最後一列說明了教材的取捨：依「版本或日期衝突時以最新者為準」，教材採用儲存庫的 <strong>26</strong>，並註明資源頁寫 25。注意 26 之中，有 <strong>兩個框架只有草稿列</strong>（CoSAI、EU AI Act Code of Practice，共 286 列草稿）；變更記錄也說，26 中的 AISVS 是尚未發布區的新增。</p>
+<div class="callout official unsure">
+  <p class="callout-title">儲存庫自己的舊數字：RATIONALE.md 還寫 41 與 20</p>
+  <p>RATIONALE.md（版本標示 2026-Q3）開頭寫「橫跨 <strong>41</strong> 個 OWASP 弱點與 <strong>20</strong> 個業界框架」，並有一節標題「Why 20 frameworks」，也說「版本為 2026-Q1」。README、stats.json 與變更記錄則是 51 條目與 26 框架。這是儲存庫自己的內部不一致，看起來是說明文件沒隨資料更新。<strong>本教材沒有改任何數字，只在這裡記錄</strong>；引用時以 stats.json（機器產生）為準。</p>
+</div>
+
+<h2 id="cw-misc">1.4 常見誤解</h2>
+<div class="concept">
+<h3 id="c-misc">三個容易混淆的地方</h3>
+<dl>
+  <dt data-n="1">誤解</dt>
+  <dd class="misc">「Crosswalk 證明我的系統符合 ISO 42001／EU AI Act。」不是。它是<strong>把 OWASP 風險對到框架控制</strong>的整理，用來找出「這個風險該看哪些控制」與「覆蓋缺口在哪」；它不是稽核結果，也不是認證。</dd>
+  <dt data-n="2">誤解</dt>
+  <dd class="misc">「README 說 26，資源頁說 25，一定有一邊錯了。」兩邊在不同時間點都可能是對的；25 到 26 是儲存庫後續的新增。引用時寫出日期與版本（例如「儲存庫 4.0.0，26 個框架」）。</dd>
+  <dt data-n="3">誤解</dt>
+  <dd class="misc">「所有 26 個框架的對照品質一樣。」stats.json 自己說明：2 個框架只有草稿列、證據欄位大多是草擬（confirmed 為 0、drafted 為 34）。第 3 章再談證據強度。</dd>
+</dl>
+</div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>Crosswalk 回答「框架 X 的哪個控制涵蓋 OWASP 風險 Y」；開源儲存庫，Markdown 為權威，JSON 與網頁由腳本產生。</li>
+  <li>四份來源清單：LLM Top 10 2026（10）、Agentic Top 10 2026（10）、Data Security（21）、Agentic Skills Top 10（10）；共 51 個條目、77 個對照檔。</li>
+  <li>框架數字：21（矩陣列數）、26（已對映）、27（登錄庫）；資源頁的 25 早於 AISVS 的新增。教材採 26。</li>
+  <li>儲存庫自己的 RATIONALE.md 仍寫 41 條目與 20 框架，是內部不一致；引用以 stats.json 為準。</li>
+  <li>它不是稽核結果或認證。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出四份來源清單與 51 的來源。</li>
+  <li>我能解釋為什麼會看到 21、25、26、27 這些不同數字。</li>
+  <li>我知道 Crosswalk 不能被當作合規證明。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-crosswalk-use.html">第 2 章　怎麼用 Crosswalk：對照單位與編號遷移</a>：一條對照長什麼樣子，以及 LLM Top 10 的編號遷移為什麼是陷阱。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，GenAI Security Industry Framework Crosswalk 資源頁（2026-09-01）：<a href="https://genai.owasp.org/resource/genai-security-industry-framework-crosswalk/">genai.owasp.org/resource/genai-security-industry-framework-crosswalk/</a>；2026-10-26 讀取。</li>
+    <li>GenAI-Security-Project/crosswalk 儲存庫：README.md、RATIONALE.md、GOVERNANCE.md、<code>data/stats.json</code>、<code>data/framework-sources.json</code>、CHANGELOG.md（版本 4.0.0）；CC BY-SA 4.0；<a href="https://github.com/GenAI-Security-Project/crosswalk">github.com/GenAI-Security-Project/crosswalk</a>；2026-10-26 讀取（儲存庫最近推送 2026-10-09）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Crosswalk 儲存庫 — CC BY-SA 4.0（儲存庫 README 與 LICENSE.md；GitHub 偵測值為 NOASSERTION）；genai.owasp.org 網站 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'cw-ch1', topic: 'framework-crosswalk-and-standards', mode: 'chapter',
+  questions: [
+    { id: 'cw1q1', type: 'mc', lo: [1], refs: [{label: '1.1 表 1-1', href: '01-crosswalk-position.html#cw-onepage'}],
+      stem: 'Crosswalk 要回答的核心問題是哪一個？',
+      options: [
+        { text: '我的系統是否已通過 ISO/IEC 42001 認證？', why: 'Crosswalk 不做認證判斷，也不是稽核結果。' },
+        { text: '哪個框架的哪個控制，涵蓋 OWASP GenAI 的哪個風險？', correct: true, why: '這是 README 與 RATIONALE 對它的描述。' },
+        { text: 'LLM Top 10 的條目要怎麼排名？', why: '排名是 LLM Top 10 自己的工作，不是 Crosswalk。' },
+        { text: '一個模型的安全分數是多少？', why: '評分屬於 AIVSS 等工具，不是 Crosswalk 的主題。' }
+      ],
+      summary: 'Crosswalk：風險 → 框架控制的翻譯表。' },
+    { id: 'cw1q2', type: 'match', lo: [1], refs: [{label: '1.2 表 1-2', href: '01-crosswalk-position.html#cw-inputs'}],
+      stem: '把下列來源清單配對到它的條目編號格式。',
+      cats: [
+        { id: 'llm', label: 'LLM01–LLM10' },
+        { id: 'asi', label: 'ASI01–ASI10' },
+        { id: 'dsgai', label: 'DSGAI01–DSGAI21' },
+        { id: 'ast', label: 'AST01–AST10' }
+      ],
+      items: [
+        { text: 'Top 10 for Agentic Applications 2026', answer: 'asi', why: 'Agentic 清單用 ASI 編號。' },
+        { text: 'GenAI Data Security Risks & Mitigations 2026', answer: 'dsgai', why: '資料安全清單有 21 個條目。' },
+        { text: 'Top 10 for LLM Applications 2026', answer: 'llm', why: 'LLM 清單用 LLM 編號。' },
+        { text: 'Agentic Skills Top 10', answer: 'ast', why: 'Skills 清單用 AST 編號。' }
+      ],
+      summary: '四份清單共 51 個條目：10＋10＋21＋10。' },
+    { id: 'cw1q3', type: 'scn', lo: [1], refs: [{label: '1.3 表 1-3', href: '01-crosswalk-position.html#cw-frameworks'}, {label: '1.4 常見誤解', href: '01-crosswalk-position.html#c-misc'}],
+      stem: '依本章，這份簡報對 Crosswalk 的說法有哪些問題？',
+      scenario: '雨林科技（虛構）的簡報寫：「Crosswalk 涵蓋 20 個框架與 41 項弱點，所以我們用它就等於通過了 EU AI Act 的符合性評估。」審查人員查了資料，發現儲存庫的不同文件寫了不同的數字。',
+      options: [
+        { text: '沒有問題，這是 OWASP 官方的對照。', why: '數字已過時，且「通過符合性評估」沒有依據。' },
+        { text: '兩處問題：數字取自儲存庫較舊的說明文件（RATIONALE.md），README 與 stats.json 的現況是 51 個條目與 26 個框架，引用應以 stats.json 為準並寫明版本；而且 Crosswalk 只是對照，不是符合性評估。', correct: true, why: '對應 1.3 節的數字出入與 1.4 節的誤解 1。' },
+        { text: '只有框架數量要改成 25。', why: '25 是資源頁（較早）的說法；教材採用儲存庫較新的 26。' },
+        { text: '只要把「41 項」改成「51 項」即可。', why: '修了條目數，但「等於通過評估」的說法仍然錯誤。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 儲存庫 RATIONALE.md 仍寫 41 個弱點與 20 個框架；README、stats.json 與 CHANGELOG 是 51 與 26。依「以最新者為準」，且 stats.json 由腳本產生，採 51 與 26 並註明版本 4.0.0。(2) Crosswalk 整理的是「風險對映到框架控制」，不是稽核或符合性評估；兩個框架僅草稿列，證據欄位也多是草擬。</p><p><strong>結論：</strong>改寫數字與版本，並把 Crosswalk 定位為找缺口的對照工具。對應教材：<a href="01-crosswalk-position.html#cw-frameworks">1.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

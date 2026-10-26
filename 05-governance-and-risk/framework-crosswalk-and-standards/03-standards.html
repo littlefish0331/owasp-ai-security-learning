@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　AI Exchange 與各標準的關係｜框架對照與標準｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP AI Exchange 對 ISO/IEC 42001、27090、27091、5338、23894、prEN 18282 與 OpenCRE 的說法；哪些是它的自述、哪些經本教材核對；以及對照作為合規證據的強度。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="framework-crosswalk-and-standards" data-page="03-standards.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　AI Exchange 與各標準的關係</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4、LO5</li>
+  <li>前置：<a href="02-crosswalk-use.html">第 2 章</a></li>
+</ul>
+<p class="lead">Crosswalk 是「OWASP 風險 → 外部框架」的單向對照。AI Exchange 做的是另一件事：它說自己<strong>反過來</strong>把內容送進標準的制定過程，並在每個控制頁寫明「這個控制，哪些標準涵蓋、涵蓋到什麼程度」。這一章把這兩種說法分開看，並回答最實際的問題：這些對照，在稽核時可以當證據用到什麼程度？</p>
+
+<h2 id="st-claims">3.1 AI Exchange 對標準關係的說法</h2>
+<p>在 <a href="../../01-overview/ai-exchange/index.html">AI Exchange 主題</a>你已看過 AI Exchange 的自述。這次本教材下載了它 2026-10-25 的完整 PDF 快照（383 頁），逐項找出它對每個標準的說法，並區分<strong>它說自己做了什麼</strong>與<strong>它說標準涵蓋什麼</strong>：</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　AI Exchange 對各標準的說法（2026-10-25 PDF 快照，改寫）</caption>
+<thead><tr><th scope="col">標準／專案</th><th scope="col">AI Exchange 的說法</th><th scope="col">性質</th></tr></thead>
+<tbody>
+<tr><th scope="row">ISO/IEC 27090 <br>（AI 資安）</th><td>「About」說貢獻 70 頁；合規控制頁（<code>AI PROGRAM</code> 一類）更新為「是指引標準，已在 2026 年 10 月發布」，創辦人 Rob van der Veer 參與工作小組</td><td>自述；<strong>本教材沒有向 ISO 查證</strong></td></tr>
+<tr><th scope="row">ISO/IEC 27091 <br>（AI 隱私）</th><td>「About」列為內容流向的標準之一；合規控制頁說「撰寫當下（2026 年 10 月）仍在制定中，可能 2027 年問世」</td><td>自述；未查證</td></tr>
+<tr><th scope="row">prEN 18282 <br>（歐盟 AI 法案的調和網路安全標準草案）</th><td>貢獻 70 頁；由 CEN/CENELEC JTC21/WG5 推動；創辦人是 AI Exchange 與 CEN/CENELEC/ISO 官方夥伴關係的聯絡官，也是 18282 的共同編輯；「撰寫當下（2026 年 10 月）準備進入最終內部審查，預計 2027 年初發布」；能否推定符合高風險 AI 系統要求，取決於是否刊登於歐盟公報</td><td>自述；未查證</td></tr>
+<tr><th scope="row">ISO/IEC 42001 <br>（AI 管理系統）</th><td>列為有用的標準：「治理控制」下的條目寫「涵蓋此控制，原文是「Gap: covers this control fully」」；並對它的範圍有明確評論：42001 是「延伸風險管理系統」，聚焦治理，類似 ISO 27001 之於資訊安全；不談生命週期流程（如如何訓練模型、資料血緣、持續驗證、模型版本管理）</td><td>AI Exchange 對 42001 的<strong>評論</strong>，不是貢獻；未查證</td></tr>
+<tr><th scope="row">ISO/IEC 5338 <br>（AI 生命週期）</th><td>創辦人是主要作者；對 42001 的補充：5338 是延伸軟體生命週期實務，聚焦工程；AI Exchange 的 <code>DEV PROGRAM</code> 控制頁寫它「完整涵蓋」此控制</td><td>自述加評論；未查證</td></tr>
+<tr><th scope="row">ISO/IEC 23894 <br>（AI 風險管理）</th><td>風險分析一節說組織通常採用以 ISO 31000 為基礎的風險管理，或類似的 ISO/IEC 23894</td><td>引用</td></tr>
+<tr><th scope="row">OpenCRE</th><td>OpenCRE 是 OWASP Integration Standards 專案下的目錄，連結各標準的共同需求；AI Exchange 的做法是插入正確的參照，「實質上讓 Exchange 成為 AI 安全標準全景的樞紐」</td><td>自述</td></tr>
+<tr><th scope="row">SANS</th><td>與 SANS Institute 有「正式持續的合作」；Essentials 與 SANS Critical AI Security Guidelines「完全對齊」</td><td>自述；未查證</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：ISO/IEC 27090 的發布狀態</p>
+  <p>AI Exchange 主題讀到的版本只寫「貢獻 70 頁」。這次的 2026-10-25 PDF 在合規控制頁寫它「<strong>已在 2026 年 10 月發布</strong>」，而同一頁也出現一個明顯的筆誤（把「ISO/IEC 27090 (AI privacy) and 27091 (AI privacy)」寫成兩次 AI privacy，應是 27091 一項）。依「以最新者為準」，教材採用 AI Exchange 的最新說法，並註明這是 AI Exchange 的陳述，<strong>本教材沒有向 ISO 官方目錄查證</strong>。</p>
+</div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：「約 70 頁」這個數字</p>
+  <p>AI Exchange 在 About 寫 prEN 18282 與 ISO/IEC 27090 各貢獻約 70 頁（兩個標準寫了同一個數字）。這是它的自述，且兩者數字相同，本教材無法判斷是否為準確數字。教材不依賴它，也不把它寫進題目。</p>
+</div>
+
+<h2 id="st-evidence">3.2 一份對照，可以當多大的證據？</h2>
+<div class="concept">
+<h3 id="c-evidence">證據強度的四個層次</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>當你拿一份對照去回答稽核員的問題時，要先分辨它的證據強度。依本教材讀到的材料，可以分為四層，由弱到強。這個分層是 <span class="tag author">作者整理，非官方</span>；每一層的事實則取自後面標示的來源。</dd>
+  <dt data-n="2">第一層：作者判斷的對照</dt>
+  <dd>Crosswalk 的主體：作者群認為「控制 C 與風險 R 有清楚、可辯護的關聯」。RATIONALE.md 的過程是：拆解風險、從框架的權威文本找控制、過濾掉「勉強相關」的控制。它是人的判斷，有審查流程，但不是標準組織的背書。</dd>
+  <dt data-n="3">第二層：附帶審查狀態的對照</dt>
+  <dd>stats.json 記錄：26 個已對映框架中，2 個只有草稿列（CoSAI、EU AI Act Code of Practice，共 286 列草稿）；證據欄位方面，已標註的事件中「確認 (confirmed)」為 0、「草擬 (drafted)」為 34，有 29 條對映只有草擬的證據；框架新鮮度方面，檢查過的 7 個中 5 個是最新、2 個落後（AIUC-1 與 MITRE ATLAS），另 20 個尚未檢查。這些數字告訴你：<strong>多數對映的證據欄位尚未被確認</strong>。</dd>
+  <dt data-n="4">第三層：社群的共識自述</dt>
+  <dd>AI Exchange 說它代表「AI 安全與隱私的共識」並透過官方夥伴關係貢獻標準。這是它的自我描述；OWASP 專案的共識流程是開放的，但不等於標準組織通過的決議。</dd>
+  <dt data-n="5">第四層：標準本身</dt>
+  <dd>只有 ISO、CEN/CENELEC 等標準組織發布的正式文本，才是稽核員最終會對照的依據。上面的對照都是「找到該看哪一條」的工具，<strong>不能取代原文</strong>。</dd>
+</dl>
+</div>
+<div class="table-wrap"><table>
+<caption>表 3-2　Crosswalk 自己列出的審查與新鮮度狀態（data/stats.json，2026-10-26 讀取，改寫）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">數值</th><th scope="col">怎麼讀</th></tr></thead>
+<tbody>
+<tr><th scope="row">條目／對映／對照檔</th><td>51／3,771／77</td><td>規模，不代表品質</td></tr>
+<tr><th scope="row">僅草稿的框架</th><td>2 個（CoSAI、EU AI Act Code of Practice），共 286 列草稿</td><td>這兩個的對映不應當成定稿</td></tr>
+<tr><th scope="row">已登錄但未對映的框架</th><td>1 個（NIST AI 600-1）</td><td>列在登錄庫，但目前沒有任何對映</td></tr>
+<tr><th scope="row">事件記錄</th><td>147 起；其中 24 起有「控制失敗」註記</td><td>多數事件沒有逐控制的失敗分析</td></tr>
+<tr><th scope="row">證據確認狀態</th><td>確認 0、草擬 34；只有草擬證據的對映 29 條；孤立的失敗 5 條</td><td>對映的證據欄位目前尚未被確認</td></tr>
+<tr><th scope="row">框架新鮮度</th><td>檢查 7：最新 5、落後 2（AIUC-1、MITRE ATLAS）、未檢查 20</td><td>多數框架版本是否為最新，尚未檢查</td></tr>
+</tbody></table></div>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：一個你可以直接用的規則</p>
+  <p>引用 Crosswalk 到稽核文件時，建議只寫三件事：<strong>(1) 哪個風險，(2) 哪個框架控制「可能相關」，(3) 已回到標準原文確認該控制的內容</strong>。第三項沒做到時，把它寫成「待確認」。這是作者的建議，不是官方規定；理由是 stats.json 自己說大多數證據尚未確認。</p>
+</div>
+
+<h2 id="st-flow">3.3 稽核員問「你們符合哪條」時的路徑</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="從風險到稽核證據的路徑：從 OWASP 風險出發，用 Crosswalk 找到可能相關的框架控制，再回到標準原文確認控制內容，然後收集自己系統的實際證據；若對照只有草稿或證據未確認，要標示待確認並尋求專家複核。AI Exchange 的每個控制頁可補充一句這個控制被哪些標準涵蓋到什麼程度。">
+flowchart TD
+  R["OWASP 風險<br>例如 LLM01:2026"] --> C["Crosswalk 查對映<br>哪些框架控制可能相關"]
+  C --> D{"該對映是否<br>僅草稿或未確認？"}
+  D -->|"是"| P["標示為待確認<br>尋求專家複核"]
+  D -->|"否"| T["回到標準原文<br>確認控制內容與編號"]
+  P --> T
+  T --> E["收集自己系統的實際證據<br>政策、測試、紀錄"]
+  AX["AI Exchange 控制頁<br>標準涵蓋程度的評論"] -.-> T
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class R,C,D,P,T,E,AX author
+</pre>
+<figcaption><strong>圖 3-1　從風險到稽核證據的路徑（作者整理，非官方）。</strong>整張圖是教材作者依 stats.json 的審查狀態與 AI Exchange 的控制頁形式整理的建議流程；官方沒有寫這個流程。</figcaption>
+</figure>
+
+<h2 id="st-misc">3.4 常見誤解</h2>
+<ul>
+  <li><strong>「AI Exchange 說它貢獻了標準，所以那些標準就是 OWASP 的標準。」</strong>不對。標準由 ISO、CEN/CENELEC 等組織發布與維護；AI Exchange 說自己是貢獻者之一。</li>
+  <li><strong>「ISO 42001 涵蓋了 AI 安全的全部。」</strong>AI Exchange 對 42001 的評論正好相反：它是治理用的管理系統，不談生命週期流程。這也提醒你：在對照表裡看到「涵蓋此控制」，要看評論欄寫的「Gap」是什麼。</li>
+  <li><strong>「對照表上有勾，就代表我們做到了。」</strong>勾表示「這個框架有控制涉及這個風險」，不表示你的系統已經做到。</li>
+</ul>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>AI Exchange 對各標準有兩種說法：自述貢獻（27090、27091、18282）與對標準涵蓋程度的評論（42001、5338、23894 等的「Gap」欄）；兩種都沒有向標準組織查證。</li>
+  <li>2026-10-25 PDF 寫 ISO/IEC 27090 已於 2026 年 10 月發布、27091 與 prEN 18282 仍在進行（預計 2027）。</li>
+  <li>OpenCRE 是連結各標準共同需求的目錄；AI Exchange 說自己透過它成為標準全景的樞紐。</li>
+  <li>證據強度四層：作者判斷的對照 → 附審查狀態的對照 → 社群共識自述 → 標準本身。Crosswalk 的 stats.json 顯示多數證據欄位尚未確認。</li>
+  <li>引用到稽核文件時，一律回到標準原文確認。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能區分「AI Exchange 說它貢獻了標準」與「AI Exchange 評論標準涵蓋什麼」。</li>
+  <li>我能說出 Crosswalk 的審查狀態指標（草稿框架、證據確認數）。</li>
+  <li>我知道對照表不能取代標準原文。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4、LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-integration.html">第 4 章　跨文件整合與收尾</a>：把前三章組成一個可用的決策流程，並用一個情境練習。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Exchange（完整 PDF 快照，建立於 2026-10-25，383 頁）：About／Summary、Essentials、<code>AI PROGRAM</code>、<code>SEC PROGRAM</code>、<code>DEV PROGRAM</code>、<code>MONITOR USE</code> 等控制頁的 Useful standards 欄；CC0 1.0；<a href="https://owaspai.org/OWASP-AI-Exchange.pdf">owaspai.org/OWASP-AI-Exchange.pdf</a>；2026-10-26 讀取。</li>
+    <li>GenAI-Security-Project/crosswalk 儲存庫：<code>data/stats.json</code>（version 4.0.0）、RATIONALE.md 第 3、4 節；CC BY-SA 4.0；<a href="https://github.com/GenAI-Security-Project/crosswalk">github.com/GenAI-Security-Project/crosswalk</a>；2026-10-26 讀取。</li>
+    <li>ISO、CEN/CENELEC 的標準正文：<strong>未取得</strong>，本章不評論其條款內容。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AI Exchange — CC0 1.0；Crosswalk 儲存庫 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'cw-ch3', topic: 'framework-crosswalk-and-standards', mode: 'chapter',
+  questions: [
+    { id: 'cw3q1', type: 'mc', lo: [4], refs: [{label: '3.1 表 3-1', href: '03-standards.html#st-claims'}],
+      stem: '關於 AI Exchange 與 ISO/IEC 27090、prEN 18282 的關係，下列哪一個說法最符合本章的處理方式？',
+      options: [
+        { text: '這些標準就是 OWASP 發布的標準。', why: '標準由 ISO、CEN/CENELEC 等組織發布；AI Exchange 是自述的貢獻者。' },
+        { text: '這是 AI Exchange 的自述（含貢獻頁數與夥伴關係）；教材沒有向標準組織查證，所以引用時要寫「AI Exchange 稱」。', correct: true, why: '3.1 節的處理方式。' },
+        { text: '已經由 ISO 官方證實，可以直接引用頁數。', why: '教材沒有查證，也無法證實；且兩個標準寫的是同一個數字，更需謹慎。' },
+        { text: '兩個標準都已發布且可作為合規依據。', why: 'AI Exchange 寫 27090 已發布，18282 仍是草案、預計 2027 年初。' }
+      ],
+      summary: '標準關係是 AI Exchange 的自述；引用要標明並盡量向標準組織查證。' },
+    { id: 'cw3q2', type: 'match', lo: [4], refs: [{label: '3.1 表 3-1', href: '03-standards.html#st-claims'}],
+      stem: '把下列描述配對到 AI Exchange 對該標準或專案的說法。',
+      cats: [
+        { id: '42001', label: 'ISO/IEC 42001' },
+        { id: '5338', label: 'ISO/IEC 5338' },
+        { id: 'cre', label: 'OpenCRE' }
+      ],
+      items: [
+        { text: '延伸風險管理系統、聚焦治理，不談生命週期流程', answer: '42001', why: 'AI Exchange 對 42001 的評論。' },
+        { text: '延伸軟體生命週期實務、聚焦工程，創辦人為主要作者', answer: '5338', why: 'AI Exchange 的說法。' },
+        { text: '連結各標準共同需求的目錄，Exchange 用它插入參照', answer: 'cre', why: 'OpenCRE 在 OWASP Integration Standards 專案下。' }
+      ],
+      summary: '42001 管治理；5338 管工程生命週期；OpenCRE 連結各標準。' },
+    { id: 'cw3q3', type: 'mc', lo: [5], refs: [{label: '3.2 證據強度', href: '03-standards.html#c-evidence'}],
+      stem: '依 Crosswalk 的 stats.json，下列哪一項最能說明「它的對映尚不能當作確認的合規證據」？',
+      options: [
+        { text: '它的對照檔數量太多。', why: '規模不是證據強度的指標。' },
+        { text: '證據欄位中「確認」為 0、「草擬」為 34；另有 2 個框架僅草稿列。', correct: true, why: '這是 stats.json 的數值。' },
+        { text: '它只對映 LLM Top 10。', why: '它對映四份清單。' },
+        { text: '它沒有任何事件記錄。', why: '它有 147 起事件記錄。' }
+      ],
+      summary: '證據欄位多為草擬；使用時要回到標準原文。' },
+    { id: 'cw3q4', type: 'scn', lo: [5], refs: [{label: '3.2 證據強度', href: '03-standards.html#c-evidence'}, {label: '3.3 圖 3-1', href: '03-standards.html#st-flow'}],
+      stem: '依本章，這份稽核回覆有什麼問題？',
+      scenario: '赤崁銀行（虛構）的合規專員要回覆稽核員：「依 OWASP Crosswalk，我們的 LLM 閘道在 ISO/IEC 42001 的 A.6.2.3 控制上達標，因為 Crosswalk 的 LLM01 對照列了這個控制，且 AI Exchange 稱 42001 對相關控制『完全涵蓋』。」稽核員要求她提供依據。',
+      options: [
+        { text: '沒有問題，Crosswalk 與 AI Exchange 都是 OWASP 官方資料。', why: '兩者都只是「找到該看哪個控制」的工具；Crosswalk 的證據欄位多為草擬，AI Exchange 的是評論。' },
+        { text: '有三個問題：Crosswalk 的對映代表「可能相關」，不是達標；AI Exchange 的「完全涵蓋」是它對 42001 這個控制的評論，不是你的系統已符合；控制編號與內容必須回到 ISO 原文確認，並附上自己系統的實際證據（政策、測試、紀錄）。', correct: true, why: '對應 3.2 節與圖 3-1。' },
+        { text: '只需把「達標」改成「部分達標」。', why: '修辭調整不處理證據來源的問題。' },
+        { text: '應該改引用 AI Exchange 的貢獻頁數來證明可信度。', why: '貢獻頁數是自述，與你的系統是否達標無關。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) Crosswalk 的對映是作者群判斷的「相關」，其證據欄位多為草擬。(2) AI Exchange 控制頁的「Gap: covers this control fully」，是它評論「該標準是否涵蓋這個 OWASP 控制」，並非說你的實作已符合。(3) 兩份 OWASP 文件對同一個 ISO 控制編號的標示曾不一致（第 2 章），編號與內容必須回 ISO 原文。(4) 稽核最終看的是你系統的實際證據。</p><p><strong>結論：</strong>改為「相關控制待確認」，回到標準原文，並附實際證據。對應教材：<a href="03-standards.html#c-evidence">3.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

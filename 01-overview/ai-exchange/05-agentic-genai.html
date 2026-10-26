@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 章　GenAI 與 Agentic AI｜OWASP AI Exchange｜OWASP AI 資安學習教材</title>
+<meta name="description" content="GenAI 的威脅特性與 LLM Top 10 2026 的官方對照，Agentic AI 的四個特性、致命三要素與安全架構原則，以及 Agentic Top 10 的邊界。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="01-overview" data-topic="ai-exchange" data-page="05-agentic-genai.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 5 章　GenAI 與 Agentic AI</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 10 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO5</li>
+  <li>前置：<a href="04-seven-layers.html">第 4 章</a></li>
+</ul>
+<p class="lead">AI Exchange 的立場有點出人意料：從威脅角度看，生成式 AI 與其他 AI「沒有那麼不同」。本章先看 GenAI 真正新的是什麼，再看 agent 為什麼把風險從「錯誤的答案」變成「錯誤的行動」。</p>
+
+<h2 id="ga-genai">5.1 GenAI 與其他 AI 的差別</h2>
+<p>官方在「How about Generative AI?」一節的重點是：GenAI 與一般 AI 的威脅與控制大部分重疊；有些風險更高、有些更低，<strong>只有少數是 GenAI 特有的</strong>。差別主要在資料科學類的控制（例如對訓練集加雜訊），以及很多 GenAI 系統直接使用現成模型、不由組織自行訓練，使部分安全責任轉移到供應商。</p>
+<p>官方列出九項 GenAI 的安全特性，並對照到 LLM Top 10。下表是整理後的對照（編號為官方在總覽頁引用的 <strong>2026 版</strong>編號，本教材已對照 GitHub 的 2026 版清單確認編號與名稱一致）。</p>
+<div class="table-wrap"><table>
+<caption>表 5-1　GenAI 九項特性對照 LLM Top 10 2026（依官方 GenAI 一節整理）</caption>
+<thead><tr><th scope="col">#</th><th scope="col">GenAI 特性（改寫）</th><th scope="col">官方對照的 LLM Top 10 2026 條目</th></tr></thead>
+<tbody>
+<tr><th scope="row">1</th><td>以自然語言提示詞操控，有提示詞注入 (Prompt Injection) 風險（直接與間接兩種）</td><td>LLM01:2026 Prompt Injection</td></tr>
+<tr><th scope="row">2</th><td>超大訓練集，更可能輸出敏感資料；模型內沒有存取權限控制，所有資料對使用者都「可及」；system prompt、對齊、輸出過濾通常不是滴水不漏</td><td><a href="../../02-llm-applications/llm-top-10/06-disclosure.html#dc-what">LLM02:2026</a> Sensitive Information Disclosure</td></tr>
+<tr><th scope="row">3</th><td>投毒是 AI 通病，GenAI 通常風險更高，因為訓練資料來源（如網際網路）難以控管</td><td><a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-poison">LLM05:2026</a> Data and Model Poisoning</td></tr>
+<tr><th scope="row">4</th><td>會不準、會幻覺且語氣自信，使人低估「錯誤或被操縱」的機率；最相關的是限制後果的控制，尤其是最小模型權限 (Least Model Privilege)</td><td><a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a> Excessive Agency 與 <a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-misinfo">LLM07:2026</a> Misinformation</td></tr>
+<tr><th scope="row">5</th><td>輸入資料外洩：模型多在雲端；提示詞含豐富上下文（RAG 尤其如此），且原始存取權可能不被遵守</td><td><strong>未被 LLM Top 10 涵蓋</strong>（官方原文：Not covered in LLM top 10）</td></tr>
+<tr><th scope="row">6</th><td>預訓練模型可能被動過手腳；預訓練在 GenAI 很普遍，供應鏈模型投毒風險升高</td><td><a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-supply">LLM04:2026</a> Supply Chain</td></tr>
+<tr><th scope="row">7</th><td>模型反推與成員推論，對 GenAI 通常是低到零風險</td><td>無專屬條目；最接近的是 LLM02:2026（推論式揭露）</td></tr>
+<tr><th scope="row">8</th><td>輸出可能含有執行注入攻擊的元素，如跨站腳本</td><td>LLM10:2026 Improper Output Handling</td></tr>
+<tr><th scope="row">9</th><td>資源耗盡對任何 IT 都是問題，但 GenAI 運算成本較高，被打爆會產生不必要的費用</td><td><a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-consume">LLM06:2026</a> Unbounded Consumption</td></tr>
+</tbody></table></div>
+<p>表中沒有 LLM08:2026 Hidden Context Exposure 與 <a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-vector">LLM09:2026</a> Vector and Embedding Weaknesses。官方在別處提到 LLM08（system prompt leakage 在 2026 版由它涵蓋，範圍擴大到任何隱藏的營運上下文）；<strong>本教材在 AI Exchange 的 PDF 快照搜尋 LLM09 與 Vector and Embedding，沒有找到對應明文</strong>，所以不宣稱官方有把 RAG 的向量風險對照到 LLM09。第 5 項值得注意：<strong>LLM Top 10 沒涵蓋輸入資料外洩</strong>，這正是 AI Exchange「全面性」的體現。</p>
+
+<h2 id="ga-agentic">5.2 Agentic AI：風險從「錯誤的答案」變成「錯誤的行動」</h2>
+<p>官方對 Agentic AI 的定義：模型的推論可以指定要執行的動作，<strong>而不需要每個動作都經過人工核准</strong>，不只是提供輸出讓人檢視。官方強調 Agentic 是一個光譜，不要用單一方式看待：</p>
+<p>官方把光譜分成四級：輕度（會執行動作，例如開門的 AI 攝影機）、中度（還會規劃）、相當（還會在迴圈中運行）、高度（以上全部，且沒有人類介入）。</p>
+<p>官方建議直接看系統的屬性：模型能不能觸發動作、能造成什麼傷害、有沒有不可信資料進來、有沒有用記憶、動作能不能把資料送出去。</p>
+
+<h3 id="ga-four">四個典型特性與對應的控制</h3>
+<div class="table-wrap"><table>
+<caption>表 5-2　Agentic AI 的四個特性（官方）</caption>
+<thead><tr><th scope="col">特性</th><th scope="col">為什麼帶來風險</th><th scope="col">官方點名的重點控制</th></tr></thead>
+<tbody>
+<tr><th scope="row">Action（動作）</th><td>agent 不只聊天，會呼叫函式（如寄信）</td><td><code class="ctl">LEAST MODEL PRIVILEGE</code>，含 agentic 授權框架：預設拒絕、基礎設施層強制、任務綁定權杖、agent 身分</td></tr>
+<tr><th scope="row">Autonomous（自主，選配）</th><td>agent 可互相觸發；工作記憶存放 agent 的狀態與計畫，成為攻擊向量</td><td><code class="ctl">OVERSIGHT</code></td></tr>
+<tr><th scope="row">Complex（複雜，選配）</th><td>行為是湧現的</td><td>（官方未單列控制）</td></tr>
+<tr><th scope="row">Multi-system（多系統，選配）</th><td>開發者傾向用指令把存取控制責任交給 AI，因而暴露在提示詞注入下</td><td>機器對機器的 <code class="ctl">MODEL ACCESS CONTROL</code>（範圍限定的權杖、session 綁定、雙向認證）加上 <code class="ctl">LEAST MODEL PRIVILEGE</code></td></tr>
+</tbody></table></div>
+
+<h3 id="ga-trifecta">致命三要素</h3>
+<p>官方在 agentic 概觀與風險分析兩處都提到：要發生<strong>敏感資料外洩</strong>，需要同時有三件事：</p>
+<ol>
+  <li><strong>Data（資料）：</strong>攻擊者能控制某些資料，它在使用者的 session 中的某個時刻進入 LLM，用來做間接提示詞注入；</li>
+  <li><strong>Access（存取）：</strong>該 LLM 或相連的 agent 能存取敏感資料；</li>
+  <li><strong>Send（送出）：</strong>該 LLM 或相連的 agent 能主動把資料送出去給攻擊者。</li>
+</ol>
+<figure class="diagram">
+<pre class="mermaid" data-alt="致命三要素示意圖：攻擊者可控的資料、能存取敏感資料、能送出資料，三者同時具備才會形成資料外洩；移除任一項就能中斷。">
+flowchart LR
+  D["Data<br>攻擊者可控的資料進入模型"] --> X{"三者同時具備？"}
+  A["Access<br>能存取敏感資料"] --> X
+  S["Send<br>能把資料送出去"] --> X
+  X -->|"是"| EX["資料外洩"]
+  X -->|"移除任一項"| OK["外洩路徑被中斷"]
+</pre>
+<figcaption><strong>圖 5-1　致命三要素。</strong>官方提醒，送出能力不限於「呼叫寄信 API」：在輸出中夾帶惡意連結或圖片網址，讓使用者點擊或瀏覽器載入，也能把資料送到攻擊者的伺服器。因此「沒有寄信功能」不代表沒有 Send。這張圖與第 4 章的 Agentic Rule of Two 在結構上對應（作者整理，非官方）。</figcaption>
+</figure>
+
+<div class="callout official">
+  <p class="callout-title">風險分析的直接應用</p>
+  <p>官方用這個概念說明為什麼「理論上存在」不等於「必須處理」：若 agentic 系統用了 LLM，理論上就有間接提示詞注入；但如果你唯一擔心的是公司敏感資料外洩，而系統<strong>沒有任何能把資料送給攻擊者的途徑</strong>（例如沒有寄信功能、輸出也不被渲染成可點擊內容），這個風險就停留在理論層級，不需要處理。第 7 章會把它放回完整的風險分析流程。</p>
+</div>
+
+<h3 id="ga-principles">四條安全架構原則</h3>
+<p>官方強調這是「設計約束」，不是另一套控制清單：</p>
+<ul>
+  <li><strong>在基礎設施強制，而不是在提示詞裡</strong>（最小模型權限、模型存取控制、agent 沙箱）。</li>
+  <li><strong>為組合式行為而設計：</strong>工具與多步串接的流程空間太大，無法事先完整規定，所以需要執行期護欄。</li>
+  <li><strong>假設會跨層連鎖：</strong>資料、推理、工具、API 與其他 agent 是同一個組合式攻擊面 (Attack Surface)。</li>
+  <li><strong>預設限制爆炸半徑 (Blast Radius)：</strong>預設拒絕的工具存取、不可轉移的 session、agent 之間不傳遞信任。</li>
+</ul>
+
+<h2 id="ga-concept">5.3 核心概念：越獄 (Jailbreak) 與逃逸 (Agent Escape)</h2>
+<div class="concept">
+<h3 id="c-escape">越獄與 Agent 逃逸：不同層的問題</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd><strong>越獄</strong>是在 agent 的邊界之內，突破模型的安全限制（例如被要求拒絕的有害內容）。<strong>逃逸</strong>是 agent 超出它被定義的邊界：呼叫未授權的工具、存取範圍外的系統、做超出任務的事。</dd>
+  <dt data-n="2">為什麼需要區分</dt>
+  <dd>官方：越獄主要是推理層的問題，逃逸主要是基礎設施層的政策強制問題。把兩者混為一談，產生的控制只能部分有效。</dd>
+  <dt data-n="3">怎麼被利用（官方範例，概念層級）</dt>
+  <dd>官方範例：程式碼執行 agent 在多輪對話中被逐步「重新框架」，到第八輪嘗試列舉檔案系統，這是它在第一輪會拒絕的事。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>逃逸：在後端以能力為基礎的存取控制限制工具、資料來源與動作範圍，與 LLM 的推理無關（<code class="ctl">LEAST MODEL PRIVILEGE</code>）。越獄：用 session 層級的 <code class="ctl">OVERSIGHT</code> 偵測漸進式偏移。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「擋住越獄就等於擋住了 agent 出事。」官方明說：基礎設施層的強制可以在越獄於推理層得逞時，仍然阻止逃逸。但也有限制：授權範圍很廣的 agent，即使不逃逸，也可能透過越獄造成傷害。</dd>
+</dl>
+</div>
+
+<h2 id="ga-boundary">5.4 和 Agentic Top 10 的邊界</h2>
+<p>兩份 OWASP 文件都談到邊界，說法一致：</p>
+<ul>
+  <li>LLM Top 10 2026 的前言：當模型只是應用中的元件時，風險歸這份清單；一旦模型成為「行動者」，帶著工具、跨 session 的記憶、與下游後果，風險就移到 OWASP Agentic Top 10。許多事件正好落在這個邊界上，兩份要搭配讀。</li>
+  <li>LLM03:2026 Excessive Agency 說明：在 agentic 系統中，它可能表現為 <strong>ASI02</strong>（Tool Misuse and Exploitation）、<strong>ASI03</strong>（Identity and Privilege Abuse）與 <strong>ASI08</strong>（Cascading Failures）。這是官方明載的對應。</li>
+  <li>分類視角不同：AI Exchange 把目標劫持 (Goal Hijacking) 視為「影響」，攻擊向量仍是提示詞注入及相關路徑；Agentic Top 10 則將它列為獨立條目 ASI01 Agent Goal Hijack。這不是矛盾，是切分方式不同。</li>
+</ul>
+
+<h2 id="ga-scenario">5.5 情境範例 B：履歷篩選 Agent</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：晨光人資的履歷篩選 Agent</h3>
+<p><span class="tag fiction">虛構</span> 晨光人資是虛構的公司。他們部署了一個履歷篩選 agent：從應徵信箱讀取履歷附件、查詢內部人才庫（含現任員工的薪資帶與考績摘要，供「是否內部轉調」比對）、產出評估後寄給招募主管，並能依評分自動發送面試邀約。</p>
+<p class="arch"><strong>架構：</strong>外部履歷（不可信）→ agent（LLM）→ 內部人才庫（敏感）→ 郵件 API（可對外寄信）。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>某份履歷的檔案裡，含有人眼看不到、但模型會讀到的指示，要 agent 把人才庫中的某些資料附進給招募主管的信件，並同時抄送外部信箱（概念層級，不描述具體做法）。</li>
+  <li><strong>哪一環出問題：</strong>同時具備致命三要素：Data＝外部履歷；Access＝人才庫含敏感資料；Send＝郵件 API 可對外寄信。三者都未被隔離。</li>
+  <li><strong>對應條目：</strong>AI Exchange：Indirect prompt injection 與 Excessive Agency 一類風險；LLM Top 10 2026：LLM01 Prompt Injection（間接）與 LLM03 Excessive Agency；因為已是 agent，Excessive Agency 在 Agentic Top 10 對應 ASI02／ASI03／ASI08。</li>
+  <li><strong>該採什麼控制：</strong>
+    <ul>
+      <li>拆掉其中一項（Rule of Two）：讓處理履歷的 agent 看不到人才庫，把「比對內部轉調」拆成另一個沒有對外寄信權限的步驟；</li>
+      <li><code class="ctl">LEAST MODEL PRIVILEGE</code>：agent 的郵件權限限定為寄給固定的招募主管名單，不能寄到外部；面試邀約改由人核准；</li>
+      <li><code class="ctl">OVERSIGHT</code>：偵測「評估任務卻附入非必要的人才庫資料」或「新的外部收件人」；</li>
+      <li><code class="ctl">DATA MINIMIZE</code>：人才庫中的薪資與考績摘要若非必要，就不要讓這個 agent 取得。</li>
+    </ul>
+  </li>
+  <li><strong>學到什麼：</strong>與其在「模型會不會被騙」上賭，不如先檢查「如果被騙了，它能拿到什麼、送出去什麼」。這正是第 7 章風險分析要練的思路。</li>
+</ol>
+</div>
+
+<h2 id="ch5-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>GenAI 與其他 AI 的威脅大部分重疊；GenAI 特有的重點是提示詞注入、超大訓練集、對雲端與 RAG 的依賴，以及輸出可能含注入。</li>
+  <li>LLM Top 10 並非窮盡：輸入資料外洩就未被涵蓋。</li>
+  <li>Agentic = 模型推論可以直接指定動作；風險從錯誤答案變成錯誤行動，爆炸半徑控制是關鍵。</li>
+  <li>致命三要素：攻擊者可控的資料 + 能存取敏感資料 + 能送出資料。移除任一項即可中斷。</li>
+  <li>在基礎設施強制授權，而不是在提示詞裡；越獄是推理層問題，逃逸是政策強制問題。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能對一個 agent 檢查致命三要素，並提出拆掉哪一項的方案。</li>
+  <li>我能說出 Excessive Agency 在 agentic 系統中對應到哪三個 ASI 條目。</li>
+  <li>我知道 LLM Top 10 與 AI Exchange 在「輸入資料外洩」上的差別。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch5-next">接下來讀什麼</h2>
+<p><a href="06-rag.html">第 6 章　RAG 系統</a>：看 RAG 的五個階段與信任邊界，以及為什麼檢索範圍和原始存取控制常常脫節。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Exchange，0. AI Security Overview：How about Generative AI?（九項特性對照表）、Agentic AI overview、How to select relevant threats（致命三要素）；<a href="https://owaspai.org/go/genai">owaspai.org/go/genai</a>、<a href="https://owaspai.org/go/agenticaioverview">…/agenticaioverview</a>、<a href="https://owaspai.org/go/threatmodel">…/threatmodel</a>；2026-10-25 快照；CC0 1.0。</li>
+    <li>OWASP AI Exchange：<a href="https://owaspai.org/go/agentescape">4.8 Agent escape</a>、<a href="https://owaspai.org/go/leastmodelprivilege">LEAST MODEL PRIVILEGE</a>、<a href="https://owaspai.org/go/oversight">OVERSIGHT</a>、<a href="https://owaspai.org/go/outputcontainsconventionalinjection">Output contains conventional injection</a>。</li>
+    <li>OWASP Top 10 for LLM Applications 2026（Version 2026）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM00_Preface.md">Preface（What's New、邊界說明）</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM03_ExcessiveAgency.md">LLM03:2026 Excessive Agency</a>；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for Agentic Applications 2026（Version 2026，2025 年 12 月）PDF：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a>；ASI01–ASI10 條目名稱以 PDF 目錄為準；CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AI Exchange（owaspai.org）— CC0 1.0；OWASP Top 10 for LLM Applications 2026、Top 10 for Agentic Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch5', topic: 'ai-exchange', mode: 'chapter',
+  questions: [
+    { id: 'c5q1', type: 'mc', lo: [5], refs: [{label: '5.1 表 5-1', href: '05-agentic-genai.html#ga-genai'}],
+      stem: '依 AI Exchange 對 GenAI 的整理，下列哪一項風險「未被 LLM Top 10 涵蓋」？',
+      options: [
+        { text: '輸出含跨站腳本等注入內容', why: '對應 LLM10:2026 Improper Output Handling，被涵蓋。' },
+        { text: '資源耗盡導致費用暴增', why: '對應 LLM06:2026 Unbounded Consumption，被涵蓋。' },
+        { text: '輸入資料外洩（提示詞、RAG 上下文隨請求送到雲端而外洩）', correct: true, why: '官方在對照表第 5 項明寫 Not covered in LLM top 10。這說明 Top 10 是認知清單，不是窮盡清單。' },
+        { text: '提示詞注入', why: '對應 LLM01:2026 Prompt Injection，被涵蓋。' }
+      ],
+      summary: 'Top 10 是認知清單；完整的威脅與控制要看 AI Exchange。' },
+    { id: 'c5q2', type: 'mc', lo: [5], refs: [{label: '5.2 致命三要素', href: '05-agentic-genai.html#ga-trifecta'}],
+      stem: '一個內部知識問答 agent：會檢索內部文件（含機密）、文件庫允許合作夥伴上傳，回答只在內部聊天視窗以純文字顯示，沒有任何寄信或對外請求功能。依致命三要素，最合理的判斷是什麼？',
+      options: [
+        { text: '三要素齊備，資料一定會外洩。', why: '外洩需要三者同時具備。這裡缺少「Send」：沒有能把資料送給攻擊者的途徑，外洩路徑被中斷。' },
+        { text: '只要加上 system prompt 說明「不要洩漏資料」就解決了。', why: '這類指令不是邊界；官方明說授權與政策要在基礎設施強制，而不是在提示詞裡。' },
+        { text: '缺少 Send，資料外洩這條路徑在理論層級，但仍須留意輸出若之後被渲染成可點擊內容、或增加對外功能，就會改變判斷。', correct: true, why: '官方說明，沒有任何送出途徑時，該風險停留在理論層級，不需要處理；但「Send」不限於 API，輸出中的連結或圖片網址也算，所以要持續檢查。' },
+        { text: '只要合作夥伴上傳的文件不是惡意的，三要素就不成立。', why: '你無法事先保證內容永遠無害；風險判斷應基於「是否可能被控制」，而不是「目前是否有惡意」。' }
+      ],
+      summary: '移除三要素任一項即可中斷外洩路徑，但要持續檢查有沒有新的送出途徑。' },
+    { id: 'c5q3', type: 'match', lo: [5], refs: [{label: '5.1 表 5-1', href: '05-agentic-genai.html#ga-genai'}, {label: '5.4 邊界', href: '05-agentic-genai.html#ga-boundary'}],
+      stem: '依官方說法，把下列情況配對到最直接相關的 LLM Top 10 2026 條目。',
+      cats: [
+        { id: 'l01', label: 'LLM01:2026 Prompt Injection' },
+        { id: 'l03', label: 'LLM03:2026 Excessive Agency' },
+        { id: 'l04', label: 'LLM04:2026 Supply Chain' },
+        { id: 'l10', label: 'LLM10:2026 Improper Output Handling' }
+      ],
+      items: [
+        { text: '模型輸出裡含有會在瀏覽器執行的腳本，網頁直接顯示', answer: 'l10', why: '官方對照：輸出含注入攻擊（如 XSS）屬 LLM10。' },
+        { text: '使用的預訓練模型在出貨前就被動過手腳', answer: 'l04', why: '官方對照：預訓練模型可能被操縱，屬供應鏈風險 LLM04。' },
+        { text: '第三方把指令藏在文件中，使模型改變行為', answer: 'l01', why: '間接提示詞注入屬 LLM01。' },
+        { text: 'agent 被賦予遠超任務所需的工具與權限，被操縱時造成損害', answer: 'l03', why: '官方對照：過度的功能、權限或自主性屬 LLM03；在 agentic 系統可表現為 ASI02、ASI03、ASI08。' }
+      ],
+      summary: '對照時抓「根因在哪一層」：輸入、輸出、供應鏈或權限。' },
+    { id: 'c5q4', type: 'scn', lo: [5], refs: [{label: '5.5 情境範例 B', href: '05-agentic-genai.html#ga-scenario'}, {label: '5.2 四條原則', href: '05-agentic-genai.html#ga-principles'}],
+      stem: '這個設計最大的問題出在哪？最先該做什麼改動？',
+      scenario: '雲帆財務（虛構）的對帳 agent 會讀取供應商寄來的 PDF 帳單（外部來源）、查詢內部付款系統（可看全部付款資料）、並可呼叫付款 API 直接核發款項，全程無人核准。為了「防止被騙」，團隊在 system prompt 寫了「只付款給帳單上的供應商，且金額不得超過帳單金額」。',
+      options: [
+        { text: '問題只在 PDF 是外部來源，改用內部系統匯出的帳單即可完全解決。', why: '移除不可信輸入確實能中斷一項，但付款核准與限額仍應在基礎設施層強制；而且「內部來源」未必永遠可信。' },
+        { text: '沒有問題，因為已經有 system prompt 的限制。', why: '官方明說授權不應只靠指令；而且情境中付款動作無任何核准。' },
+        { text: '把授權寫在提示詞裡，且 agent 同時具備不可信輸入、敏感資料與可付款動作；應在後端強制付款上限與收款帳號白名單，並對付款加上人工核准。', correct: true, why: '符合官方「在基礎設施強制，而不是在提示詞裡」，也同時處理了致命三要素／Rule of Two 的三項並存問題。' },
+        { text: '問題是 system prompt 寫得不夠長，應再補充更多規則。', why: '再多規則仍是寫在模型指令裡，易受幻覺與提示詞注入影響。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 外部 PDF 是不可信輸入；內部付款系統是敏感資料；付款 API 是變更狀態與對外動作，三項並存。(2) 團隊用 system prompt 當授權邊界，但官方建議避免把授權實作在生成式 AI 指令裡，因為幻覺與提示詞注入都可能繞過。(3) 官方強調爆炸半徑控制：預設拒絕、基礎設施層強制、任務綁定的權杖。</p><p><strong>結論：</strong>改動順序：先在付款 API 端強制限額與收款帳號白名單（最小權限，後端強制）；再對付款動作加人工核准並顯示完整收款資訊；最後才加輸入過濾等降低機率的措施。對應教材：<a href="05-agentic-genai.html#ga-principles">5.2 節</a>、<a href="04-seven-layers.html#sl-layers">第 4 章</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

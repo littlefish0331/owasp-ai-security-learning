@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　跨文件整合與收尾｜Threat Defense COMPASS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="COMPASS 與 MITRE、NIST、LLM Top 10、Agentic Top 10 的官方對應；與 Governance Checklist、AIVSS、AIMA 的作者整理對應；風險標籤的年份問題；何時該換工具；全主題重點。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="threat-defense-compass" data-page="04-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　跨文件整合與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 5 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO1、LO5</li>
+  <li>前置：第 1–3 章</li>
+</ul>
+<p class="lead">COMPASS 自己不產生威脅資料，它是把別人的資料搬進一個可打分的表。所以最重要的整合問題是：它借了哪些東西？借來的東西版本是不是跟你手上的一致？這一章回答這兩題，並標出哪些對應是官方寫的。</p>
+
+<h2 id="ig-official">4.1 官方明列的對應</h2>
+<p>RunBook 的「Framework Alignment」與參考文獻，明確寫出 COMPASS 與下列框架的關係：</p>
+<div class="table-wrap"><table>
+<caption>表 4-1　COMPASS 與其他框架、文件的對應</caption>
+<thead><tr><th scope="col">框架／文件</th><th scope="col">COMPASS 怎麼使用（官方說法，改寫）</th><th scope="col">性質</th></tr></thead>
+<tbody>
+<tr><th scope="row">MITRE ATT&amp;CK、ATLAS、NAVIGATOR、D3FEND、CAPEC</th><td>RunBook 稱 COMPASS 對齊「威脅導向防禦 (Threat Informed Defense)」原則，用這些框架建立主動式資安策略；FAQ 另說 COMPASS 在 ATT&amp;CK 與 ATLAS 的基礎上，提供結構化的評估方式</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">STIX、CVE、CWE</th><td>相容既有的資安標準；3a 分頁用 CVE 關鍵字搜尋，並對映 CWE（第 2 章）</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">OWASP Top 10 for LLM</th><td>3a 分頁的弱點表有「OWASP LLM Category (2025)」欄；2b 分頁預填的威脅名單用 LLM01:2025 等標籤</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">OWASP Agentic（RunBook 稱「Agentic Top 15」）</th><td>3a 分頁有「OWASP Agentic Top 15」欄，值如 T11；2b 分頁的一列用「T8: Repudiation &amp; Untraceability」。編號格式是 T 加數字（如 T8、T11），而不是 2026 版 Agentic Top 10 的 ASI 編號（見 4.2）。作者推測這是 Agentic AI – Threats and Mitigations 的威脅編號，但試算表沒有註明來源文件</td><td><span class="tag official">官方</span>（欄位與編號格式）；對應到哪份文件為作者推測</td></tr>
+<tr><th scope="row">NIST SSDF（SP 800-218）、SP 800-218A、AI RMF、ISO/IEC 42001、JCDC AI 網路安全協作手冊</th><td>列於參考文獻；FAQ 說明 COMPASS 如何支援 SSDF 與 NIST 的雙用途基礎模型誤用風險指引（草案 AI 800-1）、與英國 AI Playbook</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">其他 OWASP 資源</th><td>成功要素之一提醒：COMPASS 只是眾多 OWASP 資源之一，也可搭配 CycloneDX、API Top 10、ASVS 與 Cheat Sheets</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">Governance Checklist、CoE Guide</th><td>RunBook 本身沒有提到；兩者同屬 AI Security Governance Initiative</td><td><span class="tag author">作者整理，非官方</span></td></tr>
+<tr><th scope="row">AIVSS、AIMA</th><td>RunBook 沒有提到；AIVSS 是 AI 弱點的量化評分系統，AIMA 是成熟度評估；見〈<a href="../../06-assessment-and-verification/aivss/index.html">AIVSS</a>〉與〈<a href="../ai-maturity-assessment/index.html">AI 成熟度評估（AIMA）</a>〉</td><td><span class="tag author">作者整理，非官方</span></td></tr>
+</tbody></table></div>
+<p>RunBook 的參考文獻最後三條是 OWASP Top Ten for LLM、OWASP CTI 與 OWASP Agentic，沒有寫版本。這代表<strong>你無法從 RunBook 判斷它對映的是哪一版</strong>，要看試算表裡實際用的標籤。</p>
+
+<h2 id="ig-year">4.2 風險標籤的年份：你很可能對不起來</h2>
+<div class="concept">
+<h3 id="c-year">用 COMPASS 的標籤查 2026 年的清單</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>COMPASS 的試算表用的是 <strong>LLM Top 10 2025</strong> 的編號（如 LLM06:2025 Excessive Agency）與 Agentic Threats and Mitigations 的 T 系列編號。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>COMPASS 發布於 2025 年 9 月，早於 LLM Top 10 2026 版（Version 2026，2026-08-04）與 Agentic Top 10（Version 2026，2025-12）。2026 版的編號是重排的，不是順延（換算見〈<a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 的版本演進</a>〉）。</dd>
+  <dt data-n="3">怎麼被誤用</dt>
+  <dd>把試算表的「LLM06」直接拿去對 2026 版：2025 版的 LLM06 是 Excessive Agency，2026 版的 LLM06 是 Unbounded Consumption，Excessive Agency 在 2026 版是 LLM03。名稱一樣、編號不一樣，是 GenAI Security Project 主題就提醒過的 <a href="../../01-overview/genai-security-project/05-integration.html#int-evolution">年份編號問題</a>。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>引用時帶年份（LLM06:2025 或 <a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a>）；用<strong>名稱</strong>而不是編號比對兩份文件；把試算表中的標籤欄升級成 2026 版是使用者自己的工作，RunBook 沒有提供對照。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「這是 OWASP 官方的工具，標籤一定是最新的。」COMPASS 1.0 發布時沒有 2026 版可用；試算表要使用者自己維護。</dd>
+</dl>
+</div>
+<figure class="diagram">
+<pre class="mermaid" data-alt="整合流程：用 COMPASS 排優先順序之前，先確認標籤版本。若試算表標籤是 LLM Top 10 2025 而你要對的是 2026 版，用名稱比對而不是編號；排完序後，將結果餵回治理檢核表的區塊與 CoE 的路線圖，並對照 MITRE ATLAS 找出覆蓋缺口。精確量化需求改用 AIVSS 等工具，成熟度評估改用 AIMA。">
+flowchart TD
+  I["Checklist 盤點結果<br>（缺口與資產）"] --> L{"標籤版本一致嗎？<br>COMPASS 為 LLM Top 10 2025"}
+  L -->|"不一致"| N["用條目名稱比對，<br>不用編號"]
+  L -->|"一致"| S
+  N --> S["COMPASS 排優先順序<br>可能性 × 衝擊"]
+  S --> R["結果回到<br>路線圖與 CoE"]
+  S -.->|"需要精確量化"| Q["AIVSS 等評分工具"]
+  S -.->|"需要評估成熟度"| M["AIMA"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class I,L,N,S,R,Q,M author
+</pre>
+<figcaption><strong>圖 4-1　COMPASS 的整合流程（作者整理，非官方）。</strong>整張圖是教材作者依各文件用途整理的建議；官方沒有寫「先 Checklist 再 COMPASS」。年份差異的細節見 GenAI Security Project 主題的版本演進表。</figcaption>
+</figure>
+
+<h2 id="ig-limit">4.3 它不適合做什麼</h2>
+<ul>
+  <li><strong>精確的風險定量：</strong>FAQ 說明需要精確資訊時另用其他工具。若要量化 AI 弱點的嚴重度，OWASP 另有 AIVSS，見〈<a href="../../06-assessment-and-verification/aivss/index.html">AIVSS</a>〉。</li>
+  <li><strong>模型提供者的完整指引：</strong>Profile 3 在範圍之外。</li>
+  <li><strong>倫理與隱私的細節：</strong>FAQ 明說只從事件與財務衝擊的角度處理。</li>
+  <li><strong>持續更新的標籤：</strong>編號版本要使用者自己維護。</li>
+  <li><strong>取代治理：</strong>COMPASS 排序，Checklist 盤點，CoE 提供常設的組織；三者不互相取代（此為作者整理）。</li>
+</ul>
+
+<h2 id="ch4-key">全主題重點整理</h2>
+<div class="keypoints"><ul>
+  <li><strong>定位：</strong>COMPASS 1.0 = 試算表（19 分頁）+ RunBook；資源頁 2025-09-10，RunBook 封面 2025-07-04；是快速排序工具，不是精確評估。</li>
+  <li><strong>流程：</strong>OODA 四階段；三種視角（Profile 1／2／3），Profile 2 再分 2a／2b／2c。</li>
+  <li><strong>評分：</strong>可能性 × 衝擊，5 分制；20–25 Critical、15–19 High、10–14 Moderate、5–9 Low、1–4 Minimal；RunBook 範例的標籤與此不一致。</li>
+  <li><strong>落地：</strong>預防型與偵測型控制對映；路線圖五件事，每項要有任務、負責人、期限；Do this First 清單。</li>
+  <li><strong>整合：</strong>官方明列 MITRE、NIST、CVE／CWE、LLM Top 10；標籤停在 LLM Top 10 2025，用名稱比對；與 Checklist、AIVSS、AIMA 的串接是作者整理。</li>
+</ul></div>
+
+<h2 id="ch4-self">自我檢核清單</h2>
+<ul class="checklist">
+  <li>我能說出 COMPASS 由什麼組成、版本與日期，以及它的三個限制。</li>
+  <li>我能說出 OODA 各階段做什麼，並算出分數與等級。</li>
+  <li>我知道 RunBook 範例二的等級標籤為什麼對不上，以及遇到這種情況怎麼處理。</li>
+  <li>我知道試算表的標籤是 LLM Top 10 2025，並會用名稱而不是編號比對 2026 版。</li>
+  <li>我知道哪些對應是官方寫的，哪些是作者整理的。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO1、LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<ul>
+  <li>先做本主題的 <a href="quiz.html">總測驗（13 題）</a>。</li>
+  <li>想看 Agentic 領域的治理與法規現況：<strong>Agentic 安全與治理現況</strong>（05 階段下一個主題）。</li>
+  <li>想看這些標籤如何對照到各種標準與框架：見〈<a href="../framework-crosswalk-and-standards/index.html">框架對照與標準</a>〉。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，Threat Defense COMPASS RunBook（Version 1.0；資源頁 2025-09-10）：Framework Alignment、Key Success Factors、References；CC BY-SA 4.0；<a href="https://genai.owasp.org/resource/owasp-genai-security-project-threat-defense-compass-runbook/">genai.owasp.org/resource/owasp-genai-security-project-threat-defense-compass-runbook/</a>；2026-10-26 讀取。</li>
+    <li>COMPASS 試算表 V 1.0（FAQ；3a 與 2b 分頁的欄位與標籤）；CC BY-SA 4.0；2026-10-26 讀取。</li>
+    <li>LLM Top 10 2025 與 2026 的編號對照：沿用 <a href="../../01-overview/genai-security-project/05-integration.html#int-evolution">GenAI Security Project 主題第 5 章</a>，該處已依官方清單核對。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：COMPASS RunBook 與試算表 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'tc-ch4', topic: 'threat-defense-compass', mode: 'chapter',
+  questions: [
+    { id: 'tc4q1', type: 'mc', lo: [5], refs: [{label: '4.1 表 4-1', href: '04-integration.html#ig-official'}],
+      stem: '同事看到試算表 3a 分頁「OWASP Agentic Top 15」欄的值是 T11，想直接拿這個編號去 2026 版 Agentic Top 10 的 ASI 編號裡找對應條目。依 4.1 節，下列哪一項最準確？',
+      options: [
+        { text: 'T11 就是 ASI 編號的另一種寫法，換個前綴就能查到同一條。', why: '表 4-1 指出：欄位的編號格式是 T 加數字，而不是 2026 版 Agentic Top 10 的 ASI 編號；兩套編號不能靠換前綴對應。' },
+        { text: '欄名與編號格式是試算表官方的寫法，但 T 系列來自哪份文件，試算表沒有註明；教材推測是 Agentic AI – Threats and Mitigations 的威脅編號（作者推測），所以要先確認來源，不要直接當 ASI 編號查。', correct: true, why: '這是表 4-1 的原話：欄位與編號格式屬官方，對應到哪份文件是作者推測。' },
+        { text: 'RunBook 明確寫了 T 系列來自 Agentic AI – Threats and Mitigations，直接查那份文件即可。', why: '表 4-1 說的是「試算表沒有註明來源文件」，那是教材的推測，不是 RunBook 的明文。' },
+        { text: '欄名寫 Top 15，代表它是 2026 版 Agentic Top 10 的擴充版，前 10 條與 ASI 編號一致。', why: '教材沒有這樣的說法；RunBook 只是稱它為「Agentic Top 15」，編號格式與 ASI 不同。' }
+      ],
+      summary: '試算表 Agentic 欄用 T 系列編號，不是 ASI；來源文件是作者推測，使用前要先確認。' },
+    { id: 'tc4q2', type: 'match', lo: [5], refs: [{label: '4.1 表 4-1', href: '04-integration.html#ig-official'}],
+      stem: '把下列關於 COMPASS 對應的說法，配對到它的性質。',
+      cats: [
+        { id: 'official', label: '官方（RunBook 或試算表寫明）' },
+        { id: 'author', label: '作者整理，非官方' }
+      ],
+      items: [
+        { text: '3a 分頁的弱點表有「OWASP LLM Category (2025)」欄', answer: 'official', why: '表 4-1：OWASP Top 10 for LLM 的使用方式是官方寫的。' },
+        { text: 'COMPASS 與 Governance Checklist、CoE Guide 的串接（RunBook 本身沒有提到）', answer: 'author', why: '表 4-1：兩者同屬 AI Security Governance Initiative，但 RunBook 沒有提到串接，這是教材整理。' },
+        { text: 'COMPASS 對齊 MITRE ATT&CK、ATLAS 等框架的威脅導向防禦原則', answer: 'official', why: '表 4-1：RunBook 的 Framework Alignment 與 FAQ 明確這樣說。' },
+        { text: '需要精確量化 AI 弱點嚴重度時，改接到 AIVSS', answer: 'author', why: '表 4-1：RunBook 沒有提到 AIVSS；FAQ 只說需要精確結果時另用其他工具，接到 AIVSS 是教材整理。' }
+      ],
+      summary: '官方明列的是 MITRE、NIST、CVE／CWE、LLM Top 10 等；與 Checklist、CoE、AIVSS、AIMA 的串接是作者整理。' },
+    { id: 'tc4q3', type: 'scn', lo: [5], refs: [{label: '4.2 年份', href: '04-integration.html#c-year'}, {label: '4.2 圖 4-1', href: '04-integration.html#ig-year'}],
+      stem: '依本章的整合流程（作者整理），這個團隊在排序前與排序後各該怎麼做？',
+      scenario: '河岸電商（虛構）剛用 Governance Checklist 盤點完，拿到缺口與資產清單，準備用 COMPASS 排優先順序，再把結果排進路線圖。團隊的內部風險登記冊用 LLM Top 10 2026 的編號；但 COMPASS 試算表的威脅欄寫的是「LLM06:2025 Excessive Agency」。有人提議：把 LLM06 直接當成 2026 版的 LLM06，登記冊就能一次對齊。',
+      options: [
+        { text: '照提議做：編號一樣就是同一條，不需要再核對。', why: '2026 版的編號是重排的，不是順延；2026 版的 LLM06 是 Unbounded Consumption，不是 Excessive Agency。' },
+        { text: '先停下來，等 OWASP 發布 2025 與 2026 的對照表，才使用 COMPASS。', why: 'RunBook 沒有提供對照，把試算表的標籤欄升級成 2026 版是使用者自己的工作；圖 4-1 的流程裡沒有等待官方對照表這一步。' },
+        { text: '跳過 COMPASS，改用 AIVSS 對所有威脅做精確量化。', why: 'AIVSS 是需要精確量化時才接的支線（作者整理）；這個團隊要的是快速排優先順序，而且標籤版本問題不會因為換工具就消失。' },
+        { text: '排序前先確認標籤版本；不一致就用條目名稱而不是編號比對（Excessive Agency 在 2026 版是 LLM03:2026），並在登記冊裡帶年份。排序後把結果回到路線圖與 CoE。', correct: true, why: '圖 4-1：標籤版本不一致走「用條目名稱比對，不用編號」，排序後結果回到路線圖與 CoE；引用時帶年份。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 試算表使用 LLM Top 10 2025 的編號，COMPASS 發布時還沒有 2026 版，編號不是順延而是重排。(2) 2025 版的 LLM06 是 Excessive Agency；2026 版的 LLM06 是 Unbounded Consumption，Excessive Agency 在 2026 版是 LLM03。把兩者用編號直接對上，會把不同風險混在一起。(3) 圖 4-1 的流程：先問標籤版本是否一致，不一致就用條目名稱比對；排完序後結果回到路線圖與 CoE。(4) RunBook 沒有提供對照表，升級標籤欄要由使用者自己維護。</p><p><strong>結論：</strong>排序前核對版本並以名稱比對、引用時帶年份，排序後把結果交回路線圖與 CoE。圖 4-1 屬作者整理，非官方。對應教材：<a href="04-integration.html#c-year">4.2 節</a>。</p>' },
+    { id: 'tc4q4', type: 'mc', lo: [1, 5], refs: [{label: '4.3 限制', href: '04-integration.html#ig-limit'}],
+      stem: '主管說：「COMPASS 是 OWASP 官方工具，我們導入它之後，就不需要再做 Checklist 盤點，也不必成立 CoE 了。」依 4.3 節，最合理的回應是哪一項？',
+      options: [
+        { text: '不能互相取代：COMPASS 排序，Checklist 盤點，CoE 提供常設的組織；這個分工是作者整理，不是官方規定。', correct: true, why: '4.3 節最後一點：COMPASS 不取代治理，三者不互相取代（作者整理）；COMPASS 本身是快速排序工具。' },
+        { text: '可以取代，因為 COMPASS 已經對齊 MITRE ATT&CK 與 ATLAS，涵蓋了治理需要的所有面向。', why: '對齊 MITRE 是 COMPASS 的方法依據，不代表它能做組織層面的盤點，也不代表它提供常設的組織。' },
+        { text: '不能取代，因為 RunBook 明文規定 COMPASS 必須與 Checklist 一起使用。', why: 'RunBook 沒有提到 Checklist；「三者不互相取代」是作者整理，不是官方規定。' },
+        { text: '可以取代 Checklist，但不能取代 CoE。', why: '4.3 節把三者並列為互不取代，沒有只讓 COMPASS 取代其中一項的說法。' }
+      ],
+      summary: 'COMPASS 排序、Checklist 盤點、CoE 提供常設組織；三者互補（作者整理）。' }
+  ]
+});
+</script>
+</body>
+</html>

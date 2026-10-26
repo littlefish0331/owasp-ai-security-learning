@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　治理與組織｜GenAI Security Project｜OWASP AI 資安學習教材</title>
+<meta name="description" content="GenAI Security Project 的使命與章程、功績制治理模型、董事會與核心團隊的職責、決策與升級流程，以及新 Initiative 如何成立。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="01-overview" data-topic="genai-security-project" data-page="02-governance.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　治理與組織</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 5 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position.html">第 1 章</a></li>
+</ul>
+<p class="lead">為什麼要讀一個開源專案的治理模型？因為它決定了你拿到的文件<strong>是怎麼被產出、由誰背書、多快會更新</strong>。這會直接影響你該怎麼看待一份 GenAI 專案文件的可信度與時效。</p>
+
+<h2 id="gov-mission">2.1 使命與章程</h2>
+<p>官方章程 (Mission and Charter) 的使命，用一句話改寫就是：找出、降低並記錄生成式 AI 技術（含 LLM、agentic AI 與 AI 驅動應用）在資安與安全 (safety) 上的風險，並提供組織、資安專業人員、AI 從業人員與政策制定者可執行的指引與工具。</p>
+<p>章程列了五類目標。這份清單很有用，因為它同時是「你能期待這個專案產出什麼」的範圍說明：</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　章程的五類目標（官方，改寫）</caption>
+<thead><tr><th scope="col">目標類別</th><th scope="col">章程裡的做法</th><th scope="col">對應到哪裡（第 3 章）</th></tr></thead>
+<tbody>
+<tr><th scope="row">風險辨識與記錄</th><td>維護並演進 LLM Top 10；研究並記錄新興威脅與攻擊技術</td><td>Top 10 for LLM and GenAI</td></tr>
+<tr><th scope="row">最佳實務與緩解</th><td>提供實用的安全建議與藍圖；提供治理框架與合規指引；維護每季更新的 AI Security Solutions Landscape</td><td>AI Security Solutions；Security Governance</td></tr>
+<tr><th scope="row">應用研究與社群合作</th><td>推動 AI 紅隊與評估、「資安 AI 驅動的漏洞利用生成」、agentic AI 資安等研究</td><td>AI Red Teaming；Agentic App Security；Threat Intelligence</td></tr>
+<tr><th scope="row">教育與知識分享</th><td>提供公開的教材與開源工具；把重要文件翻譯成多國語言；舉辦工作小組與活動</td><td>資源庫的翻譯版本</td></tr>
+<tr><th scope="row">企業導入與 AI 治理</th><td>為從業者與主管提供資源，如 CISO AI 安全檢核表；以 CoE 指南協助組織建立 AI 安全治理計畫</td><td>Security Governance</td></tr>
+</tbody></table></div>
+<p>核心原則有四條：開放與協作；透明與易取得（所有研究成果開源、同儕審查、免費）；務實可執行（強調動手可做的方案而非理論框架）；以及倫理的 AI 資安倡議（處理倫理議題、偏誤緩解與對抗式濫用）。</p>
+
+<h2 id="gov-model">2.2 功績制治理模型</h2>
+<p>官方的治理頁說明，模型是以 Ross Gardler 與 Gabriel Hanganu 提出的「功績制治理模型 (Meritocratic governance model)」為基礎，該模型以 CC BY-SA 4.0 授權。概念是：貢獻、專業與持續的參與，決定決策權與領導角色。任何有興趣的人都可以加入社群、貢獻設計並參與決策。</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　角色與職責（官方治理頁，改寫）</caption>
+<thead><tr><th scope="col">角色</th><th scope="col">是什麼</th><th scope="col">怎麼產生</th></tr></thead>
+<tbody>
+<tr><th scope="row">董事會 <br>(Board of Directors, BoD)</th><td>最高決策機構：訂定願景、使命與價值；核准預算；解決爭議並做出治理最終決定；任命或確認領導角色；對外代表專案</td><td>任期兩年且交錯；由現任 BoD 與核心團隊成員以簡單多數選出；可由董事會三分之二多數罷免</td></tr>
+<tr><th scope="row">核心專案管理團隊 <br>(Core Project Management Team, CPMT)</th><td>日常管理、協調與發展：審查貢獻、參與策略規劃、批准治理模型的變更、管理產出的著作權、<strong>批准新的 Initiatives</strong>。官方強調核心團隊成員對社群其他人沒有顯著的支配權</td><td>由董事會任命；目前沒有明定任期，期望任期是一年；可由董事會三分之二多數罷免</td></tr>
+<tr><th scope="row">Initiative 負責人 <br>(Initiative lead)</th><td>管理一個已核准的 Initiative；同時屬於核心團隊成員的一種來源</td><td>成功提出新 Initiative 者</td></tr>
+<tr><th scope="row">貢獻者、審查者、專家 <br>(Contributors / Reviewers / Experts)</th><td>貢獻者：任何人都可以，無需承諾或資格。審查者：專注審查貢獻並回饋。專家：有關鍵領域（資安、生成式 AI 等）專業且持續有重大貢獻的人</td><td>無特別要求；通常需展現對專案的理解與有價值的貢獻</td></tr>
+<tr><th scope="row">專家審查委員會 <br>(Expert Review Board)</th><td>一組被指定的資深專家，未必是傳統貢獻者，用來當作諮詢對象或協助驗證 Initiative 的產出；由 Initiative 負責人依需求組成</td><td>由 Initiative 負責人組成</td></tr>
+<tr><th scope="row">工作小組 <br>(Working Groups)</th><td>由董事會指示成立，支援特定 Initiative 或委員會；任何人都可加入，依 Initiative 章程貢獻時間與專業</td><td>董事會指示</td></tr>
+</tbody></table></div>
+
+<h3 id="gov-decision">決策與升級流程</h3>
+<p>官方寫的決策原則是：以功績、專業與共識為基礎；非敏感的專案管理討論在貢獻者的 Slack 上進行，偶爾敏感討論在私人名單。為了避免被無止境的討論與投票拖慢，專案採「<strong>懶人共識 (lazy consensus)</strong>」：多數決策不必經過正式投票。步驟是：提案、討論、（無共識時）投票、決定。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策與升級流程：任何社群成員提案，進入討論；達成共識則決定；無法達成共識，依序升級到 Initiative 負責人、核心專案管理團隊，必要時到董事會；重大決策公開記錄。">
+flowchart TD
+  P["任何社群成員提案<br>（Slack 或 issue/patch）"] --> D["討論"]
+  D -->|"達成共識（含懶人共識）"| OK["決定並公開記錄"]
+  D -->|"無法達成共識"| L["升級：Initiative 負責人"]
+  L -->|"仍未決"| C["升級：核心專案管理團隊"]
+  C -->|"仍未決"| B["升級：董事會"]
+  L --> OK
+  C --> OK
+  B --> OK
+</pre>
+<figcaption><strong>圖 2-1　決策與升級流程（取自官方治理頁）。</strong>官方原話的升級順序是 Initiative 負責人、核心專案管理團隊、必要時董事會；所有重大決策要文件化並公開。圖形為重新繪製。</figcaption>
+</figure>
+
+<h2 id="gov-newinit">2.3 一個新的 Initiative 如何成立</h2>
+<p>治理頁沒有逐步列出完整程序，但說了幾個關鍵事實：Initiative 由有人「成功提出」後成立；<strong>核心團隊 (CPMT) 批准新的 Initiatives</strong>（同一頁在不同位置寫「CPMT 投票決定新成員與專案 Initiatives」）；工作小組由董事會指示成立；每個 Initiative 的章程由專案治理審查並批准（Initiatives 頁：「Each initiative charter is reviewed and approved as outlined in the OWASP Top 10 for LLM Project governance」）。</p>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：這對你判斷文件可信度的意義</p>
+  <p>一份文件若出自已核准的 Initiative、有對應的工作小組，且依專案流程經過審查，它的「出處」比一份個人 blog 強。但這不等於它「已被認證為標準」：官方自己的定位是「社群共識與同儕審查的指引」，不是法規或認證。請當成一份可信的社群指引，並仍然回到原文核對版本與日期。</p>
+</div>
+
+<h2 id="gov-caution">2.4 治理頁的幾個限制，你該知道</h2>
+<ul>
+  <li><strong>任期尚未定案：</strong>董事會是兩年交錯任期，但核心團隊與 Initiative 負責人「目前沒有明定任期」，只是期望一年。這是官方寫的現況，不是作者的推論。</li>
+  <li><strong>版權日期：</strong>治理頁與章程頁的頁尾版權年份是 2025（OWASP 全站頁尾的固定寫法），無法由此判斷治理文件最後的修訂時間。頁面上沒有顯示版本或修訂日期，所以<strong>本教材無法確認這份治理模型是否仍是現行版本</strong>。</li>
+  <li><strong>人員名單會變：</strong>Initiatives 頁列出的領導與核心成員名單，是當日讀取的結果；網站另有 Leadership 頁（導覽列有連結），但本教材嘗試的網址回傳 404，所以教材不列出具體人員，只提創辦人 Steve Wilson（Initiatives 頁標示為 Board Co-Chair、Project Founder）。</li>
+</ul>
+
+<h2 id="gov-concept">2.5 核心概念：「共識 + 升級」為什麼對使用者重要</h2>
+<div class="concept">
+<h3 id="c-consensus">共識決策與升級流程</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>專案的決策方式：先試著達成共識，沒有共識才逐級升級；多數決策用懶人共識，不經正式投票。</dd>
+  <dt data-n="2">為什麼這樣設計</dt>
+  <dd>官方的理由是避免專案被「無止境的討論和不斷的投票」拖慢。對一個靠志工運作、又要追上快速變化的領域，這能保持速度。</dd>
+  <dt data-n="3">對產出的影響（概念層級）</dt>
+  <dd>速度快、更新頻繁（如每季更新的 Landscape）；但也意味著各產出的成熟度不一，有的標「Version 1.0」，有的仍在 Beta、草稿或預覽階段。</dd>
+  <dt data-n="4">你該怎麼做</dt>
+  <dd>不要把「出自 GenAI Security Project」當成品質的單一保證。每次引用時，查該產出的版本、日期與狀態（草稿、預覽、定稿），並以最新者為準。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「這是 OWASP 官方標準，所以內容不會再變。」官方自己稱這是持續更新的社群資源；教材一律以讀取當日的版本與日期為準。</dd>
+</dl>
+</div>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>章程的五類目標：風險辨識、最佳實務與緩解、應用研究、教育、企業導入與治理，剛好對應到後續八個 Initiatives。</li>
+  <li>治理是功績制：董事會（最高決策、兩年任期）、核心團隊（日常管理、批准新 Initiative）、Initiative 負責人、貢獻者與專家。</li>
+  <li>決策採懶人共識；無共識時逐級升級：Initiative 負責人 → 核心團隊 → 董事會。</li>
+  <li>治理頁沒有版本或修訂日期，是否現行未能確認；核心團隊與 Initiative 負責人沒有明定任期。</li>
+  <li>「出自這個專案」不等於定稿；要查該產出的版本與狀態。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出董事會與核心團隊的職責差別。</li>
+  <li>我能畫出無共識時的升級順序。</li>
+  <li>我知道引用某份 GenAI 專案文件時，除了出處，還要查它的版本、日期與狀態。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-initiatives.html">第 3 章　八個 Initiatives 與產出地圖</a>：看每個工作小組負責什麼，以及你已經在 AI Exchange 主題看過的那些文件分別屬於哪一個。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>GenAI Security Project，Project Mission and Charter：<a href="https://genai.owasp.org/project-mission-and-charter/">genai.owasp.org/project-mission-and-charter/</a>（頁面無版本與日期；頁尾版權 2025）；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>GenAI Security Project，Project Governance（功績制治理模型）：<a href="https://genai.owasp.org/project-governance/">genai.owasp.org/project-governance/</a>（頁面無版本與日期）；2026-10-26 讀取；內文註明治理模型為 CC BY-SA 4.0。</li>
+    <li>GenAI Security Project，Initiatives 頁（創辦人標示、Initiative 章程審查說明）：<a href="https://genai.owasp.org/initiatives/">genai.owasp.org/initiatives/</a>；2026-10-26 讀取。</li>
+    <li>GenAI Security Project，Contribute：<a href="https://genai.owasp.org/contribute/">genai.owasp.org/contribute/</a>。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：genai.owasp.org 網站內容與治理模型 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'g-ch2', topic: 'genai-security-project', mode: 'chapter',
+  questions: [
+    { id: 'g2q1', type: 'mc', lo: [2], refs: [{label: '2.2 表 2-2', href: '02-governance.html#gov-model'}],
+      stem: '依官方治理頁，下列哪一項描述了「核心專案管理團隊」而不是「董事會」的職責？',
+      options: [
+        { text: '核准預算與財務計畫，並對治理事項做最終決定。', why: '這是董事會的職責；治理頁把預算核准與最終決定歸給 BoD。' },
+        { text: '審查貢獻、維護專案基礎設施、並批准新的 Initiatives。', correct: true, why: '這是核心團隊的職責。治理頁明寫核心團隊批准新 Initiatives，並管理日常營運。' },
+        { text: '代表專案向贊助者與合作夥伴說明專案。', why: '對外代表專案是董事會的職責之一。' },
+        { text: '任何人只要想參與就能擔任，沒有任何要求。', why: '這比較接近「貢獻者」的描述；核心團隊成員是由董事會任命的。' }
+      ],
+      summary: '董事會：願景、預算、最終決定、任命；核心團隊：日常管理、審查貢獻、批准新 Initiative。' },
+    { id: 'g2q2', type: 'match', lo: [2], refs: [{label: '2.2 決策與升級流程', href: '02-governance.html#gov-decision'}],
+      stem: '一項提案在社群裡無法達成共識。依官方治理頁，把下列階段配對到它在升級順序中的位置。',
+      cats: [
+        { id: 's1', label: '第 1 步（最先處理）' },
+        { id: 's2', label: '第 2 步' },
+        { id: 's3', label: '第 3 步（必要時最後）' }
+      ],
+      items: [
+        { text: 'Initiative 負責人', answer: 's1', why: '官方的升級順序：先到 Initiative 負責人。' },
+        { text: '核心專案管理團隊', answer: 's2', why: '負責人無法解決，再升級到核心團隊。' },
+        { text: '董事會', answer: 's3', why: '最後必要時才到董事會做最終決定。' }
+      ],
+      summary: '升級順序：Initiative 負責人 → 核心團隊 → 董事會。' },
+    { id: 'g2q3', type: 'scn', lo: [2], refs: [{label: '2.4 治理頁的限制', href: '02-governance.html#gov-caution'}, {label: '2.5 共識與升級', href: '02-governance.html#gov-concept'}],
+      stem: '依本章，這個團隊該怎麼處理引用？',
+      scenario: '春暉科技（虛構）要在內部標準文件寫：「我們依據 OWASP GenAI Security Project 的治理模型，其核心團隊任期為一年，並以此為由接受其某份指南為定稿標準。」法務問你：這句話有哪些地方可能不準確？你重新讀了官方治理頁，發現頁面沒有版本或修訂日期，頁尾版權年份是 2025。',
+      options: [
+        { text: '只有版權年份需要修正，改成 2026 即可。', why: '版權年份是 OWASP 全站頁尾的固定寫法，不能反映治理文件的修訂日；改年份既無依據也不解決問題。' },
+        { text: '應該改引用董事會的任期（兩年），因為它比較確定。', why: '董事會任期兩年是官方寫的，但題目討論的是核心團隊；而且把問題換成另一個角色並沒有回答「這句話哪裡不準確」。' },
+        { text: '至少三處不準確：任期尚未明定（只是期望一年）；治理頁無版本日期，是否現行未能確認；而且「出自該專案」不等於某份指南已是定稿，需查該指南自己的版本與狀態。', correct: true, why: '三點分別對應 2.4 節的任期、版本日期限制，以及 2.5 節的「出自專案 ≠ 定稿」。' },
+        { text: '沒有問題，治理頁已經寫明任期一年。', why: '官方寫的是「目前沒有明定任期，期望任期是一年」，不是確定一年；而且這句話只涉及核心團隊，且不能推出某份指南是定稿。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 官方原文：核心團隊「目前沒有明定任期，期望一年」，所以寫成「任期為一年」過度肯定。(2) 治理頁沒有版本或修訂日期，所以不能說它是現行版本。(3) 一份指南是不是定稿，要看該指南自己的版本、日期與狀態，而不是看它出自哪個專案。</p><p><strong>結論：</strong>改寫為如實的描述並標示未能確認的部分。對應教材：<a href="02-governance.html#gov-caution">2.4 節</a>、<a href="02-governance.html#gov-concept">2.5 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

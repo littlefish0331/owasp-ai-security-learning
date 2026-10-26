@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌與定位｜治理檢核表與卓越中心｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Governance Checklist 與 CoE Guide 是什麼、誰發布、給誰用、版本與日期、修訂史的疑點，以及它們在 OWASP AI 資源中的位置與使用限制。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="governance-checklist-and-coe" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌與定位</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../../01-overview/genai-security-project/03-initiatives.html">GenAI Security Project 第 3 章</a>（建議先讀）</li>
+</ul>
+<p class="lead">一位資安長被董事會問：「我們要導入 LLM 了，你需要先準備什麼？」他手上沒有可直接套用的範本。OWASP 的 AI Security Governance Initiative 正好為這個場景準備了兩份文件。這一章先把它們放在地圖上：各是什麼、給誰、多新，以及有哪些地方你不能照字面信。</p>
+
+<h2 id="pos-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　兩份文件的一頁式全貌（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">LLM Applications Cybersecurity and Governance Checklist</th><th scope="col">LLM and Generative AI Security Center of Excellence Guide</th></tr></thead>
+<tbody>
+<tr><th scope="row">發布者</th><td>OWASP Top 10 for LLM Applications 團隊，現屬 GenAI Security Project 的 AI Security Governance Initiative</td><td>同左</td></tr>
+<tr><th scope="row">類型</th><td>檢核表（資源頁歸為 Whitepapers/Guides）；PDF 32 頁</td><td>指南（資源頁歸為 Whitepapers/Guides）；PDF 32 頁</td></tr>
+<tr><th scope="row">採用的版本</th><td>v1.1（英文）。資源頁日期 2024-05-07；PDF 修訂史 1.1 為 2024-04-10</td><td>資源頁日期 2024-10-06；PDF 內頁標 Version 1.0rc，修訂史最後一列為 2024-10-01</td></tr>
+<tr><th scope="row">給誰用</th><td>執行、技術、資安、隱私、合規與法務領導者，以及 DevSecOps、MLSecOps 與網防團隊</td><td>CISO、資安團隊與跨職能領導層</td></tr>
+<tr><th scope="row">解決什麼問題</th><td>導入 LLM 時，列出要想清楚的面向，避免倉促或不安全的導入</td><td>說明如何成立一個整合資安、法務、資料科學、營運與使用者的 AI 安全卓越中心</td></tr>
+<tr><th scope="row">授權</th><td>CC BY-SA 4.0（PDF 末頁）</td><td>CC BY-SA 4.0（PDF 第 2 頁）；引用須含專案名稱與資產名稱</td></tr>
+</tbody></table></div>
+<p><strong>一句話：</strong>檢核表告訴你「要想清楚哪些事」，CoE 指南告訴你「由誰、用什麼結構來持續想」。前者像導入前的盤點清單，後者像把這份清單變成常設組織的做法。</p>
+
+<h2 id="pos-position">1.2 它們在 OWASP AI 資源中的位置</h2>
+<p>兩份文件都出自 <a href="../../01-overview/genai-security-project/03-initiatives.html">GenAI Security Project 的八個 Initiatives</a> 中的 AI Security Governance Initiative。這個 Initiative 的官方頁面（標題為 AI Security Governance and Adoption Initiative）同時列出這兩份文件、Threat Defense COMPASS 與 COMPASS RunBook，下一個主題會介紹後兩者。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="位置圖：GenAI Security Project 底下的 AI Security Governance Initiative 有四項產出：Governance Checklist（要想清楚什麼）、CoE Guide（誰來做）、Threat Defense COMPASS 與 RunBook（怎麼排風險優先順序）。Checklist 與 CoE 是本主題；COMPASS 是下一個主題。">
+flowchart TD
+  P["GenAI Security Project"] --> I["AI Security Governance Initiative"]
+  I --> C["Governance Checklist<br>要想清楚什麼"]
+  I --> E["CoE Guide<br>誰來做、怎麼組織"]
+  I --> M["Threat Defense COMPASS 與 RunBook<br>怎麼排優先順序"]
+  C -.-> T["本主題"]
+  E -.-> T
+  M -.-> N["下一個主題"]
+</pre>
+<figcaption><strong>圖 1-1　兩份文件在 Governance Initiative 中的位置。</strong>四項產出同屬一個 Initiative（官方 Initiative 頁列出）；括號中的「要想清楚什麼／誰來做／怎麼排優先順序」是教材作者用來幫助記憶的一句話，不是官方分類。</figcaption>
+</figure>
+
+<h2 id="pos-version">1.3 版本與日期：兩份文件都有對不起來的地方</h2>
+<p>依「版本或日期衝突時以最新者為準」，本教材逐項比對了資源頁、PDF 內頁與 PDF 中繼資料。下表是教材採用的做法：</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　版本與日期的核對</caption>
+<thead><tr><th scope="col">文件</th><th scope="col">各處標示</th><th scope="col">教材採用</th></tr></thead>
+<tbody>
+<tr><th scope="row">Checklist</th><td>資源頁標題 v1.1、日期 2024-05-07；PDF 修訂史 v1.1＝2024-04-10；官方介紹頁稱 2024 年 4 月發布 CISO Checklist</td><td>v1.1，標 2024-05-07（資源頁，為較新者）。2024-04-10 是 PDF 修訂史上的 v1.1 日期</td></tr>
+<tr><th scope="row">CoE Guide</th><td>資源頁 2024-10-06；PDF 內頁每頁頁尾「Version: 1.0rc」；修訂史最後一列 1.0rc＝2024-10-01；PDF 檔案屬性的標題寫「v1.0」；資源頁沒有版本號</td><td>標 2024-10-06（資源頁，為較新者），版本寫「PDF 內頁標示 1.0rc」，不寫成 1.0</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：修訂史的一列日期明顯有誤</p>
+  <p>Checklist 的修訂史把 0.9「pre-release draft」寫成 2023-02-15，但它前一列 0.5 是 2023-12-06、後一列 1.0 是 2024-02-19。照順序，這一列合理的年份應是 2024，但 PDF 原文寫的是 2023，<strong>本教材不推測哪個是對的</strong>，只標示這是文件內部的矛盾。這不影響教材的任何內容。</p>
+</div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：Checklist 是否就是「CISO Checklist」</p>
+  <p>官方介紹頁寫 2024 年 4 月發布「CISO Checklist」，資源頁寫的是 2024-05-07 的 v1.1，PDF 修訂史 v1.1 又是 2024-04-10。三個日期可以互相解釋，但<strong>官方沒有明說它們是同一份</strong>。這是 GenAI Security Project 主題已登記的未能確認項目（U-D7），本主題沿用「不下結論」的處理。</p>
+</div>
+
+<h2 id="pos-limit">1.4 它們明說自己「不是什麼」</h2>
+<p>治理類文件最容易被誤用成「照做就合規」。兩份文件自己劃了界線，整理如下：</p>
+<div class="table-wrap"><table>
+<caption>表 1-3　文件自己說的限制（官方，改寫）</caption>
+<thead><tr><th scope="col">限制</th><th scope="col">原文怎麼說（改寫）</th><th scope="col">你該怎麼做</th></tr></thead>
+<tbody>
+<tr><th scope="row">不是法律意見</th><td>兩份 PDF 都寫：內容不構成法律意見，僅供一般資訊用途</td><td>法務條款交給法務；把檢核表當成「要問法務什麼」的清單</td></tr>
+<tr><th scope="row">不是完整清單</th><td>Checklist 有一節標題就是「Not Comprehensive」：它支援組織建立初期策略，但不窮盡所有使用情境與義務，組織應依自身情境與司法管轄區擴大評估</td><td>把它當起點，不當終點</td></tr>
+<tr><th scope="row">不背書第三方</th><td>兩份 PDF 都寫：文中連到的第三方網站只為方便，OWASP 不推薦或背書其內容</td><td>引用外部連結前自己評估</td></tr>
+<tr><th scope="row">可依情境裁剪</th><td>CoE 指南總結寫：不是每家公司都需要所有角色與功能，應依組織結構與需求調整</td><td>參考它的角色表，但不必照單全收</td></tr>
+</tbody></table></div>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：這兩份文件的「時間點」</p>
+  <p>兩份文件的內頁日期都落在 2024 年。它們談的是 LLM 與生成式 AI 的導入，文中完全沒有提到 MCP；Checklist 的威脅分類與部署類型也沒有 agent 這個類別。作者的判斷是：用它們時，<strong>agent 與 MCP 這類較新的範圍要自己補</strong>（可接著讀 <a href="../../01-overview/ai-exchange/05-agentic-genai.html">AI Exchange 第 5 章</a>）。這是作者對「時間點」的觀察，不是官方說法；兩份文件都沒有聲明已更新到涵蓋 agent。</p>
+</div>
+
+<h2 id="pos-misc">1.5 常見誤解</h2>
+<div class="concept">
+<h3 id="c-misc">三個容易混淆的地方</h3>
+<dl>
+  <dt data-n="1">誤解</dt>
+  <dd class="misc">「Checklist 與 CoE Guide 是同一份文件的兩個章節。」不是。它們是兩份各自的 PDF、各自的版本與日期，只是同屬一個 Initiative。</dd>
+  <dt data-n="2">誤解</dt>
+  <dd class="misc">「把檢核表全部勾完，就代表通過 OWASP 的認證。」不對。OWASP 沒有為這份檢核表提供認證，文件也明說它不窮盡。</dd>
+  <dt data-n="3">誤解</dt>
+  <dd class="misc">「CoE 一定要是一個新設的部門。」文件的說法是跨部門的結構：由資安、法務、資料科學、營運的主管組成領導團隊，並依需要設工作小組；沒有要求新設一個獨立編制。</dd>
+</dl>
+</div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>Checklist 回答「要想清楚什麼」，CoE 指南回答「誰來做」；兩者同屬 AI Security Governance Initiative。</li>
+  <li>Checklist 採 v1.1（資源頁 2024-05-07）；CoE 指南採資源頁 2024-10-06，PDF 內頁寫 1.0rc。</li>
+  <li>兩份文件的修訂史或版本標示都有內部不一致（0.9 的年份、1.0rc 對 v1.0），這些項目標「未能確認」。</li>
+  <li>它們都明說不是法律意見、不窮盡；使用時要自己補上 agent 與 MCP 等新範圍。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能用一句話分別說明兩份文件解決的問題。</li>
+  <li>我知道引用 CoE 指南時，版本要寫「PDF 內頁標示 1.0rc」而不是 1.0。</li>
+  <li>我知道這兩份文件不是法律意見，也不是認證依據。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-checklist-strategy.html">第 2 章　檢核表的前半：威脅與導入策略</a>：看檢核表怎麼從三類威脅出發，為組織決定「要不要用、怎麼用」。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，LLM Applications Cybersecurity and Governance Checklist v1.1 – English，資源頁日期 2024-05-07，PDF 32 頁（修訂史 v1.1＝2024-04-10；末頁授權 CC BY-SA 4.0）：<a href="https://genai.owasp.org/resource/llm-applications-cybersecurity-and-governance-checklist-english/">genai.owasp.org/resource/llm-applications-cybersecurity-and-governance-checklist-english/</a>；2026-10-26 讀取。</li>
+    <li>OWASP GenAI Security Project，LLM and Generative AI Security Center of Excellence Guide，資源頁日期 2024-10-06，PDF 32 頁（內頁 Version: 1.0rc；修訂史 1.0rc＝2024-10-01；CC BY-SA 4.0）：<a href="https://genai.owasp.org/resource/llm-and-generative-ai-security-center-of-excellence-guide/">genai.owasp.org/resource/llm-and-generative-ai-security-center-of-excellence-guide/</a>；2026-10-26 讀取。</li>
+    <li>OWASP GenAI Security Project，AI Security Governance and Adoption Initiative：<a href="https://genai.owasp.org/initiatives/ai-security-governance-and-adoption/">genai.owasp.org/initiatives/ai-security-governance-and-adoption/</a>；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Governance Checklist、CoE Guide、genai.owasp.org 網站 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'gc-ch1', topic: 'governance-checklist-and-coe', mode: 'chapter',
+  questions: [
+    { id: 'gc1q1', type: 'mc', lo: [1], refs: [{label: '1.1 表 1-1', href: '01-position.html#pos-onepage'}],
+      stem: '一位新任資安長想知道「導入 LLM 之前，領導層要先想清楚哪些面向」。依本章，最直接對應的是哪一份文件？',
+      options: [
+        { text: 'CoE Guide，因為它列出了十二種角色的職責。', why: 'CoE Guide 回答的是「誰來做、怎麼組織」，不是「要想清楚哪些面向」。' },
+        { text: 'Governance Checklist，因為它把導入 LLM 要確認的事分成 13 個區塊。', correct: true, why: 'Checklist 的用途就是列出要想清楚的面向；CoE Guide 則處理組織結構。' },
+        { text: '兩份都只是同一份文件的不同章節，任選一份即可。', why: '它們是兩份各自的 PDF、各自的版本與日期，只是同屬一個 Initiative。' },
+        { text: '都不適用，這兩份文件只給開發者使用。', why: '兩份文件明說的對象是領導層、資安、合規、法務等；Checklist 也包含 DevSecOps 團隊，但主要不是開發者手冊。' }
+      ],
+      summary: 'Checklist：要想清楚什麼；CoE Guide：誰來做、怎麼組織。' },
+    { id: 'gc1q2', type: 'mc', lo: [1], refs: [{label: '1.3 表 1-2', href: '01-position.html#pos-version'}],
+      stem: '你要在內部文件引用 CoE Guide 的版本。依本章的核對結果，哪一種寫法最準確？',
+      options: [
+        { text: '「CoE Guide v1.0」，因為 PDF 檔案屬性的標題寫 v1.0。', why: '檔案屬性只是中繼資料；PDF 每頁頁尾與修訂史寫的是 1.0rc，兩者不一致，不能只取其一而不說明。' },
+        { text: '「CoE Guide（PDF 內頁標示 Version 1.0rc；資源頁日期 2024-10-06）」。', correct: true, why: '如實寫出內頁標示與採用的日期，並避免把候選版（rc）寫成正式 1.0。' },
+        { text: '「CoE Guide 2024-10-01」，因為修訂史的日期最準。', why: '依「以最新者為準」，資源頁的 2024-10-06 比修訂史的 2024-10-01 新。' },
+        { text: '「CoE Guide 最新版」，反正文件會更新。', why: '「最新版」沒有指定時間點，讀者無法核對。' }
+      ],
+      summary: '引用寫出內頁版本與採用的日期；不要把 1.0rc 寫成 1.0。' },
+    { id: 'gc1q3', type: 'scn', lo: [1], refs: [{label: '1.4 表 1-3', href: '01-position.html#pos-limit'}, {label: '1.5 常見誤解', href: '01-position.html#pos-misc'}],
+      stem: '依本章，這位主管的說法有哪些地方不準確？',
+      scenario: '雲帆物流（虛構）的法務長在會議上說：「我們把 OWASP 的 LLM 治理檢核表 13 個區塊全部勾完，就代表我們通過 OWASP 認證，也不需要再問外部律師有關 AI 的法律問題了。」資安經理覺得哪裡怪怪的，但說不出所以然。',
+      options: [
+        { text: '沒有問題，檢核表是 OWASP 官方文件，勾完就是通過認證。', why: 'OWASP 沒有為這份檢核表提供認證；文件自己也有「Not Comprehensive」一節。' },
+        { text: '只有「不需要外部律師」不準確，其他都對。', why: '「勾完就是通過認證」同樣沒有依據。' },
+        { text: '兩處都不準確：沒有「OWASP 認證」這回事，檢核表也明說不窮盡；兩份 PDF 都寫明內容不構成法律意見，法律問題仍需專業法務。', correct: true, why: '對應表 1-3 的「不是法律意見」「不是完整清單」，以及 1.5 節的第 2 個誤解。' },
+        { text: '不準確的是「13 個區塊」，實際上有 15 個。', why: '檢核表的區塊數在第 3 章逐一列出，13 個；數字不是問題所在。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 把「勾完檢核表」等同「通過認證」：官方沒有認證機制，且文件明說自己不窮盡（Not Comprehensive）。(2) 把「檢核表」當成法律保證：兩份 PDF 的聲明都寫內容不構成法律意見。(3) 因此正確的用法是：把檢核表當成與法務討論的議程，而不是取代法務。</p><p><strong>結論：</strong>應改為「用檢核表盤點準備度，並由法務就其中法律面向做專業判斷」。對應教材：<a href="01-position.html#pos-limit">1.4 節</a>、<a href="01-position.html#pos-misc">1.5 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

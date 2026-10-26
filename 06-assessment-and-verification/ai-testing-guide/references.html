@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜AI Testing Guide｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AI Testing Guide 主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="ai-testing-guide" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 4.10 節與第 8 節）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以本教材回到一手來源重新核對。本頁列出：每個項目採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。舊版資訊只出現在版本演進與本頁。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">OWASP AI Testing Guide（內容）</th><td>GitHub main 分支；最近提交 <strong>2026-06-01</strong>；儲存庫無 Releases、README 無版本號</td><td>GitHub API 與 raw 檔案（README、Document/README.md、content/*.md、content/tests/*.md）</td><td>儲存庫 LICENSE.md：CC BY-SA 4.0（GitHub 偵測值：NOASSERTION）</td></tr>
+<tr><th scope="row">OWASP AI Testing Guide（公告版本）</th><td>owasp.org 專案頁：「26 November 2025 — Version 1 Published」；Incubator Project</td><td><a href="https://owasp.org/www-project-ai-testing-guide/">owasp.org/www-project-ai-testing-guide/</a></td><td>網站頁尾：除非另有說明，內容為 CC BY-SA 4.0</td></tr>
+<tr><th scope="row">v1 PDF</th><td><strong>未下載</strong>。專案頁提供 PDF 與 GitHub 兩種取得方式，但本教材在頁面 HTML 中沒有找到可用的 PDF 連結</td><td>owasp.org 專案頁</td><td>—</td></tr>
+<tr><th scope="row">32 項測試的名稱與領域</th><td>以 content/3.0_OWASP_AI_Testing_Guide_Framework.md 的表為準</td><td>GitHub main；32 個測試頁本教材全部下載，其中 31 頁對得上框架表的連結，1 頁（APP-10）見 R-3</td><td>同上</td></tr>
+<tr><th scope="row">GenAI Red Teaming Manual（僅用於對照）</th><td>Version 1.0，2026-10-20（資源頁、PDF 封面 October 2026）</td><td><a href="https://genai.owasp.org/resource/genai-red-teaming-manual-version-1-0/">資源頁</a>與 PDF 144 頁</td><td>CC BY-SA 4.0（PDF 封面）</td></tr>
+<tr><th scope="row">OWASP AISVS（僅用於對照）</th><td>1.01 發布說明（GitHub Releases，標示 2026-10-16）</td><td><a href="https://github.com/OWASP/AISVS/releases/tag/v1.01">github.com/OWASP/AISVS/releases/tag/v1.01</a></td><td>CC BY-SA 4.0（儲存庫 README）</td></tr>
+<tr><th scope="row">LLM Top 10 2026 的清單</th><td>Version 2026；名稱與編號取自 Red Teaming Manual 第 3.3 節引用的清單，並與<a href="../../01-overview/genai-security-project/05-integration.html#int-evolution">GenAI 專案第 5 章表 5-2</a>交叉對照</td><td>GenAI Red Teaming Manual；GenAI 專案主題的一手核對</td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0（沿用既有主題已放置的副本）</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正或補充）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">版本與層級</th><td>owasp.org 頁面寫 v1 於 2025-11-26 發布，Incubator；GitHub README 本身未顯示版本、release 或層級</td><td>屬實。另查到：GitHub 無 Releases；main 的最近提交是 2026-06-01，晚於公告</td><td>內容以 GitHub main 為準，並註明與 v1 PDF 是否一致未能確認（R-4 第 1 項）</td></tr>
+<tr><th scope="row">測試數量</th><td>（筆記未列）</td><td>框架表共 <strong>32 項</strong>：APP 14、MOD 7、INF 6、DAT 5</td><td>第 2 章逐項列出</td></tr>
+<tr><th scope="row">授權</th><td>（筆記未載）</td><td>儲存庫 LICENSE.md 寫 CC BY-SA 4.0；GitHub 授權偵測為 NOASSERTION；owasp.org 專案頁沒有獨立授權欄</td><td>頁尾寫 CC BY-SA 4.0（依儲存庫 LICENSE.md），並註明偵測值</td></tr>
+<tr><th scope="row">相關資源的清單</th><td>README 列出 GenAI Red Teaming Guide、CSA Agentic AI Red Teaming Guide、AI Exchange、LLM Top 10、AIVSS、NIST AI 100-2 E2025</td><td>屬實；README 另列 OWASP AI Security and Privacy Guide</td><td>第 3 章表 3-2 引用</td></tr>
+<tr><th scope="row">AISVS 與本指引的關係</th><td>（筆記未載）</td><td>AISVS 1.01 發布說明寫：範圍指引 (Scope guidance) 指向 OWASP AI Testing Guide 作為測試程序的出處</td><td>第 3 章表 3-2 列為官方明載，並註明出處是 AISVS</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">內容依據：公告版 vs. GitHub main</th><td>owasp.org：2025-11-26 Version 1 Published；GitHub main：之後到 2026-06-01 仍有提交</td><td>採較新的 GitHub main 作為內容依據；v1 PDF 未下載，兩者差異未能確認</td></tr>
+<tr><th scope="row">APP-10 的名稱與檔名</th><td>框架表：Testing for <strong>Harmful Content Bias</strong>，連結檔名 <code>AITG-APP-10_Testing_for_Harmful_Content_Bias.md</code>（2026-10-26 回傳 404）；目錄頁：Testing for <strong>content Bias</strong>，檔名 <code>AITG-APP-10_Testing_for_Content_Bias.md</code>（回傳 200，頁面標題是 Content Bias）</td><td>名稱照框架表（「有害內容偏見」），因為該表同時標了領域與 Threat Source；並在第 2 章與本頁註明。內容從實際存在的檔案讀取</td></tr>
+<tr><th scope="row">DAT-04 的名稱</th><td>框架表與測試頁：Testing for Harmful Content in Data；目錄頁：Testing for Harmful in Data</td><td>採框架表與測試頁的寫法；目錄頁應是漏字</td></tr>
+<tr><th scope="row">Threat Source 的年份</th><td>框架表 Threat Source 欄寫「OWASP Top 10 LLM 2025」；LLM Top 10 已有 2026 版</td><td>教材照官方表呈現，並在第 2 章說明年份陷阱（表 2-3）；不擅自把表改成 2026</td></tr>
+<tr><th scope="row">APP-06 引用 LLM06 且沒標年份</th><td>測試頁參考資料寫「LLM06: Excessive Agency」，連結文字卻指向 sensitive-information-disclosure 的網址</td><td>教材在表 2-3 以名稱 Excessive Agency 對應 LLM06:2025 與 LLM03:2026，並註明該頁沒標年份；連結網址不一致是來源的瑕疵，未推論原因</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>GitHub main 與 v1 PDF（2025-11-26）是否一致：</strong>本教材沒有下載 PDF；儲存庫在公告之後仍有更新。</li>
+  <li><strong>v1 PDF 的取得位置：</strong>專案頁說 PDF 可取得，但本教材在頁面 HTML 內沒有找到連結。</li>
+  <li><strong>授權的正式標示：</strong>LICENSE.md 寫 CC BY-SA 4.0，GitHub 偵測為 NOASSERTION，owasp.org 專案頁無獨立授權欄；教材以 LICENSE.md 為準。</li>
+  <li><strong>APP-10 與 DAT-04 的名稱小差異：</strong>見 R-3；框架表連結的檔名是否為錯誤，未能確認（可能是更名後未同步）。</li>
+  <li><strong>各測試頁的完整內容：</strong>本教材逐頁檢查了 32 頁的小節結構，並閱讀了其中約 15 頁的摘要；沒有逐頁細讀每項測試的方法與工具清單。教材只引用結構、摘要與框架表。</li>
+  <li><strong>專案層級以外的現況：</strong>owasp.org 頁面顯示 Incubator；是否有更新的層級標示，未查。</li>
+  <li><strong>附錄 A–E 的內容：</strong>附錄 A（SAIF 的選用理由）本教材只看了開頭；附錄 B–E（DIE 威脅識別、風險生命週期、威脅列舉、CVE／CWE 對照）未讀。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<h3>OWASP AI Testing Guide</h3>
+<ul>
+  <li>專案頁：<a href="https://owasp.org/www-project-ai-testing-guide/">https://owasp.org/www-project-ai-testing-guide/</a></li>
+  <li>GitHub：<a href="https://github.com/OWASP/www-project-ai-testing-guide">github.com/OWASP/www-project-ai-testing-guide</a>；目錄 <a href="https://github.com/OWASP/www-project-ai-testing-guide/blob/main/Document/README.md">Document/README.md</a></li>
+  <li>內容頁：<a href="https://github.com/OWASP/www-project-ai-testing-guide/blob/main/Document/content/1.2_Principles_of_AI_Testing.md">1.2 Principles</a>、<a href="https://github.com/OWASP/www-project-ai-testing-guide/blob/main/Document/content/1.3_Objectives_of_AI_Testing_Guide.md">1.3 Objectives</a>、<a href="https://github.com/OWASP/www-project-ai-testing-guide/blob/main/Document/content/2.0_Threat_Modeling_for_AI_Systems.md">2.0 Threat Modeling</a>、<a href="https://github.com/OWASP/www-project-ai-testing-guide/blob/main/Document/content/3.0_OWASP_AI_Testing_Guide_Framework.md">3.0 Framework</a>、3.1–3.4 各類別頁、32 個測試頁（<code>content/tests/AITG-*.md</code>）</li>
+</ul>
+<h3>相鄰文件（僅用於對照）</h3>
+<ul>
+  <li>GenAI Red Teaming Manual Version 1.0：<a href="https://genai.owasp.org/resource/genai-red-teaming-manual-version-1-0/">資源頁</a>（2026-10-20）</li>
+  <li>OWASP AISVS 1.01：<a href="https://github.com/OWASP/AISVS/releases/tag/v1.01">發布說明</a>；<a href="https://github.com/OWASP/AISVS">儲存庫</a></li>
+  <li>OWASP AIVSS：<a href="https://aivss.owasp.org/">aivss.owasp.org</a></li>
+  <li>OWASP Top 10 for LLM Applications 2025／2026：見<a href="../../01-overview/genai-security-project/references.html">GenAI 專案參考資料頁</a></li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>圖 1-1 的「結果回饋更新威脅模型」虛線箭頭（官方說持續更新威脅模型，箭頭是圖示化）。</li>
+  <li>表 1-3「與紅隊 Manual 互補」的說法。</li>
+  <li>第 2 章表 2-1／2-2 的中文測試名稱（暫譯）；表後「讀表時值得注意的三件事」中的 Threat Source 統計（作者依官方表計數：LLM Top 10 2025 共 14 項、Responsible AI 共 11 項、AI Exchange 共 7 項）。</li>
+  <li>表 2-3 的 2025 ↔ 2026 編號對應（2026 欄的名稱與編號取自官方清單，對應關係是作者整理）。</li>
+  <li>圖 2-1 的整張決策流程，與情境 A 中「威脅 → 測試」的具體選擇、「標不適用並記錄理由」的做法。</li>
+  <li>表 3-1 第三欄「能改善什麼」；表 3-2 末兩列的分工說法；圖 3-1 的整張評估接力流程。</li>
+  <li>情境 B 步驟 5「把存取層級標為灰箱並記錄重複次數」的報告建議。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>OWASP AI Testing Guide：儲存庫 LICENSE.md 寫 CC BY-SA 4.0；GitHub 偵測值為 NOASSERTION。本教材以自己的話整理，不收錄官方測試頁的範例輸入；若要再散布，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>GenAI Red Teaming Manual、OWASP AISVS：CC BY-SA 4.0。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：OWASP AI Testing Guide — CC BY-SA 4.0（依儲存庫 LICENSE.md；GitHub 偵測值為 NOASSERTION）；GenAI Red Teaming Manual、OWASP AISVS、LLM Top 10 — CC BY-SA 4.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

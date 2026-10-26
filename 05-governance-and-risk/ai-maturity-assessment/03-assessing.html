@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　怎麼做評估：級別、問卷與記分｜AI 成熟度評估（AIMA）｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AIMA 的三個成熟度級別、輕量與詳細兩種評估、Yes／No 問卷與「+」記分法，用 Governance 工作表算一次分數，以及自評的限制。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="ai-maturity-assessment" data-page="03-assessing.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　怎麼做評估：級別、問卷與記分</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3、LO4</li>
+  <li>前置：<a href="02-domains.html">第 2 章</a></li>
+</ul>
+<p class="lead">知道八個領域之後，下一個問題是：怎麼打分？AIMA 的答案很樸素：<strong>一份 Yes／No 問卷，加上一套「全部 Yes 才算達到那一級」的規則</strong>。簡單，所以容易用，也容易被用錯。這一章走一遍記分法、做一次治理工作表的練習，並說明這種自評的限制。</p>
+
+<h2 id="as-levels">3.1 三個級別，每級有三個元件</h2>
+<p>AIMA 沿用 SAMM：每個實務有<strong>三個成熟度級別</strong>。對每一級，文件用三個元件來描述：</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　每一級的三個元件（AIMA「Using the AIMA Maturity Levels」，改寫）</caption>
+<thead><tr><th scope="col">元件</th><th scope="col">是什麼</th><th scope="col">文件舉的例子</th></tr></thead>
+<tbody>
+<tr><th scope="row">目標 <br>(Objective)</th><td>達到該級的保證目標；級別越高，目標越成熟</td><td>Level 1：建立基本的 AI 治理；Level 2：有指標的完整 AI 策略；Level 3：持續改善與最佳化</td></tr>
+<tr><th scope="row">活動 <br>(Activities)</th><td>要執行的核心活動；有些是全組織層級（如設 AI 監督委員會），有些是專案層級（如逐案風險評估）；實作方式有彈性</td><td>Strategy and Metrics：Level 1 可能是「訂出初步 AI 策略文件」，Level 2 可能是「實施 AI 系統效能與風險的指標追蹤」</td></tr>
+<tr><th scope="row">成果 <br>(Results)</th><td>達到該級後得到的能力或成品，如風險登記冊、合規報告、訓練計畫</td><td>Policy and Compliance：Level 1 只要「知道法律要求」；Level 2「建立 AI 政策與定期合規稽核」；Level 3「整合的合規證據管理與持續監控」</td></tr>
+</tbody></table></div>
+<p>每一級也不是一整坨：每個實務分<strong>兩個流</strong>，各自有三級。模型章節稱它們是「建立與推廣」(Create &amp; Promote) 與「衡量與改善」(Measure &amp; Improve)；而治理工作表裡，流的名稱依實務不同，例如 Strategy and Metrics 的流是「策略對齊」與「指標管理」，Policy and Compliance 的流是「政策制定」與「合規管理」。</p>
+
+<h2 id="as-scoring">3.2 記分：全部 Yes 才算達到，部分達到記「+」</h2>
+<div class="concept">
+<h3 id="c-scoring">Yes／No 問卷與「+」</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>對每個實務的工作表逐題回答 Yes 或 No。<strong>某一級的題目全部 Yes，才算達到該級</strong>。如果同時達成了下一級的部分（但不是全部）題目，就記成「Level N+」。分數可以是 0、1、2、3，或 1+、2+、3+。0 代表該領域尚無可察覺的活動；3 或 3+ 是最高。</dd>
+  <dt data-n="2">為什麼這樣設計</dt>
+  <dd>文件說明，組織不會整齊地落在某一級：可能做了一些進階活動，卻沒補齊較基礎的條件。「+」就是用來記錄這種「超出基礎級別的額外保證」。</dd>
+  <dt data-n="3">怎麼用（概念層級）</dt>
+  <dd>以 Strategy and Metrics 為例：Level 1 與 Level 2 的題目全部是 Yes、Level 3 沒有全部 Yes，分數是 <strong>Level 2+</strong>（工作表原文的例子）。評完每個實務後，可以用雷達圖或計分卡看整體的 Governance 成熟度，找出要補的地方。</dd>
+  <dt data-n="4">怎麼防止誤用</dt>
+  <dd>注意一個細節：文件的兩個例子彼此對不上。「評估方法」一節的例子是「滿足全部 Level 1 與部分 Level 2＝1+」；工作表的例子是「全部 Level 1 與 Level 2、部分 Level 3＝2+」。兩者用同一條規則（全部達到才算該級，其上部分達到加 +），並不衝突，只是舉了不同的狀況。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「只要大部分 Yes，就可以算 Level 2。」不是。要全部 Yes 才算達到；大部分 Yes 只是「+」。</dd>
+</dl>
+</div>
+
+<h2 id="as-worksheet">3.3 用 Governance 工作表算一次分數</h2>
+<p>官方在 PDF 與儲存庫給的示範工作表是 Governance 領域。三個實務、每個兩個流、每流三級，共 <strong>18 個 Yes／No 問題</strong>（3 × 2 × 3）。Strategy and Metrics 這個實務的問題如下（改寫自官方工作表）：</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　Strategy and Metrics 的工作表（官方 Governance 工作表，改寫）</caption>
+<thead><tr><th scope="col">級別</th><th scope="col">流 A：策略對齊</th><th scope="col">流 B：指標管理</th></tr></thead>
+<tbody>
+<tr><th scope="row">Level 1</th><td>是否已有初步的 AI 策略文件（即使不正式）？</td><td>是否已有任何非正式追蹤的 AI 相關指標？</td></tr>
+<tr><th scope="row">Level 2</th><td>AI 策略是否已正式訂定並向利害關係人溝通？</td><td>是否有明訂的指標，定期檢視並在組織內溝通？</td></tr>
+<tr><th scope="row">Level 3</th><td>AI 策略是否已整合進更大的業務策略並反覆精進？</td><td>指標是否被系統性分析，用於推動改善與決策？</td></tr>
+</tbody></table></div>
+<p>練習：一個團隊的回答是：流 A 的 Level 1、Level 2 都是 Yes，Level 3 是 No；流 B 的 Level 1 是 Yes，Level 2 是 No。這個實務是幾級？</p>
+<ul>
+  <li><strong>Level 1：</strong>流 A 與流 B 的 Level 1 題都是 Yes → 達到 Level 1。</li>
+  <li><strong>Level 2：</strong>流 B 的 Level 2 是 No → 未達 Level 2。</li>
+  <li>但流 A 的 Level 2 是 Yes（部分達到下一級）→ 記為 <strong>Level 1+</strong>。</li>
+</ul>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：「同一級的兩個流要不要都 Yes」</p>
+  <p>上面的練習把「某一級」解讀成「該級在兩個流的題目都要 Yes」。官方文字是「某一級的題目全部 Yes」，工作表也是兩個流並列；<strong>文件沒有明說兩個流是否各自獨立計級</strong>。本教材採用較嚴格的解讀（兩流都要），這是作者的判讀，不是官方規定。Excel 工具包可能有明確的算法，但本教材沒有檢查它的公式。</p>
+</div>
+
+<h2 id="as-styles">3.4 輕量與詳細：結果能說明什麼</h2>
+<div class="table-wrap"><table>
+<caption>表 3-3　兩種評估方式（AIMA「Conducting AIMA Assessments」，改寫）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">輕量評估 (Lightweight)</th><th scope="col">詳細評估 (Detailed)</th></tr></thead>
+<tbody>
+<tr><th scope="row">做法</th><td>用各實務的工作表回答 Yes／No，給出暫定的級別</td><td>問卷之後再做稽核式的驗證與證據蒐集</td></tr>
+<tr><th scope="row">需要的資料</th><td>訪談與文件檢視，不必深入驗證</td><td>政策文件、訓練紀錄、模型評估報告等證據；並蒐集每個實務的成功指標 (Success Metrics) 的資料</td></tr>
+<tr><th scope="row">適用</th><td>快速把現有的 AI 治理工作對映到 AIMA，取得高階圖像</td><td>要提高評級的可信度、確認不是「紙面合規」</td></tr>
+<tr><th scope="row">信心</th><td>較低：是受訪者的陳述</td><td>較高：有證據支持</td></tr>
+</tbody></table></div>
+<p>評估的<strong>範圍</strong>也要先定：是整個組織的 AI 計畫，還是單一事業單位或專案。範圍較窄時，有些活動可能在你的範圍外（例如公司層級的集中 AI 治理），評估應該<strong>註明這種情況，而不是直接填 No</strong>。</p>
+<div class="callout official unsure">
+  <p class="callout-title">本教材沒有檢查的部分</p>
+  <p>本教材只讀了 Governance 一張工作表。其餘七張（負責任 AI、資料管理、隱私、設計、實作、驗證、營運）的題目與分級，以及 Excel 工具包的「Results」與「圖形化」分頁的算法，本教材<strong>沒有逐題核對</strong>。教材不列這些題目，也不保證它們的結構與 Governance 工作表完全相同。</p>
+</div>
+
+<h2 id="as-scenario">3.5 情境範例 A：一場半天的輕量評估</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：旭光物流的 Governance 評估</h3>
+<p><span class="tag fiction">虛構</span> 旭光物流是虛構的公司。資安長想知道公司的 AI 治理在哪，決定用 AIMA 做一場半天的輕量評估，範圍是整個公司的 AI 計畫。參加者是資安、法務、資料團隊與兩位事業單位主管。</p>
+<ol class="steps">
+  <li><strong>先定範圍與角色：</strong>他們明寫「範圍＝全公司」；因為法務在總部、資料團隊在子公司，所以註明「資料治理部分由子公司負責，列為範圍外」，而不是填 No。</li>
+  <li><strong>逐題 Yes／No：</strong>Strategy and Metrics：有一份草稿式的 AI 策略，所以 Level 1 為 Yes，但沒有向各單位溝通，所以 Level 2 為 No；Policy and Compliance：沒有 AI 政策，只有零散的資料保護規定（Level 1 部分）。</li>
+  <li><strong>算分：</strong>Strategy and Metrics 記為 Level 1；Policy and Compliance 記為 0 或 Level 1 取決於「基本知道 GDPR」那一題是否 Yes；Education and Guidance 為 0。</li>
+  <li><strong>看圖：</strong>用雷達圖呈現三個實務，缺口最明顯的是教育與政策。</li>
+  <li><strong>決定下一步：</strong>他們選「先建立正式的 AI 政策並向全公司溝通」，這會同時讓 Policy and Compliance 與 Strategy and Metrics 往上一級。</li>
+  <li><strong>這個情境的提醒：</strong>這是一次輕量評估，結果是參與者的陳述。他們在報告中明寫：「暫定級別，未經證據驗證」；若要向董事會或稽核報告，再安排詳細評估，蒐集政策文件與訓練紀錄。</li>
+</ol>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>每個實務三級；每級有目標、活動、成果三個元件；兩個流各有三級。</li>
+  <li>記分：全部 Yes 才算達到該級；部分達到下一級記「+」；分數 0、1、2、3 與 1+、2+、3+。</li>
+  <li>Governance 工作表共 18 題（3 實務 × 2 流 × 3 級）；是否兩流都要 Yes 才算一級，官方沒有明說，教材採較嚴格解讀（作者整理）。</li>
+  <li>輕量評估是陳述，詳細評估加證據；範圍外的活動要註明而非填 No。</li>
+  <li>本教材只讀了 Governance 一張工作表，其餘七張與 Excel 的算法未核對。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出「全部 Yes 才算該級」與「+」的意思。</li>
+  <li>給我一份回答，我能算出一個實務的級別。</li>
+  <li>我知道輕量評估的結果不等於已驗證。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3、LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-integration.html">第 4 章　跨文件整合與收尾</a>：AIMA 只是 OWASP AI 資源裡的第四種「成熟度」工具之一，最後一章把它們區分清楚。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Maturity Assessment V1（PDF，Version V1.0 — August 11, 2025）：Applying the Model（Using the AIMA Maturity Levels、Conducting AIMA Assessments、Governance Assessment Worksheet）；<a href="https://raw.githubusercontent.com/OWASP/www-project-ai-maturity-assessment/main/releases/V1/OWASP-AIMA_V1.pdf">releases/V1/OWASP-AIMA_V1.pdf</a>；2026-10-26 讀取。</li>
+    <li>GitHub 儲存庫 <code>source/latest/20_ Applying_the_model/</code>（10、20、22）；CC BY-SA 4.0；<a href="https://github.com/OWASP/www-project-ai-maturity-assessment">github.com/OWASP/www-project-ai-maturity-assessment</a>；2026-10-26 讀取。Excel 工具包的公式未檢查。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AIMA — CC BY-SA 4.0（儲存庫 LICENSE.md；GitHub 偵測值為 NOASSERTION）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'am-ch3', topic: 'ai-maturity-assessment', mode: 'chapter',
+  questions: [
+    { id: 'am3q1', type: 'mc', lo: [3], refs: [{label: '3.2 記分', href: '03-assessing.html#c-scoring'}],
+      stem: '依 AIMA 的記分法，一個團隊對某實務的 Level 1 題目全部 Yes、Level 2 題目一半 Yes，應記為？',
+      options: [
+        { text: 'Level 2，因為已經超過一半。', why: '必須全部 Yes 才算達到該級。' },
+        { text: 'Level 1+，因為達到 Level 1，且部分達成 Level 2。', correct: true, why: '「+」表示對下一級的部分達成。' },
+        { text: 'Level 0，因為有未完成的題目。', why: 'Level 1 已全部 Yes。' },
+        { text: 'Level 3，因為分數是累加的。', why: '記分不是累加。' }
+      ],
+      summary: '全部 Yes 才算該級；部分達到下一級記「+」。' },
+    { id: 'am3q2', type: 'match', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-assessing.html#as-levels'}],
+      stem: '把下列描述配對到每一級的三個元件。',
+      cats: [
+        { id: 'obj', label: '目標 (Objective)' },
+        { id: 'act', label: '活動 (Activities)' },
+        { id: 'res', label: '成果 (Results)' }
+      ],
+      items: [
+        { text: '訂出初步的 AI 策略文件', answer: 'act', why: '這是要做的活動。' },
+        { text: '有指標的完整 AI 策略（Level 2 的保證目標）', answer: 'obj', why: '這是該級想達到的目標。' },
+        { text: '建立 AI 政策與定期合規稽核後所得到的能力或成品', answer: 'res', why: '這是達成後得到的成果。' }
+      ],
+      summary: '目標、活動、成果：每一級都用這三個元件描述。' },
+    { id: 'am3q3', type: 'mc', lo: [4], refs: [{label: '3.4 表 3-3', href: '03-assessing.html#as-styles'}],
+      stem: '下列哪一種情況最需要「詳細評估」而不是「輕量評估」？',
+      options: [
+        { text: '想在半天內快速知道自己大概在哪。', why: '這正是輕量評估的用途。' },
+        { text: '評級結果要交給外部稽核或董事會，需要證明不是紙面合規。', correct: true, why: '詳細評估加稽核式驗證與證據，信心較高。' },
+        { text: '剛成立的團隊第一次接觸 AIMA。', why: '輕量評估通常就夠用。' },
+        { text: '只想看看 Governance 的三個實務。', why: '範圍小不代表要詳細評估。' }
+      ],
+      summary: '輕量：陳述；詳細：加證據。' },
+    { id: 'am3q4', type: 'scn', lo: [3, 4], refs: [{label: '3.3 練習', href: '03-assessing.html#as-worksheet'}, {label: '3.4 範圍', href: '03-assessing.html#as-styles'}],
+      stem: '依本章，這份評估結果有什麼問題？',
+      scenario: '楓橋製造（虛構）的團隊用 AIMA 評估，範圍是單一產品線。報告寫：「Policy and Compliance：Level 3，我們全部達成，因此可以向客戶保證本公司的 AI 治理完全成熟。」細看紀錄，發現 Level 3 的題目有一半是 Yes、一半是 No；而且「公司層級的 AI 政策」這題因為不在產品線範圍內，被直接填了 No。評估只做了半天訪談，沒有蒐集任何文件。',
+      options: [
+        { text: '沒有問題，一半以上的 Yes 就算達到。', why: '必須全部 Yes 才算達到，一半是 Level 2+ 才合理（假設 Level 2 全部 Yes）。' },
+        { text: '三處：Level 3 沒有全部 Yes，最多只能記為 Level 2+；範圍外的活動應註明而不是填 No；只做訪談的輕量評估是陳述，不能用來向客戶保證，需要詳細評估的證據。', correct: true, why: '對應 3.2、3.4 節。' },
+        { text: '只有範圍的處理有問題。', why: '另外兩處同樣有問題。' },
+        { text: '應該把 Level 3 改成 Level 4。', why: 'AIMA 每個實務只有三級。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 記分規則：全部 Yes 才算達到該級；Level 3 只有一半 Yes，最多是 Level 2+（前提：Level 2 全部 Yes）。(2) 範圍：範圍較窄時，在範圍外的活動要註明，不是直接填 No。(3) 輕量評估只做訪談與文件檢視，是陳述；若要對外保證，需要詳細評估蒐集政策、紀錄等證據。</p><p><strong>結論：</strong>改為 Level 2+（暫定），註明範圍外項目，並安排詳細評估。對應教材：<a href="03-assessing.html#c-scoring">3.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

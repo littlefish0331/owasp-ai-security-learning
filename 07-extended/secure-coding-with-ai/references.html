@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜AI 輔助寫程式與模型營運安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AI 輔助寫程式與模型營運安全主題的來源核對清單：兩份 Cheat Sheet 的讀取日與提交日、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="secure-coding-with-ai" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 6.3 節與第 8 節）</li>
+</ul>
+<p class="lead">這個主題的兩份來源都是 OWASP Cheat Sheet Series 的單頁文件：Cheat Sheet <strong>沒有版本號與發布日</strong>，所以本教材以「讀取日 2026-10-26」加「GitHub 首次提交日與最後修改日」標示。本頁列出：採用的版本與日期、與筆記不同之處、衝突與取捨、未能確認的項目，以及授權。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。Cheat Sheet 隨時會修訂，教材寫的是 2026-10-26 讀到的狀態。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">Secure Coding with AI Cheat Sheet</th><td>頁面<strong>無版本號與日期</strong>。GitHub 首次提交 <strong>2026-05-05</strong>（#2132）；最後修改 <strong>2026-10-04</strong>（#2565）；共 4 個提交（另有 2026-07-23 的美式拼字統一、2026-10-03 的參考資料稽核）</td><td><a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_Coding_with_AI_Cheat_Sheet.html">網站頁面</a>；<a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Secure_Coding_with_AI_Cheat_Sheet.md">GitHub 原始檔</a>。官方儲存庫主分支的原始檔與暫存的讀取檔逐字相同；網頁只核對標題結構（14 個編號節、威脅模型、Top 10 對照表、參考資料）與頁尾授權</td><td>CC BY-SA 4.0（網站頁尾；儲存庫 LICENSE）</td></tr>
+<tr><th scope="row">Secure AI/ML Model Ops Cheat Sheet</th><td>頁面<strong>無版本號與日期</strong>。GitHub 首次提交 <strong>2025-08-08</strong>（#1744）；最後修改 <strong>2026-10-04</strong>（#2601）；共 7 個提交</td><td><a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_AI_Model_Ops_Cheat_Sheet.html">網站頁面</a>；<a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Secure_AI_Model_Ops_Cheat_Sheet.md">GitHub 原始檔</a>。同上方式核對：原始檔逐字相同；網頁核對 9 個編號建議節與第 6 節標題</td><td>CC BY-SA 4.0（網站頁尾；儲存庫 LICENSE）</td></tr>
+<tr><th scope="row">CVE-2026-39313（Secure Coding with AI 第 4 節引用）</th><td>GitHub 公告 GHSA-353c-v8x9-v7c3：npm 套件 mcp-framework 0.2.21 以前受影響，0.2.22 修正；公告日 2026-04-16</td><td><a href="https://github.com/advisories/GHSA-353c-v8x9-v7c3">github.com/advisories/GHSA-353c-v8x9-v7c3</a>（只用於核對文件所引用的版本與描述）</td><td>GitHub 公告頁面；教材只引用編號、套件與版本</td></tr>
+<tr><th scope="row">OWASP Top 10（核對對照表名稱）</th><td>2021 版與 2025 版的 A01–A10 類別名稱，只用於判斷 Secure Coding with AI 對照表對應哪一版</td><td><a href="https://top10.owasp.org/2021">top10.owasp.org/2021</a>、<a href="https://top10.owasp.org/2025">top10.owasp.org/2025</a></td><td>各頁面標示；教材只引用類別名稱</td></tr>
+<tr><th scope="row">OWASP Top 10 for LLM Applications 2026</th><td>沿用 LLM Top 10 主題採用的 2026 版（編號與連結見該主題）</td><td><a href="../../02-llm-applications/llm-top-10/references.html">LLM Top 10 主題的參考資料頁</a></td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>沿用專案已放置的副本</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正或補充）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">內容</th><td>筆記只確認這兩份速查表的標題存在，沒有讀內容</td><td>本次補讀了全文：Secure Coding with AI（威脅模型加 14 節加 Top 10 對照表）、Model Ops（常見問題 12 項、案例 8 類、建議 9 節）</td><td>第 1–5 章</td></tr>
+<tr><th scope="row">日期與修訂</th><td>筆記說「皆無日期或版本標示」</td><td>屬實；本次補查 GitHub 提交紀錄，得到首次提交與最後修改日，以及各項修訂的日期（例如 Model Ops 在 2026-05-15 插入第 6 節）</td><td>以讀取日加提交日標示（第 1 章）</td></tr>
+<tr><th scope="row">授權</th><td>（筆記未提這兩份的授權）</td><td>Cheat Sheet Series 站台頁尾標 CC BY-SA 4.0；儲存庫 LICENSE 為 CC BY-SA 4.0 全文（SPDX 標示 CC-BY-SA-4.0）；README 的授權徽章同為 CC BY-SA 4.0</td><td>第 7 節與各頁頁尾</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">Model Ops 的節號</th><td>2025-08-08 的初版有 8 個建議節（第 6 節是監控與日誌）；2026-05-15 起有 9 個（第 6 節是執行期與硬體隔離，監控與日誌是第 7 節）。調查筆記提到的「Monitoring & Logging」等節名沒有標節號</td><td>採最新版的 9 節編號；第 1 章提醒節號會變</td></tr>
+<tr><th scope="row">Secure Coding with AI 的 Top 10 對照表</th><td>表中的類別名稱（例如 A06 Vulnerable and Outdated Components、A10 Server-Side Request Forgery、沒有 A02）與 OWASP Top 10 2021 版相符；2025 版的名稱不同（A03 為 Software Supply Chain Failures、A10 為 Mishandling of Exceptional Conditions）；文件沒有標年份</td><td>教材照文件原樣描述，並註明名稱與 2021 版相符（作者核對）；<strong>文件打算對照哪一版，未能確認</strong></td></tr>
+<tr><th scope="row">官方網頁與 GitHub 原始檔</th><td>網站頁面與 GitHub 主分支原始檔的標題結構與內容一致</td><td>無衝突；內文以原始檔逐字比對，網頁只核對結構與授權</td></tr>
+<tr><th scope="row">GitHub Markdown 原始檔的引用地位</th><td>Cheat Sheet Series 儲存庫 README 說：Markdown 檔是工作用的原始檔，不打算被外部文件、書籍或網站引用；要閱讀與引用請用官方網站</td><td>各章「本章來源」的連結指向官方網站頁面；本頁另附 GitHub 原始檔連結，只供核對，用來取得首次提交日、最後修改日與修訂內容</td></tr>
+<tr><th scope="row">LLM Top 10 編號</th><td>兩份速查表都沒有引用 LLM Top 10 的編號，因此沒有 2025／2026 年份混用的問題</td><td>教材所有 LLM 編號都是作者加上的對應，一律寫 <code>LLMnn:2026</code> 並標「作者整理，非官方」；換算規則見 <a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 第 8 章</a></td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>Secure Coding with AI 的 Top 10 對照表對應哪一年的版本：</strong>文件未標；名稱與 2021 版相符（作者核對）。</li>
+  <li><strong>Model Ops 第 9 節的「OWASP ASVS 或 Proactive Controls for AI/ML」與參考資料的 AISVS 是不是同一回事：</strong>文件沒有說明；本教材也沒有查證「Proactive Controls for AI/ML」是哪一份文件，不替它補。</li>
+  <li><strong>兩份速查表的修訂動機：</strong>GitHub 提交只有標題與修改內容，沒有說明為何這樣改；教材只寫「何時新增了什麼」，不推測原因。</li>
+  <li><strong>官方網頁的逐字內容：</strong>只用網頁核對標題結構與頁尾授權，內文以 GitHub 原始檔為準；兩者若有細微差異（例如網站編譯時的轉換），本次未逐字比對。</li>
+  <li><strong>文件引用的工具、旗標與框架名稱：</strong>例如 <code>--dangerously-skip-permissions</code>、各家 AI 編碼工具的規則檔名稱、gVisor、Kata Containers 等，本教材只複述文件的說法，沒有查證各工具現行的行為或設定檔名稱。</li>
+  <li><strong>文件列為參考的 NIST SP 800-218、SP 800-218A、AI 100-2 E2025 與 OpenSSF 指南：</strong>只複述文件對它們的引用，沒有讀原文。</li>
+  <li><strong>CVE-2026-39313 的細節：</strong>只用 GitHub 公告核對文件所寫的套件、版本與描述；沒有驗證修補內容。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<ul>
+  <li>Secure Coding with AI Cheat Sheet：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_Coding_with_AI_Cheat_Sheet.html">cheatsheetseries.owasp.org/cheatsheets/Secure_Coding_with_AI_Cheat_Sheet.html</a></li>
+  <li>Secure AI/ML Model Ops Cheat Sheet：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_AI_Model_Ops_Cheat_Sheet.html">cheatsheetseries.owasp.org/cheatsheets/Secure_AI_Model_Ops_Cheat_Sheet.html</a></li>
+  <li>OWASP Cheat Sheet Series 儲存庫（原始檔、提交紀錄、LICENSE、README）：<a href="https://github.com/OWASP/CheatSheetSeries">github.com/OWASP/CheatSheetSeries</a></li>
+  <li>GitHub 安全公告 GHSA-353c-v8x9-v7c3（CVE-2026-39313）：<a href="https://github.com/advisories/GHSA-353c-v8x9-v7c3">github.com/advisories/GHSA-353c-v8x9-v7c3</a></li>
+  <li>OWASP Top 10 2021 與 2025：<a href="https://top10.owasp.org/2021">top10.owasp.org/2021</a>、<a href="https://top10.owasp.org/2025">top10.owasp.org/2025</a></li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>兩份速查表的並排比較與圖 1-1 的銜接節點（第 1 章表 1-2、圖 1-1）；Top 10 對照表年份的核對（第 1 章 1.4 節）。</li>
+  <li>圖 2-1 的「助理是匯流點」畫法；表 2-2 最後一列的「檢查時點」；LLM01:2026、LLM04:2026 的對應；Rule of Two 的檢查角度（第 2 章）。</li>
+  <li>表 3-1 依「能碰到的東西」的重排；LLM03:2026 的概念對照；把規則檔歸為供應鏈 (Supply Chain) 類問題；圖 3-1 的控制點位置（第 3 章）。</li>
+  <li>表 4-1 的生命週期階段排法與「主要回應的問題」欄；圖 4-1；表 4-2 的分組；「孤兒部署沒有直接建議」等三項觀察；LLM04、LLM05、LLM06:2026 的對應；執行期隔離十條的五組整理（第 4 章）。</li>
+  <li>表 5-1 與日誌最少化同向的說法；表 5-2 第三欄全部；圖 5-1 與情境的串接（第 5 章）。</li>
+  <li>以上都已在頁內標示「作者整理，非官方」。官方文件<strong>沒有</strong>寫這些對應。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>OWASP Cheat Sheet Series（兩份來源）：CC BY-SA 4.0。依據：網站頁尾「This work is licensed under Creative Commons Attribution-ShareAlike 4.0 International」；儲存庫 LICENSE.md 為 CC BY-SA 4.0 全文；README 的授權徽章同。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>OWASP Top 10 for LLM Applications 2026：CC BY-SA 4.0（本主題只引用條目名稱與編號的概念對照）。</li>
+  <li>GitHub 安全公告與 OWASP Top 10 2021／2025 頁面：只用於核對版本與類別名稱，未複製其內文。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：OWASP Cheat Sheet Series — CC BY-SA 4.0；OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

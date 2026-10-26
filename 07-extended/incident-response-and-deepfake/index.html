@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>事件應變與 Deepfake｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP GenAI Incident Response Guide 1.0 與 Guide for Preparing and Responding to Deepfake Events 的主題首頁：學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="incident-response-and-deepfake" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>事件應變與 Deepfake</h1>
+<ul class="meta-row">
+  <li>07 延伸主題｜主題 7</li>
+  <li>預估學習時間：約 55–65 分鐘（4 章閱讀約 30 分鐘；章末檢核與總測驗約 25–30 分鐘）</li>
+  <li>採用來源：genai.owasp.org 的 GenAI Incident Response Guide（Version 1.0，July 28, 2025）與 Guide for Preparing and Responding to Deepfake Events（Version 1，PDF 修訂表 2024-09-10 發布），2026-10-26 讀取</li>
+</ul>
+<p class="lead">前面的主題大多在談「怎麼預防」。這個主題談的是<strong>事情已經發生之後</strong>：一個 GenAI 系統出事，你要怎麼判斷它算不算「事件」、多嚴重、誰要上場、先圍堵什麼、事後要改什麼？另一半談的是一種特別的事件：<strong>deepfake 冒充</strong>。有意思的是，這兩份文件都有一個相似的取向：不要把希望放在「辨識出來」，而是把流程和控制做好。學完後，你能用官方的診斷標準區分 AI 事件與一般資安事件、用嚴重度矩陣判斷輕重、說出三種 AI 事件各自的應變重點，並理解為什麼 deepfake 指南主張「聚焦流程，而不是辨識瑕疵」。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>定位與範圍：</strong>說明兩份指南各是什麼、版本與日期，以及它們是對既有事件應變流程的「補充」而不是取代；並處理它們在日期、編號與授權上的不一致。<br><small>對應：<a href="01-position.html">第 1 章</a></small></li>
+  <li id="lo2"><strong>AI 事件的判斷：</strong>說明 AI 事件的定義、與一般資安事件的差異，並用診斷標準與嚴重度矩陣判斷一個事件。<br><small>對應：<a href="02-ai-incidents.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>三種事件的應變：</strong>區分攻擊 AI 系統、攻擊供應鏈、攻擊第三方模型供應商三種事件，並依 NIST 生命週期說出各自的重點。<br><small>對應：<a href="03-three-incidents.html">第 3 章</a></small></li>
+  <li id="lo4"><strong>Deepfake 與整合：</strong>說明 deepfake 指南「聚焦流程而非辨識」的主張與依據，並與前面主題整合。<br><small>對應：<a href="04-deepfake-and-integration.html">第 4 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>建議先讀 <a href="../../01-overview/genai-security-project/03-initiatives.html">GenAI Security Project 第 3 章</a>（這兩份指南屬 AI Threat Intelligence and Response Initiative）。</li>
+  <li>建議先讀 <a href="../aibom/index.html">AIBOM 主題</a>與 <a href="../data-security/index.html">資料安全主題</a>：事件應變多處要求拿出物料清單，並與資料最小化有張力。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>（約 10 分鐘）。本主題用到預防／偵測／回應類控制與爆炸半徑。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="01-position.html">第 1 章　全貌與定位</a></span><span class="p-state" data-file="01-position.html"></span><span class="p-desc">兩份指南的版本與日期、授權、NIST 生命週期的對齊、LLM 編號沒有年份。表 2 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="02-ai-incidents.html">第 2 章　什麼算 AI 事件、有多嚴重</a></span><span class="p-state" data-file="02-ai-incidents.html"></span><span class="p-desc">AI 事件的定義、與資安事件的診斷標準、嚴重度矩陣（取最高分）。表 3 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-three-incidents.html">第 3 章　三種事件的應變</a></span><span class="p-state" data-file="03-three-incidents.html"></span><span class="p-desc">攻擊 AI 系統、供應鏈、第三方模型供應商；偵測、圍堵、根除、復原與事後；一個虛構情境。情境 A。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="04-deepfake-and-integration.html">第 4 章　Deepfake 與整合</a></span><span class="p-state" data-file="04-deepfake-and-integration.html"></span><span class="p-desc">為什麼不靠辨識、人工驗證與財務控管、四類 deepfake 事件、與其他主題的整合。情境 B。表 2 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（14 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO4，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">核對清單、版本與日期對照、授權、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>AI 事件不一定是攻擊：<strong>幻覺、偏見、模型漂移、資源失控</strong>也可能構成事件。官方指南直接說，「目前沒有被廣泛接受的 AI 事件定義」，並採用 OECD 式的「造成傷害或提高風險」的取向。</li>
+  <li>嚴重度取<strong>各維度中的最高分</strong>：只要有一個維度達到 Critical，整個事件就是 Critical。</li>
+  <li>Deepfake 指南的立場是：偵測技術尚未成熟、人也無法可靠辨識，所以<strong>要把防線建在流程上</strong>（驗證、職責分離、雙重授權），而不是要員工去找瑕疵。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的類比、歸類或流程。</li>
+  <li>兩個情境（A、B）都是 <span class="tag fiction">虛構</span> 的公司與系統，不含可直接使用的攻擊手法。</li>
+  <li>兩份指南引用了許多真實事件（例如聊天機器人誤導乘客、Copilot 零點擊漏洞、數千萬美元的深偽詐欺）。這些是指南引用的公開事件，<strong>本教材沒有獨立查證，因此只用「事件類型」教學，不複述金額、日期與細節</strong>。</li>
+  <li>Deepfake 指南的四類事件（財務詐欺、冒充促成網路攻擊、求職面試詐欺、假資訊）本教材都讀過；但各類的「常見 TTP」表（對照 MITRE ATT&amp;CK 的數十個技術編號）、OSINT 工具清單與個別廠商工具名稱，本教材<strong>不逐項轉述</strong>，只講每類事件的處置重點。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；無法使用時，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>圖表以本地 Mermaid 繪製；若圖沒有顯示，每張圖下方都有文字說明。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：Guide for Preparing and Responding to Deepfake Events — CC BY-SA 4.0（PDF 封面）；GenAI Incident Response Guide 1.0 — PDF 內文未見授權文字，以 genai.owasp.org 網站頁尾 CC BY-SA 4.0（除非另有說明）為準；OWASP Top 10 for LLM Applications 2025／2026 — CC BY-SA 4.0。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

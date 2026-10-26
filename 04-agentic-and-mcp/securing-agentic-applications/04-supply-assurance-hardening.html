@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　供應鏈、驗證、部署與整合｜保護 Agentic 應用指南｜OWASP AI 資安學習教材</title>
+<meta name="description" content="指南後半的供應鏈與探索信任、紅隊與行為測試、安全部署與執行期強化，以及這個主題與 Threats and Mitigations、Agentic Top 10、AI Exchange 等文件的整合與使用順序。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="securing-agentic-applications" data-page="04-supply-assurance-hardening.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　供應鏈、驗證、部署與整合</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4、LO5</li>
+  <li>前置：<a href="03-architectures-capabilities.html">第 3 章</a></li>
+</ul>
+<p class="lead">指南的最後四節回答的是「做完了怎麼知道有效」與「怎麼把它放上線」：供應鏈與探索、驗證（紅隊與行為測試）、部署、執行期強化。本章先看這四節各自給了什麼，再把整個主題收攏到跨文件的位置。</p>
+
+<h2 id="d-supply">4.1 供應鏈與探索：誰可以被信任</h2>
+<p>指南第 6 節的重點不是重講一般的軟體供應鏈（它只說「標準供應鏈做法適用」：SCA 掃描、雜湊與套件鎖定、SBOM），而是 agent 特有的三件事。</p>
+<div class="table-wrap"><table>
+<caption>表 4-1　指南第 6 節：agent 特有的供應鏈與探索控制（改寫）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">官方的做法</th><th scope="col">為什麼是 agent 特有</th></tr></thead>
+<tbody>
+<tr><th scope="row">6.1.2 LLM／agent 產生的程式碼</th><td>沙箱執行任何由 agent 產生或執行的程式碼；執行產生的程式碼前先驗證套件；高風險程式碼執行要 HITL；安裝第三方函式庫前驗證授權與來源</td><td>程式碼是執行期才產生，建置時的掃描看不到</td></tr>
+<tr><th scope="row">6.2 環境與開發</th><td>低階環境與正式環境使用同一個 LLM；驗證公開登錄（如 Hugging Face）上 LLM 的雜湊與貢獻者；對提示與指示做版本控制，用提交編號與雜湊追蹤資料變更；<strong>不要讓 agent 存取建置與部署它自己的儲存庫與資料來源</strong>；用程式碼修改 agent 的 IAM／角色權限以便審查</td><td>agent 的行為隨提示、模型與資料而變，這些都要納入版本控制；agent 不能自己改自己的部署</td></tr>
+<tr><th scope="row">6.3 Agent 與工具探索</th><td>以 agent 卡片與描述辨識信任關係，對未經驗證的 agent 系統最小化信任；用 DID 驗證 agent；用邏輯或網路屏障分隔本地與遠端的 agent 登錄，避免登錄混淆與誤跨邊界；分類並分開私有與公開的 agent、資料與動作；憑證釘選以確保只與核准的登錄溝通</td><td>agent 在執行期動態探索彼此與工具，信任在連線時才決定</td></tr>
+</tbody></table></div>
+
+<h2 id="d-assure">4.2 驗證：紅隊與行為測試</h2>
+<p>第 7 節的主張是：agentic 應用的保證策略<strong>不能只做靜態測試</strong>。它分成兩條線：</p>
+<ul>
+  <li><strong>紅隊 (7.1)：</strong>模擬對手攻擊，範圍涵蓋提示詞注入，但不止於此，還要測試經工具提權、記憶污染與計畫操縱。指南列了數個測試框架與基準（例如 AgentDojo、Agent Security Bench、AgentPoison 等），並指向 ASI 紅隊指南與 GenAI Red Teaming Guide 的附錄。這些是官方列出的範例，不是背書。</li>
+  <li><strong>行為測試 (7.2)：</strong>評估 agent 的<strong>活動與互動</strong>，而不只是其結構或程式碼，用於找出非預期動作、邏輯錯誤與追求有害目標。方法包括明確的目標定義、基準資料集、在受控環境模擬、人工加自動的評估。選基準時要先分清楚：有些基準測的是一般效能（如準確度），不是安全；基準本身也需要後設評估（不一致、含糊、不完整、不準確）。</li>
+</ul>
+<p>指南另外提到「可解釋性稽核」：<strong>用思維鏈 (CoT) 看 agent 的推理，但要明白 agent 所說與所「想」不一定一致</strong>；在關鍵節點用 HITL；記錄 agent 間的目標協商與工具互動；<strong>記錄用了哪些權限集或身分</strong>，因為這代表 agent「以為自己在代表誰」。後者與第 1 章的混淆代理人直接相連。</p>
+
+<h2 id="d-deploy">4.3 部署與執行期強化</h2>
+<div class="table-wrap"><table>
+<caption>表 4-2　指南第 8、9 節：部署與執行期強化的重點（改寫）</caption>
+<thead><tr><th scope="col">節</th><th scope="col">重點</th></tr></thead>
+<tbody>
+<tr><th scope="row">8 安全部署</th><td>安全管線與「流氓 agent」檢查（相依掃描、聚焦 agent 工具使用的靜態分析、針對注入與目標偏離的動態測試、程式碼簽章與 agent 版本的來源追蹤）；角色容器化或 FaaS 以限縮爆炸半徑；API／Agent 閘道仲介所有工具呼叫（驗證 agent 身分、授權特定工具與參數、速率限制、日誌）；對異常行為告警；高風險情境的人類監督（含「人在迴路上」的持續監督）；管理非人類身分（每個 agent 實例有獨特且可管理的身分，含佈建、輪替、退役後清除）</td></tr>
+<tr><th scope="row">9 執行期強化（以 VM 為例）</th><td>基底 VM 強化（最小映像、停用多餘服務、預設限制進出）；網路隔離；每個 agent 或工具在獨立命名空間或容器中、以 seccomp 等限制系統呼叫；<strong>能力範圍限定：agent 只能使用明確宣告的工具</strong>（官方舉例是 searchDocs 而不是 shellExec），以 session 範圍的能力權杖與 JSON-RPC 包裝（如 MCP）強制；session 結束自動清除記憶；工具呼叫的執行期守衛；以 timestamp、agentID、sessionID、payload 雜湊記錄一切，並用可驗證完整性的日誌儲存；用 JWT、mTLS 等做每個 agent session 的身分；雲端特定強化（限制中繼資料服務、IAM 角色按 VM 設定）</td></tr>
+</tbody></table></div>
+<p>留意第 9 節的口吻和前面不同：它自述是「針對 LLM 驅動或工具增強 agentic 應用的拆解」，內容偏向實務清單，且提到的 AGNTCY 風格能力控制層屬於一種具體的設計；指南沒有把它當成唯一做法。讀的時候把它當作<strong>檢查清單的來源</strong>，不當成唯一架構。</p>
+
+<h2 id="d-int">4.4 跨文件整合</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="Agentic 系列文件的使用順序：先用 Threats and Mitigations 與 Top 10 for Agentic Applications 知道有哪些威脅；用多 Agent 威脅建模指南對具體系統建模；用 Securing Agentic Applications Guide 決定怎麼在架構、開發、部署與營運實作；用紅隊與行為測試驗證；治理層面等待後續的 Managing Agentic Risk 或 State of Agentic AI Security and Governance。">
+flowchart LR
+  A["知道有哪些威脅<br>T&amp;M、Top 10"] --> B["對具體系統建模<br>MAS 威脅建模指南"]
+  B --> C["決定怎麼實作<br>本指南 第 2 至 5、8、9 節"]
+  C --> D["驗證有效<br>紅隊與行為測試 第 7 節"]
+  D -.->|"系統改變時重做"| B
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class A,B,C,D author
+</pre>
+<figcaption><strong>圖 4-1　Agentic 系列文件的建議使用順序。</strong>各文件的角色是官方描述；把它們串成「威脅 → 建模 → 實作 → 驗證」的順序是<strong>作者整理，非官方</strong>。官方指南自己指出：高層治理與 CISO 層級的指引不在這份指南，會由另一份「Managing Agentic Risk Guide」處理。</figcaption>
+</figure>
+<div class="table-wrap"><table>
+<caption>表 4-3　本主題與其他 OWASP 文件的關係（只列官方有寫的；作者整理另標示）</caption>
+<thead><tr><th scope="col">相鄰文件</th><th scope="col">關係</th><th scope="col">依據</th></tr></thead>
+<tbody>
+<tr><th scope="row">Agentic AI – Threats and Mitigations</th><td>本指南的配套：T&amp;M 說有什麼威脅，本指南說怎麼實作；全文引用 T 編號</td><td>指南 1.3 節；<a href="../agentic-threats-and-mitigations/index.html">前一系列主題</a></td></tr>
+<tr><th scope="row">Top 10 for Agentic Applications 2026</th><td>其領導人信把本指南列為「Securing architecture, design, development, and deployment of Agentic apps」的文件；Top 10 各條緩解可在本指南找到更細的實作</td><td>Agentic Top 10 領導人信；<a href="../agentic-top-10-2026/index.html">相關主題</a></td></tr>
+<tr><th scope="row">ASI 紅隊指南／GenAI Red Teaming Guide</th><td>本指南說明紅隊會測的控制；紅隊演練方法在紅隊指南</td><td>指南 1.3 與第 7 節；本教材 06 階段有專屬主題</td></tr>
+<tr><th scope="row">AI Exchange</th><td>AI Exchange 的 Agentic AI 與縱深防禦概念相通；本指南是針對 agent 的具體實作</td><td><a href="../../01-overview/ai-exchange/05-agentic-genai.html">AI Exchange 第 5 章</a>（相通之處是作者整理）</td></tr>
+<tr><th scope="row">MCP 相關指南</th><td>指南第 9 節把 MCP 當作能力邊界的 JSON-RPC 包裝；MCP 本身的安全由專屬文件處理</td><td>指南 9.2、9.5；<a href="../mcp-security/index.html">MCP 安全</a></td></tr>
+</tbody></table></div>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>供應鏈：agent 特有的是「執行期產生的程式碼」「不可讓 agent 存取自己的部署」「探索與登錄的信任」。</li>
+  <li>驗證不能只做靜態測試：紅隊要測提權、記憶污染與計畫操縱；行為測試評估活動與互動；基準本身也要被評估。</li>
+  <li>CoT 不等於 agent 真正的推理；要記錄 agent「以為自己在代表誰」的身分與權限。</li>
+  <li>部署與執行期強化的核心：角色隔離、閘道仲介工具呼叫、能力限定、完整日誌、非人類身分管理。</li>
+  <li>本指南的位置：T&amp;M 說威脅、本指南說實作、紅隊指南說驗證；治理另有他處。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出 agent 特有的供應鏈控制有哪三件事。</li>
+  <li>我能解釋為什麼 CoT 不能被當作 agent 推理的可靠證據。</li>
+  <li>我能用「威脅 → 建模 → 實作 → 驗證」說明 Agentic 系列文件怎麼搭配（並知道這是作者整理）。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4、LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p>本主題的 <a href="quiz.html">總測驗（14 題）</a>；之後讀 <a href="../mcp-security/index.html">MCP 安全</a>，看 agent 與工具之間的協定本身要怎麼防。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>Securing Agentic Applications Guide</em>, Version 1.0, July 28, 2025：<a href="https://genai.owasp.org/resource/securing-agentic-applications-guide-1-0/">資源頁</a>；2026-10-26 讀取；CC BY-SA 4.0。引用段落：1.3、6 Agentic AI and the Supply Chain、7 Assuring Agentic Applications、8 Secure Agentic Deployments、9 Runtime Hardening。</li>
+    <li>OWASP Top 10 for Agentic Applications 2026（Version 2026，December 2025）領導人信：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a>；2026-10-26 讀取，用於本指南與其他文件的關係。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Securing Agentic Applications Guide、Top 10 for Agentic Applications 2026 — CC BY-SA 4.0（PDF 封面）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'saa-ch4', topic: 'securing-agentic-applications', mode: 'chapter',
+  questions: [
+    { id: 'p4q1', type: 'mc', lo: [4], refs: [{label: '4.1 表 4-1', href: '04-supply-assurance-hardening.html#d-supply'}],
+      stem: '指南在「環境與開發」中說：不要讓 agent 存取建置與部署它自己的儲存庫與資料來源。最主要的理由是？',
+      options: [
+        { text: '為了節省儲存空間。', why: '與儲存空間無關。' },
+        { text: '避免被污染的 agent 修改自己的程式碼、提示或部署，把一次入侵變成持久的後門。', correct: true, why: '指南把「agent 不能自己改自己的部署」列為 agent 特有的控制（並呼應 3.2.3）。' },
+        { text: '因為 agent 不需要版本控制。', why: '指南要求提示與指示都做版本控制。' },
+        { text: '因為部署儲存庫一律是機密。', why: '理由不是資料機密性，而是 agent 不該有改動自己運作基礎的權限。' }
+      ],
+      summary: 'agent 不能自己改自己的部署。' },
+    { id: 'p4q2', type: 'mc', lo: [4], refs: [{label: '4.2 驗證', href: '04-supply-assurance-hardening.html#d-assure'}],
+      stem: '團隊用思維鏈 (CoT) 的輸出作為證據，證明 agent 沒有被誘導做出不該做的事。依指南，這個做法的問題是？',
+      options: [
+        { text: 'CoT 永遠是正確的推理記錄，沒有問題。', why: '指南明說 agent 所說與所「想」不一定一致。' },
+        { text: 'CoT 只能提供一些洞察；agent 說的理由不一定與它實際的推理一致，所以不能單靠它判斷；應搭配 HITL、工具互動與權限使用的記錄。', correct: true, why: '指南的可解釋性稽核。' },
+        { text: 'CoT 太耗時，應該關閉。', why: '指南沒有要求關閉。' },
+        { text: '只有多 agent 系統才有這個問題。', why: '此限制與單 agent 或多 agent 無關。' }
+      ],
+      summary: 'CoT 是線索，不是證據。' },
+    { id: 'p4q3', type: 'match', lo: [4], refs: [{label: '4.3 表 4-2', href: '04-supply-assurance-hardening.html#d-deploy'}],
+      stem: '把控制配對到它在指南第 8、9 節的主要目的。',
+      cats: [
+        { id: 'blast', label: '限縮爆炸半徑' },
+        { id: 'gate', label: '仲介並稽核工具呼叫' },
+        { id: 'cap', label: '限定 agent 可用的能力' },
+        { id: 'id', label: '管理非人類身分' }
+      ],
+      items: [
+        { text: '每個 agent 或角色放在獨立的容器或 FaaS 中，並設定資源上限與網路分段', answer: 'blast', why: '角色容器化。' },
+        { text: '用 API／Agent 閘道驗證 agent 身分、授權特定工具與參數，並記錄所有工具互動', answer: 'gate', why: '第 8 節的 API 存取控制與閘道。' },
+        { text: '只允許明確宣告的工具（如 searchDocs 而非 shellExec），並以 session 範圍的能力權杖強制', answer: 'cap', why: '第 9.2 節的範圍限定。' },
+        { text: '每個 agent 實例有獨特身分，並含安全佈建、輪替與退役後清除', answer: 'id', why: '第 8 節的非人類身分管理。' }
+      ],
+      summary: '部署與執行期強化的四類目的。' },
+    { id: 'p4q4', type: 'scn', lo: [5], refs: [{label: '4.4 圖 4-1', href: '04-supply-assurance-hardening.html#d-int'}, {label: '4.4 表 4-3', href: '04-supply-assurance-hardening.html#d-int'}],
+      stem: '依本章，這位同事的規劃最缺少哪一環？',
+      scenario: '雲渡金融（虛構）的團隊已經讀完 Agentic 威脅清單，也依本指南把控制都實作了：沙箱、閘道、日誌、非人類身分管理。專案經理說：「這樣就算完成了，可以上線。」資安顧問問：「你們怎麼知道這些控制真的有效？」',
+      options: [
+        { text: '沒有缺漏，實作完成就是完成。', why: '指南第 7 節的主張是保證策略不能只做靜態測試。' },
+        { text: '缺少驗證：應以紅隊（提權、記憶污染、計畫操縱）與行為測試檢驗控制有效，並在系統改變時重做。', correct: true, why: '4.2 節與圖 4-1。' },
+        { text: '缺少更多日誌。', why: '日誌已經有，缺的是檢驗控制是否有效的活動。' },
+        { text: '缺少治理文件，這是指南的範圍內。', why: '指南明說高層治理與 CISO 層級指引在範圍外，由另一份指南處理。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 指南第 7 節要求保證策略超越靜態測試，涵蓋紅隊與行為測試。(2) 已實作控制不等於已驗證有效；agent 的行為會隨輸入、提示與工具改變。(3) 治理不在這份指南範圍。</p><p><strong>結論：</strong>補上紅隊與行為測試，並建立在系統變動時重測的機制。這個「威脅 → 建模 → 實作 → 驗證」的順序是作者整理，非官方；第 7 節本身是官方。對應教材：<a href="04-supply-assurance-hardening.html#d-assure">4.2 節</a>、<a href="04-supply-assurance-hardening.html#d-int">4.4 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

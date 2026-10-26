@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 7 章　LLM06 無限制消耗與 LLM07 錯誤資訊｜LLM Top 10 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="LLM06:2026 無限制消耗與 LLM07:2026 錯誤資訊：成本不對稱與 token 感知的限制、硬性花費上限與 agent 熔斷器；以及「錯誤的輸出變成錯誤的行動」與宣告、驗證、再行動的模式。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="02-llm-applications" data-topic="llm-top-10" data-page="07-consumption-misinformation.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 7 章　LLM06 無限制消耗與 LLM07 錯誤資訊</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="06-disclosure.html">第 6 章</a></li>
+</ul>
+<p class="lead">衝擊層的另外兩項，傷害的對象不同：LLM06 傷害<strong>服務與帳單</strong>（可用性與成本），LLM07 傷害<strong>被相信的內容</strong>（完整性）。它們有一個共同點：攻擊者不需要「入侵」任何東西，只要讓系統照常運作。</p>
+
+<h2 id="cm-consume">7.1 LLM06：成本不對稱</h2>
+<p>LLM06:2026 無限制消耗 (Unbounded Consumption) 是指 LLM 應用允許過量且不受控的推論，使攻擊者得以破壞服務可用性、造成難以承受的財務成本，或透過模型複製竊取智慧財產。官方點出的定義性特徵是<strong>成本不對稱 (cost asymmetry)</strong>：攻擊者以微不足道的代價，觸發成本高得多的運算——靠精心設計的提示詞、被盜的憑證，或被操縱的工作流程。</p>
+<p>2025 版把它描述為「拒絕服務 (Denial of Service) 的擴充」；2026 版官方說它在清單中上升四名，原因是從業者比以往更看重資源與成本耗盡（前言的意譯）。官方列了使風險加劇的四個趨勢，這些是你判斷自家系統暴露多少的線索：</p>
+<ul>
+  <li><span class="tag official">官方</span> 擴充思考與推理模型，輸出預算很大或限制不足；</li>
+  <li><span class="tag official">官方</span> 多模態模型，單次請求的運算成本大幅提高（圖片、音訊、影片轉成大量 token）；</li>
+  <li><span class="tag official">官方</span> agentic 架構與工具協定（如 MCP），把一個請求放大成連鎖的下游操作；</li>
+  <li><span class="tag official">官方</span> 共享推論基礎設施，帶來新的供應鏈攻擊面。</li>
+</ul>
+<p>官方的結論是：<strong>只靠傳統的「每秒請求數」限制已經不夠</strong>，有效防禦需要 token 感知的成本控制、硬性花費上限、agent 層級的熔斷器，以及持續的成本歸屬監控。九項風險裡，下面這幾項最能說明為什麼：</p>
+<div class="table-wrap"><table>
+<caption>表 7-1　LLM06 的風險類型與對應控制（官方風險與官方控制；配對為作者整理）</caption>
+<thead><tr><th scope="col">風險（官方範例）</th><th scope="col">為什麼簡單的請求限制擋不住</th><th scope="col">官方控制</th></tr></thead>
+<tbody>
+<tr><th scope="row">推理迴圈與思考 token 耗盡</th><td>提示詞很短、看起來合法，卻讓擴充思考模型陷入長時間或不終止的推理；輸入大小檢查完全沒用</td><td>#9 agent 的步數、遞迴深度、時間與每次執行成本上限；以狀態雜湊偵測遞迴迴圈</td></tr>
+<tr><th scope="row">大上下文濫用、agent 工作階段中上下文累積</th><td>每次請求都在預算內，不會觸發限流；但每次推論都重新處理累積的上下文，單回合成本持續上升（官方舉例：每回合從約 $0.001 增到第 100 回合約 $0.50）</td><td>#1 token／天、估計成本的限制，與推論前的 token 預估；#2 硬性花費上限</td></tr>
+<tr><th scope="row">工具呼叫迴圈與扇出</th><td>惡意工具被引入 agent 後，使一個任務變成數百次遞迴或循環呼叫</td><td>#8 偵測資源密集的工具互動與基線；#9 熔斷器；#4 沙箱限制網路與內部服務</td></tr>
+<tr><th scope="row">錢包拒絕 <br>(Denial of Wallet, DoW)</th><td>利用雲端 AI 服務的按量計價，讓提供者財務不堪負荷；這是成本問題，不是當機問題</td><td>#2 硬性花費上限必須是「中止推論」的強制機制，不是會被快速累積的工作負載追過的警示門檻</td></tr>
+<tr><th scope="row">模型擷取與蒸餾竊取</th><td>以精心設計的輸入收集足夠輸出，複製出部分模型；暴露對數機率會大幅加速</td><td>LLM06 #1 配額與限流；官方指出暴露對數機率會大幅加速擷取。限制對數機率與偵測探測行為的措施寫在 LLM02（第 6 章）</td></tr>
+<tr><th scope="row">推論基礎設施被利用</th><td>服務框架（官方列了 vLLM、TensorRT-LLM、SGLang、Triton、Ollama）的不安全反序列化、特殊 token 注入、被注入的 chat template</td><td>#10 更新服務框架、停用不安全反序列化、限制特殊 token 通過、所有推論端點強制驗證</td></tr>
+</tbody></table></div>
+<p>兩個容易忽略的細節。第一，官方在第 2 項控制特別強調「硬性花費上限」要<strong>不可被覆寫、並依 API 金鑰、使用者、團隊與雲端帳號分別設置</strong>，且要考慮不同模態與工具協定的成本差異。第二，LLM06 的第 7 項風險（模型擷取與蒸餾）和 LLM02 有分工：<strong>透過時序或共享基礎設施觀察而抽取權重或架構的側通道，歸 LLM02</strong>（第 6 章表 6-1 已列）。</p>
+
+<h2 id="cm-misinfo">7.2 LLM07：錯誤的輸出變成錯誤的行動</h2>
+<p>LLM07:2026 錯誤資訊 (Misinformation) 是指 LLM 或其應用產出不正確、不完整、無依據或誤導的資訊，且看起來夠可信，足以影響人的決策、自動化流程或 agent 的行動。官方的核心句是：<strong>風險在於不正確的輸出被信任並據以行動</strong>。因此它被描述為「系統層級的失敗」：模型輸出現在會驅動工具呼叫、產生程式碼、推斷系統狀態、授權動作、在 agent 間協調。</p>
+<p>成因很多：幻覺、不完整或過時的上下文、薄弱的依據 (grounding)、含糊的提示、偏誤或受損的資料、誤導性摘要、未驗證的工具輸出；也可以被攻擊者刻意誘發。官方特別畫了邊界：<strong>根本原因是提示詞注入、投毒或供應鏈攻陷時，要分別引用那些條目</strong>；不安全程式碼的執行與處理歸 LLM10；幻覺出來的套件名稱被註冊成供應鏈載體歸 LLM04。這個條目聚焦的是<strong>結果的失效模式</strong>：一個錯誤的陳述，驅動了有害的決策或動作。</p>
+<p>2025 版對應的是 LLM09:2025 Misinformation，過度依賴 (overreliance) 在 2023/24 版是獨立條目。2026 版官方在條目裡寫道：<strong>過度依賴仍是關鍵因素</strong>——人與系統常把流暢、有自信、結構良好的輸出當成權威；在 agentic 架構裡，這種過度依賴常被內建進系統設計。以下是官方七種常見風險，其中不少是「錯誤被當成狀態」：</p>
+<div class="table-wrap"><table>
+<caption>表 7-2　LLM07 的常見風險與官方控制（官方；配對方式為作者整理）</caption>
+<thead><tr><th scope="col">風險類型（官方）</th><th scope="col">一句話</th><th scope="col">對應控制（官方清單順序）</th></tr></thead>
+<tbody>
+<tr><th scope="row">無依據的決策支援</th><td>不正確或無依據的資訊影響商業、法律、醫療、財務或營運決策</td><td>#1 行動前先建立依據（要求輸出以權威、最新的來源為依據）；#4 用驗證訊號而不只是信心值（依據性與一致性檢查）</td></tr>
+<tr><th scope="row">工作流程中的錯誤狀態推斷</th><td>LLM 推斷某條件已成立，其實沒有，觸發非預期動作</td><td>#2 宣告－驗證－行動 (Claim-Check-Act)：把生成與執行分開，行動前先驗證宣告；#3 驗證工具呼叫的參數、授權、前置條件與當前狀態</td></tr>
+<tr><th scope="row">錯誤或捏造的程式碼與相依套件</th><td>產出不正確的程式碼建議，或引用不存在的套件</td><td>與 LLM04（供應鏈）、LLM10（輸出處理）分工；#3 驗證</td></tr>
+<tr><th scope="row">誤導的摘要與關鍵遺漏</th><td>摘要漏掉關鍵限制、例外、時間戳或風險</td><td>#6 偵測並防止遺漏失效：用有必填欄位的結構化輸出</td></tr>
+<tr><th scope="row">對抗式誘發的錯誤資訊</th><td>攻擊者設計輸入使系統產生錯誤宣稱或省略關鍵事實</td><td>#8 監控與測試；#10 對抗式評估與持續測試</td></tr>
+<tr><th scope="row">跨 agent 的錯誤資訊傳播</th><td>不正確的輸出在 agent 與工作流程之間擴散</td><td>#5 高衝擊動作的執行期驗證（核准流程與系統檢查）；#7 限制爆炸半徑（最小權限、沙箱、限流）</td></tr>
+<tr><th scope="row">偽造或誤標來源的證據</th><td>捏造或被操縱的內容被當成權威證據</td><td>#9 校準人與系統的信任：區分已驗證的事實與假設</td></tr>
+</tbody></table></div>
+<p>官方的十個情境裡，有兩個特別值得讀：<strong>跨 agent 信任失敗</strong>（檢索 agent 回報某客戶「已通過身分驗證」，實際沒有，下游付款 agent 信任這個狀態並放款）；以及<strong>虛構的任務完成</strong>（agent 回報夜間備份已完成，其實從未執行，之後還原才發現沒有備份）。兩者都不涉及任何攻擊者，卻都是 LLM07：<strong>輸出被當成狀態</strong>。</p>
+
+<h2 id="cm-flow">7.3 一個想法，兩種防禦哲學</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="兩種防禦的對照。左欄 LLM06，防止資源被過度消耗：在入口做 token 感知的速率限制與推論前預估；在帳務層設硬性花費上限，依金鑰、使用者、團隊、帳號分別設置，超過即中止推論；在 agent 層做步數、遞迴深度、時間與每次執行成本的熔斷器；持續以成本歸屬監控發現基線偏離。核心想法是限制每一次推論能花多少。右欄 LLM07，防止錯誤輸出變成錯誤行動：行動前先建立依據；宣告、驗證、再行動，把生成與執行分開；工具呼叫前驗證參數、授權、前置條件與當前狀態；高衝擊動作在執行期加上核准與系統檢查；限制爆炸半徑。核心想法是不讓一個未經驗證的陳述直接成為動作。兩欄的共同點是：不去假設模型不會出錯或不會被濫用，而是在模型之外加上決定性的限制。">
+flowchart TB
+  subgraph L6["LLM06：限制每一次推論能花多少"]
+    direction TB
+    A1["入口：token 感知的限流<br>推論前預估，超限先拒絕"] --> A2["帳務層：硬性花費上限<br>依金鑰、使用者、團隊、帳號分別設置，超過即中止"]
+    A2 --> A3["agent 層：熔斷器<br>步數、遞迴深度、時間、每次執行成本"]
+    A3 --> A4["持續監控：成本歸屬與基線偏離"]
+  end
+  subgraph L7["LLM07：不讓未經驗證的陳述直接變成動作"]
+    direction TB
+    B1["先建立依據<br>要求以權威、最新的來源為依據"] --> B2["宣告、驗證、再行動<br>把生成與執行分開"]
+    B2 --> B3["工具呼叫前驗證<br>參數、授權、前置條件、當前狀態"]
+    B3 --> B4["高衝擊動作：執行期核准與系統檢查<br>並限制爆炸半徑"]
+  end
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class L6,L7 author
+</pre>
+<figcaption><strong>圖 7-1　兩個條目的防禦層次（作者整理，非官方）。</strong>各項控制都來自 LLM06 與 LLM07 官方條目；<strong>把它們排成由外而內的層次與兩欄並排，是作者整理</strong>。共同點：都不假設模型不會出錯或不會被濫用，而是在模型之外加上決定性的限制——這與第 2 章「架構式防禦」是同一個態度。</figcaption>
+</figure>
+
+<h2 id="cm-concept">7.4 核心概念：在模型之外加上決定性的限制</h2>
+<div class="concept">
+<h3 id="c-cm">LLM06 與 LLM07</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>LLM06：推論沒有上限，導致可用性受損、成本暴增或模型被複製。LLM07：看似可信的錯誤輸出被人或自動化流程採信，並驅動行動。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>LLM06：成本不對稱（便宜的輸入換貴的運算），再加上擴充思考、多模態、agent 扇出與共享基礎設施；單純的請求數限制看不到成本。LLM07：模型的輸出流暢又自信，系統設計又常把它內建為權威；在 agentic 流程中，一個 agent 的錯誤輸出變成下一個 agent 的輸入。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>LLM06：用短而無害的提示詞讓推理模型空轉；讓長壽的 agent 工作階段緩慢累積上下文；在公開的工具庫裡放一個會造成循環呼叫的工具；或大量查詢以複製模型。LLM07：在論壇散布錯誤的修復步驟讓排障 agent 檢索後當成可信建議重複；或不需任何攻擊者，agent 就回報了從未發生的事。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>LLM06：token 感知限制、硬性花費上限、agent 熔斷器、沙箱與監控。LLM07：先建立依據、宣告－驗證－行動、驗證工具呼叫、對高衝擊動作做執行期核准、限制爆炸半徑、持續測試。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「限制每秒請求數就能防住資源耗盡」（官方：一般請求限流已不足；每次都在預算內的請求也能累積成鉅額帳單）。「花費警示就是花費上限」（官方：上限必須能中止推論，警示門檻會被快速累積的工作負載追過）。「錯誤資訊只是內容品質問題」（官方：它是系統層級的失敗，輸出會驅動行動）。「模型回報完成了，就是完成了」（官方情境：agent 可能宣稱備份完成，其實從未執行）。</dd>
+</dl>
+</div>
+
+<h2 id="ch7-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>LLM06 的核心是成本不對稱；擴充思考、多模態、agent 扇出與共享基礎設施使它加劇；傳統的每秒請求數限制不足以防禦。</li>
+  <li>LLM06 的三道防線：token 感知的限制與預估、硬性花費上限（必須能中止推論）、agent 熔斷器（步數、遞迴深度、時間、單次成本）。</li>
+  <li>LLM07 是系統層級的失敗：輸出被當成狀態或證據而驅動行動；不必有攻擊者也會發生。</li>
+  <li>LLM07 的核心模式：先建立依據；宣告－驗證－行動；工具呼叫前驗證；高衝擊動作執行期核准；限制爆炸半徑。</li>
+  <li>邊界：模型擷取的側通道歸 LLM02；不安全程式碼的處理歸 LLM10；幻覺套件的供應鏈面向歸 LLM04；注入、投毒、供應鏈攻陷為根因時分別引用。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能解釋「成本不對稱」與「錢包拒絕」，並說明為什麼單看請求數看不出來。</li>
+  <li>我能區分「花費警示」與「硬性花費上限」。</li>
+  <li>我能說出宣告－驗證－行動的意思，並舉出它能擋下的錯誤。</li>
+  <li>給我一個失效案例，我能判斷主要歸 LLM06、LLM07，還是別的條目。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch7-next">接下來讀什麼</h2>
+<p><a href="08-evolution.html">第 8 章　版本演進 2023、2025、2026</a>：十個條目都看過一遍了。下一章回頭看這份清單三版之間怎麼變，哪些變動是官方明載、哪些是依名稱比對推得的。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Top 10 for LLM Applications 2026（Version 2026，2026-08-04），LLM06:2026 Unbounded Consumption 與 LLM07:2026 Misinformation（Description、Common Examples of Risk、Prevention and Mitigation Strategies、Example Attack Scenarios）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM06_UnboundedConsumption.md">LLM06_UnboundedConsumption.md</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM07_Misinformation.md">LLM07_Misinformation.md</a>；與<a href="https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/">官方 PDF</a> 內容實質一致；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026，LLM00 Preface（What's New：Unbounded Consumption 上升四名、Misinformation 的討論）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM00_Preface.md">LLM00_Preface.md</a>。</li>
+    <li>2025 版 LLM10 Unbounded Consumption 與 LLM09 Misinformation 的描述（僅用於演進比較）：<a href="https://genai.owasp.org/resource/owasp-top-10-for-llm-applications-2025/">2025 版資源頁</a>與 PDF；2024-11-18。</li>
+    <li>官方引用的研究（擴充思考耗盡、sponge examples、模型擷取等）：本章只轉述條目的說法，未回到原文核對。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Top 10 for LLM Applications 2025／2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'l-ch7', topic: 'llm-top-10', mode: 'chapter',
+  questions: [
+    { id: 'l7q1', type: 'mc', lo: [4], refs: [{label: '7.1 成本不對稱與表 7-1', href: '07-consumption-misinformation.html#cm-consume'}],
+      stem: '團隊已設定每個使用者每分鐘最多 10 個請求，並在雲端帳單超過預算時寄出警示信。依 LLM06:2026，下列哪一項最能說明這樣的防護為什麼仍不夠？',
+      options: [
+        { text: '每個請求都在配額內，但一個長壽的 agent 工作階段讓每回合都重新處理累積的上下文，單回合成本逐步攀升；而警示信只是通知，不會中止推論。', correct: true, why: '符合 7.1 節：官方指出只靠請求數限制不足，並要求硬性花費上限是「能中止推論」的強制機制，而不是警示門檻。' },
+        { text: '因為 10 個請求太少，應該調高到 100 個。', why: '調高請求數反而擴大暴露；問題不在數字大小，而在請求數無法反映成本。' },
+        { text: '因為警示信應該改成簡訊發送。', why: '通知管道不是重點；警示再即時，也追不上快速累積的工作負載，官方要的是能中止推論的上限。' },
+        { text: '因為這類攻擊只會造成當機，不會造成財務損失。', why: '官方明確把錢包拒絕 (Denial of Wallet) 列為風險：利用按量計價，造成財務負擔，不一定當機。' }
+      ],
+      summary: '請求數限制看不到成本；要有 token 感知的限制與能中止推論的硬性花費上限。' },
+    { id: 'l7q2', type: 'scn', lo: [4], refs: [{label: '7.2 表 7-2 與跨 agent 情境', href: '07-consumption-misinformation.html#cm-misinfo'}],
+      stem: '依本章，這個事件主要屬於哪個條目，最先該補哪種控制？',
+      scenario: '北辰金融（虛構）的付款流程由兩個 agent 組成：驗證 agent 負責回報客戶是否已通過身分驗證；付款 agent 看到「已驗證」就放款。某天驗證 agent 因為資料來源逾時，輸出了「客戶已通過身分驗證」的文字，其實沒有任何驗證發生。付款 agent 信任這個狀態並放款。事後查證，沒有任何攻擊者介入。',
+      options: [
+        { text: 'LLM01 提示詞注入，應過濾驗證 agent 的輸入。', why: '事後查證沒有攻擊者，也沒有注入內容；根因是錯誤輸出被當成事實，不是輸入遭操縱。' },
+        { text: 'LLM06 無限制消耗，應加硬性花費上限。', why: '這起事件沒有資源耗盡或成本暴增的問題。' },
+        { text: 'LLM07 錯誤資訊（跨 agent 信任失敗）：付款前不該信任另一個 agent 的文字宣稱，應宣告－驗證－行動，由決定性的系統檢查驗證前置條件（例如查驗證服務的實際紀錄），並對高衝擊動作加上執行期核准。', correct: true, why: '符合 7.2 節：官方「跨 agent 信任失敗」情境，輸出被當成狀態。' },
+        { text: 'LLM08 隱藏上下文暴露，應更換提示詞。', why: '沒有任何隱藏脈絡被取出；問題在於錯誤的狀態被信任。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 沒有攻擊者，也沒有注入內容；錯誤來自一個 agent 的輸出被下游當作事實。(2) 這正是官方 LLM07「跨 agent 信任失敗」情境：檢索 agent 回報客戶已驗證、實際沒有，下游付款 agent 信任並放款。(3) 官方控制是：宣告－驗證－行動，把生成與執行分開；工具呼叫前驗證前置條件與當前狀態；對高衝擊動作加執行期核准與系統檢查；限制爆炸半徑。</p><p><strong>結論：</strong>歸 LLM07，補決定性的前置條件驗證與高衝擊動作核准。對應教材：<a href="07-consumption-misinformation.html#cm-misinfo">7.2 節</a>。</p>' },
+    { id: 'l7q3', type: 'match', lo: [4], refs: [{label: '7.1 表 7-1', href: '07-consumption-misinformation.html#cm-consume'}, {label: '7.2 表 7-2', href: '07-consumption-misinformation.html#cm-misinfo'}],
+      stem: '把下列控制配對到它主要處理的條目。',
+      cats: [
+        { id: 'l06', label: 'LLM06 無限制消耗' },
+        { id: 'l07', label: 'LLM07 錯誤資訊' }
+      ],
+      items: [
+        { text: '對每次 agent 執行設定步數、遞迴深度、時間與成本上限。', answer: 'l06', why: '官方 LLM06 第 9 項：agent 熔斷器。' },
+        { text: '行動前先驗證宣告，把生成與執行分開。', answer: 'l07', why: '官方 LLM07 第 2 項：宣告－驗證－行動。' },
+        { text: '依 API 金鑰、使用者、團隊、雲端帳號設置不可覆寫的預算上限。', answer: 'l06', why: '官方 LLM06 第 2 項：硬性花費上限。' },
+        { text: '用有必填欄位的結構化輸出，防止摘要漏掉關鍵限制。', answer: 'l07', why: '官方 LLM07 第 6 項：偵測並防止遺漏失效。' },
+        { text: '把已驗證的事實與假設分開標示。', answer: 'l07', why: '官方 LLM07 第 9 項：校準人與系統的信任。' }
+      ],
+      summary: 'LLM06 限制「能花多少」；LLM07 限制「未驗證的陳述能驅動什麼」。' }
+  ]
+});
+</script>
+</body>
+</html>

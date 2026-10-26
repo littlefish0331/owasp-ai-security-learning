@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　失敗姿態與情境｜Agent Control Standard｜OWASP AI 資安學習教材</title>
+<meta name="description" content="ACS 在 Guardian 無回應時的兩個失敗姿態（啟動姿態與決策失敗姿態）、預設為失效即放行 (fail-open) 的理由與代價、參考實作自述的缺口，以及兩個虛構情境與跨主題整合。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="agent-control-standard" data-page="03-failure-posture.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　失敗姿態與情境</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 10 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3（並回顧 LO1、LO2）</li>
+  <li>前置：<a href="02-guardian-and-hooks.html">第 2 章</a></li>
+</ul>
+<p class="lead">每一個「檢查站」都要回答一個問題：<strong>檢查站壞了的時候，要放行還是攔下？</strong>ACS 的答案是：看你怎麼設定，而它的預設是放行。這一章把這個取捨攤開，包括它的理由、它的代價，以及規格與參考實作各自承認的缺口。</p>
+
+<h2 id="fp-two">3.1 兩個失敗姿態</h2>
+<p>規格其實定義了兩個，不是一個。兩個都預設為 <code>proceed</code>（放行）。</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　ACS 的兩個失敗姿態</caption>
+<thead><tr><th scope="col">姿態</th><th scope="col">什麼時候用到</th><th scope="col">選項與預設</th><th scope="col">規格要求的紀錄</th></tr></thead>
+<tbody>
+<tr><th scope="row">啟動姿態 (startup posture)</th><td>工作階段一開始，握手 (<code>handshake/hello</code>) 就失敗：Guardian 不可達、逾時沒回，或出錯卻沒有回握手回應</td><td><code>proceed</code>：讓這個工作階段在沒有守衛的狀況下開始（預設）；<code>refuse</code>：不啟動。設定在帶外 (out of band)</td><td>沒有 Guardian 可收事件，所以要記在部署自己的稽核日誌</td></tr>
+<tr><th scope="row">決策失敗姿態 (<code>on_decision_failure</code>)</th><td>工作階段中，某一步在協商逾時內沒收到可用的決定：Guardian 沉默、傳輸失敗（連線被拒、TLS 失敗、回應格式錯誤），或 Guardian 回錯誤而非決定</td><td><code>proceed</code>：該步照常執行，這是預設，稱為失效即放行 (fail-open)；<code>deny</code>：該步阻擋，稱為失效即拒絕 (fail-closed)。在握手時協商</td><td>每一個沒有決定就放行的步驟，<strong>都必須</strong>記為稽核事件</td></tr>
+</tbody></table></div>
+<p>兩者的差別在「發生在握手前還是握手後」。決策失敗姿態是握手時協商出來的，所以管不到一次根本沒完成的握手；這就是為什麼需要另一個啟動姿態。還有一條重要規則：<strong>只要決定在逾時內到了，Agent 必須照做，不論姿態是什麼</strong>。姿態只管「沒收到決定」的情況。</p>
+
+<h2 id="fp-tradeoff">3.2 為什麼預設是放行</h2>
+<p>規格自己把理由與代價寫得很直接。依其說法：</p>
+<ul>
+  <li><strong>理由是可用性。</strong>預設 <code>proceed</code> 是為了讓一個慢的、出錯的或不可達的 Guardian「不要讓正式環境停擺」。</li>
+  <li><strong>代價是強制力。</strong>規格原話的意思是：fail-open 用強制力換可用性；一個<strong>能擾亂通道的對手，可以把「控制」變成「稽核」</strong>。換句話說，攻擊者不必說服 Guardian 放行，只要讓它聯絡不上，Agent 就照常執行了。</li>
+  <li><strong>緩解是留痕。</strong>放行時必須記稽核事件，讓繞過「可見而不是無聲」。這是偵測，不是預防。</li>
+  <li><strong>不能接受這個取捨的部署，改成 <code>deny</code>。</strong>這就是 fail-closed。</li>
+</ul>
+<p>用你熟悉的類比：這像 CI 裡一個「必要檢查」的服務掛了。你可以選擇「檢查服務掛了就讓合併繼續」（不擋住出貨，但風險自負），或「檢查服務掛了就擋合併」（安全，但服務一掛全公司停擺）。這個類比是<span class="tag author">作者整理，非官方</span>，好處是它把「安全 vs. 可用性」這個老問題套到 Agent 上；限制是 Agent 的動作可能不可逆（寄出信件、刪除資料），遠比一次合併難回頭。</p>
+
+<h2 id="fp-defer">3.3 一個刻意相反的預設</h2>
+<p>你在第 2 章看到，<code>DEFER</code>（延後）有一個逾時處置 <code>timeout_decision</code>，預設是 <code>deny</code>。這與決策失敗姿態的預設 <code>proceed</code> 剛好相反，規格明說這是<strong>刻意的</strong>：</p>
+<ul>
+  <li>決策失敗是「一個<strong>從未回答</strong>的 Guardian」，我們不確定它有沒有疑慮。</li>
+  <li>過期的 DEFER 是「一個<strong>已經標記疑慮、卻沒能解決</strong>的 Guardian」，疑慮是明確存在的。</li>
+</ul>
+<p>所以規格的邏輯是：<strong>一個降級但仍能發出 DEFER 的 Guardian，應該失效即拒絕 (fail closed)；一個完全沉默的，才失效即放行 (fail open)。</strong>這個區分有道理，但也可以看出一個侷限：它假設「沉默」代表沒有疑慮。如果沉默是因為被攻擊者擾亂造成的，那個假設就不成立，這也是為什麼規格同時承認 fail-open 可以被利用。</p>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程：Agent 送出鉤子請求。如果 Guardian 在協商逾時內回覆有效決定，Agent 必須照做。如果沒有收到可用決定，依 on_decision_failure：設為 proceed 時放行並記錄稽核事件（fail-open），設為 deny 時阻擋（fail-closed）。如果 Guardian 回覆 DEFER 且過期，依 timeout_decision，預設 deny。握手階段失敗時依啟動姿態：proceed 無守衛開始並記在部署自己的日誌，refuse 不啟動。">
+flowchart TD
+  H["工作階段開始：握手"] --> HQ{"握手成功？"}
+  HQ -->|"否，無回答"| SP{"啟動姿態"}
+  SP -->|"proceed（預設）"| U["無守衛開始<br>記在部署自己的日誌"]
+  SP -->|"refuse"| R["不啟動"]
+  HQ -->|"是"| S["Agent 在鉤子點送請求"]
+  S --> Q{"逾時內收到可用決定？"}
+  Q -->|"是"| HONOR["必須照做<br>（不論姿態）"]
+  Q -->|"否：沉默 / 傳輸失敗 / 錯誤"| P{"on_decision_failure"}
+  P -->|"proceed（預設，fail-open）"| PA["放行，必須記稽核事件"]
+  P -->|"deny（fail-closed）"| PD["阻擋"]
+  HONOR --> DF{"若決定是 DEFER 且過期"}
+  DF --> TD["依 timeout_decision<br>預設 deny"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class H,S author
+</pre>
+<figcaption><strong>圖 3-1　ACS 的失敗處理決策流程。</strong>各分支、預設值與「必須記稽核事件」的要求都來自規格 §4.1、§6、§6.4；圖是依其<strong>重新繪製的簡化版</strong>，「工作階段開始」與「Agent 在鉤子點送請求」兩格是作者加的起點，屬作者整理，非官方畫法。</figcaption>
+</figure>
+
+<h2 id="fp-gaps">3.4 規格與參考實作自述的缺口</h2>
+<p>這是這一章最重要的一節，也是 ACS 值得敬佩的地方：它把自己的缺口放在 README 最前面。下表整理它自述的內容（2026-10-26 讀取）：</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　ACS 自述的缺口（來源：儲存庫 README 與規格；項目措辭為作者整理）</caption>
+<thead><tr><th scope="col">缺口</th><th scope="col">官方怎麼說</th><th scope="col">為什麼重要</th></tr></thead>
+<tbody>
+<tr><th scope="row">線路未認證</th><td>ACS-Core 要求每個封包帶基線簽章 (HMAC-SHA256)；<strong>參考 Guardian 完全沒有實作</strong>，所以任何連得到連接埠的東西都能讀取決策、也能造成決策（儲存庫追蹤議題 #70）</td><td>規格要求的基線，參考實作做不到；在沒有認證的通道上，Guardian 的決定本身可被偽造或竊聽</td></tr>
+<tr><th scope="row">預設放行</th><td>參考 Guardian 啟動時印出「Failure posture: proceed」；Guardian 當機、卡住或不可達時，「靜默地停止治理」，要設 <code>ACS_ON_DECISION_FAILURE=deny</code> 才會失效即拒絕</td><td>預設就是 3.2 節的取捨，而且是預設值而非警告</td></tr>
+<tr><th scope="row">只有 2 個鉤子被即時評估</th><td>19 個原生鉤子中，只有 <code>toolCallRequest</code> 與 <code>toolCallResult</code> 在參考實作中被即時評估</td><td>參考實作證明的範圍很窄</td></tr>
+<tr><th scope="row">沒有主張互通性</th><td>README 明說：這不是「對 Microsoft AGT 做過整份規格互通性測試」的主張</td><td>不要把參考實作當成互通性證明</td></tr>
+<tr><th scope="row">Trace 輸出不完整</th><td>參考 Guardian 的追蹤匯出只涵蓋 2 個方法、不輸出 OCSF、請求缺少欄位時會省略必要屬性；「此樹不主張任何 Trace 設定檔」</td><td>有匯出不等於符合 ACS-Trace</td></tr>
+</tbody></table></div>
+<p>README 把兩個缺口放在最前面的理由是：「a project that hides its own gap list forfeits the right to be trusted on the rest of it」（把自己缺口藏起來的專案，就失去了讓人信任其餘部分的資格）。教材的看法（作者整理，非官方）是：對一份早期規格而言，這是比「號稱完整」更可信的姿態；但對採用者來說，它的意思也很明確：<strong>README 自己限定參考實作的主張範圍很窄，不要把它當成可直接上線的防線</strong>。</p>
+
+<h2 id="fp-scn-a">3.5 情境範例 A：把判斷全交給 LLM</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：昊天證券的 Guardian 設計</h3>
+<p><span class="tag fiction">虛構</span> 昊天證券是虛構的證券公司。團隊設計一個 Guardian，想把所有判斷交給一個 LLM：「讓 LLM 讀完整份政策文件，再判斷每個工具呼叫該不該放行，這樣最靈活。」一位工程師提出反對。</p>
+<ol class="steps">
+  <li><strong>看問題：</strong>如果 Guardian 本身是 LLM，且它看得到政策文件，那麼它有和被監控的 Agent 一樣的弱點：可以被輸入說服。攻擊者只要讓提示詞影響到 Guardian 的判斷，政策就被繞過。</li>
+  <li><strong>ACS 的設計怎麼處理：</strong>確定性層（Cedar／Rego）永遠先跑，擋下一定要擋的；只有確定性層解不出來的灰色地帶，才委派給 LLM 層；LLM 層看到的只有確定性層給的中間輸出，<strong>看不到政策原始碼</strong>；它的答案還要回到確定性層通過一次。</li>
+  <li><strong>對應的概念：</strong>這是縱深防禦與最小暴露的組合：LLM 層只拿它需要的資訊（最小權限的資訊版本），且最終決定權在不會被說服的確定性規則。對應第 2 章 2.1 節。</li>
+  <li><strong>該採的控制：</strong>把「一定要擋的」寫進確定性政策；LLM 層僅用於政策無法機械化判斷的情況；LLM 層的答案必須過確定性層；對 LLM 層本身的輸入也視為不可信（它同樣可能遇到提示詞注入）。</li>
+  <li><strong>這個情境的提醒：</strong>「更靈活」與「更安全」常是反方向。ACS 的預設（確定性層先跑）選擇的是後者，並把靈活性做成可選的委派。</li>
+</ol>
+</div>
+
+<h2 id="fp-scn-b">3.6 情境範例 B：Guardian 當機的那個週末</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：北辰物流的客服 Agent</h3>
+<p><span class="tag fiction">虛構</span> 北辰物流是虛構的物流公司。客服 Agent 可以查詢訂單，也可以申請退款（需 Guardian 核可）。團隊採用預設設定。某個週末，Guardian 服務因為一次部署失敗而不可達了十二個小時，客服平台照常運作。週一，財務發現期間有一批異常高額的退款，其中有幾筆如果 Guardian 在線，會被 <code>ASK</code> 要求人工核准。</p>
+<ol class="steps">
+  <li><strong>先看症狀：</strong>Guardian 不可達，Agent 還是照常執行，沒有人被通知。這正是預設 <code>on_decision_failure: proceed</code> 的行為。</li>
+  <li><strong>哪一環出問題：</strong>團隊把「預設值」當成「安全的值」。規格明說預設放行是為了可用性，且「能擾亂通道的對手可把控制變成稽核」。退款這種不可逆、涉及金錢的動作，不適合用這個姿態。</li>
+  <li><strong>該採的控制：</strong>(1) 對高風險的鉤子（如退款的工具呼叫）把 <code>on_decision_failure</code> 設為 <code>deny</code> (fail-closed)；(2) 規格要求放行的步驟必須記稽核事件，要監看這類事件並設告警，否則留痕沒有人看等於沒有偵測；(3) 規格建議直接監控鉤子路徑上的決策失敗，不要只靠 <code>system/ping</code> 推論健康狀態（因為 Guardian 可能回得了 ping，卻拒絕所有簽章鉤子，例如金鑰解析中斷時）。</li>
+  <li><strong>規格可以做到什麼、做不到什麼：</strong>規格的姿態是部署層級的（握手協商），本教材讀到的內容並未說明能否對個別工具單獨設定；如果需要只對退款設 fail-closed，要確認所用實作是否支援。這一點教材<strong>未能確認</strong>。</li>
+  <li><strong>這個情境的提醒：</strong>fail-open 不是 bug，是明講的取捨；責任在部署者要不要接受它。預設值的意思是「規格作者假設大多數部署更怕停擺」，而不是「這是安全的」。</li>
+</ol>
+</div>
+
+<h2 id="fp-integ">3.7 與前面主題的整合</h2>
+<ul>
+  <li><strong>與 <a href="../ml-security-top-10/index.html">ML Top 10</a>：</strong>ACS 管的是 Agent 的執行期動作，不處理訓練資料、模型參數這類 ML 生命週期風險。</li>
+  <li><strong>與 <a href="../agentic-skills-top-10/index.html">Agentic Skills Top 10</a>：</strong>ACS 的技能生命週期鉤子（<code>skillRegister</code>、<code>skillLoad</code>、<code>skillUnload</code>）讓 Guardian 在技能進入、啟用時介入，這是 AST10 的 AST09（治理）與 AST03（權限過大）可以被執行期強制的地方。對應是<span class="tag author">作者整理，非官方</span>：ACS 的文件把這些鉤子描述為「Guardian 不被技能這個組合面蒙蔽」，沒有寫它對應哪個 AST 條目。</li>
+  <li><strong>與 <a href="../../01-overview/ai-exchange/03-control-map.html">AI Exchange 控制地圖</a>：</strong>ACS 接近 <code class="ctl">OVERSIGHT</code> 與 <code class="ctl">LEAST MODEL PRIVILEGE</code> 的執行期實作，但官方沒有把 ACS 放進 AI Exchange 的分類，這是作者整理。</li>
+</ul>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>兩個失敗姿態都預設為放行：啟動姿態（握手失敗）與決策失敗姿態（鉤子點沒收到決定）。決定在逾時內到了，必須照做。</li>
+  <li>預設放行是為了可用性；代價是強制力：能擾亂通道的對手可把控制變成稽核。放行必須留痕，但留痕是偵測，不是預防。</li>
+  <li>DEFER 過期的預設是拒絕，與決策失敗的預設刻意相反：已標記疑慮卻沒解決，與完全沉默，不一樣。</li>
+  <li>參考實作自述缺口：線路未認證、預設放行、只有 2 個鉤子被即時評估、不主張互通性。README 自己限定它的主張範圍很窄，不要把它當成可直接上線的防線。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出兩個失敗姿態各自的預設與適用時機。</li>
+  <li>我能解釋為什麼 fail-open 可以被利用，以及規格要求的緩解。</li>
+  <li>我能為一個涉及不可逆動作的部署說出該怎麼設定，以及哪些地方不確定。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p>先做<a href="quiz.html">總測驗</a>。接著可讀 07 延伸的 <a href="../aibom/index.html">AIBOM</a>（與 ACS 的 Inspect 支柱產出的 AgBOM 相鄰）、<a href="../incident-response-and-deepfake/index.html">事件應變與 Deepfake</a>（Guardian 失效後的處置），或回到<a href="../../index.html">首頁學習地圖</a>依你的系統選擇下一個主題。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>ACS Instrument Specification（§4 握手與 §4.1 握手失敗、§6 處置與 §6.4 遵守決定、§13 存活探測）：<a href="https://github.com/GenAI-Security-Project/agent-control-standard/blob/main/docs/spec/instrument/specification.md">docs/spec/instrument/specification.md</a>；2026-10-26 讀取。</li>
+    <li>ACS Conformance Profiles（決策遵守、存活探測）：<a href="https://github.com/GenAI-Security-Project/agent-control-standard/blob/main/docs/spec/conformance.md">docs/spec/conformance.md</a>；2026-10-26 讀取。</li>
+    <li>儲存庫 README（「Two ways this breaks on the first try」與「Where this reference implementation stands」）：<a href="https://github.com/GenAI-Security-Project/agent-control-standard">github.com/GenAI-Security-Project/agent-control-standard</a>；2026-10-26 讀取；說明文件 CC BY-SA 4.0，規格 Apache-2.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：ACS 儲存庫的規格 — Apache-2.0；說明文件（docs 與 README）— CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'c-ch3', topic: 'agent-control-standard', mode: 'chapter',
+  questions: [
+    { id: 'c3q1', type: 'mc', lo: [3], refs: [{label: '3.2 為什麼預設是放行', href: '03-failure-posture.html#fp-tradeoff'}],
+      stem: '依規格，ACS 為什麼預設在 Guardian 無回應時放行 (fail-open)？它的代價是什麼？',
+      options: [
+        { text: '因為 fail-open 比 fail-closed 更安全。', why: '規格沒有這樣說；它說的是 fail-open 用強制力換可用性。' },
+        { text: '為了不讓慢的、出錯的或不可達的 Guardian 使正式環境停擺；代價是強制力：能擾亂通道的對手可以把控制變成稽核。', correct: true, why: '符合 3.2 節。' },
+        { text: '因為規格作者沒有考慮失敗情況。', why: '規格有專門的規範性條文處理失敗。' },
+        { text: '因為 fail-open 能讓攻擊者無法擾亂通道。', why: '正好相反：能擾亂通道的對手可利用 fail-open。' }
+      ],
+      summary: '預設放行：可用性換強制力；放行須留痕。' },
+    { id: 'c3q2', type: 'match', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-failure-posture.html#fp-two'}, {label: '3.3 刻意相反的預設', href: '03-failure-posture.html#fp-defer'}],
+      stem: '把下列情況配對到規格規定的處理。',
+      cats: [
+        { id: 'startup', label: '看啟動姿態（預設 proceed）' },
+        { id: 'fail', label: '看 on_decision_failure（預設 proceed）' },
+        { id: 'defer', label: '看 timeout_decision（預設 deny）' },
+        { id: 'honor', label: '無論姿態，必須照做' }
+      ],
+      items: [
+        { text: '工作階段開始時，握手送出後 Guardian 完全沒回', answer: 'startup', why: '握手失敗，on_decision_failure 還沒協商出來，適用啟動姿態。' },
+        { text: '工作階段進行中，某個工具呼叫在逾時內沒有收到任何決定', answer: 'fail', why: '決策失敗：看 on_decision_failure。' },
+        { text: 'Guardian 回了 DEFER，但約定的解決期限過了仍未解決', answer: 'defer', why: '看 timeout_decision，預設 deny。' },
+        { text: 'Guardian 在逾時內回了 DENY', answer: 'honor', why: '決定在逾時內到了，必須照做，不論姿態。' }
+      ],
+      summary: '兩個失敗姿態加上 DEFER 逾時；決定在時限內到了就必須照做。' },
+    { id: 'c3q3', type: 'scn', lo: [3], refs: [{label: '3.6 情境 B', href: '03-failure-posture.html#fp-scn-b'}, {label: '3.2', href: '03-failure-posture.html#fp-tradeoff'}],
+      stem: '依本章，團隊最合理的修正是什麼？有什麼是教材未能確認的？',
+      scenario: '松柏醫材（虛構）用 ACS 保護一個可以修改病患用藥紀錄的 Agent，Guardian 採預設設定。一次網路分區讓 Guardian 十分鐘不可達，期間 Agent 照常修改了幾筆紀錄，沒有人被通知。事後主管說：「預設值應該是安全的，這是 ACS 的錯。」',
+      options: [
+        { text: '主管說得對，預設值應該安全，因此這是 ACS 的缺陷。', why: '規格明講預設放行是為了可用性，而且列出代價；它不是未說明的缺陷。' },
+        { text: '對這類不可逆的高風險動作，應將 on_decision_failure 設為 deny (fail-closed)；並監看「無決定而放行」的稽核事件、設告警。是否能只對個別動作設定，教材未能確認，要查所用實作。', correct: true, why: '符合 3.6 節的控制與未能確認的說明。' },
+        { text: '應該停用 Guardian，因為它不可靠。', why: '問題是姿態設定與監看，不是要停用控制。' },
+        { text: '只要加快 Guardian 的回應速度就能解決。', why: '網路分區造成不可達，不是速度問題；姿態仍然需要決定。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) Guardian 不可達屬決策失敗，預設 proceed 放行。(2) 規格明說這是用強制力換可用性，且能擾亂通道的對手可把控制變成稽核。(3) 修改用藥紀錄是不可逆的高風險動作，不適合 fail-open。</p><p><strong>結論：</strong>改為 fail-closed（deny），並監看放行的稽核事件。規格是否能對個別動作單獨設定，本教材未能確認。對應教材：<a href="03-failure-posture.html#fp-scn-b">3.6 節</a>。</p>' },
+    { id: 'c3q4', type: 'mc', lo: [3], refs: [{label: '3.4 表 3-2', href: '03-failure-posture.html#fp-gaps'}],
+      stem: '依儲存庫 README 的自述，下列哪一項是參考實作目前的缺口？',
+      options: [
+        { text: '參考實作已通過所有符合性測試，沒有缺口。', why: 'v0.1.0 沒有符合性測試套件；README 還列出缺口。' },
+        { text: '參考 Guardian 沒有實作規格要求的基線簽章 (HMAC-SHA256)，所以線路未認證，連得到連接埠的東西都能讀取決策、造成決策。', correct: true, why: '符合 3.4 節表 3-2 第一列。' },
+        { text: '參考實作只能在 Windows 上執行。', why: '教材與 README 都沒有這樣的說法。' },
+        { text: '參考實作評估了全部 19 個鉤子。', why: '實際上只有 toolCallRequest 與 toolCallResult 兩個被即時評估。' }
+      ],
+      summary: '缺口：線路未認證、預設放行、只有 2 個鉤子被即時評估。' }
+  ]
+});
+</script>
+</body>
+</html>

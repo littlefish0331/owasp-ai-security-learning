@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜框架對照與標準｜OWASP AI 資安學習教材</title>
+<meta name="description" content="框架對照與標準主題的來源核對清單：採用的版本與日期、與調查筆記的差異、儲存庫內部與跨來源的數字出入、未能確認的項目、授權。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="framework-crosswalk-and-standards" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 4.7、4.8 節與第 8 節第 13 項）</li>
+</ul>
+<p class="lead">調查筆記說 Crosswalk 的互動網頁是動態載入、具體框架清單與對照「本次未能讀取」。這次改讀它的 <strong>GitHub 儲存庫</strong>（README、MIGRATION、RATIONALE、GOVERNANCE、CHANGELOG 與 <code>data/stats.json</code>、<code>data/framework-sources.json</code>），並下載 AI Exchange 2026-10-25 的完整 PDF 快照核對它對各標準的說法。因此 GenAI Security Project 主題登記的「Crosswalk 四份來源與 25 個框架是哪些」，在這裡可以回答。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">GenAI Security Industry Framework Crosswalk（資源頁）</th><td>2026-09-01</td><td>資源頁日期；頁面最後修改 2026-09-02</td><td>網站頁尾 CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Crosswalk 儲存庫</th><td>版本 4.0.0（2026-08-28 發布；變更記錄另有 Unreleased 區）；建立 2026-03-31；最近推送 2026-10-09；MIGRATION.md 與 RATIONALE.md 標「Version: 2026-Q3」</td><td>README 徽章、CHANGELOG.md、<code>data/stats.json</code> 的 <code>version</code>、GitHub API</td><td>CC BY-SA 4.0（README 與 LICENSE.md；著作權人 OWASP GenAI Data Security Initiative）；GitHub 偵測 NOASSERTION</td></tr>
+<tr><th scope="row">OWASP AI Exchange（完整 PDF）</th><td>PDF 建立時間 2026-10-25；383 頁；無版本號（持續更新的文件）</td><td>PDF 中繼資料；頁內「撰寫當下 Oct 2026」字樣</td><td>CC0 1.0</td></tr>
+<tr><th scope="row">LLM Top 10 2025 與 2026 編號對映</th><td>MIGRATION.md 的 Entry map；與 GenAI Security Project 主題表 5-2 已核對的五列一致</td><td>儲存庫；GenAI Security Project 主題</td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>沿用專案已放置的副本</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">Crosswalk 的內容</th><td>「具體框架清單與對照內容本次未能讀取」</td><td>改讀 GitHub 儲存庫後可以讀取：四份來源清單、26 個已對映框架（27 個登錄）、77 個對照檔、3,771 條對映</td><td>第 1、2 章整理</td></tr>
+<tr><th scope="row">框架數量</th><td>25 個框架</td><td>資源頁寫 25；儲存庫現況為 26（變更記錄的 Unreleased 區把 AISVS 加入，25→26）</td><td>採較新的 26，並註明 25 的由來</td></tr>
+<tr><th scope="row">四份來源</th><td>「來自四份 OWASP 清單」，名稱未知</td><td>LLM Top 10 2026、Agentic Top 10 2026、GenAI Data Security 2026（DSGAI01–21）、Agentic Skills Top 10（AST01–10）</td><td>第 1 章表 1-2</td></tr>
+<tr><th scope="row">AI Exchange 與 ISO/IEC 42001</th><td>「ISO/IEC 42001 在本次讀取的內容中未見提及」（不確定）</td><td>完整 PDF 中 42001 出現 12 次：作為控制頁的「Useful standards」，並有對 42001 範圍的評論</td><td>第 3 章；這項筆記的不確定已解決</td></tr>
+<tr><th scope="row">AI Exchange 的標準合作</th><td>「70 pages contributed to prEN 18282」等，來自摘要</td><td>PDF 確認相同文字；另有合規控制頁寫 27090 已於 2026 年 10 月發布、18282 預計 2027 年初發布</td><td>第 3 章；仍是自述、未向標準組織查證</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各處說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">框架數量</th><td>資源頁 25；README／stats.json／變更記錄 26；框架登錄庫 27；README 覆蓋矩陣 21 列</td><td>採 26（stats.json，機器產生、最新），並解釋四個數字</td></tr>
+<tr><th scope="row">條目與框架的總數</th><td>RATIONALE.md：41 個弱點、20 個框架（且寫版本 2026-Q1，但檔頭標 2026-Q3）；README／stats.json：51 與 26</td><td>採 51 與 26；RATIONALE.md 視為未隨資料更新，<strong>未能確認</strong>是否有人將更新</td></tr>
+<tr><th scope="row">ISO/IEC 42001 控制編號</th><td>Crosswalk：A.6.2.6 為測試、A.6.2.8 為監控；AI Exchange：B.6.2.6 討論運作與監控</td><td><strong>未能確認</strong>哪個與 ISO 原文一致；教材不使用任何 ISO 控制編號作為事實</td></tr>
+<tr><th scope="row">ISO/IEC 27090 的狀態</th><td>AI Exchange 2026-10-25 PDF：已於 2026 年 10 月發布；其前一版本（前一主題）只寫貢獻頁數</td><td>採較新的 PDF 說法，標為 AI Exchange 的陳述；未向 ISO 目錄查證</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>ISO/IEC 27090、27091、42001、5338、23894 與 prEN 18282 的內文與發布狀態：</strong>教材沒有取得標準原文，也沒有向 ISO 或 CEN/CENELEC 的目錄查證；所有關於標準的陳述都是引用 AI Exchange 或 Crosswalk 的說法。</li>
+  <li><strong>「各貢獻約 70 頁」：</strong>prEN 18282 與 ISO/IEC 27090 的貢獻頁數都寫 70，無從判斷是否精確。</li>
+  <li><strong>Crosswalk 在 owasp.org 的專案層級：</strong>README 徽章寫「OWASP Lab」，同一徽章文字是「GenAI Data Security」；未查證專案登記。</li>
+  <li><strong>RATIONALE.md 的過時數字：</strong>見表 R-3。</li>
+  <li><strong>ISO 42001 控制編號的 A／B 差異：</strong>見表 R-3。</li>
+  <li><strong>Crosswalk 互動網頁：</strong>動態載入，未操作；教材的數字取自儲存庫檔案。網頁顯示的數字可能因建置時間而不同。</li>
+  <li><strong>對映的正確性：</strong>教材沒有逐條驗證 3,771 條對映，也沒有驗證各框架控制編號；只讀了 ISO/IEC 42001 對 LLM 的一份對照檔作為例子。</li>
+  <li><strong>stats.json 的新鮮度指標：</strong>檢查過的 7 個框架中 2 個落後（AIUC-1、MITRE ATLAS）、20 個未檢查；教材轉述，未獨立核對各框架的最新版本。</li>
+  <li><strong>CHANGELOG 的 Unreleased 區：</strong>AISVS 的新增（25→26）是否已正式發布未能確認；stats.json 已把它計入 26。</li>
+</ol>
+
+<h2 id="ref-sources">5. 本主題引用的一手來源</h2>
+<ul>
+  <li>Crosswalk 資源頁：<a href="https://genai.owasp.org/resource/genai-security-industry-framework-crosswalk/">…/genai-security-industry-framework-crosswalk/</a>；互動網頁：<a href="https://genai-security-project.github.io/crosswalk/">genai-security-project.github.io/crosswalk/</a>（未操作）。</li>
+  <li>Crosswalk 儲存庫：<a href="https://github.com/GenAI-Security-Project/crosswalk">github.com/GenAI-Security-Project/crosswalk</a>（README.md、MIGRATION.md、RATIONALE.md、GOVERNANCE.md、CROSSREF.md、CHANGELOG.md、<code>data/stats.json</code>、<code>data/framework-sources.json</code>、<code>llm-top10/LLM_ISO42001.md</code>）。</li>
+  <li>OWASP AI Exchange 完整 PDF：<a href="https://owaspai.org/OWASP-AI-Exchange.pdf">owaspai.org/OWASP-AI-Exchange.pdf</a>。</li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 1 章表 1-3 對 21／25／26／27 四個數字的解釋（取自 README、stats.json 與變更記錄的交叉比對，歸納是教材整理）。</li>
+  <li>第 2 章「把對照當成檢查清單的來源」的用法；對 LLM 編號遷移排列結構（五環與三環）與依序取代會改錯五筆的模擬，是作者用 MIGRATION.md 的對映表自行計算，結果與 MIGRATION.md 說「依 ID 順序的天真取代會破壞資料」相符，但具體環與筆數不是官方陳述。</li>
+  <li>第 3 章證據強度四層的分法與圖 3-1 的流程；「引用只寫三件事」的建議。</li>
+  <li>第 4 章圖 4-1 的選擇流程，與表 4-1 中標示「作者整理」的列，情境 B 的整個劇本。</li>
+  <li>所有 Mermaid 圖為重新繪製的簡化版，不是官方原圖。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>Crosswalk 儲存庫：CC BY-SA 4.0；本教材以自己的話整理，短引用均標示來源；若你要再散布，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>OWASP AI Exchange：CC0 1.0（僅用於對照與引用）。</li>
+  <li>genai.owasp.org 網站內容：CC BY-SA 4.0。</li>
+  <li>Mermaid：MIT。</li>
+  <li>ISO、CEN/CENELEC 的標準正文有各自的授權與版權，本教材<strong>沒有使用</strong>。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：Crosswalk 儲存庫、genai.owasp.org 網站 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

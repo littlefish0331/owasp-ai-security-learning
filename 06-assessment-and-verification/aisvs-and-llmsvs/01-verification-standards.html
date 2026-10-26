@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　驗證標準是什麼｜AISVS 與 LLMSVS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="驗證標準與 Top 10、治理框架、測試指南的角色差異；可驗證的需求與建議有何不同；三個驗證層級、需求識別碼與版本引用格式。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="aisvs-and-llmsvs" data-page="01-verification-standards.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　驗證標準是什麼</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO1、LO2</li>
+  <li>前置：<a href="../../primer-security-for-developers.html#p-did">資安前置觀念：縱深防禦</a>（可略讀）；建議先讀 <a href="../../01-overview/genai-security-project/index.html">GenAI Security Project 架構</a></li>
+</ul>
+<p class="lead">前面的主題教你「有哪些風險」（Top 10）和「有哪些控制」（AI Exchange）。這個主題換一個問題：<strong>怎麼證明一個系統真的做到了？</strong>回答這個問題的文件叫驗證標準 (Verification Standard)。本章先把它的角色講清楚：它和 Top 10、治理框架、測試指南各管什麼，為什麼「可驗證」是它最重要的性質。</p>
+
+<h2 id="vs-role">1.1 驗證標準在 OWASP AI 資源裡的位置</h2>
+<p>對有開發背景的你，最好懂的類比是<strong>程式碼審查清單與單元測試的差別</strong>：Top 10 像是「常見的 bug 類型簡報」，讓你知道要留意什麼；驗證標準像是一份「驗收條件清單」，每一條都能回答「過」或「不過」，而且要有證據。本主題涵蓋兩份：AISVS 與 LLMSVS。兩者都是 OWASP 的 Incubator 層級專案，且都明說自己仿照 OWASP 應用程式安全驗證標準 (Application Security Verification Standard, ASVS) 的做法。</p>
+<div class="table-wrap"><table>
+<caption>表 1-1　四類文件的角色比較（欄位依官方描述整理；「一句話角色」為作者整理）</caption>
+<thead><tr><th scope="col">文件類型</th><th scope="col">代表文件</th><th scope="col">官方怎麼說它做什麼</th><th scope="col">一句話角色 <span class="tag author">作者整理，非官方</span></th></tr></thead>
+<tbody>
+<tr><th scope="row">風險認知清單 <br>(Awareness List)</th><td>OWASP Top 10 for LLM Applications 2026、Top 10 for Agentic Applications 2026</td><td>AISVS 的對照表稱它們為「對最重要風險的認知」，AISVS 則提供降低這些風險的細部控制</td><td>告訴你要擔心什麼</td></tr>
+<tr><th scope="row">驗證標準 <br>(Verification Standard)</th><td>AISVS、LLMSVS</td><td>一份可測試的安全需求目錄，供設計、建置、測試與稽核使用；每條需求都應「可驗證、可測試、可實作」</td><td>告訴你做到什麼才算過</td></tr>
+<tr><th scope="row">治理與風險框架 <br>(Governance / Risk Framework)</th><td>NIST AI RMF、ISO/IEC 42001、歐盟 AI 法案</td><td>AISVS 明說自己「不是治理框架、不是風險管理框架」，而是提供這些框架所指向的技術控制</td><td>告訴你組織怎麼管理與負責</td></tr>
+<tr><th scope="row">測試方法指南 <br>(Testing Guide)</th><td>OWASP AI Testing Guide、GenAI Red Teaming Manual</td><td>AISVS 1.01 的發布說明指出測試程序請看 OWASP AI Testing Guide</td><td>告訴你怎麼去檢查</td></tr>
+</tbody></table></div>
+<p>這張表的重點是分工：<strong>驗證標準定義「查什麼」，測試指南與紅隊文件定義「怎麼查」</strong>（見兄弟主題 <a href="../ai-testing-guide/index.html">AI Testing Guide</a>、<a href="../genai-red-teaming/index.html">GenAI 紅隊演練</a>）。AISVS 自己也明說它不是工具推薦清單，保持廠商中立。</p>
+
+<h2 id="vs-concept">1.2 核心概念：可驗證的需求，和只是建議的差別</h2>
+<div class="concept">
+<h3 id="c-verifiable">可驗證的需求 (Verifiable Requirement)</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>驗證標準裡的一條需求，寫法是「Verify that …」：一個你可以拿證據來回答「是／否」的結果描述。例如 AISVS 1.01 的 <code>v1.01-C2.1.4</code> 要求輸入長度控制要「拒絕」超出上限的輸入，而不是悄悄截斷（層級 1）。</dd>
+  <dt data-n="2">為什麼要這樣寫</dt>
+  <dd>「要做好輸入驗證」是建議，兩個人可以各自宣稱做到了；「超長輸入被拒絕而非截斷」是需求，審查者能構造一個超長輸入，看系統的反應。可驗證性讓不同的人得到可比較的結論，這也是它能被用在稽核與採購的原因。</dd>
+  <dt data-n="3">怎麼被用（概念層級）</dt>
+  <dd>設計階段當檢查清單；開發階段接進 CI/CD 與程式碼審查；評估階段當稽核與滲透測試的依據；採購階段拿來問供應商（AISVS 官方列出的四種用法）。</dd>
+  <dt data-n="4">怎麼驗證</dt>
+  <dd>每條需求要有證據：設定檔、測試結果、日誌、審查紀錄。LLMSVS 2.0 的認證指引特別寫到：只靠自動化工具的結果不夠，要有能證明每個控制都被測過的記錄（見第 3、4 章）。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「通過驗證標準就等於系統安全。」不對。LLMSVS 2.0 明說它無法保證完全的安全，應視為基礎需求，必要時再加上其他防護；它也不取代風險評估或安全開發流程。</dd>
+</dl>
+</div>
+
+<h2 id="vs-levels">1.3 驗證層級：不是每個系統都要做到最高</h2>
+<p>兩份標準都把需求分成三個驗證層級 (Verification Level)，每條需求標示它屬於哪一級（LLMSVS 2.0 用每級打勾的表格，AISVS 為每條指派一個層級數字）。這借用了 ASVS 的做法。官方的描述如下（用自己的話整理）：</p>
+<ul>
+  <li><strong>層級 1：</strong>所有 AI 系統都該有的基線，包含內部工具與低風險系統。</li>
+  <li><strong>層級 2：</strong>處理敏感資料或做出重要決策的系統，例如正式環境、面向客戶、處理個資。AISVS 寫「多數正式系統至少應以層級 2 為目標」。</li>
+  <li><strong>層級 3：</strong>關鍵基礎設施、安全攸關、高價值目標與受高度監管的產業等高保證環境。</li>
+</ul>
+<p>選哪一級是<strong>依系統的風險輪廓決定</strong>，不是依團隊想不想做。這點在第 4 章的情境會實際操作。順帶一提：LLMSVS 2.0 的三級描述用語略有不同（基本、中等、高保證），第 3 章再講。</p>
+
+<h2 id="vs-limits">1.4 驗證標準不是什麼，以及怎麼引用</h2>
+<p>AISVS 的 README 有一節「What AISVS is NOT」，三條都值得記：它<strong>不是治理框架</strong>（治理交給 NIST AI RMF、ISO/IEC 42001 與歐盟 AI 法案相關指引）、<strong>不是風險管理框架</strong>（它提供技術控制，但不定義風險評估方法）、<strong>不是工具推薦清單</strong>（廠商中立）。另外，AISVS 假設你的應用程式<strong>也</strong>依對應層級通過 ASVS 的驗證：AI 專屬的需求是加在一般應用程式安全之上，不是取代。LLMSVS 也有同樣的聲明：它只涵蓋與 LLM 使用及整合有關的需求，其他部分要用 ASVS 之類的標準驗證。</p>
+<p>引用也有講究。AISVS 的需求識別碼格式是 <code>C&lt;章&gt;.&lt;節&gt;.&lt;條&gt;</code>（例如 <code>C9.4.3</code>），因為編號可能隨版本改變，官方建議在報告、工具與其他文件裡加上版本：<code>v1.01-C9.4.3</code>（<code>v</code> 要小寫）。沒有帶版本的識別碼，指的是「最新發布的小版本」。你在第 2 章會看到，1.01 相對於 1.0 有 23 條新增、1 條移除、多條層級調整，所以<strong>評估報告一定要寫明用的是哪個版本</strong>。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程：要引用或套用一條驗證需求時，先確認用的版本。若報告或工具需要長期穩定，使用帶版本的格式如 v1.01-C9.4.3；只是口頭參考時可以不帶版本但指的是最新發布版本。接著確認選用的驗證層級，再決定證據。若 AISVS 與 LLMSVS 都適用，分別標示各自的版本。">
+flowchart TD
+  A["我要引用或套用一條需求"] --> B{"這份文件之後要被<br>稽核、工具或他人重用？"}
+  B -->|"是"| C["寫帶版本的識別碼<br>例：v1.01-C9.4.3"]
+  B -->|"否，只是口頭參考"| D["可省略版本<br>但指的是最新發布版"]
+  C --> E{"系統的風險輪廓？"}
+  D --> E
+  E -->|"內部工具、低風險"| L1["以層級 1 為目標"]
+  E -->|"面向客戶、處理個資"| L2["以層級 2 為目標"]
+  E -->|"關鍵、受高度監管"| L3["以層級 3 為目標"]
+  L1 --> F["蒐集每條需求的證據<br>並在報告寫明版本與層級"]
+  L2 --> F
+  L3 --> F
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class A,B,E,F author
+</pre>
+<figcaption><strong>圖 1-1　引用一條驗證需求前，先決定版本與層級。</strong>「帶版本的識別碼格式」與「依風險輪廓選層級」是官方說法；把它們串成一條流程是<strong>作者整理，非官方</strong>。</figcaption>
+</figure>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>驗證標準回答「做到什麼才算過」；Top 10 回答「要擔心什麼」；測試指南回答「怎麼查」；治理框架回答「組織怎麼管」。</li>
+  <li>需求的價值在可驗證：每條都是「Verify that …」，並要有證據。</li>
+  <li>三個層級依風險輪廓選擇；AISVS 說多數正式系統至少層級 2（AISVS 是否累積計算，官方未明說）。</li>
+  <li>AISVS 不是治理框架、不是風險管理框架、不是工具清單；它假設應用程式也通過對應層級的 ASVS。</li>
+  <li>引用要帶版本，例如 <code>v1.01-C9.4.3</code>，因為識別碼與層級會隨版本變動。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能用一句話區分 Top 10、驗證標準、測試指南、治理框架。</li>
+  <li>我能說明為什麼「要做好輸入驗證」不是一條可驗證的需求。</li>
+  <li>我知道三個驗證層級各對應什麼系統，以及為什麼層級要在測試前就選好。</li>
+  <li>我能正確寫出一條帶版本的 AISVS 需求識別碼。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO1、LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-aisvs.html">第 2 章　AISVS：十二章與版本</a>：進入第一份標準，看它的十二個章節各在驗證什麼，以及 1.0 → 1.01 → 1.02 的版本演進。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AISVS GitHub README（What is AISVS?、What AISVS is NOT、How AISVS complements other standards、Verification Levels、How to use AISVS、How to Reference AISVS Requirements）：<a href="https://github.com/OWASP/AISVS">github.com/OWASP/AISVS</a>；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>AISVS 1.01 第 2 章輸入驗證：<a href="https://github.com/OWASP/AISVS/blob/main/1.01/en/0x10-C02-Input-Validation.md">1.01/en/0x10-C02-Input-Validation.md</a>（<code>v1.01-C2.1.4</code> 的內容）。</li>
+    <li>AISVS 1.01 發布說明（GitHub Releases，v1.01）：<a href="https://github.com/OWASP/AISVS/releases/tag/v1.01">releases/tag/v1.01</a>。</li>
+    <li>OWASP LLMSVS GitHub README 與 v2.0 文件（Utilizing the LLMSVS、Assumptions、Assessment and certification）：<a href="https://github.com/OWASP/www-project-llm-verification-standard">github.com/OWASP/www-project-llm-verification-standard</a>；CC BY-SA 4.0。</li>
+    <li>OWASP AISVS 專案頁（頁面標示 Incubator 與 Standards，並列出相容標準）：<a href="https://owasp.org/www-project-artificial-intelligence-security-verification-standard-aisvs-docs/">owasp.org/www-project-artificial-intelligence-security-verification-standard-aisvs-docs/</a>。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AISVS（GitHub 儲存庫與 README）— CC BY-SA 4.0；OWASP LLMSVS（GitHub 儲存庫，LICENSE.md）— CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'v-ch1', topic: 'aisvs-and-llmsvs', mode: 'chapter',
+  questions: [
+    { id: 'v1q1', type: 'mc', lo: [1], refs: [{label: '1.1 表 1-1', href: '01-verification-standards.html#vs-role'}],
+      stem: '團隊要在上線前回答「我們的 LLM 應用到底做到了哪些安全控制？」依本章，最適合拿來當依據的文件類型是哪一種？',
+      options: [
+        { text: '風險認知清單（Top 10）：它列出最重要的風險，讀完就能知道做到了什麼。', why: 'Top 10 告訴你要擔心什麼，並不提供「過／不過」的驗收條件。' },
+        { text: '治理框架（如 NIST AI RMF）：它規範組織如何管理 AI 風險。', why: '治理框架管組織的管理方式；AISVS 自己也說它提供的是這些框架所指向的技術控制，而非治理本身。' },
+        { text: '驗證標準（AISVS 或 LLMSVS）：每條需求可驗證，並能用證據回答是否達成。', correct: true, why: '符合 1.1 節：驗證標準定義「做到什麼才算過」。' },
+        { text: '測試指南：它能直接告訴你系統通過了哪些要求。', why: '測試指南告訴你怎麼去檢查，但「要檢查什麼」的驗收條件由驗證標準定義。' }
+      ],
+      summary: '驗證標準 = 做到什麼才算過；測試指南 = 怎麼查。' },
+    { id: 'v1q2', type: 'mc', lo: [1], refs: [{label: '1.2 可驗證的需求', href: '01-verification-standards.html#vs-concept'}],
+      stem: '下列哪一句最像一條「可驗證的需求」？',
+      options: [
+        { text: '系統應該具備完善的輸入驗證機制。', why: '「完善」沒有判準，兩個人可以各自宣稱做到；這是建議，不是可驗證的需求。' },
+        { text: '輸入長度控制要拒絕超出 token 上限的輸入，而不是截斷後繼續處理。', correct: true, why: '審查者可以構造超長輸入並觀察系統行為，得到是／否的結論；這正是 v1.01-C2.1.4 的精神。' },
+        { text: '團隊應重視提示詞注入的風險。', why: '這是認知層面的呼籲，沒有可蒐集的證據。' },
+        { text: '建議參考業界最佳實務來強化模型的安全。', why: '沒有具體結果可檢查，也沒有證據形式。' }
+      ],
+      summary: '可驗證 = 有明確結果描述，能用證據回答是／否。' },
+    { id: 'v1q3', type: 'scn', lo: [1], refs: [{label: '1.4 驗證標準不是什麼', href: '01-verification-standards.html#vs-limits'}, {label: '1.1 表 1-1', href: '01-verification-standards.html#vs-role'}],
+      stem: '依本章，這份簡報裡的說法哪裡需要修正？',
+      scenario: '雲嶺科技（虛構）的簡報寫道：「我們的客服 LLM 已逐條通過 AISVS 層級 2，因此可以省略一般網頁應用程式的安全審查（ASVS），也不需要另做風險評估。AISVS 是我們的治理框架。」審查者覺得有點不對勁。',
+      options: [
+        { text: '只有「治理框架」一詞需要修正；其他說法都沒問題。', why: '省略 ASVS 與風險評估也不對：AISVS 假設應用程式也通過對應層級的 ASVS，且它自己明說不定義風險評估方法。' },
+        { text: '三處都有問題：AISVS 不是治理框架；它假設應用程式也依對應層級通過 ASVS，AI 專屬需求是加在其上；它不定義風險評估方法，不能取代風險評估。', correct: true, why: '對應 1.4 節的「What AISVS is NOT」與 ASVS 前提。' },
+        { text: '沒有問題，因為層級 2 已涵蓋所有安全面向。', why: '層級是 AI 專屬需求的深度分級，不是涵蓋所有應用程式安全。' },
+        { text: '應改成通過層級 3，這樣才能省略 ASVS。', why: '任何層級都假設有對應層級的 ASVS 驗證；層級高不會免除 ASVS。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) AISVS README 明列它不是治理框架、不是風險管理框架。(2) 它的驗證假設應用程式也依對應層級通過 ASVS；AI 專屬需求是疊加，不是取代。(3) 因此簡報有三處錯誤。</p><p><strong>結論：</strong>改寫為「AISVS 提供技術控制的驗證；治理與風險評估另行進行；一般應用程式安全以 ASVS 驗證」。對應教材：<a href="01-verification-standards.html#vs-limits">1.4 節</a>。</p>' },
+    { id: 'v1q4', type: 'match', lo: [1, 2], refs: [{label: '1.1 表 1-1', href: '01-verification-standards.html#vs-role'}, {label: '1.3 驗證層級', href: '01-verification-standards.html#vs-levels'}],
+      stem: '把下列描述配對到最符合的文件類型。',
+      cats: [
+        { id: 'top10', label: '風險認知清單（Top 10）' },
+        { id: 'vs', label: '驗證標準（AISVS／LLMSVS）' },
+        { id: 'gov', label: '治理與風險框架' },
+        { id: 'test', label: '測試方法指南' }
+      ],
+      items: [
+        { text: '每條需求都標示屬於驗證層級 1、2 或 3', answer: 'vs', why: '驗證層級是驗證標準的做法。' },
+        { text: '定義組織如何負責與管理 AI 風險（如 NIST AI RMF）', answer: 'gov', why: 'AISVS 把這類文件列為它所指向的治理框架。' },
+        { text: '說明怎麼去檢查一個控制是否有效', answer: 'test', why: 'AISVS 1.01 的發布說明指出測試程序請看 AI Testing Guide。' },
+        { text: '協助團隊認識最關鍵的風險，不提供過／不過判準', answer: 'top10', why: 'AISVS 對照表稱 Top 10 是「對最重要風險的認知」。' }
+      ],
+      summary: '四類文件各有分工，驗證標準的特徵是層級加可驗證。' }
+  ]
+});
+</script>
+</body>
+</html>

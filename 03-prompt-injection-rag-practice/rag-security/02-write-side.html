@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　寫入端：文件投毒、嵌入操弄與攝入供應鏈｜RAG 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="RAG 寫入端的三組控制：文件投毒、嵌入操弄與攝入連接器的供應鏈；說明為什麼雜湊相符不等於內容安全，並以虛構情境走一遍。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="rag-security" data-page="02-write-side.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　寫入端：文件投毒、嵌入操弄與攝入供應鏈</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-pipeline-and-map.html">第 1 章</a>；<a href="../../01-overview/ai-exchange/06-rag.html#rag-threats">AI Exchange 第 6 章表 6-1（語料投毒、索引遭竄改）</a></li>
+</ul>
+<p class="lead">寫入端回答一個問題：<strong>誰能影響進入語料與索引的東西？</strong>Cheat Sheet 把這件事拆成三組控制：文件本身（見 Section 1）、文件變成的嵌入（見 Section 2）、以及把文件送進來的連接器（見 Section 13）。這一章的重點是看懂一個容易誤會的地方：<strong>雜湊 (hash) 相符，只代表文件沒變，不代表文件安全。</strong></p>
+
+<h2 id="ws-doc">2.1 文件投毒 (Document Poisoning)</h2>
+<p>Cheat Sheet 稱文件投毒是「最常見、最容易被利用的 RAG 攻擊向量」，凡是多人或多系統可以上傳文件的共享知識庫（例如 Confluence、SharePoint、雲端硬碟、物件儲存）都有風險。<span class="tag official">官方</span> 它列出的入口是：</p>
+<ul>
+  <li>攻擊者把含有隱藏指示的文件上傳到共享知識庫；</li>
+  <li>被入侵的資料來源把投毒文件送進攝入 (Ingestion) 管線；</li>
+  <li>內部人員修改既有文件，加入在一般畫面看不見、但抽取出的文字裡存在的對抗性內容；</li>
+  <li>以不可見的 Unicode 字元（例如零寬空格）編碼隱藏指示，人眼看不到，模型卻會處理。</li>
+</ul>
+<p>這個威脅在 AI Exchange 第 6 章叫「檢索語料投毒」。Cheat Sheet 的做法是下面五類控制，而且它特別強調：<strong>防篡改要靠「分開保管的基準」，而不是單靠雜湊。</strong></p>
+
+<div class="table-wrap"><table>
+<caption>表 2-1　寫入端的攻擊入口與控制（Cheat Sheet Section 1、2、13 的整理；「對應 LLM09:2026」欄為作者整理，非官方）</caption>
+<thead><tr><th scope="col">入口（概念層級）</th><th scope="col">Cheat Sheet 的控制</th><th scope="col">要記得的限制</th><th scope="col">對應 LLM09:2026 <br>（作者整理）</th></tr></thead>
+<tbody>
+<tr><th scope="row">文件被替換或被內部人員修改</th><td>每份核准文件的 SHA-256 摘要記入<strong>獨立管控的完整性清單 (Integrity Manifest)</strong>；清單用數位簽章或訊息鑑別碼 (MAC) 保護，簽章金鑰不放在文件庫的寫入權限內；檢索前驗證清單與文件，失敗就拒絕並通知資安團隊</td><td>能同時換掉文件和它的摘要的人，仍能讓修改過的文件通過檢查</td><td>資料驗證、來源驗證與出處</td></tr>
+<tr><th scope="row">不明來源或批次上傳</th><td>文件來源的允許清單；新來源要走核准流程；不依副檔名或 MIME 類型判斷可信度；大量上傳需審核</td><td>允許清單只決定「來源」，不保證該來源內的每份內容</td><td>資料驗證、來源驗證與出處</td></tr>
+<tr><th scope="row">不可見字元與已知對抗性樣式</th><td>攝入時掃描已知的提示詞注入標記、隱藏指示、不可見 Unicode 字元與零寬空格；記錄上傳者、時間、來源與核准</td><td>掃描只攔得到已知樣式，改寫後可能漏掉</td><td>資料驗證（LLM09:2026 緩解 #2 也要求在抽取時去除零寬字元與同形異義字）</td></tr>
+<tr><th scope="row">嵌入被刻意擺到目標查詢附近</th><td>監控嵌入分布（一份文件的嵌入異常靠近許多不同的查詢叢集）；偵測重嵌入後的漂移；高安全場景用多個嵌入模型交叉比對；記錄每份文件使用的嵌入模型版本</td><td>官方列為「進階」，且稱這是需要知道所用嵌入模型的進階攻擊</td><td>檢索期資料投毒；異常偵測</td></tr>
+<tr><th scope="row">被入侵的連接器或自動同步</th><td>審查所有第三方連接器；驗證外部 API 回傳的資料（掃描、完整性、內容類型）；固定嵌入模型與攝入函式庫的版本；維護攝入來源與連接器的清冊；同步與可用之間加入暫存或審核；連接器只給必要的最小權限</td><td>外部 API 回應不能默認乾淨</td><td>資料驗證；LLM04:2026 供應鏈（作者整理）</td></tr>
+</tbody></table></div>
+
+<h2 id="ws-hash">2.2 「雜湊相符」與「內容安全」是兩件事</h2>
+<p>2026-10-04 的修訂（保護文件完整性基準免遭竄改）讓 Cheat Sheet 把這個區別寫得很清楚。<span class="tag official">官方</span> 用你熟悉的軟體發佈類比：你下載一個安裝檔並比對簽章，簽章相符只證明「這是發佈者簽的那份」，沒有證明「發佈者簽的那份沒有惡意」。</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　完整性檢查能證明什麼、不能證明什麼（官方重點，作者整理成對照）</caption>
+<thead><tr><th scope="col">問題</th><th scope="col">摘要相符能回答嗎</th><th scope="col">還需要什麼</th></tr></thead>
+<tbody>
+<tr><th scope="row">文件自核准後有沒有被改過</th><td>能（前提：摘要清單本身可信）</td><td>清單要與文件庫分開保管，並以簽章或 MAC 保護</td></tr>
+<tr><th scope="row">清單和文件會不會一起被換掉</th><td>不能</td><td>簽章金鑰放在文件庫的寫入權限之外；驗證清單的真實性，再驗證文件</td></tr>
+<tr><th scope="row">核准當下的內容是否含提示詞注入</th><td>不能。官方明說：相符「只建立與核准基準的一致性，不證明內容安全或沒有提示詞注入」</td><td>攝入時的掃描、來源允許清單、人工審核</td></tr>
+<tr><th scope="row">基準本身什麼時候可以更新</th><td>不能</td><td>基準更新要與一般文件寫入<strong>分開審查與授權</strong></td></tr>
+</tbody></table></div>
+<p>所以「雜湊相符」是個必要但不充分的檢查：它關閉「核准後被偷偷改動」這條路，但「核准時就已含有惡意內容」這條路要靠來源與內容審查關閉。</p>
+
+<h2 id="ws-embed">2.3 嵌入操弄 (Embedding Manipulation)</h2>
+<p>嵌入是文字的數值表示，用於相似度搜尋。Cheat Sheet 描述的威脅是：對抗性輸入可以被製作成「嵌入很像某些目標查詢」，於是即使內容與查詢毫不相關，也會被取回。它也明說這是進階攻擊，需要知道所用的嵌入模型，與高安全環境最相關。<span class="tag official">官方</span></p>
+<p>這跟文件投毒的差別在於攻擊者利用的是「嵌入空間的位置」：LLM09:2026 說得更直接，即使取回的內容沒有任何惡意指令，這類攻擊仍可能成立。它還點出成功需要兩個條件同時成立：投毒內容必須被取回（幾何條件），而且必須影響回答（生成條件）；防守者可以在任一層介入。<span class="tag official">官方</span></p>
+<p>防禦的重點不是「讀懂每份文件的嵌入」，而是<strong>用外部可觀察的統計來發現不自然的接近程度</strong>：嵌入分布、漂移、多模型交叉比對、版本記錄。這些控制偏專業，所以 Cheat Sheet 放在「進階」。</p>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：LLM09:2026 轉述的研究數字與 CVE</p>
+  <p>LLM09:2026 引用了許多研究成果與漏洞編號（例如嵌入反推的重建比例、少量投毒文件即可達到高成功率的結果、兩個向量資料庫 (Vector Database) 與 RAG 引擎的 CVE）。這些是 OWASP 文件的轉述，本教材沒有獨立回到原論文或 CVE 資料庫核對，因此後面章節只在需要時以「依 OWASP 文件轉述」引用，不自行引用其他統計。</p>
+</div>
+
+<h2 id="ws-supply">2.4 攝入連接器也是供應鏈</h2>
+<p>RAG 的攝入常依賴第三方連接器：雲端硬碟、協作平台、通訊軟體、物件儲存或網頁爬蟲。Cheat Sheet Section 13 的立場很簡單：<strong>連接器是供應鏈的一部分</strong>，要用處理供應鏈的方式處理。<span class="tag official">官方</span> 這與你在應用程式相依套件上用過的做法一致，只是對象變成資料管線：</p>
+<ul>
+  <li>不隱性信任外部整合：被入侵的雲端硬碟連接器可以把投毒文件注入語料。</li>
+  <li>不要自動同步外部來源後直接可用；在攝入與進入向量庫之間加上暫存或審核。</li>
+  <li>連接器只給「讀取特定資料夾」的權限，不給整個雲端硬碟的管理權。</li>
+  <li>固定嵌入模型與攝入函式庫版本：沒有控管的嵌入模型更新，會改變整個語料的檢索行為。</li>
+</ul>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="攝入管線的檢查點：來源經過允許清單，再由連接器取得，進入暫存區；暫存區做來源記錄、內容掃描與人工審核，通過後計算摘要並寫入簽章過的清單，再嵌入並寫入向量庫；任何一步失敗就隔離並通知，而不是放行。">
+flowchart LR
+  SRC["來源"] --> AL{"來源在<br>允許清單？"}
+  AL -->|否| Q["拒絕並記錄"]
+  AL -->|是| CON["連接器取得<br>最小權限"] --> STG["暫存區"]
+  STG --> SC["來源記錄<br>內容掃描<br>人工審核"]
+  SC -->|未通過| ISO["隔離並通知"]
+  SC -->|通過| MAN["寫入簽章清單<br>（摘要與基準）"] --> EMB["嵌入<br>記錄模型版本"] --> IDX["寫入向量庫<br>僅限攝入管線"]
+</pre>
+<figcaption><strong>圖 2-1　攝入管線的檢查點（作者整理，非官方）。</strong>每個菱形或方框都對應 Cheat Sheet 的一項控制（見 Section 1、2、7、13）；圖的串接與順序是作者整理。重點是：<strong>失敗時的出口是「隔離並通知」，不是「放行」。</strong></figcaption>
+</figure>
+
+<h2 id="ws-scenario">2.5 情境範例 C：每晚同步的內部知識庫</h2>
+<div class="scenario">
+<h3 id="scn-c">情境 C（虛構）：海灣物流的營運知識助理</h3>
+<p><span class="tag fiction">虛構</span> 海灣物流是虛構的公司。他們建了一個營運知識助理：每晚由第三方連接器從共享雲端硬碟與一個合作夥伴的文件入口抓取檔案，自動嵌入並寫入向量庫，白天給客服與調度員查詢。共享雲端硬碟的多個資料夾，合作夥伴與外包人員都有編輯權。</p>
+<p class="arch"><strong>架構：</strong>共享雲端硬碟／夥伴入口 → 第三方連接器（管理員權限）→ 夜間自動嵌入 → 向量庫（應用程式服務帳號可直接寫入）→ 檢索 → LLM → 調度員介面。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>某天，助理對一個常見的運費查詢，給出了一段看似權威、但與公司政策不符的規則；稽核發現這段規則來自一份最近被編輯的文件，編輯者是一個外包帳號。該文件被編輯後，沒有任何人收到通知，隔夜就被嵌入並可被檢索。</li>
+  <li><strong>哪一環出問題：</strong>(1) 來源：外包與夥伴對資料夾有寫入權，沒有來源允許清單，也沒有核准流程；(2) 連接器：用管理員權限、自動同步、攝入與可用之間沒有暫存與審核；(3) 完整性：沒有以簽章保護的核准基準，所以事後也無法證明這份文件何時、被誰改了什麼；(4) 向量庫：服務帳號可直接寫入，沒有索引修改記錄。</li>
+  <li><strong>對應條目：</strong>Cheat Sheet Section 1（文件投毒）、Section 13（攝入的供應鏈風險）、Section 7（索引完整性）；LLM09:2026 的檢索期資料投毒（寫入語料後透過檢索進入提示詞）；若該文件另含給模型的指令，則同時涉及 LLM01:2026。</li>
+  <li><strong>該採什麼控制：</strong>
+    <ul>
+      <li>來源允許清單與新來源核准流程；高風險資料夾的修改要有審核；</li>
+      <li>連接器改為只讀特定資料夾，同步後先進暫存區，掃描與審核通過才可檢索；</li>
+      <li>對核准文件建立簽章過的摘要清單，基準更新要另行授權；</li>
+      <li>向量庫的寫入權限限於攝入管線，所有索引修改記錄身分與時間，並對索引大小的異常變化發出警示。</li>
+    </ul>
+  </li>
+</ol>
+<p>注意這個情境<strong>不需要</strong>任何精巧的嵌入技巧。只靠「誰有寫入權」的管控缺口，內容就能進到答案。這也是 Cheat Sheet 把來源與完整性放在「立即」層級的理由（作者整理）。</p>
+</div>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>寫入端的核心問題：誰能影響進入語料與索引的東西。</li>
+  <li>完整性清單要與文件庫分開保管、以簽章或 MAC 保護；摘要相符只證明「沒被改過」，不證明內容安全。</li>
+  <li>基準更新要與一般文件寫入分開審查授權。</li>
+  <li>嵌入操弄是進階威脅，防禦靠分布監控、漂移偵測與跨模型比對，Cheat Sheet 放在「進階」層級。</li>
+  <li>攝入連接器是供應鏈：最小權限、暫存審核、固定版本、維護清冊。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說明為什麼摘要相符不等於內容安全。</li>
+  <li>我能為一條攝入管線標出至少三個檢查點，並說明失敗時該怎麼處理。</li>
+  <li>我能區分「來源允許清單」「完整性基準」「內容掃描」各自防的是哪一種入口。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-read-side.html">第 3 章　讀取端：存取控制繼承與隔離</a>：內容已經進了索引，下一個問題是「誰能取回什麼」。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series，RAG Security Cheat Sheet：Section 1 Document Poisoning、Section 2 Embedding Manipulation、Section 7 Index Integrity、Section 13 Supply Chain Risk in Ingestion（頁面無版本與日期；GitHub 歷史：2026-05-06 建立，2026-10-04 最後修改，其中 #2542 為完整性基準的修訂）；<a href="https://cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html</a>；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026，LLM09:2026 Vector and Embedding Weaknesses（Version 2026，發布日採 2026-08-04）：描述、緩解 #2 與 #4；<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM09_VectorAndEmbeddingWeaknesses.md">GenAI-LLM-Top10 2026/final</a>；CC BY-SA 4.0。</li>
+    <li>OWASP AI Exchange，RAG systems overview（2026-10-25 快照）；<a href="https://owaspai.org/go/ragoverview">owaspai.org/go/ragoverview</a>；CC0 1.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series 與 OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch2', topic: 'rag-security', mode: 'chapter',
+  questions: [
+    { id: 'c2q1', type: 'mc', lo: [2], refs: [{label: '2.2 雜湊相符與內容安全', href: '02-write-side.html#ws-hash'}],
+      stem: '某團隊在攝入時對每份文件計算 SHA-256，檢索前比對，相符才使用，並認為「這樣就能確保知識庫內容安全」。依 Cheat Sheet，這個結論的問題是什麼？',
+      options: [
+        { text: '相符只證明文件與核准基準一致，不證明內容安全或沒有提示詞注入；若基準與文件被一起替換，檢查也會通過。', correct: true, why: '官方明說相符只建立與核准基準的一致性；因此基準要另行保管並簽章，內容安全要靠來源與掃描。' },
+        { text: 'SHA-256 已被證明不安全，應該改用 MD5。', why: 'Cheat Sheet 的問題不在雜湊演算法的強度，而在「雜湊相符能證明什麼」；MD5 也不會讓結論成立。' },
+        { text: '只要把雜湊值存在同一個資料庫裡就足夠安全。', why: '雜湊與文件存在同一個寫入權限下，能改文件的人也能改雜湊；官方要求清單獨立管控並簽章。' },
+        { text: '雜湊檢查只適用於 PDF，不適用於文字檔。', why: '雜湊適用任何檔案；問題在它證明的範圍，而非檔案類型。' }
+      ],
+      summary: '雜湊相符 = 與基準一致；基準可信、內容安全要靠別的控制。' },
+    { id: 'c2q2', type: 'match', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-write-side.html#ws-doc'}, {label: '2.4 攝入供應鏈', href: '02-write-side.html#ws-supply'}],
+      stem: '把下列做法配對到它主要防的寫入端入口。',
+      cats: [
+        { id: 'tamper', label: '核准後文件被替換或修改' },
+        { id: 'source', label: '不明來源或批次上傳' },
+        { id: 'hidden', label: '不可見字元或已知隱藏指示' },
+        { id: 'connector', label: '被入侵的連接器或自動同步' }
+      ],
+      items: [
+        { text: '以簽章保護的獨立摘要清單，檢索前先驗證清單再驗證文件', answer: 'tamper', why: '清單與簽章用來偵測核准之後的改動。' },
+        { text: '只接受允許清單內的文件來源，新來源要走核准流程', answer: 'source', why: '允許清單針對的是「不明來源」。' },
+        { text: '在攝入時掃描零寬空格等不可見字元與已知的隱藏指示樣式', answer: 'hidden', why: '內容掃描針對人眼看不到、模型卻會處理的內容。' },
+        { text: '同步後先放進暫存區審核，連接器只給特定資料夾的讀取權限', answer: 'connector', why: '把連接器當供應鏈處理：暫存審核加最小權限。' }
+      ],
+      summary: '一種控制防一種入口：基準防改動、允許清單防來源、掃描防隱藏內容、暫存加最小權限防連接器。' },
+    { id: 'c2q3', type: 'scn', lo: [2], refs: [{label: '2.5 情境 C', href: '02-write-side.html#ws-scenario'}, {label: '2.4 攝入供應鏈', href: '02-write-side.html#ws-supply'}],
+      stem: '依本章，這個團隊的哪一個設計最需要先修正？',
+      scenario: '北辰電商（虛構）的 RAG 助理每晚由一個第三方連接器自動抓取合作商的產品手冊，嵌入後直接開放檢索。連接器用整個雲端硬碟的管理員憑證，沒有暫存或審核。某天有一份手冊被改過，助理開始在客服答覆中引用錯誤的保固條款。團隊提議：「加一個輸出關鍵字過濾，攔截含『保固』的錯誤條款。」',
+      options: [
+        { text: '採用團隊的提議，因為問題出在輸出。', why: '輸出過濾是額外一層，不是攝入端缺口的替代品；而且錯誤條款不一定含固定關鍵字。' },
+        { text: '把連接器改為只讀特定資料夾，並在同步與可檢索之間加入暫存與審核，同時對核准文件建立簽章過的基準。', correct: true, why: '根因在寫入端：連接器權限過大、自動同步沒有審核、沒有基準可偵測改動。' },
+        { text: '增加嵌入維度，讓文件更難被改動。', why: '嵌入維度與文件是否被竄改無關。' },
+        { text: '換成更大的語言模型，期待它能分辨手冊真偽。', why: '模型不是來源驗證機制；對模型來說，被取回的內容就是「可用的資料」。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 錯誤內容是從來源進入語料的，屬寫入端問題（Cheat Sheet Section 1 與 13）。(2) 連接器權限過大、自動同步且沒有暫存審核，正是 Section 13 列出的「不要做」。(3) 沒有簽章清單，就無法偵測文件何時被改。(4) 輸出過濾只能擋住已知樣式，而且錯誤的保固條款不一定長得像「攻擊」。</p><p><strong>結論：</strong>先修寫入端：最小權限連接器、暫存審核、簽章基準與來源允許清單。對應教材：<a href="02-write-side.html#ws-supply">2.4 節</a>、<a href="02-write-side.html#ws-hash">2.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

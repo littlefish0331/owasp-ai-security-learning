@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　架構式防禦｜提示詞注入防護｜OWASP AI 資安學習教材</title>
+<meta name="description" content="工具邊界授權、最小權限、人工確認、Rule of Two、CaMeL 與雙 LLM 模式：哪些控制降低成功率、哪些限縮後果，以及怎麼依應用程式的架構挑選。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="prompt-injection" data-page="03-architectural-defense.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　架構式防禦：工具邊界與限縮後果</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-fragile-layers.html">第 2 章</a>；<a href="../../01-overview/ai-exchange/04-seven-layers.html#sl-concept">AI Exchange：最小模型權限</a>；<a href="../../01-overview/ai-exchange/05-agentic-genai.html#ga-trifecta">致命三要素</a> (Lethal Trifecta)</li>
+</ul>
+<p class="lead">前面兩章的結論是：攔截會被繞過。這一章回答「那要把關在哪裡」。答案是工具邊界 (Tool Boundary)：模型提出動作，但<strong>由應用程式碼決定能不能執行</strong>。你會看到官方給的控制有哪些、各自是在降低成功率還是限縮後果，以及怎麼依你的架構挑選。</p>
+
+<h2 id="ad-boundary">3.1 把關在哪裡：工具邊界</h2>
+<p>LLM01:2026 的緩解 #4 是官方在 agentic 部署中標為「承重」（load-bearing）的兩條之一（另一條是 #8）：憑證與狀態變更的能力要握在應用程式碼，而不是模型手上，並對每個操作給最小權限 (Least Privilege)；特權呼叫走一個確定性的政策引擎，在執行當下重新驗證意圖與參數。<span class="tag official">官方</span> Cheat Sheet 的安全實作管線也是同樣的順序：</p>
+<ol>
+  <li>辨識每個通道的不可信內容（取回文件、工具結果、對話歷史），與可信指令分開，但標籤不構成邊界；</li>
+  <li>在模型之外的執行程式碼裡，驗證工具參數並強制呼叫者的權限；</li>
+  <li>高風險操作先取得「針對該動作」的核准；</li>
+  <li>把模型輸出在每個下游用途都當成不可信，套用該目的地需要的控制（安全渲染 HTML、參數化資料庫查詢）；</li>
+  <li>用無害資料與可觀察的測試替身，測試上述邊界。</li>
+</ol>
+<p>LLM01:2026 還給了一個為什麼必須如此的觀察：事件紀錄上多數高衝擊的提示詞注入 (Prompt Injection)，之所以嚴重，是因為注入落在一個工具、權限範圍或輸出渲染能力讓被攻陷的模型可以代表攻擊者、用使用者的權限行動的系統裡。</p>
+
+<h2 id="ad-table">3.2 控制清單：降低成功率，還是限縮後果？</h2>
+<p>官方的說法是：有些控制降低注入成功率，預期會對適應性攻擊者 (Adaptive Attacker) 退化；有些控制限縮成功後的爆炸半徑 (Blast Radius)，能撐得住會探測系統的攻擊者。agentic 部署中，最小權限與能力預算是承重控制。下面把 LLM01:2026 的 11 項緩解放進這個框架。</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　LLM01:2026 緩解項目 × 性質 × AI Exchange 七層（編號取自 LLM01:2026；「性質」與「七層」欄為 <span class="tag author">作者整理，非官方</span>）</caption>
+<thead><tr><th scope="col">LLM01:2026 緩解</th><th scope="col">性質</th><th scope="col">最接近的七層</th><th scope="col">官方指出的限制（改寫）</th></tr></thead>
+<tbody>
+<tr><th scope="row">#1 在 system prompt 約束角色與能力</th><td>降低成功率</td><td>層 1</td><td>屬部分控制；推測出提示詞的攻擊者可繞過，需搭配 #4</td></tr>
+<tr><th scope="row">#2 嚴格輸出結構並在程式碼驗證</th><td>降低成功率</td><td>層 2</td><td>抓格式違規，抓不到語意操縱</td></tr>
+<tr><th scope="row">#3 每個模態邊界都過濾</th><td>降低成功率</td><td>層 2</td><td>語意過濾可被改寫或編碼逃過</td></tr>
+<tr><th scope="row">#4 憑證與狀態變更留在程式碼，逐操作最小權限</th><td>限縮後果</td><td>層 5–7</td><td>寬鬆的方便權限與多 agent 轉手會把風險再帶回來</td></tr>
+<tr><th scope="row">#5 在匯入與渲染邊界移除不可見字元</th><td>降低成功率</td><td>層 2</td><td>擋不住可見文字攻擊與未來的隱寫</td></tr>
+<tr><th scope="row">#6 外部內容走獨立、標示來源的通道</th><td>降低成功率</td><td>輸入隔離（七層之外）</td><td>只在非適應性測試中降低成功率；知道標記方式的攻擊者可模仿</td></tr>
+<tr><th scope="row">#7 特權／不可逆／對外動作需明確人工確認</th><td>限縮後果</td><td>層 3</td><td>要呈現實際動作而非摘要；量大會出現核准疲勞 (Approval Fatigue)</td></tr>
+<tr><th scope="row">#8 以 Rule of Two 為下限來編列能力預算</th><td>限縮後果</td><td>層 6–7（作者對照）</td><td>對自主程度沒有規定</td></tr>
+<tr><th scope="row">#9 把 agent 記憶寫入視為特權操作</th><td>限縮後果</td><td>層 3–4</td><td>事實性記憶會滲入指示；分批寫入可躲過逐筆分類</td></tr>
+<tr><th scope="row">#10 釘選、簽署、驗證 MCP 與第三方工具套件</th><td>限縮後果（供應鏈）</td><td>七層之外</td><td>釘選擋不住隨版本發佈的惡意內容或不改版本的工具描述污染</td></tr>
+<tr><th scope="row">#11 用讀過防禦細節的適應性攻擊者測試</th><td>驗證</td><td>—</td><td>只憑靜態攻擊成功率下結論會被高估（見第 4 章）</td></tr>
+</tbody></table></div>
+<p>表中的分類是作者的整理：只有 #4、#7、#8、#9、#10 屬限縮後果，其餘多半在降低成功率（#11 屬驗證）。官方明說的是兩件事：agentic 部署裡 #4 與 #8 是承重控制，而完整的 agency 面處理在 LLM03:2026 Excessive Agency。<span class="tag author">作者整理，非官方</span></p>
+
+<h2 id="ad-concept">3.3 核心概念：Rule of Two 與致命三要素</h2>
+<div class="concept">
+<h3 id="c-ro2">以能力預算檢查系統設計</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>Rule of Two（出處標為 Meta AI, 2025）把一個 agent 的能力分成三項：(A) 處理不可信輸入、(B) 存取敏感資料或系統、(C) 變更狀態或對外通訊。官方建議把「三項同時具備」視為高風險：[A,B,C] 的 agent 每個動作都要人工核准；[A,B] 或 [A,C] 要有明確的殘餘風險評估。<span class="tag official">官方</span> 官方同時引用 Simon Willison 的「致命三要素」(Lethal Trifecta, 2025) 作為同一結構診斷的另一種說法：能同時存取私人資料、讀入不可信內容、又能對外溝通，具備高衝擊外洩的條件，拿掉任何一項就拿掉條件。</dd>
+  <dt data-n="2">為什麼有用</dt>
+  <dd>注入可以視為會發生。與其問「能不能擋住」，不如問「就算發生，這個 agent 同時握有幾項」。它把抽象的權限討論變成一張三格檢查表，容易在設計審查時使用。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>官方情境 9 轉述三個公開事件（出處為 Invariant Labs、General Analysis、Koi Security 等 2025 年的報告），結構相同：攻擊者在低權限管道（公開 GitHub issue、客服工單、惡意 npm 套件）放文字，開發者的 agent 在較高憑證下讀到並代為行動。其中一例是以 <code>service_role</code> 執行、繞過列級安全 (row-level security) 的資料庫 MCP；另一例是一個惡意的郵件相關 MCP 套件，被估計影響約 300 個組織。這些細節是官方轉述的第三方報告，本教材沒有獨立查證。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>拆掉其中一項（例如處理不可信輸入的 agent 看不到敏感資料；能存取敏感資料的步驟拿不到不可信內容；能對外通訊的步驟必須經過核准）；或讓三項分屬不同的隔離元件，元件間只傳遞受限的結構化結果。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「Rule of Two 保證安全」。官方明說它是<strong>下限</strong>(floor)，而且對自主程度（agent 能連續自己做多少步）沒有規定；[A,B] 或 [A,C] 並不代表沒風險，只是要有明確的殘餘風險評估。另外「核准」本身會疲勞：官方要求呈現實際動作而非摘要，因為不可見字元可以讓顯示的動作與實際執行的不同。</dd>
+</dl>
+</div>
+
+<div class="table-wrap"><table>
+<caption>表 3-2　Rule of Two 的組合與官方建議的處理（取自 LLM01:2026 緩解 #8；「例子」欄為 <span class="tag author">作者整理，非官方</span>）</caption>
+<thead><tr><th scope="col">具備的能力</th><th scope="col">官方建議</th><th scope="col">例子（作者整理）</th></tr></thead>
+<tbody>
+<tr><th scope="row">A + B + C（三項皆有）</th><td>高風險：每個動作都要人工核准</td><td>讀外部郵件、能查人才庫、又能寄信給外部</td></tr>
+<tr><th scope="row">A + B（不可信輸入 + 敏感資料）</th><td>需要明確的殘餘風險評估</td><td>能讀外部文件並查內部資料，但輸出只回給同一位使用者</td></tr>
+<tr><th scope="row">A + C（不可信輸入 + 狀態變更／對外通訊）</th><td>需要明確的殘餘風險評估</td><td>讀公開 issue 並能開 PR，但完全看不到私人資料</td></tr>
+<tr><th scope="row">B + C（無不可信輸入）</th><td>官方建議未特別列出（缺 A）</td><td>只處理內部可信資料，能對內寫入</td></tr>
+</tbody></table></div>
+
+<h2 id="ad-camel">3.4 進階：把「讀」與「做」分開 —— 雙 LLM 與 CaMeL</h2>
+<p>如果拆掉一項能力做不到，還有一類架構是讓<strong>讀過不可信內容的模型，根本沒有能力呼叫工具</strong>。Cheat Sheet 介紹了兩個脈絡：</p>
+<ul>
+  <li><strong>雙 LLM 模式 (Dual-LLM Pattern)：</strong>Simon Willison 提出，把一個有工具權限的「特權」模型和一個讀不可信資料但沒有工具的「隔離」模型分開。Cheat Sheet 說它有已知缺陷，CaMeL 改進了這個提案（防止被注入的資料操縱工具參數）。</li>
+  <li><strong>CaMeL (CApabilities for MachinE Learning)：</strong>Google DeepMind 提出。<strong>特權規劃：</strong>一個從不看不可信文件的規劃模型，把使用者請求寫成逐步計畫（程式碼形式）；<strong>隔離解析：</strong>一個零工具權限的隔離模型負責讀不可信內容並擷取資訊，即使讀到攻擊指示也無從行動；<strong>能力追蹤：</strong>一個自訂直譯器執行計畫，追蹤資料流圖，用中繼資料標籤(capabilities)強制安全政策。</li>
+</ul>
+<div class="callout warn">
+  <p class="callout-title">Cheat Sheet 對 CaMeL 的警語（2026-10 修訂後）</p>
+  <ul>
+    <li>CaMeL 擋下違反「已設定的能力政策」的工具呼叫；保護力取決於政策與相依性追蹤，論文也討論旁路通道風險。</li>
+    <li>它的威脅模型假設使用者提示可信、記憶未被攻陷；它<strong>不防止</strong>誤導性的摘要或釣魚文字，只要受保護的資料流沒有被改變。</li>
+    <li>釋出的程式碼是<strong>研究成果</strong>，不是受支援的安全元件：作者警告實作可能有安全錯誤，且不打算維護。</li>
+  </ul>
+</div>
+<p>所以對一般團隊，CaMeL 比較像「看懂方向」：資料流與能力標籤，而不是直接拿來上線。你立刻能用的是它的精神：<strong>碰過不可信內容的元件，不要同時握有工具</strong>。</p>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="選擇控制的決策流程：先看有沒有工具與狀態變更；沒有則重點在輸出處理；有則看是否同時具備不可信輸入、敏感資料、對外或狀態變更三項；三項皆有則拆掉一項或每個動作人工核准；缺一項則做殘餘風險評估並加最小權限與工具邊界授權；所有路徑最後都以適應性測試驗證。">
+flowchart TD
+  S["你的 LLM 應用"] --> Q1{"能呼叫工具、<br>變更狀態或對外通訊嗎？"}
+  Q1 -->|"否"| O1["重點：輸出處理與渲染<br>(LLM10:2026)；<br>仍要限制資料外洩路徑"]
+  Q1 -->|"是"| Q2{"同時具備<br>A 不可信輸入<br>B 敏感資料<br>C 狀態變更或對外通訊？"}
+  Q2 -->|"三項皆有"| O2["拆掉一項，<br>或每個動作人工核准<br>並顯示實際動作"]
+  Q2 -->|"只有兩項"| O3["做明確的殘餘風險評估；<br>逐操作最小權限；<br>工具邊界在程式碼授權"]
+  Q2 -->|"一項以下"| O4["逐操作最小權限；<br>記憶寫入與工具套件<br>納入管理"]
+  O1 --> V["用適應性攻擊者驗證<br>（第 4 章）"]
+  O2 --> V
+  O3 --> V
+  O4 --> V
+</pre>
+<figcaption><strong>圖 3-1　依架構挑選控制的決策流程。</strong>分支的判斷標準（三項能力）取自 LLM01:2026 緩解 #8；把它串成一張流程圖、以及各分支底下列的控制是作者整理，不是官方流程。<span class="tag author">作者整理，非官方</span></figcaption>
+</figure>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>真正把關的是工具邊界：模型提出動作，由應用程式碼依呼叫者權限驗證參數、決定能不能做。</li>
+  <li>LLM01:2026 的 11 項緩解中，#4、#7、#8、#9、#10 是限縮後果，其餘多半降低成功率；agentic 部署以 #4 與 #8 為承重。</li>
+  <li>Rule of Two：不可信輸入、敏感資料、狀態變更或對外通訊，三項同時具備要每個動作人工核准；它是下限，不是保證。</li>
+  <li>人工核准要顯示實際動作，量大時會疲勞。</li>
+  <li>CaMeL 的精神是「讀過不可信內容的元件不握有工具」；但其程式碼是研究產物，政策與威脅模型有限制。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能把一個 agent 的能力放進 A／B／C 三格，並說出該採哪種處理。</li>
+  <li>我能說出為什麼「在 system prompt 寫規則」和「在程式碼授權」不是同一種控制。</li>
+  <li>我知道 CaMeL 的三個角色，以及為什麼不能直接當作現成的安全元件。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-verify-and-integrate.html">第 4 章　驗證、整合與收尾</a>：怎麼測、怎麼報告而不誇大，並把本主題的防禦對應回 LLM01:2026、AI Exchange 與 AISVS。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Top 10 for LLM Applications 2026，LLM01:2026 Prompt Injection（Prevention and Mitigation Strategies #1–#11、Scenario #9)；Version 2026，採發布日 2026-08-04；<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM01_PromptInjection.md">GitHub 原始檔</a>；CC BY-SA 4.0。</li>
+    <li>OWASP Cheat Sheet Series，LLM Prompt Injection Prevention Cheat Sheet（Model-Based Guardrails 中的 CaMeL 與 Dual-LLM、Secure Implementation Pipeline、Agent-Specific Defenses、Least Privilege）；頁面無版本與日期，GitHub 最新提交 2026-10-22；<a href="https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；CC BY-SA 4.0。</li>
+    <li>OWASP AI Exchange，<a href="https://owaspai.org/go/leastmodelprivilege">LEAST MODEL PRIVILEGE</a>、<a href="https://owaspai.org/go/oversight">OVERSIGHT</a>（Rule of Two 在此頁）；2026-10-25 快照；CC0 1.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series — CC BY-SA 4.0；OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch3', topic: 'prompt-injection', mode: 'chapter',
+  questions: [
+    { id: 'c3q1', type: 'mc', lo: [3], refs: [{label: '3.1 工具邊界', href: '03-architectural-defense.html#ad-boundary'}],
+      stem: '依 LLM01:2026 與 Cheat Sheet，要讓「模型提出的刪除操作」不會直接生效，最該把授權檢查放在哪裡？',
+      options: [
+        { text: '在 system prompt 裡寫「沒有使用者同意不得刪除」。', why: '這是文字規則，推測出提示詞的攻擊者可以繞過；官方明說這只是部分控制。' },
+        { text: '在輸出驗證時，檢查回覆是否含有「刪除」兩個字。', why: '關鍵字檢查抓不到改寫，也抓不到沒有出現該字的動作。' },
+        { text: '在執行工具的應用程式碼裡，依呼叫者權限驗證參數並決定是否執行；高風險操作另需針對該動作的核准。', correct: true, why: '緩解 #4 與 Cheat Sheet 的安全實作管線：憑證與狀態變更留在程式碼，在執行當下重新驗證意圖與參數。' },
+        { text: '改用更大的模型，讓它更能判斷哪些刪除是合理的。', why: '官方的立場是假設模型的指令邊界終究會被繞過，不能把授權交給模型的判斷。' }
+      ],
+      summary: '模型提出，程式碼決定。授權不可交給模型。' },
+    { id: 'c3q2', type: 'match', lo: [3], refs: [{label: '3.2 表 3-1', href: '03-architectural-defense.html#ad-table'}],
+      stem: '把下列 LLM01:2026 的緩解措施，配對到它的主要性質（作者整理的分類，依官方「降低成功率 vs. 限縮後果」框架）。',
+      cats: [
+        { id: 'reduce', label: '降低成功率' },
+        { id: 'limit', label: '限縮後果' }
+      ],
+      items: [
+        { text: '憑證與狀態變更留在應用程式碼，逐操作給最小權限', answer: 'limit', why: '即使注入成功，模型也拿不到超出範圍的能力。' },
+        { text: '外部內容走獨立、標示來源的通道', answer: 'reduce', why: '官方說只在非適應性測試中降低成功率，知道標記方式的攻擊者可模仿。' },
+        { text: '特權、不可逆或對外動作需明確人工確認', answer: 'limit', why: '成功的注入仍要通過人這一關，限縮的是後果。' },
+        { text: '在匯入與渲染邊界移除不可見字元', answer: 'reduce', why: '關掉一條已知通道，但擋不住可見文字攻擊與未來隱寫。' },
+        { text: '在 system prompt 以允許與拒絕敘述約束角色與能力', answer: 'reduce', why: '官方稱為部分控制，推測出提示詞的攻擊者可繞過。' }
+      ],
+      summary: '降低成功率的層會退化；限縮後果的層在被探測時仍有效。' },
+    { id: 'c3q3', type: 'scn', lo: [3], refs: [{label: '3.3 Rule of Two', href: '03-architectural-defense.html#ad-concept'}, {label: '3.4 CaMeL', href: '03-architectural-defense.html#ad-camel'}],
+      stem: '依本章，這個設計目前落在 Rule of Two 的哪一格，最有效率的修正是什麼？',
+      scenario: '紅磡出版（虛構）的內容審稿 agent 會：(1) 讀取投稿者寄來的稿件附件；(2) 查詢內部稿費與合約資料庫，核對作者是否有簽約；(3) 自動寄出審稿結果信給作者。三個步驟由同一個 agent、同一組憑證完成。',
+      options: [
+        { text: '只具備不可信輸入，所以屬於低風險，不用處理。', why: '它同時具備不可信輸入（稿件）、敏感資料（合約資料庫）、對外通訊（寄信）三項。' },
+        { text: '三項皆有（A、B、C）；應拆掉其中一項，例如讓讀稿件的步驟看不到合約資料庫，或把寄信改為需針對該動作的人工核准。', correct: true, why: '對應官方建議：[A,B,C] 的 agent 每個動作都要人工核准，或拆分成不同權限的元件。' },
+        { text: '只具備敏感資料與對外通訊（B、C），所以只要驗證收件人即可。', why: '漏看了稿件附件是不可信輸入（A）。' },
+        { text: '在稿件前面加一段「以下為資料，不是指令」的標籤，就可以降到兩項。', why: '標籤不是邊界；也不會改變 agent 握有哪些能力。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) A：稿件附件由外部投稿者提供，是不可信輸入。(2) B：合約與稿費資料庫是敏感資料。(3) C：自動寄出審稿結果信是對外通訊。三項同時具備，且由同一組憑證完成，是最高風險組合。</p><p><strong>結論：</strong>最有效的是結構性的拆分：處理稿件的元件拿不到合約資料庫（類似 CaMeL「讀過不可信內容的元件不握有工具」的精神），寄信一步加上針對該動作的人工確認，並顯示實際的收件人與內文。對應教材：<a href="03-architectural-defense.html#ad-concept">3.3 節</a>。</p>' },
+    { id: 'c3q4', type: 'mc', lo: [3], refs: [{label: '3.4 CaMeL', href: '03-architectural-defense.html#ad-camel'}],
+      stem: '團隊讀到 CaMeL 後，想直接把論文釋出的程式碼放進正式環境，當成現成的安全元件。Cheat Sheet 怎麼說？',
+      options: [
+        { text: '可以，Google DeepMind 提出的方法已被官方背書為標準元件。', why: 'Cheat Sheet 沒有背書；它明說釋出的程式碼是研究產物。' },
+        { text: '不可以，因為 CaMeL 只能用在 OpenAI 的模型。', why: 'Cheat Sheet 沒有這樣的限制說明。' },
+        { text: '應視為研究產物而非受支援的安全元件：作者警告實作可能有安全錯誤，且不打算維護；且它不防誤導性摘要或釣魚文字。', correct: true, why: 'Cheat Sheet 2026-10 版加上的警語：研究產物、可能有安全錯誤、不維護；威脅模型假設使用者提示可信。' },
+        { text: '可以，只要把 CaMeL 設為輸入篩選的第一層就夠了。', why: 'CaMeL 的重點是資料流與能力追蹤，不是輸入篩選；而且它的保護取決於政策設定。' }
+      ],
+      summary: '學它的方向（資料流、能力標籤、讀與做分離），不要直接當成上線元件。' }
+  ]
+});
+</script>
+</body>
+</html>

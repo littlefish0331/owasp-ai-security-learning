@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌與定位｜受管制領域的 AI 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP Cheat Sheet Series 的兩份領域專用 AI 速查表（廣告系統、AML 與制裁）是什麼、為什麼要有領域專用文件、它們怎麼指回通用文件，以及「同一個控制換上領域情境」這個讀法。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="ai-in-regulated-industries" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌與定位</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="index.html">主題首頁</a></li>
+</ul>
+<p class="lead">前面的主題談的多半是「通用控制」：授權要在後端強制、簽章不等於安全、失敗時要拒絕。OWASP Cheat Sheet Series 在 2026 年多了兩份寫給<strong>特定行業</strong>的 AI 速查表：一份給廣告平台，一份給處理支付的金融機構。這一章先弄清楚它們是什麼、為什麼會有「領域專用」這種文件，再教本主題最重要的讀法：把通用控制翻譯到自己的領域。</p>
+
+<h2 id="rg-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　兩份領域專用速查表一頁式全貌（2026-10-26 讀取；項目內容為各文件自述，次數與日期為作者查 GitHub 提交紀錄所得）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">AI-Powered Advertising Systems Security Cheat Sheet</th><th scope="col">AML and Sanctions Compliance for AI Agent Payments Cheat Sheet</th></tr></thead>
+<tbody>
+<tr><th scope="row">寫給誰</th><td>廣告平台：每個廣告請求都有 AI 驅動的財務決策。涵蓋程式化購買 (OpenRTB)、搜尋、零售媒體、CTV/OTT、DOOH、直售、原生與行動中介等投放模式；古典機器學習與生成式 AI（含 LLM、VLM）都算</td><td>金融科技業者、銀行與支付處理商：當自主 AI agent（而不是瀏覽器裡的人）發起或協助受管制的支付</td></tr>
+<tr><th scope="row">結構</th><td>五節；每節先列主要控制，再附一張「威脅／證據／執行期訊號」表</td><td>導言、法規脈絡 (Regulatory Context) 與關鍵原則，加上 12 節；多數節分 Do 與 Don't 兩欄</td></tr>
+<tr><th scope="row">GitHub 首次提交</th><td>2026-09-14</td><td>2026-06-03</td></tr>
+<tr><th scope="row">最近修改</th><td>2026-10-04（共 5 筆提交）</td><td>2026-10-18（共 9 筆提交）</td></tr>
+<tr><th scope="row">版本號</th><td colspan="2">兩份都沒有版本號（Cheat Sheet 的通例）。本教材以「讀取日 2026-10-26」加「GitHub 首次與最近修改日」標示，並確認本機讀到的內容與儲存庫當天的最新版一致</td></tr>
+<tr><th scope="row">授權</th><td colspan="2">CC BY-SA 4.0（Cheat Sheet Series 站台頁尾；儲存庫 LICENSE.md 與 README 同）</td></tr>
+</tbody></table></div>
+<p>兩份都屬於 OWASP Cheat Sheet Series 中與 AI 相關的速查表。該系列的 AI 速查表共 9 份，本教材另外已涵蓋提示詞注入、RAG 與 MCP 三份；這兩份是<strong>領域專用</strong>的，與其他通用速查表性質不同。</p>
+
+<h2 id="rg-why">1.2 為什麼會有領域專用的速查表</h2>
+<p>文件並沒有寫「我們為什麼做領域專用版」。從它們的寫法可以歸納出下面的分工（<span class="tag author">作者整理，非官方</span>）：通用文件回答「這一類風險怎麼防」；領域速查表 (Domain-Specific Cheat Sheet) 回答「在我這個行業，那個控制長什麼樣子、用什麼證據證明、要監看什麼訊號」。廣告文件的導言就自稱是「廣告技術專用控制」的清單，目的是不讓 AI 本身變成攻擊面；AML 文件的導言則先提醒：用了 AI agent 並不會讓適用的反洗錢 (Anti-Money Laundering, AML) 或制裁義務消失，動手前要先確認機構、交易、客戶關係與管轄區的要求。</p>
+<p>兩份文件也都主動把「通用的部分」指回別份文件，而不是重寫一遍。下表只列文件自己寫出的指向；右欄是本教材可先讀的對應處（對應關係是作者整理，非官方）。</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　領域文件指回通用文件的地方（中欄為文件自述）</caption>
+<thead><tr><th scope="col">領域文件的位置</th><th scope="col">文件指向的通用文件</th><th scope="col">本教材可先讀</th></tr></thead>
+<tbody>
+<tr><th scope="row">廣告導言</th><td>OWASP LLM Top 10 (2025) 列舉通用 LLM 風險</td><td>文件用的是 2025 版編號，換算見<a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 第 8 章</a></td></tr>
+<tr><th scope="row">廣告第 2 節（語料）</th><td>RAG Security Cheat Sheet（管線控制）</td><td><a href="../../03-prompt-injection-rag-practice/rag-security/index.html">RAG 安全主題</a></td></tr>
+<tr><th scope="row">廣告第 3 節（推論與提示邊界）</th><td>LLM Prompt Injection Prevention Cheat Sheet（一般輸入邊界控制）；CSP 速查表；LLM10:2025、LLM01:2025、LLM02:2025、LLM07:2025</td><td><a href="../../03-prompt-injection-rag-practice/prompt-injection/index.html">提示詞注入防護主題</a></td></tr>
+<tr><th scope="row">廣告第 4、5 節</th><td>AI Agent Security Cheat Sheet（通用 agentic 模式）、JWT 速查表、LLM06:2025、Secure AI Model Ops Cheat Sheet（模型生命週期）</td><td>這些速查表本主題不展開</td></tr>
+<tr><th scope="row">AML 導言與第 9 節</th><td>MCP Security Cheat Sheet 的授權章節；訊息層級簽章只是「選配的額外控制」，不是 MCP 的核心要求</td><td><a href="../../04-agentic-and-mcp/mcp-security/04-third-party-user.html#u-cs">MCP 安全第 4 章</a>、<a href="../../04-agentic-and-mcp/mcp-security/05-integration.html#n-rc">第 5 章</a></td></tr>
+<tr><th scope="row">AML 第 4、5、6 節</th><td>Logging Cheat Sheet（日誌保護）、Transaction Authorization Cheat Sheet（人工核准時要看到關鍵交易資料）、API Security Top 10 的 API4:2023</td><td>這些本主題不展開</td></tr>
+<tr><th scope="row">AML 第 12 節</th><td>AISVS，特別是第 10 章（MCP 安全需求）</td><td><a href="../../06-assessment-and-verification/aisvs-and-llmsvs/02-aisvs.html#av-chapters">AISVS 與 LLMSVS 第 2 章</a></td></tr>
+</tbody></table></div>
+
+<h2 id="rg-concept">1.3 核心概念：同一個控制，換上領域情境</h2>
+<div class="concept">
+<h3 id="c-translate">通用控制要「翻譯」才用得上</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>領域速查表裡的控制，多數不是新發明，而是通用控制放進特定行業的資產、對手與法規壓力之後的「版本」。例如通用原則「簽章只證明來源與完整性，不證明安全」，在廣告文件變成：授權供應商也可以簽署帶後門的模型，簽章檢查照樣全過；在 AML 文件變成：收據的簽章證明資料來源與完整性，並不證明發行者的篩查做得對。<span class="tag author">作者整理，非官方</span>：這兩句是同一個原則的兩個領域版本，文件本身沒有把它們並列。</dd>
+  <dt data-n="2">為什麼要翻譯</dt>
+  <dd>通用文件說「驗證輸入」，但沒說在廣告平台上，不可信輸入是發布者網頁、廣告主的著陸頁與 brief 欄位；通用文件說「失敗時要拒絕」，但沒說在制裁篩查上，攻擊者可以刻意製造篩查失敗，逼系統放行（AML 文件在 Fail-Closed 一節明寫：失敗率升高可能是為了迫使 fail-open 的阻斷服務攻擊）。領域文件補的就是這一層「具體長相」。</dd>
+  <dt data-n="3">怎麼讀（概念層級）</dt>
+  <dd>廣告文件給了一個很好用的格式：每個威脅配一個「證據」（用什麼測試或稽核證明這項控制有效）與一個「執行期訊號」（上線後看哪個指標才知道它還在運作）。翻譯通用控制時，照這個格式問自己三件事：這個領域的資產是什麼、誰能寫入或操縱它、拿什麼證明控制有效。</dd>
+  <dt data-n="4">在哪個控制層</dt>
+  <dd>兩份文件的控制橫跨預防、偵測與回應，沒有自己的分類。<span class="tag author">作者整理，非官方</span>：本主題後面的章節會標出哪些是文件明說的「邊界」，哪些只是「降低機率的縱深」。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「領域文件取代通用文件。」兩份文件自己都把通用機制指回其他速查表（表 1-2）。另一個誤解是「領域文件是合規指南，照做就合規」：AML 文件明說它的法規對照只是示意、不是法律意見；它的關鍵原則還要求不要把 agent 憑證或名單比對成功當成法律義務已完成的證明。</dd>
+</dl>
+</div>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="通用控制（例如授權在後端、簽章、日誌、失敗姿態）與兩個領域的情境（廣告：同意、競價事件、創意審查；支付：身分、制裁篩查、收據）合在一起，換上領域情境，得到領域版控制，內容是威脅、證據與執行期訊號；讀者再把它翻回自己的領域。">
+flowchart TB
+  G["通用控制<br>授權在後端、簽章、<br>日誌、失敗姿態"] --> T["換上領域情境"]
+  D1["廣告：同意、結果事件、<br>創意審查"] --> T
+  D2["支付：身分、制裁篩查、<br>收據"] --> T
+  T --> O["領域版控制<br>威脅、證據、執行期訊號"]
+  O --> R["讀者：翻回自己的領域"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class T,R author
+</pre>
+<figcaption><strong>圖 1-1　通用控制加上領域情境。</strong>「威脅、證據、執行期訊號」的格式來自廣告文件；把兩份文件放進「通用控制加領域情境」這個框架，以及最後「翻回自己的領域」一步，是<strong>作者整理，非官方</strong>（虛線框）。</figcaption>
+</figure>
+
+<h2 id="rg-caution">1.4 使用前先知道的三件事</h2>
+<div class="callout warn">
+  <p class="callout-title">法規相關內容的處理方式</p>
+  <p>兩份文件都引用了大量法規與政府指引（個資與隱私、兒童保護、歐盟 AI 法案、美國反洗錢與制裁等）。本教材<strong>只轉述文件說了什麼</strong>，並標明這是文件的陳述；教材<strong>不是法律意見</strong>，也<strong>不查證</strong>這些法規的條文、適用範圍或現況，更不補充文件沒有寫的法規內容。要知道自己的義務，請找合格的法務。這與前面治理主題處理法規附錄的方式相同。</p>
+</div>
+<ul>
+  <li><strong>它們變動很快。</strong>AML 文件在 2026-06-03 到 2026-10-18 之間有 9 筆提交，廣告文件在 2026-09-14 到 2026-10-04 之間有 5 筆。教材讀的是 2026-10-26 的內容，細節可能已再變動；引用時請回頭看官方網頁。</li>
+  <li><strong>文件自己會標出控制的限制。</strong>廣告文件反覆寫「這是縱深防禦，不是邊界」；AML 文件反覆寫「這不證明…」。把這些限制讀進去，比背控制清單重要。</li>
+  <li><strong>兩份文件是 Cheat Sheet，不是標準。</strong>它們沒有版本、沒有符合性測試，也沒有認證；採用與否、做到哪一步，由你的風險分析與法務決定。</li>
+</ul>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>兩份領域專用速查表：廣告系統（五節，每節附威脅／證據／執行期訊號表）與 AML 及制裁（法規脈絡、關鍵原則、12 節 Do／Don't）；都沒有版本號，授權 CC BY-SA 4.0。</li>
+  <li>領域文件把通用機制指回通用文件（RAG、提示詞注入、MCP、日誌、AISVS 等），自己補的是「這個行業的具體長相」。</li>
+  <li>讀法：同一個控制換上領域情境；用「威脅—證據—執行期訊號」檢查自己的領域版本。</li>
+  <li>法規內容只轉述文件的說法，不是法律意見，教材不查證現況。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出兩份文件各寫給誰、各有幾節、各自的日期與授權。</li>
+  <li>我能說明領域專用文件與通用文件的分工，並舉出兩個文件自己指向通用文件的例子。</li>
+  <li>我知道為什麼不能把 AML 文件的對照表當成合規保證。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-advertising.html">第 2 章　廣告系統：五道關卡</a>：從「同意」開始，逐節看廣告文件的控制與它自己標出的限制。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series, <em>AI-Powered Advertising Systems Security Cheat Sheet</em>：<a href="https://cheatsheetseries.owasp.org/cheatsheets/AI-Powered_Advertising_Systems_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；無版本號；GitHub 首次提交 2026-09-14、最近修改 2026-10-04；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP Cheat Sheet Series, <em>AML and Sanctions Compliance for AI Agent Payments Cheat Sheet</em>（儲存庫檔名 AML_Sanctions_AI_Agent_Payments_Cheat_Sheet.md）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/AML_Sanctions_AI_Agent_Payments_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；無版本號；GitHub 首次提交 2026-06-03、最近修改 2026-10-18；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP/CheatSheetSeries 儲存庫的 LICENSE.md、README.md 與提交紀錄：<a href="https://github.com/OWASP/CheatSheetSeries">github.com/OWASP/CheatSheetSeries</a>；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series 的兩份速查表 — CC BY-SA 4.0（站台頁尾與儲存庫 LICENSE.md）。本頁未使用 NC（非商業）授權的來源。法規相關內容為文件陳述的轉述，不是法律意見。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'r-ch1', topic: 'ai-in-regulated-industries', mode: 'chapter',
+  questions: [
+    { id: 'r1q1', type: 'mc', lo: [1], refs: [{label: '1.2 為什麼會有領域專用的速查表', href: '01-position.html#rg-why'}, {label: '1.3 核心概念', href: '01-position.html#rg-concept'}],
+      stem: '依本章，領域專用速查表與通用文件（例如 RAG 或提示詞注入速查表）的關係，最貼近下列哪一項？',
+      options: [
+        { text: '領域文件取代通用文件，讀領域版就不必再讀通用版。', why: '兩份文件都把通用機制指回其他速查表，並沒有重寫一遍。' },
+        { text: '領域文件只是通用文件的中文翻譯。', why: '兩者內容不同：領域文件有廣告或支付專用的控制。' },
+        { text: '領域文件把通用控制放進特定行業的資產與對手之中，補上具體長相（威脅、證據、訊號），並把通用機制指回通用文件。', correct: true, why: '符合 1.2 節與 1.3 節。' },
+        { text: '領域文件是法規條文的完整彙編。', why: '文件只引用部分法規作為依據，AML 文件並明說對照表只是示意、不是法律意見。' }
+      ],
+      summary: '領域文件 = 通用控制 + 領域情境；通用機制指回通用文件。' },
+    { id: 'r1q2', type: 'match', lo: [1], refs: [{label: '1.1 表 1-1', href: '01-position.html#rg-onepage'}],
+      stem: '把下列描述配對到它所屬的速查表。',
+      cats: [
+        { id: 'ads', label: '廣告系統速查表' },
+        { id: 'aml', label: 'AML 與制裁速查表' }
+      ],
+      items: [
+        { text: '每一節都附「威脅／證據／執行期訊號」表', answer: 'ads', why: '表 1-1「結構」列。' },
+        { text: '導言與法規脈絡之後有 12 節，多數分 Do 與 Don\'t', answer: 'aml', why: '表 1-1「結構」列。' },
+        { text: '涵蓋程式化購買、搜尋、零售媒體、CTV/OTT 等投放模式', answer: 'ads', why: '表 1-1「寫給誰」列。' },
+        { text: '情境是自主 AI agent 而不是瀏覽器裡的人發起支付', answer: 'aml', why: '表 1-1「寫給誰」列。' }
+      ],
+      summary: '廣告：五節加三欄表；AML：法規脈絡加 12 節 Do／Don\'t。' },
+    { id: 'r1q3', type: 'scn', lo: [1], refs: [{label: '1.4 使用前先知道的三件事', href: '01-position.html#rg-caution'}, {label: '1.3 常見誤解', href: '01-position.html#rg-concept'}],
+      stem: '依本章，這位主管的說法哪裡有問題？',
+      scenario: '潮境支付（虛構）的合規主管讀完 AML 速查表，在內部簡報上寫：「文件第 11 節的法規對照表列出每項控制對應的義務；我們把表裡的控制都做完，就等於滿足反洗錢與制裁義務，不必再問法務。」',
+      options: [
+        { text: '沒有問題，對照表就是官方認可的合規清單。', why: '文件明說對照表只是示意、不是法律意見。' },
+        { text: '問題只在對照表太舊，更新後就可以照做。', why: '問題不在新舊，而在對照表的性質。' },
+        { text: '問題在於 AML 文件只適用於銀行，不適用於支付處理商。', why: '文件的對象明寫包含金融科技業者、銀行與支付處理商。' },
+        { text: '對照表是示意、不是法律意見，義務因管轄區而異；文件要求用合格法務確認各管轄區的義務，且不要把 agent 憑證或名單比對成功當成法律義務已完成的證明。', correct: true, why: '符合 1.3 節的常見誤解與 1.4 節的提醒。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 第 11 節自己標明對照是示意、不是法律意見，義務隨管轄區而異。(2) 文件的關鍵原則要求由合規負責人定義篩查、監控、通報與保存規則，不把 agent 憑證或名單比對成功當成義務已完成。(3) 本教材只轉述文件的陳述，不查證法規現況。</p><p><strong>結論：</strong>可以把對照表當起點，但要由合格法務確認各管轄區的義務。對應教材：<a href="01-position.html#rg-caution">1.4 節</a>。</p>' },
+    { id: 'r1q4', type: 'mc', lo: [1], refs: [{label: '1.1 表 1-1', href: '01-position.html#rg-onepage'}],
+      stem: '兩份速查表都沒有版本號。依本教材的做法，引用它們時最恰當的標示是？',
+      options: [
+        { text: '標「讀取日 2026-10-26」加上 GitHub 的首次提交日與最近修改日，並提醒內容可能已再變動。', correct: true, why: '符合表 1-1 與 1.4 節。' },
+        { text: '自己編一個版本號，例如 1.0，因為這是第一次發布。', why: '官方沒有標示版本，不能自行編造。' },
+        { text: '不標任何日期，因為 Cheat Sheet 永遠是最新的。', why: '兩份文件在數月內分別有 9 筆與 5 筆提交，不標日期無法對照。' },
+        { text: '用該站點首頁的最後更新日代替。', why: '教材採用的是各文件自己的提交紀錄。' }
+      ],
+      summary: '無版本號 → 讀取日 + GitHub 首次與最近修改日。' }
+  ]
+});
+</script>
+</body>
+</html>

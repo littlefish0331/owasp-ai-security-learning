@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　把練習接回防禦：學習迴圈與收尾｜動手練習｜OWASP AI 資安學習教材</title>
+<meta name="description" content="用學習迴圈把練習的觀察接回風險條目與防禦控制：練習類別對照表、練習能教與不能教的事，以及整個 03 階段的收尾。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="hands-on-labs" data-page="02-learning-loop.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　把練習接回防禦：學習迴圈與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3、LO4</li>
+  <li>前置：<a href="01-three-labs.html">第 1 章</a>（三個專案與 2025 版／2026 版編號換算）</li>
+</ul>
+<p class="lead">練習最容易停在「我破解了」。但對開發者來說，真正的收穫在後面：這個現象屬於哪個風險？我的系統缺少哪一項控制？我怎麼確認補上了？這一章給一個固定的筆記格式，把每次練習都接回防禦，再收尾整個 03 階段。</p>
+
+<h2 id="loop-def">2.1 學習迴圈：觀察、對應、找缺口、驗證</h2>
+<p>學習迴圈 (Learning Loop) 是本教材對這件事的稱呼 <span class="tag author">作者整理，非官方</span>，不是官方用語。四個動作，每一輪練習都用同樣的格式記下來：</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="學習迴圈：從練習中觀察到一個現象，對應到帶年份的風險條目，找出系統缺少的控制，再在隔離環境驗證補上控制後現象是否消失；若仍存在，回到找缺口，若已消失，進入下一個練習。">
+flowchart LR
+  O["1 觀察<br>練習中哪裡不該發生的事發生了"] --> M["2 對應風險<br>帶年份的條目，例如 LLM01:2026"]
+  M --> G["3 找缺口<br>你的系統缺少哪一項控制"]
+  G --> V["4 驗證<br>在隔離環境確認控制有效"]
+  V -->|"現象仍在"| G
+  V -->|"現象已消失"| N["下一個練習"]
+  N --> O
+</pre>
+<figcaption><strong>圖 2-1　學習迴圈（作者整理，非官方）。</strong>第 4 步若現象仍在，回到第 3 步重新找缺口。這個流程不是官方方法，只是把「練習」和「防禦」接起來的筆記格式。</figcaption>
+</figure>
+<p>PwnzzAI 自己的設計也有類似的三段：示範、利用情境、加固替代方案 <span class="tag official">官方</span>。差別是學習迴圈多了第 2 步（對應風險條目）與第 4 步（驗證），把結論綁回你自己的系統。</p>
+
+<h2 id="loop-concept">2.2 核心概念：怎麼把一個觀察寫成可行動的結論</h2>
+<div class="concept">
+<h3 id="c-loop">觀察 → 對應風險 → 缺少的控制 → 怎麼驗證</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>一個四欄的筆記格式。先寫你在練習中看到的<strong>現象</strong>（用你自己的話，不寫操作步驟），再寫它屬於哪個風險、你的系統缺少哪項控制，最後寫怎麼確認補好了。</dd>
+  <dt data-n="2">為什麼需要它</dt>
+  <dd>練習的樂趣在「成功」，但成功只證明某個弱點存在。若不對應到風險條目與控制，你只學到一個技巧，而不是一個防禦。把結論綁到控制，才能帶回自己的設計審查。<span class="tag author">作者整理，非官方</span></dd>
+  <dt data-n="3">沒做到會怎樣（概念層級）</dt>
+  <dd>只會停在「這個練習的答案」：換一個系統就不知道檢查什麼；或者只補了練習裡的那一個點，沒有補上背後缺少的控制類別。</dd>
+  <dt data-n="4">怎麼做（以一個虛構的觀察為例）</dt>
+  <dd>
+    <ul>
+      <li><strong>觀察：</strong>練習中，助理被塞進文件的文字影響，開始做原本沒要它做的事。</li>
+      <li><strong>對應風險：</strong>間接提示詞注入 (Indirect Prompt Injection)，LLM01:2026 Prompt Injection（若動作牽涉工具權限，再加 LLM03:2026 Excessive Agency）。</li>
+      <li><strong>缺少的控制：</strong>模型能碰的資料與工具沒有按任務縮小；見 <a href="../prompt-injection/03-architectural-defense.html">提示詞注入防護第 3 章</a>。</li>
+      <li><strong>怎麼驗證：</strong>在隔離環境，用虛構的資料與有記錄的測試工具，重複同類輸入，確認動作被權限層拒絕而非靠模型自己拒絕。</li>
+    </ul>
+  </dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「我過關了，所以我懂怎麼防。」過關只表示你找到並利用了一個刻意放進去的弱點，與你能否設計出防禦是兩回事。</dd>
+</dl>
+</div>
+
+<h2 id="loop-map">2.3 練習類別對照：每一類接回哪個條目與哪一章</h2>
+<p>下表只用各專案公開的資料夾或類別名稱，不涉及任何解法。對應到 2026 版條目與本教材章節，是作者整理。</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　練習類別、2026 版風險條目與本教材的防禦章節（全表為作者整理，非官方）</caption>
+<thead><tr><th scope="col">練習類別（來源）</th><th scope="col">2026 版條目</th><th scope="col">接回哪裡</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM01_Prompt_Injection<br>（PromptMe）；Prompt Injection（PwnzzAI）</th><td>LLM01:2026 Prompt Injection</td><td><a href="../prompt-injection/index.html">提示詞注入防護</a>主題</td></tr>
+<tr><th scope="row">LLM02_Sensitive_Information_Disclosure<br>（PromptMe）；Data Disclosure（PwnzzAI）</th><td>LLM02:2026 Sensitive Information Disclosure</td><td>AI Exchange 第 6 章與 <a href="../rag-security/03-read-side.html">RAG 安全第 3 章</a>（存取控制）</td></tr>
+<tr><th scope="row">LLM07_System_Prompt_Leakage<br>（PromptMe）；System Prompt Leakage（PwnzzAI）；Recon（FinBot）</th><td>LLM08:2026 Hidden Context Exposure</td><td><a href="../prompt-injection/index.html">提示詞注入防護</a>主題</td></tr>
+<tr><th scope="row">LLM06_Excessive_Agency<br>（PromptMe）；Policy Bypass、Destructive（FinBot）</th><td>LLM03:2026 Excessive Agency</td><td><a href="../prompt-injection/03-architectural-defense.html">提示詞注入防護第 3 章</a>；<a href="../../01-overview/ai-exchange/04-seven-layers.html#sl-layers">AI Exchange 七層防線</a></td></tr>
+<tr><th scope="row">LLM08_Vector_and_Embedding_Weaknesses<br>（PromptMe）；Vector and Embedding Weakness（PwnzzAI）</th><td>LLM09:2026 Vector and Embedding Weaknesses</td><td><a href="../rag-security/index.html">RAG 安全</a>主題</td></tr>
+<tr><th scope="row">LLM05_Improper_Output_Handling（PromptMe）；Improper Output Handling（PwnzzAI）</th><td>LLM10:2026 Improper Output Handling</td><td>AI Exchange 七層防線；<a href="../rag-security/04-generate-and-integrate.html">RAG 安全第 4 章</a>（輸出驗證）</td></tr>
+<tr><th scope="row">LLM10_Unbounded_Consumption<br>（PromptMe）；Unbounded Consumption（PwnzzAI）</th><td>LLM06:2026 Unbounded Consumption</td><td>本主題第 1 章（費用與金鑰上限）；<a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-consume">LLM Top 10 第 7 章的無限制消耗</a></td></tr>
+<tr><th scope="row">LLM03_Supply_Chain、LLM04_Data_and_Model_Poisoning<br>（PromptMe）；Remote Code Execution（FinBot）</th><td>LLM04:2026 Supply Chain、LLM05:2026 Data and Model Poisoning</td><td>LLM Top 10 第 3 章的<a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-supply">供應鏈</a>與<a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-poison">資料與模型投毒</a>；RAG 的資料投毒見 <a href="../rag-security/02-write-side.html">RAG 安全第 2 章</a></td></tr>
+<tr><th scope="row">LLM09_Misinformation（PromptMe）</th><td>LLM07:2026 Misinformation</td><td><a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-misinfo">LLM Top 10 第 7 章的錯誤資訊</a></td></tr>
+</tbody></table></div>
+<div class="callout unsure">
+  <p class="callout-title">未能確認：沒有下對應的部分</p>
+  <p>FinBot 的 Data Exfiltration 類別與提示詞注入、RAG 的哪些條目有關，要看實際挑戰內容，本教材沒有執行，所以不下對應。三個專案對 LLM Top 10 <strong>2026 版</strong>的更新狀態（是否已改用 2026 編號）也未能確認。</p>
+</div>
+
+<h2 id="loop-limits">2.4 練習能教什麼，不能教什麼</h2>
+<div class="table-wrap"><table>
+<caption>表 2-2　練習的價值與限制（作者整理，非官方）</caption>
+<thead><tr><th scope="col">練習能幫你</th><th scope="col">練習幫不了你</th></tr></thead>
+<tbody>
+<tr><td>親眼看到「指令與資料混在一起」是什麼感覺，建立直覺</td><td>證明你的系統有防禦：通過練習不等於你的系統安全</td></tr>
+<tr><td>熟悉風險條目的名稱，和它在系統裡的樣子</td><td>反映真實環境：練習的漏洞是刻意放進去的，真實系統的缺口更零散、更混雜</td></tr>
+<tr><td>練習用條目語言溝通，例如在設計審查時指出缺少哪項控制</td><td>代表有決心的攻擊者：練習通常沒有針對你的防禦持續調整的對手</td></tr>
+<tr><td>為防禦測試取得「想要重現的現象」清單</td><td>取代正式的測試：見 06 評估與驗證階段的<a href="../../06-assessment-and-verification/genai-red-teaming/index.html">GenAI 紅隊演練</a>與 <a href="../../06-assessment-and-verification/ai-testing-guide/index.html">AI Testing Guide</a></td></tr>
+</tbody></table></div>
+<p>最後一點與官方 LLM01:2026 的立場一致：它要求測試時要面對<strong>讀過防禦設計的適應性攻擊者 (Adaptive Attacker)</strong>，並且不接受只憑靜態攻擊測試就宣稱有效。練習平台通常做不到這一點。<span class="tag official">官方</span></p>
+
+<div class="scenario">
+<h3 id="scn-f">情境 F（虛構）：讀書會的一輪練習</h3>
+<p><span class="tag fiction">虛構</span> 澄光資訊是虛構的公司。四位開發者組成讀書會，在各自的本機虛擬機執行 PromptMe，一週做一個挑戰，每次聚會用學習迴圈的四欄格式分享。（以下只寫流程，不涉及任何解法。）</p>
+<p class="arch"><strong>流程：</strong>各自在隔離環境練習 → 填四欄筆記 → 聚會比對「對應風險」與「缺少的控制」→ 挑一項帶回公司的設計審查清單。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>第一次聚會時，三個人寫的「對應風險」都是練習資料夾上的 2025 版編號，另一個人換算成 2026 版，發現編號不同，爭論起來。</li>
+  <li><strong>哪一環出問題：</strong>編號沒有帶年份。同一個詞（例如「LLM06」）在 2025 版與 2026 版指的是不同條目。</li>
+  <li><strong>對應條目：</strong>版本落差，見第 1 章表 1-2；不是風險條目本身的問題。<span class="tag author">作者整理，非官方</span></li>
+  <li><strong>該採什麼控制：</strong>讀書會約定筆記的「對應風險」欄一律寫成帶年份的完整形式；每次聚會抽一格檢查「缺少的控制」是否指到具體的控制，而不是「加強防護」這類沒有內容的說法。</li>
+</ol>
+</div>
+
+<h2 id="loop-wrap">2.5 03 階段收尾</h2>
+<p>這個階段從三個角度走了同一條路：<strong>條目</strong>（LLM01:2026、LLM09:2026）告訴你風險是什麼；<strong>Cheat Sheet</strong> 告訴你開發者可以做什麼；<strong>練習專案</strong>讓你看到風險的樣子。三者合用時，練習放在最後，而且要接回前兩者：</p>
+<ul>
+  <li>先讀 <a href="../prompt-injection/index.html">提示詞注入防護</a>與 <a href="../rag-security/index.html">RAG 安全</a>，知道要防什麼。</li>
+  <li>再選一個練習（第 1 章的決策圖），在隔離環境中做。</li>
+  <li>用學習迴圈把結果寫成「對應風險＋缺少的控制」。</li>
+</ul>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>學習迴圈是作者的筆記格式：觀察、對應風險（帶年份）、缺少的控制、驗證。</li>
+  <li>練習能建立直覺與條目語言，但通過練習不等於系統有防禦。</li>
+  <li>練習平台通常沒有適應性攻擊者，所以不能取代正式測試。</li>
+  <li>引用條目一律帶年份；2025 版與 2026 版的編號大多不同。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能把一個練習的觀察寫成四欄筆記，且「對應風險」帶年份。</li>
+  <li>我能說出練習和真實系統的三個差別。</li>
+  <li>我知道這一輪練習要接回哪個防禦章節。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3、LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<ul>
+  <li><a href="quiz.html">本主題總測驗（12 題）</a>。</li>
+  <li>回到 <a href="../prompt-injection/index.html">提示詞注入防護</a>與 <a href="../rag-security/index.html">RAG 安全</a>，把練習的結論接回防禦。</li>
+  <li>表 2-1 的條目有完整講解：見 02 階段的<a href="../../02-llm-applications/llm-top-10/index.html">Top 10 for LLM Applications 2026</a>。</li>
+  <li>FinBot CTF 涉及的 agentic 風險：FinBot 的 README 提到 Agentic Top 10，但未標年份（見<a href="01-three-labs.html#lab-compare">第 1 章表 1-1</a>），所以與本教材的<a href="../../04-agentic-and-mcp/agentic-top-10-2026/index.html">Top 10 for Agentic Applications 2026</a>是否同一版未能確認；兩者可對照閱讀。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP PromptMe README 與 GitHub 資料夾名稱 — <a href="https://github.com/OWASP/www-project-promptme">github.com/OWASP/www-project-promptme</a>；2026-10-26 讀取；Apache-2.0。</li>
+    <li>OWASP PwnzzAI README（Learning Framework 與 Implemented Vulnerabilities）— <a href="https://github.com/OWASP/PwnzzAI">github.com/OWASP/PwnzzAI</a>；2026-10-26 讀取；GPL-3.0。</li>
+    <li>FinBot CTF README（挑戰類別）— <a href="https://github.com/GenAI-Security-Project/finbot-ctf">github.com/GenAI-Security-Project/finbot-ctf</a>；2026-10-26 讀取。</li>
+    <li>OWASP Top 10 for LLM Applications 2026：LLM01:2026 Prompt Injection（測試要面對適應性攻擊者）— <a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM01_PromptInjection.md">GenAI-LLM-Top10 2026/final</a>；Version 2026（發布日採 2026-08-04）；CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；PromptMe — Apache-2.0；PwnzzAI — GPL-3.0；FinBot CTF — README 寫 Apache 2.0（GitHub 偵測值為 NOASSERTION）。本教材只引用專案名稱與描述，未複製其程式碼或解法。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch2', topic: 'hands-on-labs', mode: 'chapter',
+  questions: [
+    { id: 'c2q1', type: 'mc', lo: [4], refs: [{label: '2.1 學習迴圈', href: '02-learning-loop.html#loop-def'}],
+      stem: '學習迴圈的四個動作，依序是什麼？',
+      options: [
+        { text: '觀察 → 對應風險 → 找缺少的控制 → 驗證', correct: true, why: '這是圖 2-1 的順序：先記下現象，再對應到風險條目，找出缺口，最後在隔離環境驗證。' },
+        { text: '攻擊 → 取得旗標 → 截圖 → 分享', why: '這是「過關」的流程，沒有把結論接回控制與驗證。' },
+        { text: '閱讀條目 → 背誦編號 → 通過測驗 → 結束', why: '學習迴圈從練習中的觀察開始，不是從背誦開始。' },
+        { text: '部署 → 監控 → 告警 → 回應', why: '這是營運流程，不是把練習接回防禦的筆記格式。' }
+      ],
+      summary: '觀察 → 對應風險 → 找缺口 → 驗證；第 4 步若現象仍在，回到第 3 步。' },
+    { id: 'c2q2', type: 'match', lo: [4], refs: [{label: '2.2 四欄筆記', href: '02-learning-loop.html#loop-concept'}],
+      stem: '把四欄筆記中的內容，配對到它所屬的欄位。',
+      cats: [
+        { id: 'obs', label: '觀察' },
+        { id: 'risk', label: '對應風險' },
+        { id: 'gap', label: '缺少的控制' },
+        { id: 'ver', label: '怎麼驗證' }
+      ],
+      items: [
+        { text: '練習中，助理被文件裡的文字影響，做了原本沒要它做的事', answer: 'obs', why: '描述看到的現象，不含判斷與解法。' },
+        { text: 'LLM01:2026 Prompt Injection，並因牽涉工具權限而加上 LLM03:2026 Excessive Agency', answer: 'risk', why: '風險欄指到帶年份的條目。' },
+        { text: '模型能碰的資料與工具沒有按任務縮小', answer: 'gap', why: '缺口欄要指到具體的控制，而不是「加強防護」。' },
+        { text: '在隔離環境用虛構資料重複同類輸入，確認動作被權限層拒絕', answer: 'ver', why: '驗證欄寫怎麼確認控制有效。' }
+      ],
+      summary: '四欄各自回答不同的問題：看到什麼、屬於什麼風險、缺什麼控制、怎麼確認。' },
+    { id: 'c2q3', type: 'mc', lo: [4], refs: [{label: '2.4 表 2-2', href: '02-learning-loop.html#loop-limits'}],
+      stem: '一位同事說：「我把 PromptMe 的十個挑戰都通過了，所以我們的系統已經有防禦。」依本章，這個推論的主要問題是什麼？',
+      options: [
+        { text: '通過的挑戰數量不夠，至少要通過全部三個專案。', why: '數量不是問題；通過再多練習都不等於你的系統有防禦。' },
+        { text: '通過練習只代表利用了刻意放進去的弱點，並不能證明自己的系統有防禦。', correct: true, why: '表 2-2：練習的漏洞是刻意設計的，也沒有針對你的防禦持續調整的對手。' },
+        { text: '練習專案的內容都已過時，不值得參考。', why: '教材沒有這樣說；練習有助建立直覺與條目語言，只是不能取代對自己系統的驗證。' },
+        { text: '只要把練習的答案貼進 system prompt 就能防禦。', why: '把規則寫進提示詞不是邊界；本主題強調要接回架構層的控制。' }
+      ],
+      summary: '練習建立直覺，驗證要在自己的系統上做。' },
+    { id: 'c2q4', type: 'scn', lo: [3, 4], refs: [{label: '情境 F', href: '02-learning-loop.html#scn-f'}, {label: '第 1 章 表 1-2', href: '01-three-labs.html#lab-versions'}],
+      stem: '依情境 F 的做法，讀書會最該約定什麼？',
+      scenario: '星野軟體（虛構）的讀書會在筆記裡寫「對應風險：LLM06」。甲同學的意思是 Excessive Agency（來自專案資料夾的 2025 版編號），乙同學的意思是 Unbounded Consumption（來自他剛讀的 2026 版教材）。兩人為此爭論了半小時。',
+      options: [
+        { text: '全部改用中文名稱，不要使用編號。', why: '編號加上年份是無歧義的引用方式；放棄編號會讓後續與官方文件對照更困難。' },
+        { text: '一律使用 2025 版，因為練習專案都是 2025 版。', why: '本教材其他處以 2026 版為準；問題在於沒有標年份，不是該選哪一版。' },
+        { text: '每個條目引用都寫成帶年份的完整形式，例如 LLM03:2026 Excessive Agency。', correct: true, why: '同一個「LLM06」在兩個年份指不同條目，帶年份才能消除歧義。' },
+        { text: '誰先查到誰說了算。', why: '這不是規則；歧義來自缺少年份，而不是誰的記憶比較準。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 2025 版的 LLM06 是 Excessive Agency，2026 版的 LLM06 是 Unbounded Consumption，兩個同編號指不同的條目。(2) 練習專案用 2025 版，本教材用 2026 版，所以兩種寫法會同時出現。(3) 最簡單的解法是把年份寫進每一個引用。</p><p><strong>結論：</strong>一律使用帶年份的完整形式。對應教材：<a href="01-three-labs.html#lab-versions">第 1 章 1.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌與定位：三個主要發現｜Agentic 安全與治理現況｜OWASP AI 資安學習教材</title>
+<meta name="description" content="State of Agentic AI Security and Governance 2.01 是什麼、誰發布、給誰用、版本與日期、v1.0 到 v2 的變化、執行摘要的三個發現，以及它的資料來源與限制。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="agentic-security-and-governance" data-page="01-position-and-findings.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌與定位：三個主要發現</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../governance-checklist-and-coe/index.html">治理檢核表與卓越中心</a>（建議先讀）</li>
+</ul>
+<p class="lead">一位 CISO 剛接手公司的 AI 治理，她想知道三件事：agent 的威脅是不是真的發生了？法規是不是已經來了？她該以什麼框架評估公司目前的狀態？這份報告的作者群試圖用一份文件回答這三題。這一章先看它是什麼、跟上一版差在哪裡、結論有哪三項。</p>
+
+<h2 id="pf-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　State of Agentic AI Security and Governance 一頁式全貌（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">名稱與版本</th><td>State of Agentic AI Security and Governance，Version 2.01，2026 年 6 月（PDF 封面）；PDF 139 頁</td></tr>
+<tr><th scope="row">日期</th><td>資源頁日期 2026-06-01；頁面標示「Version 2.01 update」；PDF 檔案建立時間 2026-06-02。法規附錄的條目「驗證至 2026 年 4 月 4 日」</td></tr>
+<tr><th scope="row">發布者</th><td>OWASP GenAI Security Project 的 Agentic Security Initiative (ASI)</td></tr>
+<tr><th scope="row">給誰用</th><td>主要是 CISO、高階主管與負責 agentic AI 資安、治理與策略監督的領導者；其次是資安架構師、AI 工程師；法規脈絡也適用合規與法務。官方說：詳細的實作指引、框架、速查表與技術緩解，放在配套的 OWASP 資源</td></tr>
+<tr><th scope="row">前一版</th><td>v1.0，2025 年 7 月（報告內文提及）</td></tr>
+<tr><th scope="row">結構</th><td>正文約 69 頁（執行摘要到結語）；附錄 1–6 約 65 頁（agent 類型詳述、法規地圖、風險對採用層級、專案調查、FinBot CTF、個人 agent 的 Top 10 應用）</td></tr>
+<tr><th scope="row">授權</th><td>CC BY-SA 4.0（PDF 第 2 頁）；引用須含專案名稱與資產名稱</td></tr>
+</tbody></table></div>
+<p>報告屬於 Agentic Security Initiative，也就是 <a href="../../01-overview/genai-security-project/03-initiatives.html">GenAI Security Project 八個 Initiative</a> 中的一個；與 <a href="../governance-checklist-and-coe/index.html">治理檢核表與卓越中心的兩份文件</a>不同，後者出自 AI Security Governance Initiative。</p>
+
+<h2 id="pf-v2">1.2 從 v1.0 到 v2：這一年變了什麼</h2>
+<p>報告的開場把 v1.0（2025 年 7 月）定位為「把 agentic 風險當作一組可能的威脅、調查早期生態並呼籲治理跟上」。過了一年：採用加速、Top 10 for Agentic Applications 發布、針對 agent 造成傷害的法規環境開始成形。v2 因此「讀這一年的證據」。新增與改寫的部分：</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　v2 的新增與調整（官方，改寫）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">v2 的做法</th></tr></thead>
+<tbody>
+<tr><th scope="row">威脅分析</th><td>改寫為以已記錄的事故為基礎，並新增「Real-World Incidents and Exploits Tracker」，條目對映到 Top 10 for Agentic Applications</td></tr>
+<tr><th scope="row">AI Safety vs AI Security</th><td>新增專章（第 3 章）</td></tr>
+<tr><th scope="row">成熟度</th><td>新增 Enterprise Adoption Maturity Model：把治理能力對上部署複雜度</td></tr>
+<tr><th scope="row">身分與供應鏈</th><td>Agent Identity 與 Non-Human Identity 升為專章（把身分視為新的控制平面）；新增 AI SBOM and Supply Chain Provenance 專章（第 4 章）</td></tr>
+<tr><th scope="row">分類</th><td>Agents Taxonomy 改為三個獨立維度（類型、實作、組合），自主程度為貫穿維度</td></tr>
+<tr><th scope="row">生態調查與法規</th><td>生態視角取自 53 個被追蹤 agentic 專案的遙測；法規地圖涵蓋 10 個司法管轄區的 42 項文書</td></tr>
+</tbody></table></div>
+
+<h2 id="pf-findings">1.3 執行摘要的三個發現</h2>
+<div class="concept">
+<h3 id="c-three">報告想讓你帶走的三句話</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd><strong>威脅現在是真的。</strong>2025 年還是一串架構疑慮，如今幾乎每個條目都有事故、供應商公告或 CVE。<strong>安全與安全性在部署層收斂。</strong>部署層指的是部署組織自己擁有的架構決策、設定、權限與營運控制；模型層的安全性仍是供應商的責任。<strong>治理必須跟上部署。</strong>法規的通報時限是以小時計，假設的是持續監督而非定期稽核。</dd>
+  <dt data-n="2">為什麼會這樣</dt>
+  <dd>報告的論述是：agent 有廣泛的自主與工具存取時，「它因為被操縱而做壞事」與「它因為它能而做壞事」難以操作性地區分（第 3 章）；而時限是由法規決定的：報告列舉 DORA 4 小時通報、NIS2 24 小時預警、紐約 RAISE Act 72 小時、加州 SB 53 的 15 天。</dd>
+  <dt data-n="3">你該怎麼用</dt>
+  <dd>報告給的起點是：找出你目前運行的<strong>最進階的 agent</strong>，然後要麼把治理成熟度拉到與之匹配，要麼降低部署層級。它特別點名<strong>影子 AI</strong>：幾乎出現在作者群檢視過的每個組織，必須先被發現才能被治理。</dd>
+  <dt data-n="4">怎麼避免誤用</dt>
+  <dd>三個發現是作者群的主張與論證，不是 OWASP 的認證結論。報告的許多數字與事件來自外部報導、廠商公告與作者群的整理，教材只轉述、未逐一查證；引用時請說「報告指出」。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「這份報告告訴我 agent 要怎麼實作防護。」不是。官方的範圍說明是：實作指引放在配套資源（Securing Agentic Applications Guide、Threats and Mitigations 等）；這份報告談的是現況、分類、治理與法規。</dd>
+</dl>
+</div>
+
+<h2 id="pf-evidence">1.4 它用了什麼證據，以及你要保留什麼</h2>
+<p>報告的資料有四種來源，可信度不同，讀的時候要分開看：</p>
+<div class="table-wrap"><table>
+<caption>表 1-3　報告的證據來源與讀法</caption>
+<thead><tr><th scope="col">證據來源</th><th scope="col">例子（報告內）</th><th scope="col">你該怎麼讀</th></tr></thead>
+<tbody>
+<tr><th scope="row">被公開揭露的弱點與供應商公告</th><td>以 CVE 編號與供應商公告記錄的事故，如 Codex CLI 沙箱邊界問題、Cursor 的允許清單繞過</td><td>可追溯到公開紀錄，可自行查證；教材轉述其失敗模式</td></tr>
+<tr><th scope="row">OWASP 自己維護的追蹤與調查</th><td>ASI Exploits &amp; Incidents Tracker、「State of AI Surveyor」對 53 個專案的 GitHub 遙測</td><td>是「curated snapshot」（官方用語：策展的快照，非窮盡），包含不代表指責特定廠商</td></tr>
+<tr><th scope="row">外部調查與報告</th><td>IBM 資料外洩成本報告、a16z 的企業採用分析、CSA 與 CrowdStrike 的調查</td><td>數字來自第三方；教材引用時請寫「報告引用某某」，不要當成 OWASP 的結論</td></tr>
+<tr><th scope="row">作者群的判斷</th><td>「安全與安全性在部署層收斂」「AT0 要被消除而非治理」</td><td>是論證，不是標準；請與其他文件對照後再採用</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">報告自己說的限制：它的分類不是窮盡的</p>
+  <p>報告在分類章節明說：這些類別「不是窮盡的」，也不是每個正式環境中的 agent 都能整齊地歸入一類，是「截至 2026 年中觀察到的主要模式」。事件追蹤表是「策展的快照，不是完整檔案」。這些聲明請帶著讀。</p>
+</div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：報告對 ASI01 的名稱有兩種寫法</p>
+  <p>報告的資源表把 ASI01 稱作「Agent Behavior Hijack」，但報告其他 12 處以及附錄都寫「Agent Goal Hijack」；官方 Top 10 for Agentic Applications for 2026（Version 2026，2025-12）的名稱是 Agent Goal Hijack。這看起來是報告內部的不一致；教材一律使用 Agent Goal Hijack。</p>
+</div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>報告採用 Version 2.01（2026 年 6 月，139 頁），出自 Agentic Security Initiative；v1.0 為 2025 年 7 月。</li>
+  <li>v2 新增：以事故為基礎的威脅分析、Safety vs Security 專章、Adoption Maturity Model、Agent Identity／NHI 與 AI SBOM 專章、三維度分類。</li>
+  <li>三個發現：威脅是真的、部署層的安全與安全性收斂、治理必須跟上部署。</li>
+  <li>證據有四種來源：公開弱點、OWASP 追蹤與調查、外部報告、作者群判斷；請分開看。</li>
+  <li>報告不是實作手冊，也不是法律意見。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出報告的版本、日期與給誰用。</li>
+  <li>我能說出三個發現，並指出它們各是事實陳述還是論證。</li>
+  <li>我知道引用報告中的數字時，要標明是它引用的外部來源。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-taxonomy-and-threats.html">第 2 章　Agent 分類與 2025–2026 威脅</a>：先把「agent」分類，才知道不同種類各有什麼不一樣的治理問題。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，State of Agentic AI Security and Governance 2.01 資源頁（2026-06-01）：<a href="https://genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/">genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/</a>；2026-10-26 讀取。</li>
+    <li>同上報告 PDF（Version 2.01，June 2026，139 頁；CC BY-SA 4.0）：Executive Summary、Scope and Audience、Fit with Agentic Initiative Resources、Notable Agentic Projects Survey；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：State of Agentic AI Security and Governance 2.01、genai.owasp.org 網站 — CC BY-SA 4.0；引用須包含專案名稱與資產名稱。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ag-ch1', topic: 'agentic-security-and-governance', mode: 'chapter',
+  questions: [
+    { id: 'ag1q1', type: 'mc', lo: [1], refs: [{label: '1.3 三個發現', href: '01-position-and-findings.html#c-three'}],
+      stem: '依報告的執行摘要，下列哪一項是它的三個主要發現之一？',
+      options: [
+        { text: '只要使用經過認證的模型，agent 就沒有風險。', why: '報告沒有這樣說；它強調模型層的安全性是供應商責任，但部署層的風險由部署組織承擔。' },
+        { text: '在部署層，安全 (security) 與安全性 (safety) 無法在操作上分開治理。', correct: true, why: '這是三個發現之一，第 3 章會詳述。' },
+        { text: '法規還沒有影響 agent，所以不用擔心。', why: '報告的第三個發現正好相反：法規的通報時限已經以小時計。' },
+        { text: 'agent 的威脅仍然只是理論。', why: '第一個發現就是：威脅現在是真的，已有事故、公告與 CVE。' }
+      ],
+      summary: '三個發現：威脅是真的；部署層安全與安全性收斂；治理要跟上部署。' },
+    { id: 'ag1q2', type: 'mc', lo: [1], refs: [{label: '1.1 表 1-1', href: '01-position-and-findings.html#pf-onepage'}],
+      stem: '一位工程師想從這份報告找「如何為我的 agent 實作沙箱與允許清單」的逐步指引。依官方的範圍說明，最適合的回應是？',
+      options: [
+        { text: '報告就是實作手冊，直接照做。', why: '官方說明詳細的實作指引放在配套資源，而非這份報告。' },
+        { text: '報告不談安全相關內容，應該去讀別的領域。', why: '報告談的是 agentic AI 的安全與治理；只是它的定位是現況與治理，不是實作手冊。' },
+        { text: '報告的對象是 CISO 與主管層，實作指引在配套資源（如 Securing Agentic Applications Guide），應轉去那裡。', correct: true, why: '官方範圍說明列出了配套資源。' },
+        { text: '只需要查附錄 6。', why: '附錄 6 是個人 agent 的 Top 10 應用，不是通用的實作手冊。' }
+      ],
+      summary: '這份報告談現況與治理；實作細節在配套資源。' },
+    { id: 'ag1q3', type: 'scn', lo: [1], refs: [{label: '1.4 表 1-3', href: '01-position-and-findings.html#pf-evidence'}, {label: '1.1 表 1-1', href: '01-position-and-findings.html#pf-onepage'}],
+      stem: '依本章，這份簡報在引用這份報告時，有哪些地方需要修正？',
+      scenario: '晨光金融（虛構）的簡報寫：「OWASP 在 2025 年 7 月發布的 State of Agentic AI Security and Governance 報告證實，百分之三十七的組織沒有 AI 影子政策；OWASP 並認證了所有 agent 事故資料。」審查人員覺得數字與措辭都怪怪的。',
+      options: [
+        { text: '只需要把日期改成 2026 年，其餘都對。', why: '日期之外，數字來源與「認證」都有問題。' },
+        { text: '兩處以上要修：版本與日期（目前採用 Version 2.01、2026 年 6 月，2025 年 7 月是 v1.0）；數字是報告引用的外部調查（IBM 資料外洩成本報告），不是 OWASP 的結論；OWASP 的追蹤表是策展的快照，不是認證。', correct: true, why: '對應表 1-1 與表 1-3，以及 1.4 節官方聲明。' },
+        { text: '沒有問題，這是官方報告。', why: '官方報告也有範圍與證據來源的區別。' },
+        { text: '應該把「報告」改成「標準」。', why: '它不是標準，也不是認證依據。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 版本與日期：目前版本是 2.01（2026 年 6 月）；2025 年 7 月是 v1.0。(2) 「百分之三十七」：報告在談影子 AI 時寫「根據同一份報告，只有 37% 的組織有政策管理 AI 或偵測影子 AI」，這個數字出自報告所引用的 IBM 資料外洩成本報告，不是 OWASP 自己的調查。(3) 「認證」：報告自述事件追蹤表是「策展的快照，不是窮盡檔案」，沒有認證。</p><p><strong>結論：</strong>改為「報告引用 IBM 的調查指出……」，並更正版本日期。對應教材：<a href="01-position-and-findings.html#pf-evidence">1.4 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

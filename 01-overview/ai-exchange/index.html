@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OWASP AI Exchange｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP AI Exchange 主題首頁：學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="01-overview" data-topic="ai-exchange" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>OWASP AI Exchange</h1>
+<ul class="meta-row">
+  <li>01 總覽｜主題 1</li>
+  <li>預估學習時間：約 90–100 分鐘（8 章閱讀約 67 分鐘；章末檢核與總測驗約 25–30 分鐘；前置觀念頁另需約 10 分鐘）</li>
+  <li>採用來源：owaspai.org 2026-10-25 內容快照</li>
+</ul>
+<p class="lead">這個主題帶你認識 OWASP AI Exchange：一份涵蓋所有 AI 的威脅、控制與風險分析知識庫。學完後，你能在面對一個 AI 系統時，知道從哪裡開始、先問哪些問題、挑哪些控制。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>定位：</strong>說明 AI Exchange 是什麼，並比較它與 LLM Top 10 2026、Agentic Top 10 2026、MCP Top 10、ML Top 10、AISVS 的差別；面對一個情境，能判斷該先讀哪份文件。<br><small>對應：<a href="01-position.html">第 1 章</a>、<a href="08-integration.html">第 8 章</a></small></li>
+  <li id="lo2"><strong>威脅：</strong>把一個攻擊歸入開發期、輸入或執行期的其他威脅，並指出它傷害的資產與 CIA 性質。<br><small>對應：<a href="02-threat-map.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>控制：</strong>用四大控制類別與週期表為威脅挑選控制，區分預防型與偵測／回應型，並用七層防線解釋縱深防禦。<br><small>對應：<a href="03-control-map.html">第 3 章</a>、<a href="04-seven-layers.html">第 4 章</a></small></li>
+  <li id="lo4"><strong>風險分析：</strong>對一個系統走一遍威脅建模，選擇風險處理策略（降低、轉移、避免、接受），並釐清哪些責任仍在自己這邊。<br><small>對應：<a href="07-risk-analysis.html">第 7 章</a></small></li>
+  <li id="lo5"><strong>GenAI、Agentic 與 RAG：</strong>辨認這三種架構特有的攻擊面（含致命三要素），並提出對應控制。<br><small>對應：<a href="05-agentic-genai.html">第 5 章</a>、<a href="06-rag.html">第 6 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>熟悉軟體開發與 LLM 應用（RAG、Agent 的運作不必再解釋）。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>（約 10 分鐘）。重點是 CIA 三要素、信任邊界、最小權限、縱深防禦，以及 SQL Injection 與 Prompt Injection 的對照。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="../../primer-security-for-developers.html">資安前置觀念</a></span><span class="p-state" data-file-shared="primer"></span><span class="p-desc">共用頁面，所有主題都會連到這裡（約 10 分鐘）。</span></li>
+  <li><span class="p-title"><a href="01-position.html">第 1 章　全貌與定位</a></span><span class="p-state" data-file="01-position.html"></span><span class="p-desc">這份文件是什麼、誰發布、版本與日期、和相鄰文件的差別。表 2 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="02-threat-map.html">第 2 章　威脅地圖</a></span><span class="p-state" data-file="02-threat-map.html"></span><span class="p-desc">三類威脅、六種影響、攻擊鏈。表 2 張、圖 2 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-control-map.html">第 3 章　控制地圖</a></span><span class="p-state" data-file="03-control-map.html"></span><span class="p-desc">四大控制類別、週期表、預防／偵測／回應。情境 A。表 3 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="04-seven-layers.html">第 4 章　縱深防禦：提示詞注入七層防線</a></span><span class="p-state" data-file="04-seven-layers.html"></span><span class="p-desc">縱深防禦的最具體範例與爆炸半徑控制。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="05-agentic-genai.html">第 5 章　GenAI 與 Agentic AI</a></span><span class="p-state" data-file="05-agentic-genai.html"></span><span class="p-desc">GenAI 特性對照 LLM Top 10 2026、致命三要素。情境 B。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="06-rag.html">第 6 章　RAG 系統</a></span><span class="p-state" data-file="06-rag.html"></span><span class="p-desc">五階段信任邊界與 RAG 專屬威脅。情境 C。表 1 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="07-risk-analysis.html">第 7 章　風險分析</a></span><span class="p-state" data-file="07-risk-analysis.html"></span><span class="p-desc">G.U.A.R.D.、威脅建模、風險處理與責任歸屬；附一段決策樹範例走法。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="08-integration.html">第 8 章　跨文件整合與收尾</a></span><span class="p-state" data-file="08-integration.html"></span><span class="p-desc">概念對照表、從症狀查文件、重點整理與下一步。表 1 張、圖 2 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（16 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO5，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">核對清單、版本與日期對照、授權、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>AI Exchange 是<strong>入口與全貌</strong>：涵蓋所有 AI，從威脅、控制到風險分析，並持續更新、沒有版本號。</li>
+  <li>威脅依時機分三類，控制依功能分四大類；<strong>預防型的權限控制比事後偵測有效</strong>，但偵測／監督是最後一道檢查點。</li>
+  <li>提示詞注入沒有根治法。官方的做法是疊七層，並<strong>假設前兩層會被突破</strong>，把重點放在限縮後果。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的類比、歸類或結論。</li>
+  <li>三個情境（A–C）與一段範例走法都是 <span class="tag fiction">虛構</span> 的公司與系統，不含可直接使用的攻擊手法。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage。如果瀏覽器停用了它，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>圖表以本地的 Mermaid 繪製；若圖沒有顯示，每張圖下方都有文字說明。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：OWASP AI Exchange（owaspai.org）— CC0 1.0；OWASP Top 10 for LLM Applications 2026、Top 10 for Agentic Applications 2026、AISVS — CC BY-SA 4.0。主題中提到的 OWASP MCP Top 10 其專案頁標示 <span class="tag nc">NC 授權</span> CC BY-NC-SA 4.0（非商業），本教材只引用其名稱與狀態。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

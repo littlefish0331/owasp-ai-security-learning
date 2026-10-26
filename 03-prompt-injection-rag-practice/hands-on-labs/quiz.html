@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜動手練習｜OWASP AI 資安學習教材</title>
+<meta name="description" content="動手練習主題總測驗：12 題，涵蓋四個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="hands-on-labs" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：動手練習</h1>
+<ul class="meta-row">
+  <li>12 題（選擇題 4、情境判斷題 4、配對題 4）</li>
+  <li>預估時間：約 15 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO4</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–2 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位：</strong>說明三個練習專案各自的焦點、授權與版本狀態，並為一個學習目標選出合適的專案。</li>
+  <li><strong>安全使用：</strong>判斷執行刻意有漏洞的應用 (Intentionally Vulnerable Application) 時的暴露、金鑰、費用與資料風險。</li>
+  <li><strong>編號換算：</strong>把練習專案使用的 2025 版編號換算成 2026 版，並用帶年份的形式引用。</li>
+  <li><strong>接回防禦：</strong>把練習的觀察接回風險條目與控制，並說明練習的限制。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：genai.owasp.org 資源頁與 OWASP Top 10 for LLM Applications — CC BY-SA 4.0；PromptMe — Apache-2.0；PwnzzAI — GPL-3.0；FinBot CTF — README 寫 Apache 2.0（GitHub 偵測值為 NOASSERTION）。本教材只引用專案名稱與描述，未複製其程式碼或解法。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-three-labs.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-learning-loop.html', a, '第 2 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位 ================= */
+  { id: 'q01', type: 'match', lo: [1], refs: [C1('lab-compare', '1.2 表 1-1')],
+    stem: '把下列描述配對到它最符合的專案（依表 1-1）。',
+    cats: [
+      { id: 'pm', label: 'PromptMe' },
+      { id: 'pw', label: 'PwnzzAI' },
+      { id: 'fb', label: 'FinBot CTF' }
+    ],
+    items: [
+      { text: '有 release v1.0.0（2025-08-21），授權為 Apache-2.0', answer: 'pm', why: 'PromptMe 是三者中唯一標示 release 的，授權 Apache-2.0。' },
+      { text: '每項弱點附示範、利用情境與加固替代方案；授權 GPL-3.0，沒有 release', answer: 'pw', why: 'PwnzzAI 的 README 自述三段式設計，授權為 GPL-3.0。' },
+      { text: '多 agent 廠商管理平台，以事件偵測成功、沒有靜態旗標', answer: 'fb', why: 'FinBot CTF 的平台描述與偵測方式。' },
+      { text: '授權欄在 README 與 GitHub 偵測值之間不一致，教材標為未能確認', answer: 'fb', why: 'FinBot 的 README 寫 Apache 2.0，GitHub 偵測值為 NOASSERTION。' }
+    ],
+    summary: '三個專案的焦點、授權與版本狀態各不相同，引用時要分開寫。' },
+
+  { id: 'q02', type: 'scn', lo: [1], refs: [C1('lab-choose', '1.4 圖 1-1'), C1('lab-compare', '1.2 表 1-1')],
+    stem: '依第 1 章，這個小組最適合先選哪個專案，並要先準備什麼？',
+    scenario: '星野軟體（虛構）有一個四人讀書小組，剛讀完提示詞注入防護，想接下來練習「多個 agent 加上工具」的風險。他們有一台隔離的虛擬機，可以申請有用量上限的練習金鑰，也能自己架 Redis。',
+    options: [
+      { text: 'PromptMe：它是 OWASP 專案，10 個挑戰涵蓋所有主題。', why: 'PromptMe 的焦點是 LLM Top 10 基本款、使用本機模型，不是以多 agent 為焦點；「OWASP 專案」也不等於適合這個學習目標。' },
+      { text: 'PwnzzAI：pizza shop 的情境最容易懂。', why: 'PwnzzAI 的設計是單一 Flask 應用內的多項弱點與加固替代方案，焦點不是多 agent。' },
+      { text: 'FinBot CTF：它以多 agent 平台為焦點；執行需要 Redis 與 LLM 金鑰，所以先備好隔離環境與有上限的金鑰。', correct: true, why: '符合圖 1-1 的分流：想練多 agent、工具的 agentic 風險選 FinBot；需求與安全準備見表 1-1 與 1.5 節。' },
+      { text: '三個都不適合，agentic 風險無法靠練習接觸。', why: 'FinBot CTF 就是為了讓人實際接觸 agentic 風險而設計。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 學習目標是多 agent 加工具的風險，對應表 1-1 中 FinBot CTF 的焦點。(2) 表 1-1 的執行需求列：需要 Redis 與 LLM 金鑰（OpenAI 或 Ollama）。(3) 他們已有隔離環境與有上限的金鑰，正好符合圖 1-1 與 1.5 節的前置準備。</p><p><strong>結論：</strong>選 FinBot CTF，並在隔離環境用專用金鑰執行。對應教材：<a href="01-three-labs.html#lab-choose">1.4 節</a>。</p>' },
+
+  { id: 'q03', type: 'mc', lo: [1], refs: [C1('lab-compare', '1.2 表 1-1')],
+    stem: 'FinBot CTF 的 README 寫授權為 Apache 2.0，但 GitHub 偵測的授權欄是 NOASSERTION。引用它的授權時，教材採哪種寫法？',
+    options: [
+      { text: '並列 README 的說法與 GitHub 偵測值，並標註未能確認，不自行擇一。', correct: true, why: '兩處說法不一致、無法判斷何者為準時，規則是標「未能確認」並如實並列。' },
+      { text: '只寫 Apache 2.0，因為 README 是專案自己寫的。', why: '雖然 README 較可能反映作者的意圖，但教材的規則是遇到不一致時並列並標未能確認，不自行擇一。' },
+      { text: '只寫 NOASSERTION，因為它是 GitHub 的自動偵測結果。', why: 'NOASSERTION 表示偵測不出，不代表沒有授權；只寫它會遺漏 README 的明文。' },
+      { text: '不寫授權，因為不確定。', why: '授權是使用者最需要知道的資訊之一；正確做法是寫出不確定的內容，而不是省略。' }
+    ],
+    summary: '來源不一致時，並列各方說法並標示未能確認。' },
+
+  /* ================= LO2 安全使用 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C1('lab-safe', '1.5 安全地執行')],
+    stem: '練習時需要用到雲端模型的金鑰。下列哪一種處理最符合 1.5 節的建議？',
+    options: [
+      { text: '使用公司的正式金鑰，但只讓自己知道。', why: '正式金鑰放進刻意有漏洞的應用，應用被攻破時金鑰就一併外洩；「只有自己知道」擋不住這個應用本身。' },
+      { text: '把金鑰寫進 system prompt，讓應用自己保管。', why: '提示詞不是保管機密的地方；刻意有洞的應用更不該拿到任何你不想失去的東西。' },
+      { text: '使用正式金鑰，但開啟日誌，事後再檢查用量。', why: '日誌是事後偵測，不能取代事前的隔離與用量上限；而且正式金鑰仍然暴露。' },
+      { text: '專為練習申請金鑰，設定用量與費用上限，練習結束就撤銷。', correct: true, why: '1.5 節：專用金鑰、設定上限、用完撤銷，同時處理金鑰與費用兩項風險。' }
+    ],
+    summary: '練習用專用、有上限、用完撤銷的金鑰。' },
+
+  { id: 'q05', type: 'scn', lo: [2], refs: [C1('lab-safe', '1.5 後果與做法')],
+    stem: '依第 1 章，這個做法的主要問題與改法是什麼？',
+    scenario: '晴川科技（虛構）的工程師想讓練習「更貼近真實」，把一批去識別化不完全的客戶資料匯入刻意有漏洞的練習應用，並設定成呼叫雲端模型來回答問題。',
+    options: [
+      { text: '只要把資料表的欄位名稱改掉就可以。', why: '改欄位名稱不會改變資料本身；資料仍是真實內容，仍會進入有洞的應用。' },
+      { text: '改用虛構的資料；真實資料不該進入刻意有漏洞的應用，也不該送給雲端模型。', correct: true, why: '1.5 節的「資料」風險：真實資料送進有洞的應用，或送給雲端模型。做法是只用虛構資料。' },
+      { text: '資料量不大就沒關係。', why: '風險不取決於資料量；去識別化不完全的資料外洩一筆就是真實的後果。' },
+      { text: '在 system prompt 加一句「不得輸出客戶資料」。', why: '把保護資料的責任交給提示詞，等於沒有保護；問題出在資料不該進入這個環境。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 這個應用是刻意有漏洞的，預期會被攻破，不該拿到任何你不想失去的東西。(2) 去識別化不完全的資料仍然是真實資料。(3) 雲端模型會收到這些內容，等於把資料送出你的控制範圍。</p><p><strong>結論：</strong>練習只用虛構資料。對應教材：<a href="01-three-labs.html#lab-safe">1.5 節</a>。</p>' },
+
+  { id: 'q06', type: 'match', lo: [2], refs: [C1('lab-safe', '1.5 後果與做法')],
+    stem: '把下列做法配對到它主要處理的風險面向。',
+    cats: [
+      { id: 'exp', label: '暴露' },
+      { id: 'key', label: '金鑰' },
+      { id: 'cost', label: '費用' },
+      { id: 'data', label: '資料' }
+    ],
+    items: [
+      { text: '只綁本機位址，不對外開放連接埠', answer: 'exp', why: '避免有洞的服務被不相干的人使用。' },
+      { text: '專為練習申請金鑰，用完就撤銷', answer: 'key', why: '金鑰若放在應用讀得到的地方，應用被攻破就外洩；專用且可撤銷能限縮損失。' },
+      { text: '設定用量與費用上限', answer: 'cost', why: '對應 LLM06:2026 Unbounded Consumption 談的成本不對稱。' },
+      { text: '只使用虛構的資料', answer: 'data', why: '避免真實資料進入有洞的應用或被送給雲端模型。' }
+    ],
+    summary: '暴露、金鑰、費用、資料四個面向，各有對應的做法。' },
+
+  /* ================= LO3 編號換算 ================= */
+  { id: 'q07', type: 'match', lo: [3], refs: [C1('lab-versions', '1.3 表 1-2')],
+    stem: '練習專案以 2025 版編號命名。把下列 2025 版條目配對到它在 2026 版的編號。',
+    cats: [
+      { id: 'a04', label: 'LLM04:2026' },
+      { id: 'a05', label: 'LLM05:2026' },
+      { id: 'a07', label: 'LLM07:2026' },
+      { id: 'a10', label: 'LLM10:2026' }
+    ],
+    items: [
+      { text: 'LLM03:2025 Supply Chain', answer: 'a04', why: 'Supply Chain 在 2026 版是 LLM04。' },
+      { text: 'LLM04:2025 Data and Model Poisoning', answer: 'a05', why: 'Data and Model Poisoning 在 2026 版是 LLM05。' },
+      { text: 'LLM05:2025 Improper Output Handling', answer: 'a10', why: 'Improper Output Handling 從第 5 降到第 10，在 2026 版是 LLM10。' },
+      { text: 'LLM09:2025 Misinformation', answer: 'a07', why: 'Misinformation 在 2026 版是 LLM07。' }
+    ],
+    summary: '換算要查表 1-2，不能用記憶中的編號。' },
+
+  { id: 'q08', type: 'mc', lo: [3], refs: [C1('lab-versions', '1.3 版本落差')],
+    stem: '把 LLM Top 10 的十個條目從 2025 版換成 2026 版時，下列哪個說法正確？',
+    options: [
+      { text: '只有 LLM01 與 LLM02 的編號沒變，其餘的編號都改變了。', correct: true, why: '1.3 節：十項中只有 LLM01 與 LLM02 的編號沒變（表 1-2）。' },
+      { text: '十個條目的編號都沒變，只是名稱更新。', why: '2026 版重新排序，大多數編號改變；Excessive Agency 從 LLM06 變成 LLM03，就是例子。' },
+      { text: '只有 LLM01 的編號沒變。', why: 'LLM02 Sensitive Information Disclosure 的編號也沒有改變。' },
+      { text: '前三個條目的編號都沒變。', why: 'LLM03 在兩個版本指不同條目：2025 版是 Supply Chain，2026 版是 Excessive Agency。' }
+    ],
+    summary: '只有 LLM01 與 LLM02 的編號沒變；引用要帶年份。' },
+
+  { id: 'q09', type: 'scn', lo: [3], refs: [C1('lab-versions', '1.3 表 1-2')],
+    stem: '依第 1 章，這位同事該怎麼處理 Model Theft？',
+    scenario: '青松網路（虛構）的資安負責人整理風險登記冊，要把 PwnzzAI 列出的 11 項弱點都對應到 LLM Top 10 2026 的編號。她發現第 11 項 Model Theft 在 2026 版找不到同名的條目，同事建議「隨便找一個最像的編號對上去」。',
+    options: [
+      { text: '對到 LLM01:2026，因為它是第一項。', why: '沒有任何依據；強行對應會讓登記冊內容失真。' },
+      { text: '直接刪掉這一項。', why: '刪掉會讓風險清單少一項；正確做法是如實記錄它對應不到的狀況。' },
+      { text: '對到 LLM08:2026 Hidden Context Exposure，因為兩者都和「被取走」有關。', why: '這是望文生義；Hidden Context Exposure 談的是隱藏的指令與營運脈絡，教材沒有任何把它與 Model Theft 對應的依據。' },
+      { text: '註明它屬於 2023/24 版，2025 與 2026 版沒有獨立條目，官方未明述去向，標為未能確認，不硬配。', correct: true, why: '表 1-2 最後一列：Model Theft 屬 2023/24 版，2026 版沒有獨立條目，去向官方未明述。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) PwnzzAI 的 11 項是 2025 版的 10 項加上 2023/24 版的 Model Theft。(2) 2026 版沒有獨立的 Model Theft 條目，官方也沒有說它歸到哪裡。(3) 無法判斷時，規則是標示「未能確認」，不自行擇一。</p><p><strong>結論：</strong>如實記錄，不硬配。對應教材：<a href="01-three-labs.html#lab-versions">1.3 節</a>。</p>' },
+
+  /* ================= LO4 接回防禦 ================= */
+  { id: 'q10', type: 'match', lo: [4], refs: [C2('loop-map', '2.3 表 2-1')],
+    stem: '把下列練習類別配對到它在表 2-1 接回的位置。',
+    cats: [
+      { id: 'pi', label: '提示詞注入防護主題' },
+      { id: 'rag', label: 'RAG 安全主題' },
+      { id: 'ch1', label: '本主題第 1 章（費用與金鑰上限）' },
+      { id: 'llm', label: '只接回 02 階段 LLM Top 10 的專章（本階段內沒有對應章節）' }
+    ],
+    items: [
+      { text: 'LLM01_Prompt_Injection（PromptMe）', answer: 'pi', why: '表 2-1：LLM01:2026 接回提示詞注入防護主題。' },
+      { text: 'LLM08_Vector_and_Embedding_Weaknesses（PromptMe）', answer: 'rag', why: '表 2-1：LLM09:2026 接回 RAG 安全主題。' },
+      { text: 'LLM10_Unbounded_Consumption（PromptMe）', answer: 'ch1', why: '表 2-1：LLM06:2026 接回本主題第 1 章對費用與金鑰上限的說明（同列另連到 LLM Top 10 第 7 章，但已有本主題的章節，所以不屬於「只接回 LLM Top 10 專章」）。' },
+      { text: 'LLM09_Misinformation（PromptMe）', answer: 'llm', why: '表 2-1：LLM07:2026 Misinformation 只接回 LLM Top 10 第 7 章的錯誤資訊，本階段內沒有對應章節。' }
+    ],
+    summary: '表 2-1 把練習類別、2026 版條目與本教材章節串起來；全表為作者整理。' },
+
+  { id: 'q11', type: 'scn', lo: [4], refs: [C2('loop-concept', '2.2 四欄筆記')],
+    stem: '依第 2 章，這份筆記哪裡需要修正？',
+    scenario: '澄光資訊（虛構）的讀書會成員寫了一份練習筆記。「觀察」：助理被文件裡的文字影響，做了不該做的事。「對應風險」：LLM01:2026 Prompt Injection。「缺少的控制」：加強防護。「怎麼驗證」：再破一次，看能不能過關。',
+    options: [
+      { text: '「觀察」欄應該改成寫完整的操作步驟。', why: '觀察欄只寫現象，不寫操作步驟；本主題也不提供攻擊步驟。' },
+      { text: '「對應風險」欄不應該帶年份。', why: '剛好相反：條目引用一律要帶年份，才能避免 2025 與 2026 版的混淆。' },
+      { text: '「缺少的控制」要指到具體的控制；「怎麼驗證」要在隔離環境確認控制有效，而不是再破一次。', correct: true, why: '2.2 節：缺口欄不能是「加強防護」這類沒有內容的說法；驗證是確認補上的控制讓現象不再發生。' },
+      { text: '整份筆記都不需要修改。', why: '「加強防護」沒有指到任何控制，也無法據以驗證。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 觀察與對應風險兩欄是合格的：描述現象、帶年份。(2) 「加強防護」沒有指到具體的控制，無法帶回設計審查。(3) 驗證的目的是確認控制有效，例如動作被權限層拒絕，而不是再試著過關。</p><p><strong>結論：</strong>把缺口寫成具體控制（例如按任務縮小工具權限），驗證改在隔離環境確認該控制有效。對應教材：<a href="02-learning-loop.html#loop-concept">2.2 節</a>。</p>' },
+
+  { id: 'q12', type: 'mc', lo: [4], refs: [C2('loop-limits', '2.4 表 2-2')],
+    stem: '依第 2 章，練習平台通常不能取代對你自己系統的測試，其中一個關鍵原因，也與官方 LLM01:2026 對測試的立場一致，是什麼？',
+    options: [
+      { text: '練習平台的程式碼都太舊，無法對照新的風險條目。', why: '教材沒有這樣的說法；練習平台可以幫你建立直覺，只是不能取代對自己系統的驗證。' },
+      { text: '練習平台通常沒有針對你的防禦持續調整的對手；官方要求用讀過防禦設計的適應性攻擊者來測試。', correct: true, why: '2.4 節：表 2-2 與 LLM01:2026 都強調適應性攻擊者，並不接受只憑靜態攻擊測試的結論。' },
+      { text: '練習平台只能在雲端模型上執行。', why: '與事實不符：PromptMe 的設計是用本機 Ollama 與開源模型。' },
+      { text: '練習平台的授權不允許用於測試。', why: '與授權無關；問題在於測試的對手與環境，不在授權。' }
+    ],
+    summary: '練習建立直覺；評估防禦要面對適應性攻擊者，並在自己的系統上做。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'hands-on-labs', mode: 'final',
+    los: [
+      { n: 1, text: '定位：說明三個練習專案各自的焦點、授權與版本狀態，並選出合適的專案。' },
+      { n: 2, text: '安全使用：判斷執行刻意有漏洞的應用時的暴露、金鑰、費用與資料風險。' },
+      { n: 3, text: '編號換算：把練習用的 2025 版編號換算成 2026 版，並帶年份引用。' },
+      { n: 4, text: '接回防禦：把練習的觀察接回風險條目與控制，並說明練習的限制。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

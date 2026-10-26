@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OWASP AI 資安學習教材｜首頁・學習地圖</title>
+<meta name="description" content="依閱讀順序 01–07 整理的 OWASP AI 資安學習教材（非官方學習整理）：各主題狀態、學習路徑與共用資源。">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>OWASP AI 資安學習教材</h1>
+<ul class="meta-row">
+  <li>讀者：熟悉 AI 與軟體開發、對資安較陌生的工程師</li>
+  <li>資料來源：OWASP 官方文件（作者自備的研究筆記為起點，調查日 2026-10-26；一手來源清單見儲存庫的 SOURCES.md）</li>
+  <li>作者：Youjun 與 Claude Code 合力完成・內容截至 2026-10-26</li>
+  <li>狀態：目前已完成 28 個主題（01 總覽的兩個、02 LLM 應用的一個、03 提示詞注入與 RAG 實作的三個、04 Agentic 與 MCP 的五個、05 治理與風險的五個、06 評估與驗證的四個、07 延伸主題的八個）</li>
+</ul>
+<p class="lead">這是一套把 OWASP 的 AI 資安資源整理成可自學網站的教材。重點是<strong>知識整合</strong>：不是堆疊名詞定義，而是讓你知道遇到某個情況時該查哪份文件、採哪類控制。</p>
+
+<div class="callout warn">
+  <p class="callout-title">請先知道這件事</p>
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong>每一頁都會標明採用的來源版本與日期，以及授權；若與官方文件不一致，請以官方為準，並歡迎對照各主題「參考資料」頁的來源核對清單。</p>
+</div>
+
+<h2 id="start">從哪裡開始</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="primer-security-for-developers.html">資安前置觀念（給開發者）</a></span><span class="p-state"></span><span class="p-desc">用開發者熟悉的類比說明威脅建模、攻擊面、信任邊界、最小權限、縱深防禦、預防／偵測／回應類控制、CIA 三要素，並比較 SQL Injection 與 Prompt Injection。約 10 分鐘。</span></li>
+  <li><span class="p-title"><a href="01-overview/ai-exchange/index.html">01 總覽・OWASP AI Exchange</a></span><span class="p-state"></span><span class="p-desc">第一個完整主題：涵蓋所有 AI 的威脅、控制與風險分析知識庫。學習目標 5 條，8 章加 16 題總測驗。</span></li>
+  <li><span class="p-title"><a href="01-overview/genai-security-project/index.html">01 總覽・GenAI Security Project 架構</a></span><span class="p-state"></span><span class="p-desc">OWASP 的另一個旗艦 AI 專案：治理模型、八個 Initiatives 與 Solutions Landscape。學習目標 5 條，5 章加 15 題總測驗。建議先讀完 AI Exchange。</span></li>
+  <li><span class="p-title"><a href="02-llm-applications/llm-top-10/index.html">02 LLM 應用・Top 10 for LLM Applications 2026</a></span><span class="p-state"></span><span class="p-desc">LLM 應用最常被引用的風險清單：十項風險的入口、放大器、衝擊三層地圖，各項控制的限制，以及 2023/24→2025→2026 的版本演進與編號換算。學習目標 5 條，10 章加 18 題總測驗。建議先讀完 AI Exchange 與 GenAI Security Project 的第 1 章。</span></li>
+  <li><span class="p-title"><a href="03-prompt-injection-rag-practice/prompt-injection/index.html">03 提示詞注入與 RAG 實作・提示詞注入防護</a></span><span class="p-state"></span><span class="p-desc">LLM01:2026 與 Prompt Injection Prevention Cheat Sheet：為什麼沒有根治法、哪些防線會被繞過、哪些架構控制能限縮後果。學習目標 4 條，4 章加 14 題總測驗。建議先讀完 AI Exchange 第 4 章。</span></li>
+  <li><span class="p-title"><a href="03-prompt-injection-rag-practice/rag-security/index.html">03 提示詞注入與 RAG 實作・RAG 安全</a></span><span class="p-state"></span><span class="p-desc">RAG Security Cheat Sheet 與 LLM09:2026：RAG 管線寫入端、讀取端與生成端的實作控制。學習目標 4 條，4 章加 14 題總測驗。建議先讀完 AI Exchange 第 6 章。</span></li>
+  <li><span class="p-title"><a href="03-prompt-injection-rag-practice/hands-on-labs/index.html">03 提示詞注入與 RAG 實作・動手練習</a></span><span class="p-state"></span><span class="p-desc">PromptMe、PwnzzAI、FinBot CTF 的定位、版本、授權與安全使用，以及如何把練習接回防禦。學習目標 4 條，2 章加 12 題總測驗。建議在前兩個主題之後閱讀。</span></li>
+  <li><span class="p-title"><a href="04-agentic-and-mcp/agentic-threats-and-mitigations/index.html">04 Agentic 與 MCP・Agentic 威脅與緩解</a></span><span class="p-state"></span><span class="p-desc">Agentic AI – Threats and Mitigations 1.1 的 T1–T17 威脅分類與六個 Playbooks，加上用 MAESTRO 七層做多 Agent 威脅建模。學習目標 5 條，4 章加 14 題總測驗。建議先讀完 AI Exchange 第 5 章。</span></li>
+  <li><span class="p-title"><a href="04-agentic-and-mcp/agentic-top-10-2026/index.html">04 Agentic 與 MCP・Top 10 for Agentic Applications 2026</a></span><span class="p-state"></span><span class="p-desc">ASI01–ASI10 十項 agentic 風險：如何區分、怎麼防、與 LLM Top 10 2025／2026 編號的換算。學習目標 5 條，5 章加 15 題總測驗。建議先讀完 Agentic 威脅與緩解。</span></li>
+  <li><span class="p-title"><a href="04-agentic-and-mcp/securing-agentic-applications/index.html">04 Agentic 與 MCP・保護 Agentic 應用指南</a></span><span class="p-state"></span><span class="p-desc">Securing Agentic Applications Guide 1.0：六類關鍵元件、生命週期控制、三種架構與高風險能力的控制，以及驗證與部署。學習目標 5 條，4 章加 14 題總測驗。建議先讀完 Agentic 威脅與緩解。</span></li>
+  <li><span class="p-title"><a href="04-agentic-and-mcp/mcp-security/index.html">04 Agentic 與 MCP・MCP 安全</a></span><span class="p-state"></span><span class="p-desc">MCP Top 10（Beta）、伺服器開發指南、第三方使用 Cheat Sheet 與 MCP Security Cheat Sheet：文件地圖、十項風險、開發者與使用者兩種視角。學習目標 5 條，5 章加 16 題總測驗。MCP Top 10 授權文字自相矛盾，標示 NC。建議先讀完 Agentic 威脅與緩解。</span></li>
+  <li><span class="p-title"><a href="04-agentic-and-mcp/ai-agent-security-cheat-sheet/index.html">04 Agentic 與 MCP・AI Agent Security Cheat Sheet 與第三方執行證據驗證</a></span><span class="p-state"></span><span class="p-desc">OWASP Cheat Sheet Series 的 AI Agent Security（13 項風險、九節最佳實務）與 Verifying Third-Party Agent Execution Evidence（六個問題）：限制 agent 能做什麼、看見與驗證、第三方簽署的執行紀錄能證明什麼。學習目標 5 條，5 章加 14 題總測驗。兩份速查表都沒有版本號，教材標讀取日與提交日。建議先讀完 MCP 安全。</span></li>
+  <li><span class="p-title"><a href="05-governance-and-risk/governance-checklist-and-coe/index.html">05 治理與風險・治理檢核表與卓越中心</a></span><span class="p-state"></span><span class="p-desc">LLM Applications Cybersecurity and Governance Checklist v1.1 的 13 個區塊與 Center of Excellence Guide：導入前要想清楚什麼、由誰來做；含影子 AI、部署類型與 CoE 的 12 個月階段。學習目標 5 條，5 章加 14 題總測驗。</span></li>
+  <li><span class="p-title"><a href="05-governance-and-risk/threat-defense-compass/index.html">05 治理與風險・Threat Defense COMPASS</a></span><span class="p-state"></span><span class="p-desc">COMPASS 1.0 與 RunBook：用 OODA 循環和 5 分制可能性 × 衝擊快速排出 AI 威脅的優先順序；含資源頁、RunBook 與試算表三份資料的版本出入。學習目標 5 條，4 章加 13 題總測驗。建議先讀完治理檢核表與卓越中心。</span></li>
+  <li><span class="p-title"><a href="05-governance-and-risk/agentic-security-and-governance/index.html">05 治理與風險・Agentic 安全與治理現況</a></span><span class="p-state"></span><span class="p-desc">State of Agentic AI Security and Governance 2.01（139 頁）：agent 分類與威脅、安全與安全性在部署層的收斂、Agent 身分與供應鏈，以及採用層級 AT0–AT8 × 治理等級 0–4 矩陣。本主題為選讀，未逐頁讀完。學習目標 5 條，6 章加 14 題總測驗。</span></li>
+  <li><span class="p-title"><a href="05-governance-and-risk/framework-crosswalk-and-standards/index.html">05 治理與風險・框架對照與標準</a></span><span class="p-state"></span><span class="p-desc">GenAI Security Industry Framework Crosswalk（51 個條目對映 26 個框架）與 AI Exchange 和各標準的關係：怎麼用、LLM Top 10 2025→2026 的編號是排列不可依序取代、對照的證據強度。學習目標 5 條，4 章加 14 題總測驗。建議先讀完治理檢核表與卓越中心。</span></li>
+  <li><span class="p-title"><a href="05-governance-and-risk/ai-maturity-assessment/index.html">05 治理與風險・AI 成熟度評估 (AIMA)</a></span><span class="p-state"></span><span class="p-desc">OWASP AIMA V1.0：仿 SAMM 的 AI 成熟度模型（8 個領域、24 個實務、三級），用 Yes／No 問卷與「+」記分自評；並區分四種容易混淆的「成熟度」。學習目標 5 條，4 章加 13 題總測驗。</span></li>
+  <li><span class="p-title"><a href="06-assessment-and-verification/genai-red-teaming/index.html">06 評估與驗證・GenAI 紅隊演練</a></span><span class="p-state"></span><span class="p-desc">GenAI 紅隊演練：Manual 的八階段、Guide 的概念與 Vendor Evaluation Criteria，學會判斷紅隊報告是否可靠、辨別只會越獄的廠商。學習目標 4 條，4 章加 14 題總測驗。建議先讀完 AI Exchange 與提示詞注入防護。</span></li>
+  <li><span class="p-title"><a href="06-assessment-and-verification/ai-testing-guide/index.html">06 評估與驗證・AI Testing Guide</a></span><span class="p-state"></span><span class="p-desc">把 AI 威脅轉成 32 項可執行測試（應用、模型、基礎設施、資料四層），主張測試目標是「可信度」而不只是安全；含黑箱限制與如何從威脅模型挑測試。學習目標 4 條，3 章加 12 題總測驗。</span></li>
+  <li><span class="p-title"><a href="06-assessment-and-verification/aisvs-and-llmsvs/index.html">06 評估與驗證・AISVS 與 LLMSVS</a></span><span class="p-state"></span><span class="p-desc">把 AI 系統的安全要求寫成可驗證的需求，學會選目標層級、蒐集證據，並判斷「LLMSVS 認證」宣稱（AISVS 採 1.01、LLMSVS 採 v2.0）。學習目標 4 條，4 章加 16 題總測驗。</span></li>
+  <li><span class="p-title"><a href="06-assessment-and-verification/aivss/index.html">06 評估與驗證・AIVSS</a></span><span class="p-state"></span><span class="p-desc">AI 弱點評分系統：為什麼 CVSS 不足以評 agentic AI 的弱點；目前並存的三套 AIVSS 說法；v0.8 的十因子算式與序數尺度解讀；1.0 的查表模型與限制。學習目標 4 條，3 章加 12 題總測驗。</span></li>
+  <li><span class="p-title"><a href="07-extended/ml-security-top-10/index.html">07 延伸主題・Machine Learning Security Top 10</a></span><span class="p-state"></span><span class="p-desc">傳統 ML 系統的十項風險（2023 edition，Version 0.3 Draft，官方標示頻繁修改中）：依生命週期分辨 ML01–ML10、官方建議的防禦主題，以及與 AI Exchange、LLM Top 10 2026 的對應。學習目標 4 條，4 章加 14 題總測驗。建議先讀完 AI Exchange 第 2 章。</span></li>
+  <li><span class="p-title"><a href="07-extended/data-security/index.html">07 延伸主題・資料安全</a></span><span class="p-state"></span><span class="p-desc">Data Security Risks and Mitigations 2026（Version 1.0）：GenAI 的資料面與 AI-DSPM、21 個 DSGAI 風險分六組、三層控制與 Buy／Build 標註，以及與 LLM Top 10 2026 的官方對照（官方文字對條目數有 21 與 25 兩種說法，教材採 21）。學習目標 5 條，5 章加 16 題總測驗。建議先讀完 RAG 安全。</span></li>
+  <li><span class="p-title"><a href="07-extended/secure-coding-with-ai/index.html">07 延伸主題・AI 輔助寫程式與模型營運安全</a></span><span class="p-state"></span><span class="p-desc">Secure Coding with AI 與 Secure AI/ML Model Ops 兩份 Cheat Sheet（無版本號，以讀取日與提交日標示）：開發迴圈的信任邊界（依賴、間接提示詞注入、工具、沙箱、規則檔）、模型營運九節依生命週期重排，以及官方寫的對應與作者整理的分界。學習目標 5 條，5 章加 15 題總測驗。建議在 AIBOM 之前閱讀。</span></li>
+  <li><span class="p-title"><a href="07-extended/agentic-skills-top-10/index.html">07 延伸主題・Agentic Skills Top 10</a></span><span class="p-state"></span><span class="p-desc">Agent 技能層的十項風險（AST01–AST10；1.0-2026，白皮書 V1 公開審查中）：四個生態面向、官方歸類決策樹、反覆出現的控制主題，以及 AST 對 LLM 編號不能照抄的地方。學習目標 4 條，4 章加 14 題總測驗。建議先讀完 AI Exchange 第 5 章。</span></li>
+  <li><span class="p-title"><a href="07-extended/agent-control-standard/index.html">07 延伸主題・Agent Control Standard</a></span><span class="p-state"></span><span class="p-desc">讓獨立的 Guardian 在 Agent 動手前審查並決定的開放標準（規格 v0.1.0，早期）：鉤子與五種處置、失敗姿態預設為放行的取捨，以及參考實作自述的缺口。學習目標 3 條，3 章加 12 題總測驗。建議先讀完 Agentic Skills Top 10。</span></li>
+  <li><span class="p-title"><a href="07-extended/aibom/index.html">07 延伸主題・AIBOM</a></span><span class="p-state"></span><span class="p-desc">OWASP AI SBOM Initiative 與 AIBOM Generator：工具範圍（只涵蓋 Hugging Face 模型）與版本現況、AI 物料清單要記什麼、與 DBOM、AgBOM、SBOM 的關係；完整度分數不等於安全。學習目標 3 條，3 章加 12 題總測驗。</span></li>
+  <li><span class="p-title"><a href="07-extended/incident-response-and-deepfake/index.html">07 延伸主題・事件應變與 Deepfake</a></span><span class="p-state"></span><span class="p-desc">GenAI Incident Response Guide 1.0 與 Deepfake 事件指南：什麼算 AI 事件與五維度嚴重度矩陣（取最高分）、三種事件的應變，以及為什麼 deepfake 的防線在流程而不在辨識。學習目標 4 條，4 章加 14 題總測驗。建議先讀完資料安全與 AIBOM。</span></li>
+  <li><span class="p-title"><a href="07-extended/ai-in-regulated-industries/index.html">07 延伸主題・受管制領域的 AI 安全</a></span><span class="p-state"></span><span class="p-desc">OWASP Cheat Sheet Series 的兩份領域專用 AI 速查表（無版本號；2026-10-26 讀取）：廣告系統（同意閘門、結果事件、供應鏈與生成內容的來源證明）與 AML／制裁（身分先於篩查、失效即拒絕、簽署收據與名單新鮮度）；學會把通用控制翻譯到自己的領域。法規內容只轉述文件的陳述，不是法律意見。學習目標 5 條，5 章加 15 題總測驗。建議先讀完 Agent Control Standard 與 MCP 安全。</span></li>
+  <li><span class="p-title"><a href="glossary.html">詞彙表</a></span><span class="p-state"></span><span class="p-desc">累積式詞彙表：中文譯名、原文、一句話解釋與首次出現頁；暫譯皆有標示。</span></li>
+</ol>
+
+<h2 id="map">學習地圖</h2>
+<p>依建議閱讀順序分為 01–07 階段，每個階段內的主題也依建議順序排列（後面的主題會用到前面的概念）。「可學習」的主題可直接進入；目前所有登記的主題都已完成。階段順序是本教材作者的建議（來自作者自備的研究筆記），並非 OWASP 官方說法。</p>
+<div id="home-map"><noscript><p>此地圖需要 JavaScript。可直接開啟：<a href="01-overview/ai-exchange/index.html">01 總覽・OWASP AI Exchange</a>。</p></noscript></div>
+
+<h2 id="how">怎麼使用這套教材</h2>
+<ul>
+  <li><strong>每個主題</strong>包含：學習目標與預估時間、一頁式全貌、核心概念逐項講解（是什麼 → 為什麼會發生 → 怎麼被利用 → 怎麼防 → 常見誤解）、表格比較、流程圖、虛構情境、跨文件整合、章末檢核與總測驗、參考資料與來源核對。</li>
+  <li><strong>標示約定：</strong><span class="tag official">官方</span> 表示來自 OWASP 文件；<span class="tag author">作者整理，非官方</span> 表示類比、歸類或結論是教材作者的推論；<span class="tag fiction">虛構</span> 表示情境中的公司與系統是虛構的；<span class="tag nc">NC 授權</span> 表示來源採非商業授權。</li>
+  <li><strong>離線可用：</strong>所有頁面為純 HTML／CSS／JS，雙擊以 <code>file://</code> 開啟即可，不需伺服器；圖表使用 <code>assets/vendor/</code> 內的本地 Mermaid。</li>
+  <li><strong>外觀：</strong>頁首可切換淺色／深色與字級；頁面可列印。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各主題的「參考資料」頁。已完成的主題：<a href="01-overview/ai-exchange/references.html">OWASP AI Exchange</a>、<a href="01-overview/genai-security-project/references.html">GenAI Security Project 架構</a>、<a href="02-llm-applications/llm-top-10/references.html">Top 10 for LLM Applications 2026</a>、<a href="03-prompt-injection-rag-practice/prompt-injection/references.html">提示詞注入防護</a>、<a href="03-prompt-injection-rag-practice/rag-security/references.html">RAG 安全</a>、<a href="03-prompt-injection-rag-practice/hands-on-labs/references.html">動手練習</a>、<a href="06-assessment-and-verification/genai-red-teaming/references.html">GenAI 紅隊演練</a>、<a href="06-assessment-and-verification/ai-testing-guide/references.html">AI Testing Guide</a>、<a href="06-assessment-and-verification/aisvs-and-llmsvs/references.html">AISVS 與 LLMSVS</a>、<a href="06-assessment-and-verification/aivss/references.html">AIVSS</a>、<a href="07-extended/ml-security-top-10/references.html">Machine Learning Security Top 10</a>、<a href="07-extended/agentic-skills-top-10/references.html">Agentic Skills Top 10</a>、<a href="07-extended/agent-control-standard/references.html">Agent Control Standard</a>、<a href="07-extended/data-security/references.html">資料安全</a>、<a href="07-extended/aibom/references.html">AIBOM</a>、<a href="07-extended/incident-response-and-deepfake/references.html">事件應變與 Deepfake</a>、<a href="05-governance-and-risk/governance-checklist-and-coe/references.html">治理檢核表與卓越中心</a>、<a href="05-governance-and-risk/threat-defense-compass/references.html">Threat Defense COMPASS</a>、<a href="05-governance-and-risk/agentic-security-and-governance/references.html">Agentic 安全與治理現況</a>、<a href="05-governance-and-risk/framework-crosswalk-and-standards/references.html">框架對照與標準</a>、<a href="05-governance-and-risk/ai-maturity-assessment/references.html">AI 成熟度評估</a>的參考資料與來源核對、<a href="04-agentic-and-mcp/ai-agent-security-cheat-sheet/references.html">AI Agent Security</a>、<a href="07-extended/secure-coding-with-ai/references.html">Secure Coding with AI</a>、<a href="07-extended/ai-in-regulated-industries/references.html">受管制領域的 AI 安全</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p class="site-credit">作者：Youjun 與 Claude Code 合力完成・內容截至 2026-10-26・教材文字採 CC BY-SA 4.0、自寫程式採 MIT（見儲存庫的 LICENSE） 04 Agentic 與 MCP 的 AI Agent Security 主題與 07 延伸主題的 Secure Coding with AI、受管制領域的 AI 安全三個主題，另引用 OWASP Cheat Sheet Series 的 AI Agent Security、Verifying Third-Party Agent Execution Evidence、Secure Coding with AI、Secure AI/ML Model Ops、AI-Powered Advertising Systems Security、AML and Sanctions Compliance for AI Agent Payments 六份速查表 — 站台頁尾與儲存庫 LICENSE 皆標示 CC BY-SA 4.0；這些速查表沒有版本號，以讀取日 2026-10-26 與 GitHub 提交日為準。</p>
+  <p>各頁引用來源的授權以來源頁面標示為準，並列在各頁頁尾。目前已完成主題的來源：OWASP AI Exchange — CC0 1.0；OWASP Top 10 for LLM Applications 2026、Top 10 for Agentic Applications 2026、AISVS、Machine Learning Security Top 10、OWASP Cheat Sheet Series、genai.owasp.org 網站與 Solutions Landscape 各 PDF — CC BY-SA 4.0；OWASP MCP Top 10 專案頁標示 <span class="tag nc">NC 授權</span> CC BY-NC-SA 4.0（非商業，本教材僅引用名稱與狀態）；其 GitHub 的 README 與 index.md 同為 NC-SA，但 LICENSE.md 寫 CC BY-SA 4.0，自相矛盾，04 MCP 安全主題因此保守標 NC，只引用名稱、編號與簡短描述。04 Agentic 與 MCP 的其餘文件（Agentic AI – Threats and Mitigations、Multi-Agentic system Threat Modeling Guide、Securing Agentic Applications Guide、MCP 伺服器開發指南、第三方 MCP 使用 Cheat Sheet）— 各 PDF 封面標示 CC BY-SA 4.0；MCP Security Cheat Sheet 以 Cheat Sheet Series 網站標示為準。03 提示詞注入與 RAG 實作另提到三個練習專案：PromptMe — Apache-2.0；PwnzzAI — GPL-3.0；FinBot CTF — 其 README 寫 Apache License 2.0（GitHub 偵測值為 NOASSERTION）；本教材只引用這些專案的名稱與描述，未複製其程式碼或解法。06 評估與驗證另引用：GenAI Red Teaming Manual／Guide、Vendor Evaluation Criteria（各 PDF 封面）、AISVS、LLMSVS、AI Testing Guide（依儲存庫 LICENSE.md；GitHub 授權偵測值為 NOASSERTION）— CC BY-SA 4.0；AIVSS 的 aivss.owasp.org 網站標示 CC BY-SA 4.0（除非另有說明），AIVSS v0.8 PDF 內文與 OWASP AIVSS 儲存庫的授權未能確認，AIVSS 1.0 候選儲存庫 — Apache-2.0。07 延伸主題另引用：Machine Learning Security Top 10（專案頁與 PDF）、Agentic Skills Top 10（README、專案頁與網站；白皮書 PDF 內文未見授權文字）— CC BY-SA 4.0；Agent Control Standard 的規格與程式碼 — Apache-2.0，其說明文件 — CC BY-SA 4.0；OWASP GenAI Data Security Risks and Mitigations 2026、LLM and Gen AI Data Security Best Practices、Guide for Preparing and Responding to Deepfake Events（各 PDF）— CC BY-SA 4.0；AIBOM Generator 資源頁、AI SBOM Initiative 頁與官方部落格 — 網站頁尾 CC BY-SA 4.0（除非另有說明），其 GitHub 儲存庫 — Apache-2.0；GenAI Incident Response Guide 1.0（PDF 內文未見授權文字，以 genai.owasp.org 網站頁尾 CC BY-SA 4.0 為準）。05 治理與風險另引用：LLM Applications Cybersecurity and Governance Checklist v1.1、LLM and Generative AI Security CoE Guide、Threat Defense COMPASS RunBook 與試算表、State of Agentic AI Security and Governance 2.01（各 PDF）— CC BY-SA 4.0；GenAI Security Project Crosswalk 儲存庫（依 README 與 LICENSE.md；GitHub 授權偵測值為 NOASSERTION）— CC BY-SA 4.0；OWASP AIMA（依儲存庫 LICENSE.md；GitHub 偵測值為 NOASSERTION）— CC BY-SA 4.0。</p>
+</div></footer>
+<script src="assets/sitemap.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

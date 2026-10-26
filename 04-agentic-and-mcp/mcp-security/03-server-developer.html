@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　伺服器開發者視角｜MCP 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="A Practical Guide for Secure MCP Server Development 的八類控制與「最低標準」檢查表：本機與遠端、隔離、工具設計、驗證授權、部署治理；並用一個虛構的多租戶 MCP 伺服器情境練習。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="mcp-security" data-page="03-server-developer.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　伺服器開發者視角</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-top10-groups.html">第 2 章</a></li>
+</ul>
+<p class="lead">你開發一個 MCP 伺服器，等於把一個用<strong>使用者委派權限</strong>、能<strong>串接多個工具</strong>的服務放到 AI 助理旁邊。官方的說法是：它和傳統 API 的差別在於，「任何單一漏洞的衝擊會被放大」。這份 17 頁的指南把控制分成八類，並收尾於一張五大類的「最低標準 (Minimum Bar)」檢查表。本章用兩張表把它們攤開，再用一個虛構情境走一遍。</p>
+
+<h2 id="s-vuln">3.1 官方先列的六種弱點</h2>
+<p>指南先列出 MCP 伺服器常見的六種風險，後面的八類控制幾乎一一對應：</p>
+<ul>
+  <li><strong>Tool Poisoning：</strong>經由提示詞或工具中繼資料中的精心設計輸入操縱 AI。</li>
+  <li><strong>Dynamic Tool Instability（Rug Pulls）：</strong>工具描述缺乏嚴格版本控制、又是動態載入，已被信任的定義可能被即時替換。</li>
+  <li><strong>Code Injection &amp; Unsafe Execution：</strong>伺服器把模型給的輸入直接送進系統指令、API 或資料庫查詢。</li>
+  <li><strong>Credential Leakage &amp; Token Misuse：</strong>金鑰與 OAuth 權杖存放、記錄或快取不當。</li>
+  <li><strong>Excessive Permissions：</strong>工具或範圍過寬，一個被攻破的工具就能危及多個系統。</li>
+  <li><strong>Insufficient Isolation（Session、Identity &amp; Compute）：</strong>多個並行 session 共用狀態、共用單一身分（如同一個服務帳號服務多位使用者）、或在共享主機執行程式碼，造成跨租戶洩漏、身分偽冒與資源競爭。</li>
+</ul>
+
+<h2 id="s-eight">3.2 八類控制</h2>
+<div class="table-wrap"><table>
+<caption>表 3-1　Secure MCP Server Development 的八類控制（指南第 1–8 節，改寫）</caption>
+<thead><tr><th scope="col">類別</th><th scope="col">重點（官方列舉的摘要）</th><th scope="col">對應的弱點</th></tr></thead>
+<tbody>
+<tr><th scope="row">1 安全架構</th><td><strong>本機 vs 遠端</strong>：本機優先用 STDIO 或 Unix socket；必須用本機 HTTP 時只綁 127.0.0.1、仍要明確授權並驗證 Origin；在隔離的子程序或容器中執行。遠端：TLS 1.2+，嚴格依 MCP 結構驗證所有 JSON-RPC 訊息。<strong>信任連線</strong>：已知靜態關係用允許清單、寫死連線或 mTLS；動態環境用 OAuth 2.1 或 OIDC。<strong>隔離使用者與 session</strong>：禁止用全域變數或單例存使用者資料；每 session 獨立物件或 session 鍵控狀態；結束時確定性清理；每 session 資源配額</td><td>隔離不足、資源競爭</td></tr>
+<tr><th scope="row">2 安全工具設計</th><td>每個工具要有<strong>簽章的 manifest</strong>（描述、結構、版本、所需權限），載入時驗證簽章與雜湊；新增或更新工具要有正式核准流程（SAST、動態測試、SCA、人工審查）；<strong>驗證描述與實際行為相符</strong>（人工檢查、工具固定、LLM 掃描；標示做了描述沒提到的動作，如網路寫入）；只給模型最少必要的欄位，內部中繼資料留在模型脈絡之外</td><td>Tool Poisoning、Rug Pull</td></tr>
+<tr><th scope="row">3 資料驗證與資源管理</th><td>每 session 的呼叫與資料擷取配額、逾時；<strong>所有資料視為不可信</strong>，為每個工具的輸入與輸出定義 JSON Schema，不符即拒絕；過濾淨化並設輸出大小上限</td><td>Code Injection、DoS</td></tr>
+<tr><th scope="row">4 提示詞注入控制</th><td>優先<strong>結構化 JSON 工具呼叫</strong>而非讓模型產生自由文字指令；高風險動作的 HITL（用 MCP 的 elicitation 暫停並要求明確確認）；「LLM 當裁判」：在另一個脈絡的 LLM session 用政策提示審核高風險呼叫；「一任務一 session」：換任務就重設 session，避免隱藏指示在長對話中持續</td><td>Tool Poisoning、注入</td></tr>
+<tr><th scope="row">5 驗證與授權</th><td>遠端伺服器一律驗證，用 OAuth 2.1 或 OIDC，每次請求驗證簽發者、受眾、有效期與簽章；<strong>禁止權杖直通 (Token Passthrough)</strong>：不可把用戶端權杖轉給下游 API，改用發給該伺服器的權杖或 On-Behalf-Of 流程，直通會破壞稽核並造成混淆代理人風險；短效且窄範圍的權杖；<strong>session 是狀態，不是身分</strong>：不可只靠 session ID 做授權；集中式政策執行層</td><td>Credential Leakage、Excessive Permissions</td></tr>
+<tr><th scope="row">6 安全部署與更新</th><td>機密放在保管庫，<strong>永遠不讓 LLM 接觸機密</strong>；最小化強化的容器，非 root；網路分段、預設封鎖進出；版本固定、建置時掃描、簽章映像、維護 AIBOM；CI/CD 安全關卡；安全的錯誤處理（不回傳堆疊、權杖、路徑）</td><td>Credential Leakage、供應鏈</td></tr>
+<tr><th scope="row">7 治理</th><td>密碼學完整性（簽章與版本固定）；任何新工具或重大修改須經安全審查；稽核日誌（含工具呼叫參數、授權事件、組態變更的新舊值；欄位允許清單、遮罩與雜湊，且不可竄改）；<strong>非人類身分治理</strong>：當作一級身分</td><td>稽核、NHI</td></tr>
+<tr><th scope="row">8 工具與持續驗證</th><td>SAST（含自訂 MCP 規則）與 SCA 進 CI/CD，超出風險容忍度就中斷建置；執行期保護（seccomp、AppArmor 等）；餵給 SIEM 的持續監控；用供應鏈健檢框架評估專案</td><td>供應鏈、偵測</td></tr>
+</tbody></table></div>
+<p>留意第 5 類的兩個設計：<strong>禁止權杖直通</strong>與<strong>session 不等於身分</strong>。它們分別堵住了 MCP 伺服器最常見的兩條「借用使用者權限」的路，也正是第 1 章混淆代理人的實作版。</p>
+
+<h2 id="s-minbar">3.3 最低標準 (Minimum Bar) 檢查表</h2>
+<p>指南最後收成五大類，是作者認為這份文件最實用的一頁：</p>
+<ol>
+  <li><strong>強身分、驗證與政策執行：</strong>遠端伺服器全用 OAuth 2.1／OIDC；權杖短效、窄範圍、每次呼叫驗證；無權杖直通、政策集中執行。</li>
+  <li><strong>嚴格隔離與生命週期控制：</strong>使用者、session、執行脈絡完全隔離；使用者資料無共享狀態；session 有確定性清理與資源配額。</li>
+  <li><strong>可信、受控的工具：</strong>工具簽章、版本固定、正式核准；描述與執行期行為比對；只給模型最少必要的欄位。</li>
+  <li><strong>處處以結構驗證：</strong>所有 MCP 訊息與工具輸入輸出都過結構驗證；輸入輸出淨化、限制大小、視為不可信；要求結構化 JSON 呼叫。</li>
+  <li><strong>強化的部署與持續監督：</strong>容器化、非 root、網路限制；機密在保管庫、不給 LLM；CI/CD 關卡、稽核日誌與持續監控是強制的。</li>
+</ol>
+
+<h2 id="s-scenario">3.4 情境範例 A：多租戶的內部知識 MCP 伺服器</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：群峰顧問的知識庫伺服器</h3>
+<p><span class="tag fiction">虛構</span> 群峰顧問是虛構的公司。平台團隊做了一個內部 MCP 伺服器，讓各專案的 AI 助理查詢知識庫與專案文件，並提供「寄出摘要」功能。為了方便，它用一個服務帳號存取後端 API；同時為了效能，把最近查詢的專案內容快取在伺服器的全域變數裡；使用者驗證則是用連線時拿到的 session ID。以下為虛構，細節停在概念層級。</p>
+<p class="arch"><strong>架構：</strong>各專案的 AI 助理（用戶端）→ MCP 伺服器（單一服務帳號、全域快取、session ID）→ 後端 API 與郵件服務。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>A 專案的助理查詢後，伺服器把結果放進全域快取。幾分鐘後，B 專案的另一位使用者問了一個語意接近的問題，伺服器從快取回傳了 A 專案的內容。另外，稽核時發現所有後端存取都記在同一個服務帳號下，無法分辨是誰做的。</li>
+  <li><strong>哪一環出問題：</strong>(a) 用全域變數存使用者資料，違反「禁止全域變數與共享單例」與「每 session 獨立」；(b) 單一服務帳號服務多位使用者，造成身分偽冒、無法歸因；(c) 只靠 session ID 授權，違反「session 是狀態，不是身分」；(d) 缺少每 session 配額與確定性清理。</li>
+  <li><strong>對應條目：</strong>指南第 1 類（隔離）與第 5 類（驗證授權）；MCP Top 10：MCP10 Context Injection &amp; Over-Sharing、MCP07 Insufficient Authentication &amp; Authorization、MCP02（範圍）；T&amp;M：T3 Privilege Compromise；Agentic Top 10：ASI03、ASI06。LLM Top 10 2026：LLM02:2026 Sensitive Information Disclosure。</li>
+  <li><strong>該採什麼控制：</strong>
+    <ul>
+      <li>隔離：每 session 建獨立物件或用 session 鍵控的狀態庫；結束時清空檔案、快取與權杖；加每 session 配額；</li>
+      <li>身分：用 OAuth 2.1／OIDC，以 Token Delegation 保留使用者脈絡，同時伺服器仍保有獨立的非人類身分；禁止權杖直通；</li>
+      <li>授權：不能只靠 session ID，要綁定已驗證的使用者與用戶端身分並重新檢查；</li>
+      <li>日誌：記錄工具呼叫、參數、授權事件，遮罩敏感內容，並且不可竄改。</li>
+    </ul>
+  </li>
+  <li><strong>學到什麼：</strong>「為了效能與方便」的三個決定（共享快取、共用帳號、只靠 session ID）各自都合理，合在一起就是跨租戶洩漏。官方在弱點清單中專門點名了這三種組合。審查伺服器設計時，最有效的問題是：<strong>「這個東西如果被兩個使用者同時用，會發生什麼事？」</strong></li>
+</ol>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>指南的八類控制：安全架構、安全工具設計、資料驗證與資源管理、提示詞注入控制、驗證與授權、安全部署與更新、治理、工具與持續驗證；最後收成五大類的 Minimum Bar。</li>
+  <li><strong>禁止權杖直通</strong>與<strong>session 是狀態、不是身分</strong>是防止「借用使用者權限」的兩個關鍵設計。</li>
+  <li>本機優先 STDIO；遠端用 Streamable HTTP 與 TLS，並嚴格依結構驗證訊息。</li>
+  <li>永遠不讓 LLM 接觸機密；工具描述要與實際行為相符並簽章固定。</li>
+  <li>跨租戶洩漏往往來自三個各自合理的方便性決定（共享快取、共用帳號、只靠 session ID）的組合。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能對一個 MCP 伺服器設計，用五大類 Minimum Bar 逐項檢查。</li>
+  <li>我能解釋為什麼權杖直通會造成混淆代理人風險，以及怎麼避免。</li>
+  <li>我知道多租戶隔離的三個常見破口。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-third-party-user.html">第 4 章　第三方使用者視角</a>：如果你是使用別人開發的 MCP 伺服器的一方，官方的客戶端安全、探索驗證、授權與治理工作流；再加情境 B。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>A Practical Guide for Secure MCP Server Development</em>, Version 1.0, February 2026：<a href="https://genai.owasp.org/resource/a-practical-guide-for-secure-mcp-server-development/">資源頁</a>（顯示日期 2026-02-16）；2026-10-26 讀取；CC BY-SA 4.0。引用段落：Introduction、Current Vulnerability Landscape、1–8、MCP Security Minimum Bar。</li>
+    <li>OWASP MCP Top 10：<a href="https://github.com/OWASP/www-project-mcp-top-10">GitHub 倉庫</a>；僅引用條目名稱與編號（<span class="tag nc">NC</span> 授權文字自相矛盾，保守視為非商業）。</li>
+    <li>OWASP Top 10 for LLM Applications 2026：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">GitHub 2026/README.md</a>；僅用於 2026 版編號。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Secure MCP Server Development 指南、Top 10 for LLM Applications 2026 — CC BY-SA 4.0。<span class="tag nc">NC</span> 本頁僅引用 OWASP MCP Top 10 的條目名稱與編號；該專案授權文字自相矛盾（LICENSE.md 為 CC BY-SA 4.0；README 與 index.md 為 CC BY-NC-SA 4.0），保守視為非商業。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'mcp-ch3', topic: 'mcp-security', mode: 'chapter',
+  questions: [
+    { id: 'm3q1', type: 'mc', lo: [3], refs: [{label: '3.2 表 3-1（第 5 類）', href: '03-server-developer.html#s-eight'}],
+      stem: '指南要求「禁止權杖直通 (Token Passthrough)」。最主要的理由是？',
+      options: [
+        { text: '權杖直通會讓網路變慢。', why: '理由不是效能。' },
+        { text: '把用戶端權杖轉給下游 API 會破壞稽核，也使伺服器可能被誘導濫用使用者的權限，形成混淆代理人風險。', correct: true, why: '指南第 5 類的說明。替代做法是使用發給該伺服器的權杖或 On-Behalf-Of 流程。' },
+        { text: '因為權杖不能超過一分鐘。', why: '文件說短效（以分鐘計），但不是這個理由。' },
+        { text: '因為下游 API 一律不接受權杖。', why: '下游 API 接受權杖，問題在於誰的權杖。' }
+      ],
+      summary: '不轉發用戶端權杖；用發給伺服器的權杖或 On-Behalf-Of。' },
+    { id: 'm3q2', type: 'match', lo: [3], refs: [{label: '3.2 表 3-1', href: '03-server-developer.html#s-eight'}],
+      stem: '把設計決定配對到它違反的指南控制類別。',
+      cats: [
+        { id: 'iso', label: '1 隔離使用者與 session' },
+        { id: 'auth', label: '5 驗證與授權' },
+        { id: 'tool', label: '2 安全工具設計' },
+        { id: 'dep', label: '6 安全部署與更新' }
+      ],
+      items: [
+        { text: '用類別層級屬性快取使用者的查詢結果，所有 session 共用', answer: 'iso', why: '禁止全域變數、類別屬性、共享單例存使用者資料。' },
+        { text: '只拿 session ID 當作授權依據', answer: 'auth', why: 'session 是狀態，不是身分。' },
+        { text: '工具描述寫「查詢天氣」，實際程式碼還會把資料寄到外部', answer: 'tool', why: '要驗證描述與實際行為相符。' },
+        { text: '把 API 金鑰放在環境變數，並讓 LLM 讀得到', answer: 'dep', why: '機密放保管庫，且永遠不讓 LLM 接觸機密。' }
+      ],
+      summary: '八類控制各有對應的錯誤。' },
+    { id: 'm3q3', type: 'mc', lo: [3], refs: [{label: '3.2 表 3-1（第 1 類）', href: '03-server-developer.html#s-eight'}],
+      stem: '你要做一個只給同一台電腦上的 AI 應用使用的本機 MCP 伺服器。依指南，連線方式最優先的選擇是？',
+      options: [
+        { text: '綁定 0.0.0.0 的 HTTP，方便其他機器也能連。', why: '這會擴大暴露面；指南建議本機優先 STDIO 或 Unix socket。' },
+        { text: '優先 STDIO 或 Unix socket；必須用本機 HTTP 時只綁 127.0.0.1、仍要授權並驗證 Origin。', correct: true, why: '指南第 1 類。' },
+        { text: '一律用遠端 Streamable HTTP 加 TLS。', why: '遠端傳輸適用於遠端伺服器；本機優先 STDIO。' },
+        { text: '不需要任何驗證，因為在本機。', why: '指南說本機 HTTP 仍要明確授權與驗證。' }
+      ],
+      summary: '本機：STDIO／Unix socket；必要時綁 127.0.0.1。' },
+    { id: 'm3q4', type: 'scn', lo: [3], refs: [{label: '3.4 情境範例 A', href: '03-server-developer.html#s-scenario'}, {label: '3.3 最低標準', href: '03-server-developer.html#s-minbar'}],
+      stem: '依本章，團隊用最低標準檢查，應該先修哪一類？為什麼？',
+      scenario: '松濤雲端（虛構）的 MCP 伺服器同時服務多個客戶。安全審查發現：(1) 伺服器用一個全域 Python 字典儲存各客戶最近的查詢結果；(2) 所有客戶的後端存取都用同一個服務帳號；(3) 授權只檢查 session ID 是否存在；(4) 稽核日誌完整。團隊想先做「更多日誌」。',
+      options: [
+        { text: '先做更多日誌，因為看不見的風險最大。', why: '日誌已完整；缺的是隔離與身分。' },
+        { text: '先修隔離與身分：每 session 獨立狀態、以使用者脈絡的權杖存取（保留獨立的伺服器 NHI）、授權綁定已驗證身分。這對應最低標準的第 1、2 類。', correct: true, why: '這三項各自導致跨租戶洩漏與歸因失敗；3.4 節情境 A 同型。' },
+        { text: '先換一個更快的快取。', why: '效能不是問題，隔離才是。' },
+        { text: '不需要修，因為日誌完整就能追查。', why: '追查是事後；跨租戶洩漏已經發生。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 全域字典存各客戶資料，違反「禁止全域變數與共享單例」。(2) 共用服務帳號使動作無法歸因，並造成身分偽冒風險。(3) 只靠 session ID 授權，違反「session 是狀態，不是身分」。(4) 日誌完整只能事後調查。</p><p><strong>結論：</strong>先補隔離與身分（最低標準第 1、2 類）。對應教材：<a href="03-server-developer.html#s-scenario">3.4 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

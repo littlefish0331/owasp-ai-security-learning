@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Agent Security Cheat Sheet｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AI Agent Security Cheat Sheet 與 Verifying Third-Party Agent Execution Evidence Cheat Sheet 主題首頁：學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="ai-agent-security-cheat-sheet" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>AI Agent Security Cheat Sheet 與第三方執行證據驗證</h1>
+<ul class="meta-row">
+  <li>04 Agentic 與 MCP｜主題 5</li>
+  <li>預估學習時間：約 70–75 分鐘（5 章閱讀約 40 分鐘；章末檢核與總測驗約 30–35 分鐘）</li>
+  <li>採用來源：OWASP Cheat Sheet Series 的 AI Agent Security Cheat Sheet（無版本號；GitHub 提交 2025-12-17 至 2026-10-04）與 Verifying Third-Party Agent Execution Evidence Cheat Sheet（無版本號；2026-10-02 至 2026-10-03）；2026-10-26 讀取</li>
+</ul>
+<p class="lead">前面的 04 階段主題告訴你 agent 有哪些風險、MCP 怎麼用。這個主題換成開發者的角度：<strong>設計一個 agent 時，該先放進哪些控制？</strong>OWASP Cheat Sheet Series 的 AI Agent Security Cheat Sheet 用 13 項風險加九節最佳實務回答，另一份 Verifying Third-Party Agent Execution Evidence Cheat Sheet 則回答一個更尖銳的問題：<strong>第三方給你的執行紀錄，即使簽了章，到底能證明什麼？</strong>學完後，你能拿一個 agent 設計說出先補哪類控制，也能拿一份第三方紀錄說出哪些結論站得住、哪些只是對方的說法。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>全貌與定位：</strong>說出兩份 Cheat Sheet 的版本／日期／授權標示方式，區分文件明寫的連結與本教材（作者整理）的對照，並把 13 項 Key Risks 當作檢查清單的起點使用。<br><small>對應：<a href="01-position.html">第 1 章</a></small></li>
+  <li id="lo2"><strong>限制 agent 能做什麼：</strong>用「授權在執行元件、批准綁定確切動作、失效即拒絕」檢查工具、記憶、多 agent 與資料保護的設計，找出危險做法。<br><small>對應：<a href="02-restrict.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>看見、驗證與測試：</strong>說明輸出驗證、監控與對抗式測試各補什麼；用濫用案例矩陣與發佈閘門檢查限制是否仍有效。<br><small>對應：<a href="03-see-and-test.html">第 3 章</a></small></li>
+  <li id="lo4"><strong>第三方執行證據：</strong>把一份第三方執行紀錄的各個屬性分成獨立可重驗、供應者主張與無資訊，並用六個問題說明理由。<br><small>對應：<a href="04-third-party-evidence.html">第 4 章</a></small></li>
+  <li id="lo5"><strong>整合：</strong>分辨兩份 Cheat Sheet 與系列內其他速查表、04 階段各主題的關係，依情境決定先看哪份文件。<br><small>對應：<a href="05-integration.html">第 5 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>建議先讀 <a href="../agentic-top-10-2026/index.html">Top 10 for Agentic Applications 2026 主題</a>，知道 ASI 條目的名稱與「最小自主權」；本主題第 1 章把 Key Risks 與 ASI 做作者整理的對照。</li>
+  <li>建議先讀 <a href="../mcp-security/index.html">MCP 安全主題</a>（尤其第 4 章的受信任登錄與治理流程）：第 4、5 章的情境以第三方 MCP 伺服器為例。</li>
+  <li>可搭配 <a href="../agentic-threats-and-mitigations/index.html">Agentic 威脅與緩解</a>與 <a href="../securing-agentic-applications/index.html">保護 Agentic 應用指南</a>；第 1 章的表 1-2 說明分工。Cheat Sheet 的第 2 節把注入細節交給 <a href="../../03-prompt-injection-rag-practice/prompt-injection/index.html">提示詞注入防護主題</a>。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>（約 10 分鐘）；「預防／偵測／回應」那一節會用到。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="01-position.html">第 1 章　全貌、定位與兩群控制</a></span><span class="p-state" data-file="01-position.html"></span><span class="p-desc">兩份速查表的日期與授權；與 04 階段的分工；13 項 Key Risks；九節分成「限制」與「看見」兩群。表 3 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="02-restrict.html">第 2 章　限制 agent 能做什麼</a></span><span class="p-state" data-file="02-restrict.html"></span><span class="p-desc">工具、記憶、多 agent、資料保護的危險 vs 安全；授權在執行元件、批准綁定確切動作；風險分級；簽章不等於權限。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-see-and-test.html">第 3 章　看見、驗證與測試</a></span><span class="p-state" data-file="03-see-and-test.html"></span><span class="p-desc">輸出驗證、監控與可觀測性；濫用案例矩陣；發佈閘門與驗證證據；兩群如何互相檢驗。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="04-third-party-evidence.html">第 4 章　第三方執行證據怎麼驗</a></span><span class="p-state" data-file="04-third-party-evidence.html"></span><span class="p-desc">三種結論；六個問題；簽章證明誰說的、不證明說的是真的；四個工作範例。表 3 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="05-integration.html">第 5 章　跨文件整合與收尾</a></span><span class="p-state" data-file="05-integration.html"></span><span class="p-desc">在 Cheat Sheet 系列的位置；先看哪份的決策流程；情境：審查第三方 MCP 伺服器給的執行紀錄。表 2 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（14 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO5，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">核對清單、版本與日期對照、授權、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>九節最佳實務可以讀成兩群：<strong>限制</strong>（讓 agent 根本做不到）與<strong>看見</strong>（做了要看得到、驗得出）。兩群互相檢驗，缺一都比看起來脆弱。</li>
+  <li>最關鍵的一個設計原則：<strong>agent 只提議，放行的是它碰不到的執行元件；批准要綁定確切動作並原子地消耗</strong>，旗標不夠。</li>
+  <li>第三方簽章的執行紀錄，<strong>證明的是誰說的，不是說的是真的</strong>；要依屬性分成獨立可重驗、供應者主張、無資訊。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是本教材加的分群、對照、流程或推演。</li>
+  <li>情境與測驗裡的公司、供應者都是 <span class="tag fiction">虛構</span>，不含可直接使用的攻擊手法。</li>
+  <li>原文有大量 Python 示範碼。本教材<strong>不貼程式碼</strong>，只用文字說明「危險 vs 安全」的差別；官方也曾更正過其中不夠安全的示範（第 1 章）。</li>
+  <li>兩份 Cheat Sheet 都沒有版本號，且仍在修改；教材以讀取日 2026-10-26 加提交日標示，細節請以官方網站為準。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；無法使用時，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>圖表以本地 Mermaid 繪製；若圖沒有顯示，每張圖下方都有文字說明。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：OWASP Cheat Sheet Series（AI Agent Security、Verifying Third-Party Agent Execution Evidence）— CC BY-SA 4.0（站台頁尾與儲存庫 LICENSE.md）；Top 10 for Agentic Applications 2026 — CC BY-SA 4.0。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

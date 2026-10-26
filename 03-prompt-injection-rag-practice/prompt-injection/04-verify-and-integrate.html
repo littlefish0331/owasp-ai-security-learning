@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　驗證、整合與收尾｜提示詞注入防護｜OWASP AI 資安學習教材</title>
+<meta name="description" content="怎麼設計與回報提示詞注入的冒煙測試與適應性測試而不誇大結果，並把 Cheat Sheet 的防禦對應到 LLM01:2026、AI Exchange 七層與 AISVS 章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="prompt-injection" data-page="04-verify-and-integrate.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　驗證、整合與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4（兼收尾 LO1–LO3）</li>
+  <li>前置：<a href="03-architectural-defense.html">第 3 章</a></li>
+</ul>
+<p class="lead">防禦做完之後，怎麼知道有沒有用？這一章講 Cheat Sheet 對測試與回報的要求：冒煙測試 (Smoke Test) 不是基準，單一成功率不代表安全。接著把整個主題的防禦對應回其他 OWASP 文件，最後用一個虛構情境練習怎麼讀一份「全部通過」的測試報告。</p>
+
+<h2 id="vi-smoke">4.1 冒煙測試是什麼，不是什麼</h2>
+<p>Cheat Sheet 提供了一份示範用的測試輸入集（16 個手選的攻擊輸入加 9 個正常請求），並明確稱它為<strong>冒煙測試 (Smoke Test)，不是安全基準</strong>。<span class="tag official">官方</span> 理由是：這些輸入不代表真實流量，也不代表真實攻擊的分佈。要用它，得先改成你的應用程式支援的任務、權限與輸入通道；超出應用程式範圍的請求，不能算作「正常對照」。</p>
+<p>Cheat Sheet 的要求可以歸納成三件事：</p>
+<ul>
+  <li><strong>每個案例先定義目標：</strong>它要驗證哪個安全違規、正常任務是什麼、需要什麼上下文、觀察什麼結果。測試時用假資料和沙箱化的工具替身。</li>
+  <li><strong>測對的邊界：</strong>測間接注入時，要把輸入放進被評估的<strong>外部內容通道</strong>（例如被檢索的文件），而不是當成使用者訊息送，那測的是另一條邊界。</li>
+  <li><strong>每個目標用各自的觀察項評分，不要混成一個分數。</strong>下表是 Cheat Sheet 的做法。</li>
+</ul>
+<div class="table-wrap"><table>
+<caption>表 4-1　依安全目標分開評分（依 Cheat Sheet「Grade the intended outcome」整理）</caption>
+<thead><tr><th scope="col">安全目標</th><th scope="col">要觀察什麼</th><th scope="col">該目標下的限制</th></tr></thead>
+<tbody>
+<tr><th scope="row">測試標記的洩漏</th><td>放在 system prompt 裡的假標記，是否出現在回應中</td><td>沒看到只代表「這個標記沒出現」，其他內容或被轉換過的洩漏仍可能發生。不要放真實機密</td></tr>
+<tr><th scope="row">未授權的工具使用或資料變更</th><td>工具呼叫紀錄、授權決策、假資料狀態的變化</td><td>最終回應顯示拒絕，不能還原已經執行的動作</td></tr>
+<tr><th scope="row">對外洩漏</th><td>假資料是否抵達受控的測試目的地</td><td>回應文字乾淨，不能證明沒有資料從其他通道離開</td></tr>
+</tbody></table></div>
+<p>每個案例的結果要記為四種之一：<strong>觀察到違規、未觀察到違規、無法判定、不適用</strong>。缺少遙測、錯誤、不支援的測試情境，不能算作「攻擊被擋下」，要另外報告。對正常請求，另記政策決策（允許、阻擋、人工複審）和任務是否完成，並算出誤報率（正當請求被錯誤拒絕的數量 ÷ 適用的正常請求數）。一個拒絕所有正常請求的系統，誤報率就是 100%，不論它的措辭多漂亮。</p>
+
+<h2 id="vi-report">4.2 怎麼回報結果而不誇大</h2>
+<p>Cheat Sheet 對回報有幾條具體的規矩：</p>
+<ul>
+  <li>保留每個案例的結果、各項比率的分子與分母、案例來源、模型與防禦版本、設定、重複次數；依安全目標分別回報，<strong>不要把不相干的結果合併成一個安全分數</strong>。</li>
+  <li>手選的冒煙測試，只回報次數與個別失敗，不宣稱「族群攻擊成功率」。若是獨立抽樣的二元結果，要報信賴區間並說明方法與假設。Cheat Sheet 舉的例子：在定義好的正常工作量中獨立抽樣 7 次、誤報為 0,Wilson 95% 信賴區間大約是 0% 到 35.4%,<strong>不能當作誤報率為零的證據</strong>。</li>
+  <li>比較兩種防禦，要用同一批案例並保留配對結果；重複執行或高度相關的變體，不能當作獨立案例。信賴區間包含 0，代表「尚未建立差異」，不代表「兩者相同」。</li>
+  <li>通過冒煙測試，不代表能抵擋持續進攻的對手。</li>
+</ul>
+<p>為什麼要這麼保守?官方給了兩個研究結果當背景（皆為依 OWASP 文件轉述，本教材未獨立查證）：Cheat Sheet 轉述 Hughes 等人 2024 年的 Best-of-N 研究，在最多 10000 個增強提示的條件下，對 GPT-4o 的攻擊成功率為 89%，對 Claude 3.5 Sonnet 為 78%，同時提醒這是特定模型與設定下的結果，不是通用預測。LLM01:2026 的緩解 #11 轉述 Nasr 等人(2025)：評估 12 種近期防禦時，靜態攻擊成功率接近零，但適應性攻擊成功率在多數防禦上超過 90%。兩者的共同教訓是：<strong>對一組固定攻擊的成績，會嚴重高估防禦對有適應能力的攻擊者的效果。</strong>LLM01:2026 因此建議用讀過防禦細節的適應性攻擊者 (Adaptive Attacker) 來測，並以 AgentDojo、JailbreakBench 作為基線。</p>
+
+<h2 id="vi-map">4.3 對應回其他 OWASP 文件</h2>
+<p>下表把 Cheat Sheet 的防禦，對應到 LLM01:2026 的緩解編號與 AI Exchange 七層。「LLM01:2026 緩解」欄的編號取自官方；「AI Exchange 七層」欄是作者的對照。AISVS 的對應只有官方在 LLM Top 10 2026 附錄給的那一段，在表下方單獨列出。附錄聲明這是「章節粒度、方向性指引，不是合規對照」，而且對應的是 AISVS 1.0（目前 GitHub 的最新穩定版是 1.01，本教材沒有逐項比對兩者差異）。</p>
+<div class="table-wrap"><table>
+<caption>表 4-2　Cheat Sheet 的防禦 ↔ LLM01:2026 緩解編號 ↔ AI Exchange 七層（第 3 欄為 <span class="tag author">作者整理，非官方</span>）</caption>
+<thead><tr><th scope="col">Cheat Sheet 的防禦</th><th scope="col">LLM01:2026 緩解（官方編號）</th><th scope="col">AI Exchange 七層（作者對照）</th></tr></thead>
+<tbody>
+<tr><th scope="row">輸入篩選 <br>(Input Screening) 與正規化</th><td>#3、#5</td><td>層 2 輸入輸出處理</td></tr>
+<tr><th scope="row">結構化提示 <br>(Structured Prompt)</th><td>#6（#1 為 system prompt 約束）</td><td>輸入隔離；層 1</td></tr>
+<tr><th scope="row">輸出監控與驗證</th><td>#2</td><td>層 2</td></tr>
+<tr><th scope="row">人在迴路 <br>(Human-in-the-Loop, HITL)</th><td>#7</td><td>層 3 人工監督</td></tr>
+<tr><th scope="row">最小權限 (Least Privilege) 與工具邊界 (Tool Boundary) 授權</th><td>#4、#8</td><td>層 5–7</td></tr>
+<tr><th scope="row">護欄模型 <br>(Guardrail Model)、CaMeL</th><td>（官方 LLM01:2026 緩解未單列）</td><td>層 2、層 4</td></tr>
+<tr><th scope="row">監控與日誌</th><td>#9（記憶寫入的紀錄）</td><td>層 4 自動化監督</td></tr>
+<tr><th scope="row">適應性測試</th><td>#11</td><td>—</td></tr>
+</tbody></table></div>
+<div class="callout official">
+  <p class="callout-title">AISVS 對應（LLM Top 10 2026 附錄，對應 AISVS 1.0，整個 LLM01:2026 層級）</p>
+  <p>主要防禦章：C2 輸入驗證、C9 編排與 agentic 安全、C10 MCP 安全、C11 對抗穩健性、C12 監控／日誌／異常偵測。支持性章：C7 模型行為與輸出控制。官方沒有把它細分到單一防禦，所以上表不另加 AISVS 欄。</p>
+</div>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="從 Cheat Sheet 到上線前檢查的流程：先用三軸拆解情境，接著盤點 A、B、C 三項能力並在工具邊界授權；再配置降低成功率的各層；然後以冒煙測試加適應性攻擊者驗證；最後依目標分開回報並附信賴區間或次數，結果不佳則回到盤點能力。">
+flowchart TD
+  A["1 三軸拆解情境<br>投遞面、傳播行為、編碼"] --> B["2 盤點能力 A／B／C<br>並在工具邊界授權"]
+  B --> C["3 配置降低成功率的層<br>篩選、獨立通道、輸出驗證、護欄"]
+  C --> D["4 驗證<br>冒煙測試加適應性攻擊者"]
+  D --> E["5 依安全目標分開回報<br>次數、分母、信賴區間、版本"]
+  E -->|"結果不佳或無法判定"| B
+</pre>
+<figcaption><strong>圖 4-1　從 Cheat Sheet 到上線前檢查。</strong>五個步驟串接前三章與本章的內容；串接順序是作者整理，不是官方流程。回到第 2 步是重點：測試不佳時，先檢查工具邊界與能力預算，而不是只加過濾。<span class="tag author">作者整理，非官方</span></figcaption>
+</figure>
+
+<h2 id="vi-scenario">4.4 情境範例 B：「測試全過」的護欄產品</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：北辰銀行的護欄採購</h3>
+<p><span class="tag fiction">虛構</span> 北辰銀行是虛構的公司。他們評估一個廠商的護欄產品，打算放在內部理財助理前面。廠商的簡報寫：「在 16 個攻擊輸入與 9 個正常請求上，100% 攻擊被擋、0% 誤報，已通過 OWASP Cheat Sheet 的測試。」採購主管想直接簽約。</p>
+<p class="arch"><strong>架構：</strong>員工提問 → 護欄產品（輸入端） → 理財助理（LLM） → 內部帳務查詢 API 與郵件 API。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>簡報裡的測試用的就是 Cheat Sheet 範例集，而且是以「使用者訊息」送入的；助理平常最大的風險卻是取回的內部文件與外部郵件。</li>
+  <li><strong>哪一環出問題：</strong>(1) 把冒煙測試當成基準；(2) 手選案例的結果被說成「通過率」；(3) 沒有測間接注入通道，測的是另一條邊界；(4) 0% 誤報只有 9 個案例，且沒有針對理財助理的正常任務；(5) 把攻擊結果與誤報合成一句「通過」，沒有分開的觀察項與版本資訊。</li>
+  <li><strong>對應條目：</strong>LLM01:2026 緩解 #11（用讀過防禦細節的適應性攻擊者測試，不接受只有靜態成功率的宣稱）；Cheat Sheet「Smoke-Testing Your Defenses」與「Report results with their limits」。</li>
+  <li><strong>該採什麼控制：</strong>
+    <ul>
+      <li>要求廠商提供：每案例的結果、分子分母、案例來源、模型與護欄版本、設定、重複次數；</li>
+      <li>自己建立符合理財助理任務與權限的案例集，間接注入案例放進它實際讀取的文件與郵件通道，以假資料與沙箱化工具替身執行；</li>
+      <li>9 個正常請求中 0 個誤報，只能說「沒有觀察到」。若這 9 個是獨立抽樣，95% 區間會很寬（Cheat Sheet 對 7 個的例子是約 0%–35.4%），不是「誤報率為零」；</li>
+      <li>不論護欄結果如何，工具邊界仍要強制：帳務查詢依登入身分、寄信需針對該動作的核准（第 3 章）。護欄是額外一層，不是替代。</li>
+    </ul>
+  </li>
+  <li><strong>學到什麼：</strong>「全部通過」的報告要先問三件事：測的是哪條邊界?案例是怎麼選的?沒有被測到的是什麼?</li>
+</ol>
+</div>
+
+<h2 id="ch4-key">本章重點與整個主題的收尾</h2>
+<div class="keypoints"><ul>
+  <li>冒煙測試不是基準。依安全目標分開評分，結果記為觀察到違規／未觀察到違規／無法判定／不適用。</li>
+  <li>回報要有分子與分母、案例來源與版本；手選案例不宣稱族群比率；「零誤報」不等於「誤報率為零」。</li>
+  <li>固定攻擊集的成績會高估對適應性攻擊者的防禦（依 OWASP 文件轉述的研究結果）；要用讀過防禦細節的測試者。</li>
+  <li>整個主題一句話：提示詞注入 (Prompt Injection) 沒有根治法 → 前面的層會被繞過 → 把關在工具邊界與能力預算 → 用不誇大的方式驗證。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出冒煙測試與基準的差別，並指出一份「測試全過」報告該追問什麼。</li>
+  <li>我能把一個防禦對應到 LLM01:2026 的緩解編號，並指出 AISVS 的對應只是方向性的。</li>
+  <li>我能從情境描述中判斷，測試測的是哪條邊界。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<ul>
+  <li>想看提示詞注入落在 RAG 管線的哪個階段、以及語料與向量資料庫的專屬控制：<a href="../rag-security/index.html">RAG 安全主題</a>。</li>
+  <li>想自己動手感受這些風險、又不碰正式環境：<a href="../hands-on-labs/index.html">動手練習主題</a>。</li>
+  <li>先做<a href="quiz.html">本主題總測驗</a>確認掌握度。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series，LLM Prompt Injection Prevention Cheat Sheet（Best-of-N Attack Mitigation、Smoke-Testing Your Defenses、Grade the intended outcome、Report results with their limits、Best Practices Checklist）；頁面無版本與日期，GitHub 最新提交 2026-10-22；<a href="https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026，LLM01:2026（緩解 #11）與 Appendix: Mapping the Top 10 to OWASP AISVS 1.0；Version 2026，採發布日 2026-08-04；<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLMZZ_Appendix_AISVS_Mapping.md">AISVS 對應附錄</a>；CC BY-SA 4.0。</li>
+    <li>OWASP AISVS：<a href="https://github.com/OWASP/AISVS">github.com/OWASP/AISVS</a>（README 標示最新穩定版 1.01；1.02 開發中）；CC BY-SA 4.0（以來源頁面標示為準）。</li>
+    <li>OWASP AI Exchange，<a href="https://owaspai.org/go/promptinjection">Prompt injection 七層防線</a>；2026-10-25 快照；CC0 1.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series — CC BY-SA 4.0；OWASP Top 10 for LLM Applications 2026、AISVS — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch4', topic: 'prompt-injection', mode: 'chapter',
+  questions: [
+    { id: 'c4q1', type: 'mc', lo: [4], refs: [{label: '4.1 冒煙測試', href: '04-verify-and-integrate.html#vi-smoke'}],
+      stem: '依 Cheat Sheet，下列哪一個做法最符合「為間接提示詞注入設計測試案例」的要求？',
+      options: [
+        { text: '把攻擊文字當成使用者訊息送進聊天框，因為這樣最容易自動化。', why: 'Cheat Sheet 明說這樣測的是另一條邊界；間接注入要放進被評估的外部內容通道。' },
+        { text: '把測試輸入放進助理實際會讀取的外部內容通道（如被檢索的文件），用假資料與沙箱化的工具替身觀察結果。', correct: true, why: '符合 Cheat Sheet：測對的邊界、用假資料和沙箱化工具替身。' },
+        { text: '只要回應文字裡沒有出現敏感詞就算通過。', why: 'Cheat Sheet 指出乾淨的回應文字不能證明沒有資料從其他通道離開，也不能證明沒有執行動作。' },
+        { text: '用越多越好的案例，把結果合成一個總分。', why: 'Cheat Sheet 要求依安全目標分開回報，不要把不相干的結果合併成一個安全分數。' }
+      ],
+      summary: '測對的邊界、用對的觀察項。' },
+    { id: 'c4q2', type: 'mc', lo: [4], refs: [{label: '4.2 怎麼回報', href: '04-verify-and-integrate.html#vi-report'}],
+      stem: '一份報告寫「在定義好的正常工作量中獨立抽樣 7 次，零誤報」。依 Cheat Sheet 的例子，下列哪一項結論最恰當？',
+      options: [
+        { text: '誤報率為零，可以放心上線。', why: 'Cheat Sheet 的例子正是要說明：零個誤報不是「誤報率為零」的證據。' },
+        { text: '95% 信賴區間大約是 0% 到 35.4%，所以只能說沒有觀察到誤報，不能宣稱誤報率為零。', correct: true, why: '這是 Cheat Sheet 的 Wilson 區間例子：樣本太小，區間很寬。' },
+        { text: '7 次太少，所以結果完全沒有意義，應該丟掉。', why: '結果仍有資訊，只是要如實說明它的不確定範圍，而不是丟棄或誇大。' },
+        { text: '只要再加 9 個手選的案例，區間就會變成 0%。', why: '手選案例不是獨立抽樣；區間不會因為加幾個案例就變成 0。' }
+      ],
+      summary: '零誤報 ≠ 誤報率為零；回報要附樣本數與區間。' },
+    { id: 'c4q3', type: 'match', lo: [4], refs: [{label: '4.1 表 4-1', href: '04-verify-and-integrate.html#vi-smoke'}],
+      stem: '把下列觀察結果配對到它「最不能證明」的結論（依 Cheat Sheet 表中的限制欄）。',
+      cats: [
+        { id: 'marker', label: '假標記未出現在回應' },
+        { id: 'refuse', label: '最終回應顯示拒絕' },
+        { id: 'clean', label: '回應文字乾淨' }
+      ],
+      items: [
+        { text: '不能證明：其他 system prompt 內容或被轉換過的洩漏不會發生', answer: 'marker', why: '標記沒出現只代表「這個標記沒出現」。' },
+        { text: '不能證明：沒有資料從其他通道離開', answer: 'clean', why: '回應文字乾淨，不等於沒有對外洩漏。' },
+        { text: '不能證明：已執行的動作被還原', answer: 'refuse', why: '拒絕的回應不會讓已經發生的工具動作消失。' }
+      ],
+      summary: '每個觀察項都有它不能證明的事。' },
+    { id: 'c4q4', type: 'scn', lo: [4], refs: [{label: '4.4 情境 B', href: '04-verify-and-integrate.html#scn-b'}, {label: '4.2 怎麼回報', href: '04-verify-and-integrate.html#vi-report'}],
+      stem: '依本章，採購主管最該先要求廠商補上什麼？',
+      scenario: '遠山證券（虛構）要採購一個提示詞注入偵測服務。廠商簡報：「我們在公開的 20 個攻擊範例上偵測率 100%，已超越業界水準。」他們沒有說範例的來源、模型與設定版本、重複次數，也沒有提供正常請求的誤報數字。採購主管打算以此簽約。',
+      options: [
+        { text: '要求廠商提供案例來源、各比率的分子與分母、版本與設定、重複次數與誤報；並自行用符合自家任務與輸入通道的案例，由適應性測試者驗證。', correct: true, why: '符合 Cheat Sheet 的回報要求與 LLM01:2026 緩解 #11。' },
+        { text: '直接簽約，因為 100% 已是最高分。', why: '手選案例的通過率不是族群比率，也沒有說明測的邊界。' },
+        { text: '要求廠商把範例從 20 個擴充到 200 個同類型的案例就好。', why: '同類型的案例不是獨立案例，也沒有納入適應性攻擊者。' },
+        { text: '只需要確認廠商的服務夠快，因為偵測品質無法驗證。', why: '品質可以用符合自家情境的案例、分開的觀察項與適應性測試來驗證，只是要如實報告其限制。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 「100%」只是一組公開範例上的結果，沒有案例來源與分母。(2) 沒有版本與設定，結果無法重現。(3) 沒有誤報數字，無法判斷會不會誤擋正常請求。(4) 固定範例集的成績會高估對適應性攻擊者的效果（LLM01:2026 緩解 #11 所轉述的研究）。</p><p><strong>結論：</strong>先要求完整的回報資料，再用自己的任務與通道做驗證；無論結果如何，工具邊界的授權仍需另外強制。對應教材：<a href="04-verify-and-integrate.html#vi-report">4.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　檢核表的 13 個區塊｜治理檢核表與卓越中心｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Governance Checklist 的 13 個檢核區塊：對手風險、威脅建模、資產盤點、訓練、商業案例、治理、法務、合規、使用與實作、TEVV、模型卡與風險卡、RAG、紅隊；含一個虛構情境。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="governance-checklist-and-coe" data-page="03-checklist-areas.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　檢核表的 13 個區塊</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-checklist-strategy.html">第 2 章</a></li>
+</ul>
+<p class="lead">策略決定之後，進入檢核表的主體。它有 13 個區塊，每個區塊底下是「請確認……」式的行動項。這一章不逐條複誦，而是教你<strong>怎麼把一個實際問題歸到對的區塊</strong>，並仔細看最容易被技術人員略過的兩個：法務與合規。</p>
+
+<h2 id="ar-map">3.1 13 個區塊總覽</h2>
+<p>本教材把 13 個區塊依「它在問什麼」分成四群，方便記憶。分群是 <span class="tag author">作者整理，非官方</span>；區塊名稱與順序取自官方 PDF 的 Checklist 一節。</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　13 個檢核區塊（名稱與順序取自官方；分群為作者整理）</caption>
+<thead><tr><th scope="col">群（作者整理）</th><th scope="col">區塊（官方名稱）</th><th scope="col">它在問什麼（改寫）</th></tr></thead>
+<tbody>
+<tr><th scope="row" rowspan="4">先看清楚</th><td>1　Adversarial Risk <br>（對手風險）</td><td>競爭者怎麼投資 AI？現有控制（如語音驗證的密碼重設）會不會被生成式攻擊削弱？事件應變計畫要不要為此更新？</td></tr>
+<tr><td>2　Threat Modeling <br>（威脅建模）</td><td>在部署 LLM 前做威脅建模；攻擊者會怎樣加速對組織、員工、客戶的攻擊？能否偵測有害輸入、守住與既有系統的整合、防範內部人濫用、避免有害內容？</td></tr>
+<tr><td>3　AI Asset Inventory <br>（AI 資產清冊）</td><td>盤點內部與第三方的 AI 服務、工具、負責人與資料來源及敏感度；把 AI 元件納入 SBOM；建立 AI 方案上線流程</td></tr>
+<tr><td>4　AI Security and Privacy Training <br>（AI 資安與隱私訓練）</td><td>與員工溝通疑慮；訓練倫理、責任與法律議題；更新資安意識訓練以涵蓋語音與影像複製</td></tr>
+<tr><td rowspan="3">定規則</td><td>5　Establish Business Cases <br>（建立商業案例）</td><td>每個導入案要有商業價值、風險與效益的權衡與投資報酬評估</td></tr>
+<tr><td>6　Governance <br>（治理）</td><td>建立 AI 的 RACI（誰負責、誰當責、誰被諮詢、誰被告知）；指定風險與治理責任；資料分類與使用限制；AI 政策；可接受使用矩陣</td></tr>
+<tr><td>7　Legal <br>（法務）</td><td>保固、條款、授權協議、智慧財產權、補償條款、責任、保險、著作權等（3.2 節）</td></tr>
+<tr><td rowspan="1">守法規</td><td>8　Regulatory <br>（合規）</td><td>各國與各州的 AI 法規、員工監控與自動決策、臉部辨識同意、供應商是否遵法（3.2 節）</td></tr>
+<tr><td rowspan="5">做與驗</td><td>9　Using or Implementing LLM Solutions <br>（使用或實作 LLM 方案）</td><td>威脅建模信任邊界、資料安全、存取控制（最小權限＋縱深防禦）、訓練管線、輸入輸出、監控與回應、供應鏈、基礎設施、事件應變演練</td></tr>
+<tr><td>10　Testing, Evaluation, Verification, and Validation (TEVV) <br>（測試、評估、驗證與確認）</td><td>全生命週期持續做 TEVV；定期向主管層報告功能、安全、可靠與穩健度</td></tr>
+<tr><td>11　Model Cards and Risk Cards <br>（模型卡與風險卡）</td><td>審閱模型卡與風險卡；建立追蹤、維護所有已部署模型（含第三方）模型卡的流程</td></tr>
+<tr><td>12　RAG: LLM Optimization <br>（RAG：LLM 最佳化）</td><td>說明微調與 RAG 的取捨；列出參考資料。這個區塊的行動項只有「參考資料」</td></tr>
+<tr><td>13　AI Red Teaming <br>（AI 紅隊）</td><td>把紅隊演練列為 AI 模型與應用的標準做法；官方強調紅隊不能單獨驗證所有真實危害</td></tr>
+</tbody></table></div>
+<p>名稱中的 TEVV 是官方縮寫。它借自 NIST AI Framework 的說法：在整個 AI 生命週期持續做測試、評估、驗證與確認。第 5 章會再說明它與 NIST 的關係。</p>
+
+<h2 id="ar-legal">3.2 法務與合規：技術人員最常略過的兩個區塊</h2>
+<p>這兩個區塊在檢核表裡篇幅最長，因為 LLM 的法律後果多半還沒有定論。文件開宗明義：許多 AI 的法律影響「尚未定義且可能代價高昂」，因此要 IT、資安與法務合作。作者把它們的問題整理成表：</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　法務與合規區塊在查什麼（官方，改寫）</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">要確認的事（改寫）</th><th scope="col">誰來接</th></tr></thead>
+<tbody>
+<tr><th scope="row">產品責任與條款</th><td>AI 相關的產品保固由誰負責；既有服務條款要不要補 GenAI；客戶最終使用者協議要避免讓組織承擔抄襲、偏見擴散或侵權責任</td><td>法務＋產品</td></tr>
+<tr><th scope="row">供應商授權協議 (EULA)</th><td>各 GenAI 平台對使用者提示詞、輸出權利與所有權、隱私、責任與輸出用途限制的處理差異很大，要逐一審閱</td><td>法務＋採購</td></tr>
+<tr><th scope="row">智慧財產與著作權</th><td>聊天機器人產生的程式碼可能影響公司對產品的權利歸屬；若 AI 使用了受著作權保護的資料，輸出有侵權風險；著作權需有人類作者</td><td>法務＋研發</td></tr>
+<tr><th scope="row">補償與保險</th><td>檢視含補償 (indemnification) 條款的合約，釐清是 AI 提供者還是使用者造成事件；傳統董監事責任險與商業一般責任險可能不足以涵蓋 AI 使用</td><td>法務＋風險管理</td></tr>
+<tr><th scope="row">員工與承包商</th><td>與承包商簽訂適當使用 AI 的協議；在有權利或侵權疑慮時，限制或禁止員工與承包商使用生成式 AI</td><td>法務＋人資</td></tr>
+<tr><th scope="row">人資與招募</th><td>用於員工管理或招募的 AI 可能引發差別待遇或差別影響主張；要詢問並記錄供應商如何訓練與監控模型、是否收集機密資料、資料如何儲存與刪除</td><td>人資＋法務</td></tr>
+<tr><th scope="row">各地法規</th><td>確認國家、州或其他政府的 AI 合規要求；員工監控與自動決策系統、臉部辨識與影像分析的同意規定；供應商是否遵守適用法規</td><td>合規</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">法規描述是 2024 年的快照，不能直接當成現況</p>
+  <p>Regulatory 一節以當時的狀態寫成：例如它說歐盟 AI 法案「預期是第一部全面的 AI 法律，最早 2025 年適用」、美國十州「到 2023 年底前已通過或將生效」相關法律、加拿大只有自願行為準則且 AIDA 將有更強要求。這些都是<strong>文件發布當時的描述</strong>，本教材沒有去查證它們現在的狀態，也不提供任何法規現況；使用時請以法務取得的最新法規為準。</p>
+</div>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：給開發者的最短讀法</p>
+  <p>如果你不是法務，這兩個區塊你不需要逐條判斷，但需要知道<strong>哪些技術決策會觸發法律問題</strong>：把客戶資料送進哪個供應商（EULA 與隱私）、用 AI 產生的程式碼進產品（權利歸屬）、用 AI 做招募或員工管理（差別待遇）。遇到這三類，主動去問法務，是比背條文更有效的做法。</p>
+</div>
+
+<h2 id="ar-concept">3.3 核心概念：怎麼把問題歸到對的區塊</h2>
+<div class="concept">
+<h3 id="c-route">以「問題的主人」來分類</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>13 個區塊不是 13 種技術風險，而是 13 個「該有人負責回答的問題」。歸類時問：這個問題最終由誰回答？對手與威脅（資安）、盤點與訓練（IT 與人資）、規則與責任（治理）、法律與法規（法務、合規）、技術落實（工程）、驗證（測試與紅隊）。</dd>
+  <dt data-n="2">為什麼這樣設計</dt>
+  <dd>檢核表的對象是跨職能領導層。以「問題的主人」分區，讓每個部門找得到自己的段落，也讓缺口一眼可見：哪一個區塊沒人認領。</dd>
+  <dt data-n="3">怎麼使用（概念層級）</dt>
+  <dd>拿一個具體情況（如「有人把客戶名單貼進外部聊天機器人」），逐一問它觸及哪些區塊：資產清冊（沒盤點到）、治理（沒有可接受使用矩陣）、訓練（員工不知道規則）、法務／合規（隱私與合約）。一個事件通常橫跨多個區塊。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>每個區塊至少有一位負責人（對應治理區塊的 RACI），並定期檢視哪些區塊還沒有人。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「區塊是依嚴重度排序的，前面的比較重要。」文件沒有這樣說。順序是它的編排，不是優先順序。</dd>
+</dl>
+</div>
+
+<h2 id="ar-scenario">3.4 情境範例 A：一場導入前的準備度會議</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：北辰保險的客服 LLM 導入案</h3>
+<p><span class="tag fiction">虛構</span> 北辰保險是虛構的公司。業務部門想在三個月內上線一個客服助理：以供應商的 API 取得模型，並把保單條款與歷史客訴放進知識庫供檢索。資安長被要求在上線前交出「準備度評估」，他決定用 OWASP 的檢核表當議程，邀請法務、合規、資料、人資與業務一起開會。</p>
+<ol class="steps">
+  <li><strong>先定策略：</strong>他們選的是 Type 2（透過模型 API），所以要特別在乎供應商的合約與資料處理，對訓練管線的要求相對少（第 2 章）。</li>
+  <li><strong>資產清冊（區塊 3）：</strong>清冊裡發現客服部已經有人在用另一個未核准的摘要工具，這就是影子 AI。決定納入上線流程，並把它加進 SBOM。</li>
+  <li><strong>治理（區塊 6）：</strong>RACI 還沒有人負責「AI 回答出錯的客訴」。他們指定客服主管當責、資安與法務被諮詢。</li>
+  <li><strong>法務與合規（區塊 7、8）：</strong>法務審閱供應商的 EULA，發現對使用者提示詞的處理與客戶隱私承諾不一致；合規確認保險業對自動決策與客戶溝通的規範，並要求供應商說明資料如何儲存與刪除。</li>
+  <li><strong>使用與實作（區塊 9）與 RAG（區塊 12）：</strong>知識庫含保單與客訴，要確認資料依敏感度分類與存取控制；RAG 區塊只列了參考資料，細節要去讀專門的 RAG 安全文件，見〈<a href="../../03-prompt-injection-rag-practice/rag-security/index.html">RAG 安全</a>〉。</li>
+  <li><strong>驗證（區塊 10、13）：</strong>上線前安排紅隊演練與持續的 TEVV，並約定向主管層報告的指標。</li>
+  <li><strong>這個情境的提醒：</strong>13 個區塊在這場會議裡被<strong>不同的人認領</strong>，沒有人需要把整份清單一個人做完。若要把「哪些區塊還沒有主人」看得更清楚，下一章的 CoE 就是常設的做法。</li>
+</ol>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>13 個區塊依序為：對手風險、威脅建模、資產清冊、訓練、商業案例、治理、法務、合規、使用與實作、TEVV、模型卡與風險卡、RAG、紅隊。</li>
+  <li>區塊是「該有人回答的問題」，不是依嚴重度排序的技術風險類別。</li>
+  <li>法務與合規的描述是 2024 年的快照；教材不提供法規現況，請以法務為準。</li>
+  <li>一個實際情況通常橫跨多個區塊；缺口是「哪個區塊沒有主人」。</li>
+</ul></div>
+<ul class="checklist">
+  <li>給我一個情況，我能指出它觸及哪些區塊。</li>
+  <li>我知道哪三類技術決策最容易觸發法律問題。</li>
+  <li>我不會把法務與合規區塊的 2024 年描述當成現況。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-coe.html">第 4 章　卓越中心 (CoE)</a>：檢核表的 13 個區塊需要有人認領，CoE 指南說明怎麼組成這個跨部門的團隊。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，LLM Applications Cybersecurity and Governance Checklist v1.1 – English：Checklist 一節（Adversarial Risk 至 AI Red Teaming 共 13 區塊）；資源頁日期 2024-05-07；CC BY-SA 4.0；<a href="https://genai.owasp.org/resource/llm-applications-cybersecurity-and-governance-checklist-english/">genai.owasp.org/resource/llm-applications-cybersecurity-and-governance-checklist-english/</a>；2026-10-26 讀取。法規描述（Regulatory 一節）的年份以 PDF 頁面轉圖核對。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Governance Checklist — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'gc-ch3', topic: 'governance-checklist-and-coe', mode: 'chapter',
+  questions: [
+    { id: 'gc3q1', type: 'match', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-checklist-areas.html#ar-map'}],
+      stem: '把下列問題配對到它最該歸屬的檢核區塊。',
+      cats: [
+        { id: 'inv', label: 'AI Asset Inventory（資產清冊）' },
+        { id: 'gov', label: 'Governance（治理）' },
+        { id: 'legal', label: 'Legal（法務）' },
+        { id: 'rt', label: 'AI Red Teaming（紅隊）' }
+      ],
+      items: [
+        { text: '公司現在到底有哪些 AI 工具與資料來源？誰是負責人？', answer: 'inv', why: '盤點內部與第三方的 AI 服務、工具、負責人與資料來源屬資產清冊。' },
+        { text: '誰負責、誰當責、誰被諮詢、誰被告知（RACI）？', answer: 'gov', why: 'RACI、AI 政策與可接受使用矩陣屬治理區塊。' },
+        { text: '供應商的 EULA 如何處理使用者提示詞與輸出的所有權？', answer: 'legal', why: 'EULA、智慧財產與補償條款屬法務區塊。' },
+        { text: '以模擬攻擊驗證 AI 應用有沒有可被利用的弱點', answer: 'rt', why: '紅隊是對 AI 系統的對抗式攻擊測試模擬。' }
+      ],
+      summary: '歸類的關鍵是：這個問題最終由誰回答。' },
+    { id: 'gc3q2', type: 'mc', lo: [3], refs: [{label: '3.2 法規快照', href: '03-checklist-areas.html#ar-legal'}],
+      stem: '你的法務部門問：「檢核表說歐盟 AI 法案最早 2025 年適用，我們可以直接引用這句話當作現況嗎？」依本章，最合適的回答是？',
+      options: [
+        { text: '可以，這是 OWASP 官方文件，內容永遠正確。', why: '官方文件也是某個時間點的快照；Checklist 發布於 2024 年，描述的是當時的預期。' },
+        { text: '不要直接引用；那是 2024 年文件發布時的描述，現況要由法務以最新法規確認。', correct: true, why: '3.2 節的提醒：法規描述是快照，本教材也不提供法規現況。' },
+        { text: '不要引用，因為檢核表不談法規。', why: '檢核表有專門的 Regulatory 區塊，只是它的描述是快照。' },
+        { text: '可以引用，但把年份改成今年就好。', why: '改年份是在沒有依據下編造；該由法務確認現況。' }
+      ],
+      summary: '法規描述是 2024 年的快照，現況交給法務。' },
+    { id: 'gc3q3', type: 'mc', lo: [3], refs: [{label: '3.3 核心概念', href: '03-checklist-areas.html#c-route'}],
+      stem: '關於 13 個檢核區塊的順序與用途，下列哪一項說法最符合本章？',
+      options: [
+        { text: '順序代表優先順序，要先把前面的區塊做完才能做後面的。', why: '文件沒有這樣說；順序是編排，不是優先順序。' },
+        { text: '區塊是 13 種技術漏洞類別，一個漏洞只對應一個區塊。', why: '區塊是「該有人回答的問題」；一個實際情況通常橫跨多個區塊。' },
+        { text: '區塊是「該有人負責回答的問題」，一個實際情況通常橫跨多個區塊，缺口是沒有主人的區塊。', correct: true, why: '這是 3.3 節的核心概念（以問題的主人分類，屬作者整理的使用方式）。' },
+        { text: '只有資安團隊需要讀，其他部門不用。', why: '檢核表的對象明列了執行、合規、法務、隱私等領導者。' }
+      ],
+      summary: '區塊是「問題的主人」，而不是優先順序或單一漏洞類別。' },
+    { id: 'gc3q4', type: 'scn', lo: [3], refs: [{label: '3.4 情境 A', href: '03-checklist-areas.html#ar-scenario'}, {label: '3.1 表 3-1', href: '03-checklist-areas.html#ar-map'}],
+      stem: '依本章，這個團隊最先該補的是哪個檢核區塊，為什麼？',
+      scenario: '東嶺顧問（虛構）打算把一個 LLM 助理接到內部的客戶資料庫，供顧問查詢客戶背景。會議上，資料團隊說「我們有資料分類」，開發團隊說「我們會在提示詞裡叫模型不要洩漏機密」，人資說「還沒有人訓練過同事怎麼用」。資安長發現，整個公司沒有人能列出「目前有哪些 AI 工具連到了哪些資料來源」。',
+      options: [
+        { text: '紅隊演練（區塊 13），先找出弱點再說。', why: '沒有清冊就不知道要測哪些系統；紅隊是驗證，不是起點。' },
+        { text: 'AI 資產清冊（區塊 3）：先盤點有哪些 AI 工具、資料來源與負責人，再接著補治理與存取控制。', correct: true, why: '現況的根本缺口是「看不見」；其餘區塊（治理、訓練、實作）都需要先知道範圍。' },
+        { text: 'RAG（區塊 12），因為這就是 RAG。', why: 'RAG 區塊的行動項只有參考資料；它不是起點，真正缺的是盤點與存取控制。' },
+        { text: '商業案例（區塊 5），先算清楚投資報酬再說。', why: '商業案例重要，但不能解決「看不見」的暴露。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 資料團隊的「有資料分類」不等於「模型的存取受到分類限制」。(2) 開發團隊打算只靠提示詞叫模型保密，而檢核表的「使用或實作」區塊要求的是最小權限的存取控制與縱深防禦（為什麼提示詞不能當授權機制，見 <a href="../../01-overview/ai-exchange/04-seven-layers.html">AI Exchange 第 4 章</a>）。(3) 人資指出訓練缺口。(4) 但所有這些之前，沒有人能列出 AI 工具與資料來源的連接，這是資產清冊的缺口，也是後續治理、存取、訓練的範圍來源。</p><p><strong>結論：</strong>先做資產清冊，再把治理（RACI、可接受使用）、存取控制與訓練補上。對應教材：<a href="03-checklist-areas.html#ar-map">3.1 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　階段 5–8：持久化到修補｜GenAI 紅隊演練｜OWASP AI 資安學習教材</title>
+<meta name="description" content="GenAI Red Teaming Manual 八階段的後半：持久化的意思、影響範圍與嚴重度、測試判準與可重現性、攻擊成功率與攻擊預算，以及紅藍成對產出如何變成偵測與回歸測試；附一個報告被質疑的虛構情境。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="genai-red-teaming" data-page="03-phases-5-8.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　階段 5–8：持久化到修補</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 10 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2、LO3</li>
+  <li>前置：<a href="02-phases-1-4.html">第 2 章</a></li>
+</ul>
+<p class="lead">入侵得手只是中場。八階段的後半，問的是三件事：這個入侵能不能活過重置（階段 5）、後果有多大（階段 6）、報告怎麼寫才經得起質疑（階段 7），以及發現怎麼變成防禦（階段 8）。本章的重點是「怎麼不被機率性騙到」：單次通過不等於穩健，沒紀錄不等於沒發生，兩個預算不同的測試不能直接比。</p>
+
+<h2 id="ph-p5">3.1 階段 5：持久化在 AI 裡是什麼意思</h2>
+<p>傳統的持久化是留後門或憑證。Manual 說，在 AI 紅隊裡，它指的是污染<strong>上下文、記憶、訓練資料或工具</strong>，讓入侵在目前的工作階段之後仍然存活；另一個目標是誘使 AI 做出技術上做得到、但政策上禁止的動作（權限升級）。Manual 在階段 6 給了一個實用的判斷標準：</p>
+<div class="callout official">
+  <p class="callout-title">休眠的內容只是資料殘留</p>
+  <p>被放在儲存體裡、沒有被觸發的內容，<strong>只是資料殘留</strong>。只有當一個乾淨的後續工作階段成功回想起並執行它，才算建立了持久化。如果攻擊撐不過一次工作階段重置，就歸類為單輪或暫時性的注入。</p>
+</div>
+<p>回報持久化時，Manual 要求不要寫「中等持久化程度」這種模糊標籤，而是寫出實際驗證過的鏈：</p>
+<ul>
+  <li><strong>存活 (Survival)：</strong>撐過哪些邊界事件：工作階段重置、服務重啟、管線維護（快取清除、索引重建）。</li>
+  <li><strong>爆炸半徑 (Blast Radius)：</strong>只依<strong>實際驗證過</strong>的帳號分類：本地（只影響攻擊者自己）、橫向（同租戶其他使用者）、系統性（跨租戶或擴散到下游 agent）。沒測的就寫「未測」，不能用理論暴露取代。</li>
+  <li><strong>載體 (Carrier)：</strong>內容存在哪：對話記憶、RAG 向量資料庫、業務資料（工單、郵件）、框架初始化檔案或本機快取。</li>
+</ul>
+<p>修補之後還有一道關卡：<strong>殘留的 AI 狀態 (Residual AI State)</strong>。刪掉有問題的文件不代表清掉了；摘要、檢索索引和快取都可能是載體，來源檔案不見了行為仍在。紅隊要驗證修補是否從所有載體清除。</p>
+<p>升級權限的測試，Manual 強調測的是「授權層」。三個概念性檢查點：沒被授予的工具能不能被呼叫；有權使用的工具，參數能不能超出授權範圍；能不能透過已授權的工具修改 agent 自己的權限。每個案例都要記錄<strong>拒絕來自執行環境還是模型</strong>：模型今天拒絕、換版本後可能順從，執行環境的拒絕才穩定可回歸。</p>
+
+<h2 id="ph-p6">3.2 階段 6：後果有多大</h2>
+<p>階段 6 在入侵確認後開始，目的是<strong>分析與驗證，不是再利用</strong>：攻擊者的有效權限、受影響範圍、連鎖失效的可能，並轉成緩解優先順序。Manual 用五條固定的軸記錄影響範圍，讓不同測試者有共同基礎解釋評級：</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　影響範圍的五條軸與嚴重度（Manual 6.2、6.5，改寫）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">動作類別 <br>(Action class)</th><td>唯讀、可回復、對外可回復、不可回復：效果能不能撤銷、由誰撤銷</td></tr>
+<tr><th scope="row">鏈深度 <br>(Chain depth)</th><td>單步、有界的鏈、無界的自主鏈：被入侵後能在不重新授權下驅動多少個組合呼叫</td></tr>
+<tr><th scope="row">對外範圍 <br>(External reach)</th><td>只在內部、夥伴或第三方、公開：效果有沒有跨越信任或組織邊界</td></tr>
+<tr><th scope="row">回復時窗 <br>(Reversibility window)</th><td>立即撤銷、帶外撤銷、無法撤銷：傷害鎖定前能回復的時間與成本</td></tr>
+<tr><th scope="row">身分範圍 <br>(Identity scope)</th><td>限定的個人、共用的個人、非人類憑證：動作是用誰的權限執行的</td></tr>
+<tr><th scope="row">嚴重度 <br>(Severity) 四級</th><td>嚴重 (Critical)、高 (High)、中 (Medium)、低 (Low)；嚴重＝通往重大傷害或高價值入侵的現實路徑，低＝滋擾級的政策偏離</td></tr>
+<tr><th scope="row">評分維度（五個）</th><td>安全性嚴重度、資安衝擊（CIA 與權限升級）、可能性／可利用性、可偵測性、動作類別</td></tr>
+</tbody></table></div>
+<p>兩個規則：第一，<strong>不要平均掉不可回復的後果</strong>。多步驟的發現取鏈上「最嚴重且可達」的那一步，組合鏈以「有證據支持、可達的最壞後果」作為嚴重度下限；第二，<strong>區分觀察到的效果與潛在的升級</strong>，並寫下前提條件。</p>
+<p>Manual 附了幾個「校準用」的公開案例（<span class="tag official">Manual 引用的公開案例</span>），本教材只取等級與理由：EchoLeak（零點擊、跨使用者外洩）與 ShadowLeak 評為嚴重；可寫成腳本的無上限推論拉高成本、但沒有內容傷害的「錢包拒絕」(Denial of Wallet, DoW) 評為高。Manual 特別點出：前兩者<strong>不含有害內容，卻是嚴重</strong>，因為被示範的衝擊跨越使用者邊界影響了機密性。所以嚴重度看衝擊，不看輸出看起來危不危險。這些只是校準範例，不是通用分數。</p>
+
+<h2 id="ph-p7">3.3 階段 7：評估與報告，怎麼不被機率性騙到</h2>
+<p><strong>測試判準 (Test Oracle)</strong> 是預先約定的判定規則：什麼叫失敗（有害內容、未授權的工具執行、敏感資料外洩）、什麼算可接受、什麼是邊界（要由安全審查者裁決）。套用判準的人、確定性檢查或模型叫評分器 (scorer)；判準降低歧義但不保證標籤可靠，所以<strong>評分器要與被測系統分開驗證</strong>。</p>
+<p>對 agent 還要多一組<strong>授權判準</strong>：控制是否評估動作的宣告屬性，而不是 agent 自己提供的值？依賴的核准是否在 agent 執行環境之外被驗證？授權失敗可能發生在輸出完全無害時，只用輸出判準會把它記成通過；控制拒絕了、但原因與要測的屬性無關，則是「不確定」，不能算通過。</p>
+<p><strong>可重現性 (Reproducibility)</strong> 的要求，Manual 分成三層：</p>
+<ul>
+  <li><strong>證據保管鏈 (Chain of Custody)：</strong>每份證據標唯一案例編號、蒐集者、方法與 UTC 時間；對原始證據計算雜湊並放在唯讀儲存，分析只用副本。</li>
+  <li><strong>環境遙測：</strong>模型名稱／版本／部署快照、凍結的取樣參數（溫度、種子等）、確切的系統提示詞、護欄設定、工具綱要與檢索上下文；鎖不住的就明寫「重放可能有變異」。</li>
+  <li><strong>agent 執行軌跡：</strong>只有對話逐字稿不夠；要有身分與權限、工具呼叫（含參數與原始回傳）、授權檢查（政策版本、允許／拒絕）、對外效果（資料庫寫入、對外連線）。</li>
+</ul>
+<div class="callout warn">
+  <p class="callout-title">沒有紀錄不是通過</p>
+  <p>如果監測沒有記下工具有沒有執行、資料有沒有流到接收端、授權檢查有沒有發生，要把這個<strong>缺口本身</strong>當作可觀測性發現回報。Manual 明寫：<strong>缺少軌跡絕對不能記成防禦通過</strong>。</p>
+</div>
+
+<h3 id="ph-asr">單次評估、Best-of-N，與攻擊成功率</h3>
+<div class="table-wrap"><table>
+<caption>表 3-2　兩種評估模式（Manual 7.3，改寫）</caption>
+<thead><tr><th scope="col">模式</th><th scope="col">用途</th><th scope="col">做法</th><th scope="col">要報告什麼</th></tr></thead>
+<tbody>
+<tr><th scope="row">單次 <br>(Single-Shot)</th><td>固定的回歸測試、基準驗證</td><td>每個測試案例只執行一次固定嘗試</td><td>二元的通過／失敗。<strong>通過單次測試不能證明穩健</strong></td></tr>
+<tr><th scope="row">Best-of-N (BoN)</th><td>對抗式穩健性與邊界測試</td><td>允許最多 N 次的變化、突變或多輪嘗試</td><td>攻擊成功率 (Attack Success Rate, ASR)＝成功嘗試的比例；「任一次嘗試突破了控制嗎」(success@k)；攻擊預算（嘗試次數、token、API 成本）</td></tr>
+</tbody></table></div>
+<p>兩條基準規則：<strong>成功要連同攻擊者付出的力氣一起報</strong>（例如「第 4 次嘗試達成目標，整體 ASR 15%，耗用 12,400 token」這種寫法，而非孤立的百分比）；<strong>預算要配對</strong>：兩個模型、防禦或設定，除非在相同的嘗試、輪數與 token 上限下評估，否則不能比較安全態勢。</p>
+<p>指標的細節：混淆矩陣要綁定「評估對象」，輸入控制、輸出安全分類器與端到端行為<strong>不能合併成一個矩陣</strong>。惡意輸入沒被擋、但產生無害回應，對「輸入阻擋」是偽陰性，對「輸出」卻是真陰性；所以輸入控制的結果與最終輸出要分開報。</p>
+<p>涵蓋率也不是只看分類法：要把測試對到 LLM Top 10、Agentic Top 10、MITRE ATLAS 與內部分類，並追蹤對照<strong>威脅模型、存取等級、身分、介面與攻擊預算</strong>的涵蓋，記錄已測、未測與不確定；未解的嚴重／高風險發現與回歸穩定度要與涵蓋率<strong>分開報</strong>，因為廣泛涵蓋仍可能藏著嚴重失敗。</p>
+
+<h2 id="ph-p8">3.4 階段 8：紅藍成對產出，與回歸</h2>
+<p>階段 8 把識別轉成防禦：在系統提示詞、護欄與架構三層修補；驗證修補擋住攻擊又沒破壞原本功能；把紅隊演練中成功的案例自動化進 CI/CD 防回歸；更新藍隊偵測規則。核心做法是：每個確認的利用產生<strong>兩份成對的交付物，以同一個案例編號 (Case ID) 連結</strong>。</p>
+<div class="table-wrap"><table>
+<caption>表 3-3　紅藍成對產出（Manual 8.1，改寫）</caption>
+<thead><tr><th scope="col">交付物</th><th scope="col">給誰</th><th scope="col">內容（改寫）</th></tr></thead>
+<tbody>
+<tr><th scope="row">紅方產出 <br>(Red Artifact)</th><td>工程團隊，用來重現與修復</td><td>前提與範圍（應用、模型版本、角色與權限）、最短的重現步驟、通過／失敗判準、觀察到的衝擊證據、清理步驟（如何撤銷測試動作）</td></tr>
+<tr><th scope="row">藍方產出 <br>(Blue Artifact)</th><td>SOC 與偵測工程，用來監測與遏制</td><td>偵測邏輯（SIEM 查詢、關聯規則或行為啟發式）、所需遙測欄位、調校與誤報（長得像攻擊的良性流程）、遏制與通報路徑</td></tr>
+</tbody></table></div>
+<p>這對產出會推動新的偵測規則與告警門檻、事件應變手冊更新、CI/CD 的回歸測試集，以及事後的紫隊驗證。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="迴圈圖：確認的發現產生紅方產出與藍方產出，兩者以同一個案例編號連結；紅方產出交給工程修補，修補後以回歸測試驗證；藍方產出變成偵測規則與應變手冊；兩邊的結果回到下一輪規劃。">
+flowchart LR
+  F["確認的發現<br>(案例編號)"] --> R["紅方產出<br>重現與判準"]
+  F --> B["藍方產出<br>偵測與遏制"]
+  R --> X["工程修補"] --> T["回歸測試<br>CI/CD 閘門"]
+  B --> D["偵測規則<br>應變手冊"]
+  T --> N["下一輪規劃<br>(階段 1)"]
+  D --> N
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class X,T,D,N author
+</pre>
+<figcaption><strong>圖 3-1　發現 → 紅藍成對產出 → 修補與回歸。</strong>成對產出與案例編號連結是 Manual 8.1 的說法；右側「修補、回歸、偵測規則、回到下一輪」的串接，是依 Manual 8.2 的清單畫出的 <span class="tag author">作者整理，非官方</span> 流程。</figcaption>
+</figure>
+
+<h2 id="ph-scn">3.5 情境範例 A：報告被質疑</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：靛藍電商的客服 agent 紅隊報告</h3>
+<p><span class="tag fiction">虛構</span> 靛藍電商是虛構的公司。它的客服 agent 可以查詢訂單、讀取知識庫（RAG），並呼叫「退款」工具。外包紅隊交出報告，結論是：「候選模型 A 在所有測試中通過，比候選模型 B 更安全，建議採用 A。」資安長要求審查者逐項檢查這份結論站不站得住腳。</p>
+<ol class="steps">
+  <li><strong>「A 全部通過」的依據：</strong>報告附錄顯示，A 的每個測試案例只跑了一次。這是單次評估，Manual 說通過單次測試不能證明穩健；要評估穩健性，應該用 Best-of-N，並報告 ASR 與攻擊預算（3.3 節）。</li>
+  <li><strong>「退款工具授權通過」的依據：</strong>報告記載「沒有看到未授權退款」，但工具呼叫的軌跡與授權檢查沒有被記錄。這是遙測缺口，不是防禦通過；而且應該用授權判準檢查「退款額度、對象」這些參數有沒有被對照授權，而不只是看輸出是否正常（3.3 節）。</li>
+  <li><strong>「A 比 B 更安全」的依據：</strong>A 的 ASR 是 4%、B 是 11%，但 A 每個案例給了 5 次嘗試、B 給了 20 次。預算不同，不能直接比（3.3 節）。審查者要求在相同嘗試次數、輪數與 token 上限下重測。</li>
+  <li><strong>這個情境的提醒：</strong>三個錯誤都不是技術錯誤，而是把機率性系統當成確定性系統來寫報告。修正方式不是換模型，而是把報告補成「測試判準、軌跡、預算」三樣齊全的版本。</li>
+</ol>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>持久化要有「乾淨的後續工作階段回想並執行」才成立；休眠內容只是資料殘留。回報寫存活、爆炸半徑（只依驗證過的帳號）與載體。</li>
+  <li>嚴重度看衝擊，不看輸出危不危險；多步驟取鏈上最嚴重且可達的後果，不平均。</li>
+  <li>測試判準與評分器分開驗證；授權判準獨立於輸出判準；缺少軌跡不能記成通過。</li>
+  <li>單次通過不證明穩健；比較模型或防禦時，預算必須配對，成功要連同攻擊預算一起報。</li>
+  <li>每個確認的利用產生以案例編號連結的紅方與藍方產出，帶動偵測規則與 CI 回歸測試。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出持久化成立的條件，並用「存活、爆炸半徑、載體」寫一句回報。</li>
+  <li>我能解釋為什麼「沒有看到異常」在沒有軌跡時不能算通過。</li>
+  <li>我能指出兩個預算不同的 ASR 為什麼不能比較。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2、LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-vendor-evaluation.html">第 4 章　評估紅隊廠商與工具</a>：如果你不自己做，而是採購紅隊服務或自動化工具，怎麼分辨真正的對抗式測試與只會越獄的淺層服務。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>GenAI Red Teaming Manual，Version 1.0，資源頁 2026-10-20（PDF 144 頁）：<a href="https://genai.owasp.org/resource/genai-red-teaming-manual-version-1-0/">資源頁</a>；Phase 5（5.2、5.3 概要）、Phase 6（6.1–6.6）、Phase 7（7.1–7.5）、Phase 8（8.1–8.2）；CC BY-SA 4.0。持久化的各載體測試案例未逐項閱讀。</li>
+    <li>Manual 6.5.4 引用的公開案例（EchoLeak、ShadowLeak、ForcedLeak、Denial of Wallet 等）：本教材只轉述 Manual 給的等級與理由，未獨立查證各案例。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：GenAI Red Teaming Manual（PDF 封面）— CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'rt-ch3', topic: 'genai-red-teaming', mode: 'chapter',
+  questions: [
+    { id: 'r3q1', type: 'mc', lo: [2], refs: [{label: '3.1 持久化', href: '03-phases-5-8.html#ph-p5'}],
+      stem: '紅隊在共用知識庫放入一份內容後，沒有任何後續工作階段回想或執行它。依 Manual，這個結果應該怎麼定性？',
+      options: [
+        { text: '已建立持久化，因為內容仍存在於儲存體。', why: '休眠的內容只是資料殘留；持久化需要乾淨的後續工作階段成功回想並執行。' },
+        { text: '已建立持久化，嚴重度為高。', why: '同上；而且嚴重度要看已驗證的衝擊，不能只看內容是否存在。' },
+        { text: '只是資料殘留，尚未建立持久化。', correct: true, why: '符合 3.1 節的判斷標準。' },
+        { text: '持久化需要服務重啟才算成立。', why: '服務重啟只是「存活」要記錄的邊界事件之一；不是持久化成立的條件。' }
+      ],
+      summary: '持久化＝乾淨的後續工作階段回想並執行；休眠內容只是殘留。' },
+    { id: 'r3q2', type: 'match', lo: [3], refs: [{label: '3.4 表 3-3', href: '03-phases-5-8.html#ph-p8'}],
+      stem: '把下列內容配對到它屬於紅方產出還是藍方產出。',
+      cats: [
+        { id: 'red', label: '紅方產出' },
+        { id: 'blue', label: '藍方產出' }
+      ],
+      items: [
+        { text: '最短的重現步驟與通過／失敗判準', answer: 'red', why: '紅方產出給工程團隊重現與修復。' },
+        { text: '偵測邏輯與所需遙測欄位', answer: 'blue', why: '藍方產出給 SOC 與偵測工程監測與遏制。' },
+        { text: '清理步驟：如何撤銷測試期間的動作', answer: 'red', why: '清理步驟屬紅方產出。' },
+        { text: '調校與誤報：長得像攻擊的良性流程', answer: 'blue', why: '誤報與調校屬藍方產出。' }
+      ],
+      summary: '兩者以同一個案例編號連結：紅方管重現，藍方管偵測與遏制。' },
+    { id: 'r3q3', type: 'scn', lo: [3], refs: [{label: '3.3 階段 7', href: '03-phases-5-8.html#ph-p7'}, {label: '3.5 情境範例 A', href: '03-phases-5-8.html#ph-scn'}],
+      stem: '依本章，報告裡這句話應該怎麼修正？',
+      scenario: '海藍旅遊（虛構）的紅隊報告寫：「訂位 agent 的取消工具通過授權測試，因為我們沒有看到未授權的取消。」審查者發現，這次測試沒有記錄工具呼叫與授權檢查，只保留了對話逐字稿。',
+      options: [
+        { text: '把這項改成「不確定」並列為可觀測性發現：缺少軌跡不能記成通過；補上工具呼叫、參數與授權檢查的紀錄後重測。', correct: true, why: '符合 3.3 節：缺少軌跡絕對不能記成防禦通過。' },
+        { text: '維持「通過」，因為對話逐字稿裡沒有異常。', why: '授權失敗可能發生在輸出完全無害時；只看輸出會誤判為通過。' },
+        { text: '改成「失敗」，因為沒有紀錄代表一定有漏洞。', why: '沒有證據不等於有漏洞；正確的定性是不確定，並報告可觀測性缺口。' },
+        { text: '改成「通過」，並把嚴重度降為低。', why: '嚴重度要看已驗證的衝擊；沒有軌跡就無法判定通過或失敗，也無從降級。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 授權判準是檢查動作的授權決策，不是看輸出；(2) 沒有工具呼叫與授權檢查的軌跡，就無法判定；(3) Manual 明寫：缺少軌跡絕對不能記成防禦通過，要把缺口當作可觀測性發現。</p><p><strong>結論：</strong>改為「不確定」，列出可觀測性發現，並補軌跡後重測。對應教材：<a href="03-phases-5-8.html#ph-p7">3.3 節</a>。</p>' },
+    { id: 'r3q4', type: 'mc', lo: [3], refs: [{label: '3.3 單次、Best-of-N 與 ASR', href: '03-phases-5-8.html#ph-asr'}],
+      stem: '要比較兩個模型的紅隊結果，下列哪個做法符合 Manual？',
+      options: [
+        { text: '各自挑 ASR 較低的一次結果比較。', why: '挑選結果沒有控制條件，不能比較。' },
+        { text: '在相同的嘗試次數、輪數與 token 上限下評估，並連同攻擊預算一起報告。', correct: true, why: '符合 3.3 節的兩條基準規則：預算要配對，成功要連同攻擊者付出的力氣一起報。' },
+        { text: '只要 ASR 的百分比有算出來就可以比較。', why: '孤立的百分比沒有預算，預算不同時不能比較。' },
+        { text: '只比較單次評估的通過率，因為最簡單。', why: '通過單次測試不能證明穩健；對抗式穩健性應用 Best-of-N。' }
+      ],
+      summary: '比較要預算配對；成功要連同攻擊預算一起報。' }
+  ]
+});
+</script>
+</body>
+</html>

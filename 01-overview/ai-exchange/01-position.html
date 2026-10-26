@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌與定位｜OWASP AI Exchange｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP AI Exchange 是什麼、誰發布、給誰用、版本與日期，以及它和 LLM Top 10、Agentic Top 10、MCP Top 10、ML Top 10、AISVS 的差異。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="01-overview" data-topic="ai-exchange" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌與定位</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../../primer-security-for-developers.html">資安前置觀念</a>（可略讀）</li>
+</ul>
+<p class="lead">本章回答三個問題：OWASP AI Exchange 是什麼？它和你可能聽過的 LLM Top 10 差在哪？遇到某個情況時，該先查哪份文件？</p>
+
+<h2 id="ov-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　OWASP AI Exchange 一頁式全貌（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">是什麼</th><td>開源、持續更新的 AI 資安與隱私知識庫 (living publication)：整理 AI 系統的威脅、控制措施與相關最佳實務，官方形容它是「一份連貫的資源」，而不是一堆各自獨立的文件。</td></tr>
+<tr><th scope="row">誰發布</th><td>OWASP 旗艦專案 (Flagship project)，創辦人兼主編 Rob van der Veer；官方自述作者群超過 170 位。領導者名單在不同頁面不一致（3 位或 4 位），本教材不列名單。</td></tr>
+<tr><th scope="row">給誰用</th><td>資安、隱私、工程、測試、治理等從業人員，以及組織內的終端使用者。</td></tr>
+<tr><th scope="row">涵蓋範圍</th><td>所有 AI：代理式 AI (Agentic AI)、分析式、判別式、生成式與啟發式系統 (heuristic)；也包含沒有 AI 模型的「以資料為中心的系統」（如資料倉儲、BI）。</td></tr>
+<tr><th scope="row">版本與日期</th><td><strong>沒有版本號。</strong>本教材採用 <strong>owaspai.org 2026-10-25 的內容快照</strong>：官方 PDF 快照產生於 2026-10-25（383 頁），網站頁面最後修改也是 2026-10-25。owasp.org 專案頁的「Version 1.0」是專案登記欄位，不是內容版本。</td></tr>
+<tr><th scope="row">授權</th><td>owaspai.org 內容為 CC0 1.0（可自由使用、不必署名，官方希望能註明來源）；owasp.org 專案頁頁尾為 CC BY-SA 4.0。</td></tr>
+</tbody></table></div>
+<p>入口網址與官方 PDF 見<a href="references.html">參考資料頁</a>。官方自稱「300+ pages」，owasp.org 專案頁寫「200+ pages」，快照實際是 383 頁，所以頁數不適合當版本依據。</p>
+
+<h3 id="ov-oldname">舊名：AI Security and Privacy Guide</h3>
+<p>官方 About 頁說明：專案起初就叫 AI security and privacy guide，約一年後更名為 AI Exchange，用來強調「全球協作」；GitHub 儲存庫路徑出於歷史原因保留舊名。所以你在 GitHub 或 owasp.org 看到的「AI Security and Privacy Guide」，和 AI Exchange 是同一個專案，不是兩份文件。</p>
+
+<h2 id="ov-compare">1.2 它在 OWASP AI 資源中的位置</h2>
+<p>AI Exchange 對自己與鄰近專案的分工說明如下：</p>
+<ul>
+  <li><strong>AI Exchange</strong>：AI 資安基礎的完整框架，涵蓋所有種類的 AI，與國際標準對齊並餵入標準制定。</li>
+  <li><strong>GenAI Security Project</strong>：另一個旗艦專案，是專談生成式 AI 安全的文件集合，LLM Top 10 就在其中。</li>
+  <li><strong>AISVS</strong>：想依技術性安全需求去評估或稽核 AI 應用時使用。</li>
+</ul>
+<div class="table-wrap"><table>
+<caption>表 1-2　相鄰文件比較（版本與日期為本教材採用的最新者）</caption>
+<thead><tr><th scope="col">文件</th><th scope="col">管什麼</th><th scope="col">版本／日期</th></tr></thead>
+<tbody>
+<tr><th scope="row">AI Exchange</th><td>所有 AI 的威脅、控制、風險分析、測試與隱私；知識庫</td><td>無版本號；2026-10-25 快照</td></tr>
+<tr><th scope="row">Top 10 for LLM Applications 2026</th><td>LLM 應用最關鍵的十項風險 (<a href="../../02-llm-applications/llm-top-10/02-prompt-injection.html#pi-what">LLM01:2026</a>–<a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-output">LLM10:2026</a>)；偏重提升認知</td><td>Version 2026；2026-08-04</td></tr>
+<tr><th scope="row">Top 10 for Agentic Applications 2026</th><td>Agent 型應用的十項風險 (ASI01–ASI10)</td><td>Version 2026；2025 年 12 月</td></tr>
+<tr><th scope="row">MCP Top 10 <span class="tag nc">NC 授權</span></th><td>MCP 系統的十項風險 (MCP01:2025–MCP10:2025)；仍在 Beta 階段</td><td>無版本號；條目標 2025</td></tr>
+<tr><th scope="row">Machine Learning Security Top 10</th><td>傳統機器學習系統的十項風險 (ML01:2023–ML10:2023)</td><td>2023 edition；Version 0.3 Draft</td></tr>
+<tr><th scope="row">AISVS</th><td>可逐條驗證的 AI 安全需求，仿 OWASP ASVS 的作法，分 Level 1–3、12 章</td><td>1.01（最新穩定版）</td></tr>
+</tbody></table></div>
+<p>三個版本取捨：LLM Top 10 的日期，GitHub 與 PDF 封面寫 08-04、genai.owasp.org 資源頁寫 08-03，依「以最新為準」採 08-04；AISVS 的 GitHub 寫 1.01、owasp.org 專案頁寫 1.0，依版本號採 1.01；MCP Top 10 的授權欄位前後不一致，哪個為準未能確認。細節見<a href="references.html">參考資料頁</a>。</p>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程圖：依主要需求，選擇先讀 AI Exchange、LLM Top 10 2026、AISVS，或 Agentic、MCP、ML 相關文件。">
+flowchart TD
+  S["我遇到的情況是…"] --> Q{"主要需求"}
+  Q -->|"為任何 AI 或資料系統做威脅建模、選控制、對照標準"| A1["AI Exchange"]
+  Q -->|"想快速掌握 LLM 應用最常見的風險"| A2["LLM Top 10 2026"]
+  Q -->|"要逐條驗證 AI 應用的技術需求"| A3["AISVS"]
+  Q -->|"模型會呼叫工具、自主行動"| A4["先讀 AI Exchange 的 Agentic AI overview，再讀 Agentic Top 10 2026"]
+  Q -->|"系統透過 MCP 連接工具"| A5["MCP Top 10（Beta）"]
+  Q -->|"傳統機器學習模型"| A6["AI Exchange；ML Top 10 為 2023 草稿"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class A4,A5,A6 author
+</pre>
+<figcaption><strong>圖 1-1　遇到某情況該先查哪份文件。</strong>前三條是 AI Exchange 對各專案用途的說明；<strong>虛線框的三條是作者整理，非官方</strong>。這張圖只是入口導引，不是互斥選項：實務上常先用 AI Exchange 建立全貌，再依需要進到其他文件。</figcaption>
+</figure>
+
+<div class="callout warn">
+  <p class="callout-title">一處值得留意的官方說法</p>
+  <p>AI Exchange 總覽頁寫道，LLM Top 10「刻意不完整」，例如不含提示詞 (prompt) 的安全。但 LLM Top 10 2026 有 LLM01:2026 Prompt Injection 與 <a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-hidden">LLM08:2026</a> Hidden Context Exposure（由原本的 System Prompt Leakage 擴大而成）。這句話與 2026 版內容看來不一致，原因本教材無法確認，請不要把它當成對 2026 版的描述。</p>
+</div>
+
+<h2 id="ov-standards">1.3 它與國際標準的關係</h2>
+<p>這是 AI Exchange 最特別的地方，但要分清楚「官方自述」和「已查證的事實」。</p>
+<ul>
+  <li><span class="tag official">官方自述</span> About 頁寫，透過「獨特的官方聯絡夥伴關係」，內容正餵入歐盟 AI Act 相關標準（prEN 18282，貢獻 70 頁）、ISO/IEC 27090（AI 資安，貢獻 70 頁）與 ISO/IEC 27091（AI 隱私），並透過 OpenCRE 連結各標準。本教材<strong>沒有</strong>向 ISO 或 CEN/CENELEC 查證，所以只能說「官方如此自述」。</li>
+  <li>AI Exchange 會在控制說明裡列出「有用的標準」並標註覆蓋缺口。例如在 AI PROGRAM 一項，它說 ISO/IEC 42001 是 AI 治理的管理系統，類似 ISO 27001 之於資安，但不談模型訓練、資料沿革、版本管理等生命週期工程；那部分由 ISO/IEC 5338 負責。</li>
+</ul>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：「2026 年夏季前的重大更新」是否完成</p>
+  <p>路線圖寫「Priority content workstreams to deliver major update before summer 2026」（Agentic AI、對 NIST／MITRE ATLAS／ETSI 的調和、紅隊演練等）。頁面沒有說明是否已完成。</p>
+</div>
+
+<h2 id="ov-misc">1.4 常見誤解</h2>
+<div class="table-wrap"><table>
+<caption>表 1-3　常見誤解與釐清</caption>
+<thead><tr><th scope="col">誤解</th><th scope="col">釐清</th></tr></thead>
+<tbody>
+<tr><th scope="row">「AI Exchange 是 LLM Top 10 的長版。」</th><td>不是。它是涵蓋所有 AI 的知識庫，有威脅、控制與風險分析；Top 10 偏重提升認知，官方把「相對於 Top 10 的全面性」列為 AI Exchange 的特色。</td></tr>
+<tr><th scope="row">「它只管 LLM。」</th><td>官方明說涵蓋所有 AI，包括規則式系統與查找表；生成式 AI 內容用「GenAI」標記。</td></tr>
+<tr><th scope="row">「它是官方標準，照做就算合規。」</th><td>它是 OWASP 的知識庫，內容餵入標準制定，但自己不是 ISO 或歐盟標準。官方也提醒：新法規偏重成果導向，需要有證據證明風險已被充分降低。</td></tr>
+<tr><th scope="row">「它是 Version 1.0。」</th><td>1.0 是專案登記欄位；內容持續更新、沒有版本號。引用時請標註「快照日期」。</td></tr>
+</tbody></table></div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>AI Exchange 是涵蓋所有 AI 的持續更新知識庫，CC0 1.0，沒有版本號；引用時用快照日期（本教材：2026-10-25）。</li>
+  <li>它和 GenAI Security Project 並列為兩個旗艦專案：前者管「所有 AI 的基礎框架」，後者是「生成式 AI 的文件集合」（含 LLM Top 10）。</li>
+  <li>要全貌或做威脅建模 (Threat Modeling)，先讀 AI Exchange；要快速認識 LLM 風險讀 LLM Top 10；要逐條驗證用 AISVS。</li>
+  <li>與標準的關係是官方自述，本教材沒有獨立查證。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能用兩句話說明 AI Exchange 與 LLM Top 10 2026 的差別。</li>
+  <li>我知道「AI Security and Privacy Guide」就是 AI Exchange 的舊名。</li>
+  <li>我知道引用 AI Exchange 時該標註快照日期，而不是版本號。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。作答後會立即顯示對錯與每個選項的解析。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-threat-map.html">第 2 章　威脅地圖</a>：把 AI 系統上的威脅依「開發期、輸入、執行期」分類，並學會讀攻擊鏈 (Attack Chain)。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Exchange 首頁與「0. AI Security Overview」（About、Relevant OWASP AI initiatives、Roadmap、AI PROGRAM 控制）：<a href="https://owaspai.org/">owaspai.org</a>、<a href="https://owaspai.org/go/about/">owaspai.org/go/about/</a>；內容快照 2026-10-25（頁面最後修改 2026-10-25 13:30 GMT）；PDF 快照 <a href="https://owaspai.org/OWASP-AI-Exchange.pdf">OWASP-AI-Exchange.pdf</a>（383 頁）。授權 CC0 1.0。</li>
+    <li>OWASP 專案頁：<a href="https://owasp.org/www-project-ai-exchange/">owasp.org/www-project-ai-exchange/</a>（Flagship、Version 1.0、200+ pages）；GitHub <a href="https://github.com/OWASP/www-project-ai-security-and-privacy-guide">OWASP/www-project-ai-security-and-privacy-guide</a>。頁尾授權 CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/README.md">GenAI-LLM-Top10 README</a>（Version 2026；2026-08-04；CC BY-SA 4.0）。</li>
+    <li>OWASP Top 10 for Agentic Applications 2026：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a>；PDF 封面 Version 2026、December 2025，CC BY-SA 4.0。</li>
+    <li>OWASP MCP Top 10：<a href="https://owasp.org/www-project-mcp-top-10/">owasp.org/www-project-mcp-top-10/</a>（Phase 3 Beta；頁面寫 CC BY-NC-SA 4.0）。</li>
+    <li>OWASP Machine Learning Security Top 10：<a href="https://owasp.github.io/www-project-machine-learning-security-top-10/index.html">專案頁</a>（2023 edition、Version 0.3 Draft；CC BY-SA 4.0）。</li>
+    <li>OWASP AISVS：<a href="https://github.com/OWASP/AISVS">GitHub</a>（最新穩定版 1.01）與 <a href="https://owasp.org/www-project-artificial-intelligence-security-verification-standard-aisvs-docs/">owasp.org 專案頁</a>（寫 1.0）。CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AI Exchange（owaspai.org）— CC0 1.0；OWASP Top 10 for LLM Applications 2026、Top 10 for Agentic Applications 2026、Machine Learning Security Top 10、AISVS、owasp.org 專案頁 — CC BY-SA 4.0。</p>
+  <p><span class="tag nc">NC 授權</span> 表 1-2 提到的 OWASP MCP Top 10，其專案頁標示 CC BY-NC-SA 4.0（非商業）。本頁只引用其名稱、狀態與授權標示；若要再利用該文件內容，請以官方頁面為準並留意非商業限制。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch1', topic: 'ai-exchange', mode: 'chapter',
+  questions: [
+    { id: 'c1q1', type: 'mc', lo: [1], refs: [{label: '1.1 一頁式全貌', href: '01-position.html#ov-onepage'}, {label: '1.4 常見誤解', href: '01-position.html#ov-misc'}],
+      stem: '同事說：「AI Exchange 就是 LLM Top 10 的完整長版，只是頁數比較多。」下列哪個回應最正確？',
+      options: [
+        { text: '正確，兩者都是十項風險清單，AI Exchange 只是寫得比較詳細。', why: 'AI Exchange 不是十項清單。它是涵蓋威脅、控制、風險分析、測試與隱私的知識庫。' },
+        { text: '不正確。AI Exchange 是 ISO 標準，LLM Top 10 是 OWASP 專案。', why: 'AI Exchange 本身是 OWASP 旗艦專案；它的內容據官方自述餵入 ISO 與歐盟標準制定，但自己不是 ISO 標準。' },
+        { text: '不正確。AI Exchange 是涵蓋所有 AI 的威脅與控制知識庫並持續更新；LLM Top 10 是針對 LLM 應用的十項風險清單，偏重提升認知。', correct: true, why: '這符合 AI Exchange 對自己與 Top 10 的比較：它強調「全面性」，而 Top 10 偏向認知。' },
+        { text: '不正確。AI Exchange 只談隱私，LLM Top 10 才談資安。', why: 'AI Exchange 以資安為主，同時涵蓋隱私，不是只談隱私。' }
+      ],
+      summary: 'AI Exchange = 全面的知識庫（所有 AI、含控制與風險分析）；LLM Top 10 = LLM 應用的十項風險清單。' },
+    { id: 'c1q2', type: 'mc', lo: [1], refs: [{label: '舊名說明', href: '01-position.html#ov-oldname'}, {label: '1.1 版本與日期', href: '01-position.html#ov-onepage'}],
+      stem: '你在 GitHub 看到儲存庫名稱是 www-project-ai-security-and-privacy-guide，而你正在讀的是 owaspai.org。要在報告裡引用 AI Exchange，哪一種寫法最恰當？',
+      options: [
+        { text: '把它當成另一份獨立的指南，另外引用「AI Security and Privacy Guide」。', why: '不是另一份文件。官方 About 頁說明該專案起初就叫 AI security and privacy guide，後來更名為 AI Exchange。' },
+        { text: '寫成「OWASP AI Exchange 300+ 頁版」，用頁數區分。', why: '頁數會隨內容增加而變，且各頁面標示不一致（200+ 與 300+），不適合當版本依據。' },
+        { text: '寫成「OWASP AI Exchange（owaspai.org），內容快照 2026-10-25」，並說明舊名與儲存庫路徑的關係。', correct: true, why: 'AI Exchange 沒有版本號，所以用快照日期標註才能讓讀者知道你看的是哪一時間點的內容。' },
+        { text: '寫成「OWASP AI Exchange Version 1.0」，因為 owasp.org 專案頁這樣標。', why: 'Version 1.0 是專案登記欄位，不是內容版本；內容本身持續更新、沒有版本號，寫 1.0 會讓人誤以為內容是固定的。' }
+      ],
+      summary: '舊名 = 同一個專案；引用時用「網址＋快照日期」，不要寫成 Version 1.0。' },
+    { id: 'c1q3', type: 'scn', lo: [1], refs: [{label: '圖 1-1 與表 1-2', href: '01-position.html#ov-compare'}],
+      stem: '依據本章，這個團隊應該先讀哪一份文件？',
+      scenario: '海瀾製造是一間虛構的製造公司。他們在產線上部署了一個影像分類模型，用來判斷零件是否有瑕疵，系統沒有使用任何 LLM，分類結果只是顯示給品管人員參考，不會自動觸發任何動作。資安主管要求團隊為這套系統做威脅建模，並希望做法能和正在發展中的國際 AI 資安標準方向一致。一位工程師建議：「OWASP 不是有 LLM Top 10 2026 嗎？我們就照那份做就好。」另一位同事想直接拿 AISVS 當檢查表。資安主管請你判斷，團隊該先從哪裡開始。',
+      options: [
+        { text: 'MCP Top 10，因為模型會和產線設備溝通。', why: '情境裡沒有跡象顯示使用 MCP；而且 MCP Top 10 仍在 Beta 階段，不適合當起點。' },
+        { text: 'Top 10 for Agentic Applications 2026，因為產線是自動化系統。', why: '該清單針對 Agent 型應用，也就是模型的推論可以直接指定動作、不必逐一人工核准。這裡的分類結果只顯示給品管人員，沒有觸發動作，不符合這個定義。' },
+        { text: 'Top 10 for LLM Applications 2026，因為它是 OWASP 最新的 AI 風險清單。', why: '它針對 LLM 應用；這套系統沒有 LLM。「最新」不等於「適用」。' },
+        { text: 'AI Exchange，因為它涵蓋所有 AI（含非 LLM 的分類模型），並提供威脅建模與標準對齊的內容。', correct: true, why: '符合「為任何 AI 做威脅建模、對照標準」這條路徑。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 這套系統是影像分類模型，沒有 LLM，所以以 LLM 為對象的清單不是主要依據。(2) 需求是「威脅建模」與「與標準方向一致」，這正是 AI Exchange 的定位：涵蓋所有 AI，並自述內容餵入 AI 標準制定。(3) AISVS 是「驗證標準」，AI Exchange 的說明是：想對照技術性安全需求去評估或稽核 AI 應用時用它。它是需求檢查表，不是用來找出「這套系統有哪些威脅」的方法，所以不是做威脅建模的第一個工具。</p><p><strong>結論：</strong>先讀 AI Exchange，用它的風險分析（第 7 章）找出適用的威脅；之後需要逐條驗證時再用 AISVS。對應教材：<a href="01-position.html#ov-compare">1.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

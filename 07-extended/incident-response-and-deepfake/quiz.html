@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜事件應變與 Deepfake｜OWASP AI 資安學習教材</title>
+<meta name="description" content="事件應變與 Deepfake 主題總測驗：14 題，涵蓋四個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="incident-response-and-deepfake" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：事件應變與 Deepfake</h1>
+<ul class="meta-row">
+  <li>14 題（選擇題 5、情境判斷題 5、配對題 4）</li>
+  <li>預估時間：約 18 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO4</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–4 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位與範圍：</strong>說明兩份指南各是什麼、版本與日期，以及它們是對既有事件應變流程的「補充」；並處理日期、編號與授權上的不一致。</li>
+  <li><strong>AI 事件的判斷：</strong>說明 AI 事件的定義與一般資安事件的差異，並用診斷標準與嚴重度矩陣判斷一個事件。</li>
+  <li><strong>三種事件的應變：</strong>區分三種 AI 事件，並依 NIST 生命週期說出各自的重點。</li>
+  <li><strong>Deepfake 與整合：</strong>說明 deepfake 指南「聚焦流程而非辨識」的主張與依據，並與前面主題整合。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：Guide for Preparing and Responding to Deepfake Events — CC BY-SA 4.0（PDF 授權頁）；GenAI Incident Response Guide 1.0 — PDF 內文未見授權文字，以 genai.owasp.org 網站頁尾 CC BY-SA 4.0（除非另有說明）為準。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-position.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-ai-incidents.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-three-incidents.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-deepfake-and-integration.html', a, '第 4 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位與範圍 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('pos-conflict', '1.2 三個小問題')],
+    stem: '關於 Deepfake 指南的發布日期，本教材採用哪一種處理？',
+    options: [
+      { text: '只採資源頁的 2024-09-23，因為較晚，所以就是正式發布日。', why: '資源頁日期是網站登錄日，不一定是文件發布日，教材不單選。' },
+      { text: '只採 PDF 修訂表的 2024-09-10，並認定資源頁日期是筆誤。', why: '沒有證據顯示資源頁日期是筆誤。' },
+      { text: '並列：版本 1，PDF 修訂表發布日 2024-09-10，資源頁登錄日 2024-09-23；哪個是正式發布日未能確認。', correct: true, why: '符合 1.2 節。' },
+      { text: '兩個日期都不採用，只寫「2024 年」。', why: '兩個日期都有來源，應如實並列並標示衝突。' }
+    ],
+    summary: 'Deepfake 指南的日期並列，標示未能確認。' },
+
+  { id: 'q02', type: 'match', lo: [1], refs: [C1('pos-two', '1.1 表 1-1'), C1('pos-conflict', '1.2')],
+    stem: '把下列描述配對到它所屬的指南。',
+    cats: [
+      { id: 'ir', label: 'GenAI Incident Response Guide 1.0' },
+      { id: 'df', label: 'Deepfake 指南（Version 1）' }
+    ],
+    items: [
+      { text: '封面標示 Version 1.0、July 28, 2025', answer: 'ir', why: '表 1-1。' },
+      { text: 'PDF 授權頁明載 CC BY-SA 4.0', answer: 'df', why: '表 1-1。' },
+      { text: 'PDF 內文未見授權文字，以網站頁尾為準', answer: 'ir', why: '表 1-1。' },
+      { text: '文字說「三類」卻列出四類事件', answer: 'df', why: '1.2 節問題 2。' }
+    ],
+    summary: '兩份指南的版本、日期、授權與不一致各不相同。' },
+
+  { id: 'q03', type: 'scn', lo: [1], refs: [C1('pos-conflict', '1.2 問題 3')],
+    stem: '依本教材，這份檢核表的編號引用有什麼問題？',
+    scenario: '南港電子（虛構）的風險檢核表引用 GenAI 事件應變指南：「供應鏈事件對應 LLM03，資料與模型投毒對應 LLM04。」檢核表本身以 OWASP Top 10 for LLM Applications 2026 為基準。審查人員發現，2026 版的 LLM03 是 Excessive Agency，Supply Chain 在 2026 版是 LLM04。',
+    options: [
+      { text: '指南的編號是 2025 版且沒有標年份；應寫成 LLM03:2025、LLM04:2025，再到 2026 版查對應條目（例如 2025 版的 Supply Chain 在 2026 版是 LLM04:2026），不能直接貼進以 2026 為基準的檢核表。', correct: true, why: '符合 1.2 節問題 3：指南的編號與 2025 版一致，只是沒標年份。' },
+      { text: '指南使用的是 2026 版編號，是檢核表抄錯了。', why: '指南的名稱與編號與 2025 版吻合，2026 版不同。' },
+      { text: '編號沒有年份差異，LLM03 永遠是 Supply Chain。', why: '兩個年份的編號不同，這正是引用時要加年份的原因。' },
+      { text: '應把檢核表中所有 LLM 編號刪除，只用文字說明。', why: '編號可以用，但要標年份並對照正確版本。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) IR 指南的 LLM 編號沒有年份，但名稱與編號和 2025 版一致。(2) 2026 版重新編號：Excessive Agency 是 LLM03:2026，Supply Chain 是 LLM04:2026。(3) 因此直接貼進以 2026 為基準的檢核表，會讓 LLM03 指到錯的風險。</p><p><strong>結論：</strong>引用時一律寫 LLMnn:年份，並對照正確版本。對應教材：<a href="01-position.html#pos-conflict">1.2 節</a>。</p>' },
+
+  /* ================= LO2 AI 事件的判斷 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C2('ai-layers', '2.3 表 2-2')],
+    stem: '依指南的診斷標準，下列哪一項屬於「執行期」這一層的 AI 受害跡象？',
+    options: [
+      { text: '模型雜湊與校驗值和模型庫的紀錄不符。', why: '這屬於模型層的完整性違規。' },
+      { text: '沒有正當的訓練或推論工作，卻出現 GPU/TPU 使用率飆升。', why: '這屬於系統層。' },
+      { text: 'AI 程式庫或 CI/CD 產物被意外更動。', why: '這屬於實作層。' },
+      { text: '重複且微幅變化的查詢，疑似在推斷決策邊界。', correct: true, why: '執行期的異常查詢模式。' }
+    ],
+    summary: '模型層、實作層、系統層、執行期各有自己的跡象。' },
+
+  { id: 'q05', type: 'scn', lo: [2], refs: [C2('c-max-score', '2.4 取最高分'), C2('c-ai-vs-cyber', '2.3')],
+    stem: '依本章，這位主管的判斷有什麼問題？',
+    scenario: '北投診所（虛構）的 AI 分流助理因模型服務故障完全無法運作，護理站必須人工排序候診病人，已有病人的候診時間大增。團隊評分：A 功能 3、B 資料 1、C 營運可用性 4、D 聲譽與財務 2、E 補救工作量 2。主管說：「沒有資料外洩，也沒有人入侵，這不是資安事件，最多算 Medium。」',
+    options: [
+      { text: '主管正確，沒有入侵就不可能高於 Medium。', why: '指南的 AI 事件不要求有攻擊者，Critical 也不必有入侵。' },
+      { text: '整體應取最高分，C=4，所以是 Critical；系統完全不可用本身就可以是 Critical，不需要入侵；應立即啟動跨職能團隊並依 Critical 的 SLA 處理。', correct: true, why: '符合 2.4 節。' },
+      { text: '整體應取平均 2.4，算 Medium。', why: '指南明說取最高分，不是平均。' },
+      { text: '這不是 AI 事件，所以不適用嚴重度矩陣。', why: '模型服務故障導致有害結果，AI 在成因中扮演核心角色，屬於 AI 事件。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 指南的 AI 事件定義不要求有攻擊者，故障也算。(2) 整體嚴重度取各維度最高分，C=4 即 Critical。(3) 維度 C 的 Critical 描述是系統完全不可用，與是否被入侵無關。</p><p><strong>結論：</strong>整體為 Critical。對應教材：<a href="02-ai-incidents.html#c-max-score">2.4 節</a>。</p>' },
+
+  { id: 'q06', type: 'match', lo: [2], refs: [C2('ai-severity', '2.4 表 2-3')],
+    stem: '把下列 Critical 等級的描述配對到嚴重度矩陣的維度。',
+    cats: [
+      { id: 'b', label: 'B　資料／智財的完整性與機密性' },
+      { id: 'c', label: 'C　營運可用性' },
+      { id: 'd', label: 'D　聲譽與財務' },
+      { id: 'e', label: 'E　補救工作量' }
+    ],
+    items: [
+      { text: '核心模型遭竊、大規模個資外洩，且資料完整性無法挽回', answer: 'b', why: '表 2-3 維度 B。' },
+      { text: '系統完全不可用，對生命安全有立即威脅', answer: 'c', why: '表 2-3 維度 C。' },
+      { text: '災難性且不可逆的信任損失，加上重大罰款', answer: 'd', why: '表 2-3 維度 D。' },
+      { text: '需要全系統重建與長期復原', answer: 'e', why: '表 2-3 維度 E。' }
+    ],
+    summary: '五個維度各有自己的 Critical 描述。' },
+
+  { id: 'q07', type: 'mc', lo: [2], refs: [C2('c-max-score', '2.4 取最高分')],
+    stem: '組織能否調整指南的嚴重度矩陣？',
+    options: [
+      { text: '可以：指南明說組織可使用這個框架，或改成符合自己現有計算方式的版本。', correct: true, why: '符合 2.4 節。' },
+      { text: '不可以，矩陣是 OWASP 的標準，必須原樣使用。', why: '指南沒有這樣要求。' },
+      { text: '只能增加維度，不能刪除。', why: '指南沒有提出這種限制。' },
+      { text: '可以，但必須先取得 OWASP 核准。', why: '指南沒有提出核准程序。' }
+    ],
+    summary: '矩陣可使用或修改。' },
+
+  /* ================= LO3 三種事件的應變 ================= */
+  { id: 'q08', type: 'scn', lo: [3], refs: [C3('c-prop', '3.2 立即而成比例'), C3('tp-types', '3.1 表 3-1')],
+    stem: '依本章，哪一種做法最符合指南對供應鏈事件圍堵的建議？',
+    scenario: '萬華物流（虛構）自己訓練路線預測模型，發現訓練管線的某個相依套件新版本含可疑程式碼。這個模型的輸出餵給即時派車系統。工程師甲主張：「立刻刪除所有容器和模型，不必討論。」工程師乙主張：「先不動，等根因分析完成再說。」',
+    options: [
+      { text: '採用甲的做法：全部立刻刪除。', why: '指南要求立即但「成比例」，並先評估相依與輸出是否餵給關鍵流程。' },
+      { text: '採用乙的做法：等根因分析完成再行動。', why: '指南要求圍堵要立即，不是等根因分析。' },
+      { text: '只重啟服務，因為重啟就能移除可疑程式碼。', why: '重啟不會移除已被帶入的可疑相依。' },
+      { text: '立即但成比例：依資產清單確認誰在用這個模型的輸出；盤點該套件在開發與部署環境中的所有版本，檢查共用的序列化模型成品是否可能傳播；業務衝擊小就隔離模型並關閉服務；若影響派車，先評估是否下線與備援方案。', correct: true, why: '符合 3.2 節與表 3-1。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 指南：圍堵應立即且與業務衝擊成比例，可行時下線模型，但要先評估相依與輸出是否餵給關鍵流程。(2) 惡意第三方套件：盤點所有版本、檢查共享成品、依團隊責任對映爆炸半徑。(3) 甲忽略相依，乙違反「立即」。</p><p><strong>結論：</strong>立即但成比例。對應教材：<a href="03-three-incidents.html#c-prop">3.2 節</a>。</p>' },
+
+  { id: 'q09', type: 'match', lo: [3], refs: [C3('tp-types', '3.1 表 3-1')],
+    stem: '把下列做法配對到它所屬的生命週期階段。',
+    cats: [
+      { id: 'contain', label: '圍堵' },
+      { id: 'erad', label: '根除' },
+      { id: 'recover', label: '復原' },
+      { id: 'post', label: '事後活動' }
+    ],
+    items: [
+      { text: '撤銷或輪換與模型端點相關的 API 金鑰，並暫停與供應商的互動', answer: 'contain', why: '第三方供應商一節的隔離與回滾。' },
+      { text: '重新產生 AI-BOM，驗證所有現用的相依、資料集與工具都已知且可信', answer: 'erad', why: '攻擊 AI 系統一節的根除。' },
+      { text: '回滾到版本控制中已知良好的版本', answer: 'recover', why: '供應鏈一節的復原選項。' },
+      { text: '向供應商取得書面結案聲明，並更新內部清單', answer: 'post', why: '供應鏈一節的事後活動。' }
+    ],
+    summary: '圍堵、根除、復原、事後活動各有典型做法。' },
+
+  { id: 'q10', type: 'mc', lo: [3], refs: [C3('tp-prep', '3.3 表 3-2')],
+    stem: '依指南，AI 事件應變團隊與傳統 IT 事件應變團隊是什麼關係？',
+    options: [
+      { text: 'AI 事件應變團隊取代傳統團隊，傳統角色不再需要。', why: '指南說傳統角色仍然不可或缺。' },
+      { text: '在傳統角色之上疊加 AI 專長角色，並建議分層啟動：核心、延伸、專家。', correct: true, why: '符合表 3-2。' },
+      { text: '只有處理 deepfake 時才需要傳統角色。', why: '與指南無關。' },
+      { text: '只需要指派一位 AI 專家，其餘角色維持不變。', why: '指南列了多個 AI 專長角色。' }
+    ],
+    summary: 'AI 團隊是疊加，不是取代。' },
+
+  /* ================= LO4 Deepfake 與整合 ================= */
+  { id: 'q11', type: 'mc', lo: [4], refs: [C4('c-process', '4.1 運作方式')],
+    stem: '指南所說的「雙頻驗證」(dual-band communication verification) 最接近下列哪一項？',
+    options: [
+      { text: '用同一個電話管道連打兩次來確認。', why: '重點是兩種驗證不能來自同一個通訊管道。' },
+      { text: '要求兩位主管同時出現在視訊畫面中。', why: '與通訊管道無關。' },
+      { text: '交易不能僅透過單一管道（例如只有 email 或只有電話）請求、審核或核准；需要兩種無法經由同一管道完成的驗證。', correct: true, why: '符合指南的敘述。' },
+      { text: '在視訊上同時使用兩套 deepfake 偵測軟體。', why: '指南不以偵測為主要防線。' }
+    ],
+    summary: '雙頻驗證：兩種驗證不能走同一個管道。' },
+
+  { id: 'q12', type: 'scn', lo: [4], refs: [C4('c-process', '4.1 運作方式'), C4('df-four', '4.3 表 4-2')],
+    stem: '依本章，這個 helpdesk 流程的主要弱點與改法是什麼？',
+    scenario: '內湖科技（虛構）的 helpdesk 接到自稱「出差中副總」的來電，聲音很像，要求替新手機登錄 MFA。現行做法是：來電者說得出員工編號就可以辦理。事後發現，該副總的員工編號曾出現在公司公開程式庫的歷史紀錄中。',
+    options: [
+      { text: '弱點在驗證依據：員工編號可能曝光，不該當作驗證因子；應改用至少兩種人工驗證（回撥預先登記的號碼、Code of the Day、要求主管驗證等），並讓 helpdesk 受訓、有明確的通報機制，而不是依賴聲音像不像。', correct: true, why: '符合 4.1、4.3 節。' },
+      { text: '弱點在 helpdesk 人員沒聽出聲音是合成的，應加強辨識訓練。', why: '指南反對把防線建在辨識上。' },
+      { text: '只要引進 deepfake 偵測軟體就能解決。', why: '偵測技術不成熟，且不是指南的主要建議。' },
+      { text: '應禁止 helpdesk 處理任何 MFA 登錄。', why: '指南的建議是改善驗證流程，不是停止服務。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 指南舉例：員工編號若曝光在公開程式庫，就不該用於驗證。(2) 人工驗證的建議做法至少用其中兩種。(3) helpdesk 類事件的偵測幾乎完全仰賴 helpdesk 受過訓練並有明確通報機制。</p><p><strong>結論：</strong>換驗證依據與流程，不靠辨識。對應教材：<a href="04-deepfake-and-integration.html#df-four">4.3 節</a>。</p>' },
+
+  { id: 'q13', type: 'scn', lo: [4], refs: [C4('c-integ', '4.4 與資料安全：日誌的張力')],
+    stem: '依本章，這場爭議最恰當的處理方式是什麼？',
+    scenario: '士林電信（虛構）的事件應變團隊要求把所有使用者提示詞完整保存兩年以供鑑識。隱私長引用資料安全文件的 DSGAI14，要求預設最少日誌、關閉內容層級記錄。兩邊都說自己有 OWASP 官方文件作依據。',
+    options: [
+      { text: '事件應變團隊勝出，因為鑑識需要完整資料。', why: 'IR 指南自己也承認儲存提示詞有隱私顧慮，不是單方面勝出。' },
+      { text: '隱私長勝出，因為最少日誌是 Tier 1 的第一步，所以任何時候都不該記錄提示詞內容。', why: '資料安全文件的做法是「預設只記中繼資料，明確提升才記內容」，並非永遠禁止；它在別處也要求可歸因的查詢日誌供調查。' },
+      { text: '兩邊都有官方依據：應事前決定保存什麼、多久、誰能看，以及事件時由誰核准提升記錄層級（可參考資料安全文件的「預設最少、明確提升、核准且到期」），並記入政策，而不是事件發生時才爭論。', correct: true, why: '符合 4.4 節。' },
+      { text: '兩者衝突，代表其中一份一定是錯的，應忽略其中一份。', why: '兩份都是官方材料，張力是真實存在的取捨。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) IR 指南稱提示詞既是最常見的攻擊向量，也是最豐富的偵測訊號，要求串進日誌堆疊；同時承認儲存提示詞可能引發隱私顧慮。(2) DSGAI14 Tier 1：內容層級記錄預設關閉、只記中繼資料，除非明確提升；Tier 2 的除錯記錄需核准並自動到期。(3) 資料安全文件在 DSGAI12 也要求完整的閘道請求日誌與可歸因的查詢日誌供調查。兩份文件沒有互相引用。</p><p><strong>結論：</strong>事前決定並記入政策，包含誰能核准提升記錄；「事件時由誰核准提升」是作者整理，非官方。對應教材：<a href="04-deepfake-and-integration.html#c-integ">4.4 節</a>。</p>' },
+
+  { id: 'q14', type: 'match', lo: [4], refs: [C4('c-process', '4.1 運作方式')],
+    stem: '把下列做法配對到 deepfake 指南的三層防線。',
+    cats: [
+      { id: 'human', label: '人工驗證' },
+      { id: 'fin', label: '財務控管' },
+      { id: 'culture', label: '文化與訓練' }
+    ],
+    items: [
+      { text: '回撥到預先登記的電話號碼確認請求', answer: 'human', why: '人工驗證最佳實務之一。' },
+      { text: '超過一定金額的交易需要多重核准', answer: 'fin', why: '財務控管。' },
+      { text: '職責分離：核准付款的人與處理付款的人不同', answer: 'fin', why: '財務控管。' },
+      { text: '訓練強調「眼睛和耳朵不可信，一律走流程，無例外」', answer: 'culture', why: '文化與訓練。' }
+    ],
+    summary: '三層防線：人工驗證、財務控管、文化與訓練。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'incident-response-and-deepfake', mode: 'final',
+    los: [
+      { n: 1, text: '定位與範圍：說明兩份指南各是什麼、版本與日期，並處理日期、編號與授權上的不一致。' },
+      { n: 2, text: 'AI 事件的判斷：說明 AI 事件的定義，並用診斷標準與嚴重度矩陣判斷一個事件。' },
+      { n: 3, text: '三種事件的應變：區分三種 AI 事件，並依 NIST 生命週期說出各自的重點。' },
+      { n: 4, text: 'Deepfake 與整合：說明聚焦流程而非辨識的主張與依據，並與前面主題整合。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

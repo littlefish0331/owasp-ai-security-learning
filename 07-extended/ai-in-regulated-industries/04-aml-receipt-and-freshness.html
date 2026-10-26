@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　AML 與制裁（下）｜受管制領域的 AI 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AML 與制裁速查表的後半：信任分級速率限制、自建或託管篩查、收據的規範化序列化與跨 agent 傳遞、名單新鮮度綁定到簽署收據，以及文件自己的法規對照表與它的限制。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="ai-in-regulated-industries" data-page="04-aml-receipt-and-freshness.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　AML 與制裁（下）：速率限制、架構、收據與名單新鮮度</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="03-aml-identity-and-failclosed.html">第 3 章</a></li>
+</ul>
+<p class="lead">篩查做完了。這個結果要怎麼留下來，讓下一個 agent、下一個系統與事後的監理檢查都能驗證？AML 速查表的後半把答案放在<strong>簽署收據 (Signed Compliance Receipt)</strong> 上，並且反覆提醒：簽章能證明的東西很有限。本章走過第 6 到第 12 節，重點是「這個簽章證明了什麼、沒證明什麼」。</p>
+
+<h2 id="am2-limits">4.1 速率限制與自建或託管</h2>
+<p><strong>信任分級的速率限制（第 6 節）。</strong>文件的主張是：不是所有 agent 都該被同等對待。速率限制要依<strong>密碼學身分</strong>（公鑰指紋或護照 ID），不是 IP 位址，因為 IP 可能共用或被偽造；新註冊或低信任的 agent（例：L0／L1）限額較低，驗證過的高信任 agent（例：L3／L4）較高；回應中附上剩餘配額與重設時間，讓 agent 自行調整；偵測到異常（請求突增、異常的實體樣式）就降級配額。要防「女巫攻擊 (Sybil Attack)」，也就是建立多個身分來繞過限制，做法是把 agent 身分綁到<strong>已驗證的營運者帳戶</strong>。</p>
+<p><strong>自建或託管篩查（第 7 節）。</strong>兩種架構都可以，但 agent 是呼叫者時安全考量不同。自建時，名單、比對引擎與篩查 API 都在機構自己的基礎設施上，請求不離開機構邊界，名單更新頻率與比對演算法由自己控制，代價是要投資名單攝入與比對品質。託管時，機構呼叫第三方篩查 API，<strong>agent 的身分憑證與篩查資料會離開機構邊界</strong>，機構必須確保供應商符合適用的法規要求，且要資料最小化：只送篩查所需的最少資料。兩種架構都要用 TLS 加密傳輸；威脅模型需要跨越不受信任的中介來驗證時，才用雙方都支援、經審查的訊息簽章設定檔。不要把 agent 的私鑰或完整身分憑證送給第三方，也不要以為 TLS 在連線終止之後還保護資料。</p>
+
+<h2 id="am2-receipt">4.2 收據：序列化、信任與跨 agent 傳遞</h2>
+<p><strong>序列化 (第 8 節)。</strong>兩個系統各自把同一個 JSON 物件序列化來雜湊或驗章時，鍵的順序、空白與數字格式都可能不同，得到的位元組就不同，驗章會失敗。JSON 規範化方案 (JSON Canonicalization Scheme, JCS，RFC 8785) 給出一種確定的表示法。文件同時列了兩個限制：JCS <strong>不是每種簽署格式都需要</strong>（JWS 的驗證者檢查的是編碼後的簽署輸入，不會重新序列化酬載）；而且跨系統驗證還需要雙方同意的簽章設定檔與受信任的驗證金鑰，<strong>規範化 (Canonicalization) 兩者都不提供</strong>。要做的是：若收據設定檔要求各自序列化 JSON，簽署與驗證前都先規範化；不要自行多加一道預先雜湊，除非設定檔要求；記錄用了哪個規範化與簽章設定檔；不要依賴框架預設或美化輸出的序列化。</p>
+<p><strong>跨 agent 的問責（第 9 節）。</strong>agent 付款可能經過多個 agent。下游依賴簽署的篩查收據時，必須用<strong>綁定到受信任發行者</strong>的金鑰驗證它。文件說得很精確：數位簽章提供資料來源與完整性的保證，<strong>不證明發行者的篩查做得對</strong>；收據記錄的是發行者對實體、名單與決定的「主張」，所以驗證者仍需要一份政策，決定信任哪些篩查發行者。收據要綁定到特定交易（簽署的酬載含交易或意圖雜湊）並一路傳遞；每一跳驗證進來的收據，若自己也採取動作，就附加自己的簽署收據，形成可驗證的問責鏈。</p>
+<div class="table-wrap"><table>
+<caption>表 4-1　收據每一層「證明什麼、不證明什麼」（取自文件第 8–10 節各節的限制說明；整理成對照表是作者編排）</caption>
+<thead><tr><th scope="col">收據裡的要素</th><th scope="col">能提供</th><th scope="col">文件明說它沒有提供</th></tr></thead>
+<tbody>
+<tr><th scope="row">規範化序列化 (JCS)</th><td>同一物件在不同系統得到同樣位元組</td><td>簽章設定檔與受信任的驗證金鑰</td></tr>
+<tr><th scope="row">數位簽章</th><td>資料來源與完整性</td><td>發行者的篩查是否做對</td></tr>
+<tr><th scope="row">簽入交易或意圖雜湊</th><td>後續驗證者能把這份收據與別筆交易區分開</td><td>（文件未多說）</td></tr>
+<tr><th scope="row">簽入名單版本與時間戳</th><td>被記錄的主張不會被事後更改</td><td>名單當時真的是最新的，或真的被使用</td></tr>
+<tr><th scope="row">驗證者自己的政策</th><td>信任哪些發行者；可接受的名單年齡與篩查年齡上限</td><td>——（這是驗證者的責任，不能交給發行者決定）</td></tr>
+</tbody></table></div>
+
+<h2 id="am2-fresh">4.3 核心概念：名單新鮮度 (Sanctions-List Freshness) 要綁進收據</h2>
+<div class="concept">
+<h3 id="c-fresh">「已篩查」不是布林值</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>文件第 10 節的第一句：一張寫著「已篩查，無命中」的收據，如果沒說<strong>用的是哪個版本的名單、什麼時候篩的</strong>，就沒有意義。要把名單版本與時間戳放進簽署收據裡，讓「篩查有多新」本身不可竄改且可稽核。</dd>
+  <dt data-n="2">為什麼</dt>
+  <dd>制裁名單更新頻繁，拿過期的名單得到「乾淨」的結果，是合規缺口（文件的陳述）。後面的驗證者無從得知當時用的是哪一版，除非它被寫進收據。</dd>
+  <dt data-n="3">怎麼被忽略（概念層級）</dt>
+  <dd>收據只有「screened: true」；或收據有名單時間，卻由發行者自己宣告有效期，驗證者照單全收；或以為簽了時間戳，就等於證明名單真的是最新的。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>(a) 簽署範圍內含名單來源、版本或發布日期與篩查時間戳；(b) 把每個結果與名單版本綁到<strong>特定交易或付款意圖</strong>；(c) 由<strong>驗證者</strong>強制自己可接受的名單年齡與篩查年齡上限，不讓發行者提供的年齡限制凌駕驗證者的政策；(d) 另外保存使用過的名單版本證據與篩查服務的更新歷史。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「收據有簽章與時間戳，所以那份名單一定是最新的。」文件明說：簽署的時間戳或版本只保護<strong>被記錄的主張</strong>不被更改，並不獨立證明名單當時是最新的、或真的被使用，所以才要另外保留證據。</dd>
+</dl>
+</div>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="收據在多個 agent 之間傳遞：篩查發行者簽署收據，內容有交易雜湊、名單來源與版本、篩查時間。第一個 agent 收到後，驗證簽章、發行者是否受信任、是否綁定這筆交易、名單與篩查是否在驗證者自己設定的年齡上限內；四項都通過才依賴它，並附加自己的簽署收據。下一個 agent 重複同樣的驗證。任何一項不通過就不依賴、不放行。">
+flowchart TB
+  I["篩查發行者簽署收據<br>交易雜湊、名單版本、篩查時間"] --> A["agent A 驗證四項<br>簽章、受信任發行者、<br>交易綁定、名單與篩查年齡"]
+  A -->|"都通過"| A2["採取動作<br>附加自己的簽署收據"]
+  A -->|"任一項不通過"| X["不依賴、不放行"]
+  A2 --> B["agent B 重複同樣的驗證"]
+  B -->|"都通過"| P["付款可繼續"]
+  B -->|"任一項不通過"| X
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class X author
+</pre>
+<figcaption><strong>圖 4-1　收據在 agent 之間傳遞時，每一跳驗證的四件事。</strong>四項驗證與「附加自己的簽署收據」取自第 9 節；圖是依文件重新繪製的簡化版，「不通過就不依賴、不放行」的終點是作者依第 5 節的原則補上，屬<strong>作者整理，非官方畫法</strong>（虛線框）。</figcaption>
+</figure>
+
+<h2 id="am2-map">4.4 文件自己的法規對照表，以及它的限制</h2>
+<p>第 11 節的對照表是整份文件最容易被誤用的一段。文件先聲明：這個對照只是示意、不是法律意見，義務因管轄區而異。下表是現行版本的對照（教材只轉述文件的陳述，不查證法規）：</p>
+<div class="table-wrap"><table>
+<caption>表 4-2　文件第 11 節的對照表（意譯；FATF 建議編號是文件所寫，教材未查證）</caption>
+<thead><tr><th scope="col">控制（文件章節）</th><th scope="col">文件寫它對應到</th></tr></thead>
+<tbody>
+<tr><th scope="row">agent 身分先於篩查（第 1 節）</th><td>技術歸屬與授權；不取代適用的客戶或實質受益人識別</td></tr>
+<tr><th scope="row">實體與操作者篩查（第 2–3 節）</th><td>篩查適用制裁合規計畫所認定的當事人；不是「每個軟體操作者都必須篩查」的普遍法律義務</td></tr>
+<tr><th scope="row">簽署稽核軌跡與收據（第 4、8–10 節）</th><td>紀錄保存；文件寫 FATF 建議 11、多年保存期間</td></tr>
+<tr><th scope="row">收據中的名單新鮮度（第 10 節）</th><td>顯示哪個版本的名單支持了該次評估的證據；光是名單篩查不足以證明合規</td></tr>
+<tr><th scope="row">失效即拒絕（第 5 節）</th><td>防止必要檢查未完成時就執行；要把這個技術閘門與「確認命中後的法律封鎖義務」區分開</td></tr>
+<tr><th scope="row">信任分級限額（第 6 節）</th><td>風險為本的做法（文件寫 FATF 建議 1）；監控門檻</td></tr>
+</tbody></table></div>
+<p>三個值得注意的地方。第一，每一列的右欄都有「不是什麼」的限定語。第二，這張表<strong>被收斂過</strong>：教材比對了 2026-06-03 首次提交的版本，當時把第 1 節對到「KYC／KYB 歸屬與客戶盡職調查」、第 5 節對到「對受制裁當事人的封鎖義務」、第 10 節對到「對照當前名單篩查的義務」；現行版本都改成更保守的說法，方向一致：<strong>不要把技術控制直接說成法律義務的履行</strong>。第三，表後的 Do／Don't 要你向合格法律顧問確認各管轄區的具體義務，且跨境 agent 支付系統不要只依賴單一管轄區的名單或規則。</p>
+<p>第 12 節是全文的 Do／Don't 彙整，文件說這些控制與 AISVS 的驗證要求一致，特別是第 10 章（MCP 安全需求；見<a href="../../06-assessment-and-verification/aisvs-and-llmsvs/02-aisvs.html#av-chapters">AISVS 與 LLMSVS 第 2 章</a>）。其中有一條值得單獨記：身分要在<strong>每次</strong>篩查請求前驗證，一次檢查不夠長期存取。</p>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>速率限制依密碼學身分與信任等級，不依 IP；把 agent 身分綁到已驗證的營運者帳戶以防女巫攻擊。託管篩查時，憑證與篩查資料離開機構邊界，要資料最小化。</li>
+  <li>規範化 (JCS) 只解決「各自序列化得到同樣位元組」，不提供簽章設定檔與受信任金鑰；JWS 不需要它。</li>
+  <li>收據的簽章證明來源與完整性，不證明發行者篩查做對；驗證者要有信任哪些發行者的政策，並自己強制名單年齡與篩查年齡上限。</li>
+  <li>「已篩查」不是布林值：名單版本與時間戳要簽進收據並綁定到交易；簽署只保護被記錄的主張，不證明名單當時是最新的。</li>
+  <li>文件的法規對照表是示意、不是法律意見，且已被收斂得更保守；要與法務確認各管轄區義務。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出一張收據要簽進哪些內容，以及每一跳要驗證哪四件事。</li>
+  <li>我能對「簽了章就證明篩查正確」這個說法指出錯在哪裡。</li>
+  <li>我能說明為什麼對照表要和法務一起讀，以及它被改保守的方向。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p><a href="05-integration.html">第 5 章　兩個領域的共同模式與收尾</a>：把廣告與 AML 兩份文件放在一起，找出可以帶走的模式，並用兩個虛構情境練習。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series, <em>AML and Sanctions Compliance for AI Agent Payments Cheat Sheet</em>（Section 6–12）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/AML_Sanctions_AI_Agent_Payments_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；無版本號；GitHub 首次提交 2026-06-03、最近修改 2026-10-18；2026-10-26 讀取；CC BY-SA 4.0。法規與政府指引為文件的陳述，教材未查證，不是法律意見。</li>
+    <li>OWASP/CheatSheetSeries 提交紀錄（2026-06-03 首次提交 095b35c 與現行版本的第 11 節比對；2026-10-01 的收據規範化與交易綁定修訂 3471cb0；2026-10-04 的收據信任限制修訂 df5a004）：<a href="https://github.com/OWASP/CheatSheetSeries">github.com/OWASP/CheatSheetSeries</a>；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series 的 AML and Sanctions Compliance for AI Agent Payments Cheat Sheet — CC BY-SA 4.0（站台頁尾與儲存庫 LICENSE.md）。本頁未使用 NC（非商業）授權的來源。法規相關內容為文件陳述的轉述，不是法律意見。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'r-ch4', topic: 'ai-in-regulated-industries', mode: 'chapter',
+  questions: [
+    { id: 'r4q1', type: 'mc', lo: [4], refs: [{label: '4.1 速率限制', href: '04-aml-receipt-and-freshness.html#am2-limits'}],
+      stem: '依 AML 速查表，下列哪一種速率限制設計最符合文件的建議？',
+      options: [
+        { text: '依來源 IP 位址設定統一限額，簡單且容易實作。', why: '文件指出 IP 可能共用或被偽造，不應只依 IP。' },
+        { text: '對所有 agent 設同一個很高的限額，避免影響付款成功率。', why: '文件警告限額太高等於沒有保護，也主張依信任分級。' },
+        { text: '依 agent 的密碼學身分與信任等級設定限額，低信任較低、高信任較高，並把身分綁到已驗證的營運者帳戶以防女巫攻擊。', correct: true, why: '符合 4.1 節。' },
+        { text: '只對新註冊的 agent 限速，已驗證的 agent 完全不限。', why: '文件建議的是高信任較高的限額，而非完全不限；異常行為時還要降級。' }
+      ],
+      summary: '依密碼學身分與信任等級限速；身分綁營運者帳戶防女巫攻擊。' },
+    { id: 'r4q2', type: 'match', lo: [4], refs: [{label: '4.2 表 4-1', href: '04-aml-receipt-and-freshness.html#am2-receipt'}],
+      stem: '把下列說法配對：它是收據裡哪個要素「能提供」的，或哪個要素「沒有提供」的。',
+      cats: [
+        { id: 'sig', label: '數位簽章能提供' },
+        { id: 'canon', label: '規範化 (JCS) 能提供' },
+        { id: 'neither', label: '簽章與規範化都沒有提供' }
+      ],
+      items: [
+        { text: '資料的來源與完整性', answer: 'sig', why: '表 4-1：簽章提供資料來源與完整性。' },
+        { text: '同一個 JSON 物件在不同系統得到同樣位元組', answer: 'canon', why: '表 4-1：規範化的作用。' },
+        { text: '證明發行者的篩查做得正確', answer: 'neither', why: '文件明說簽章不證明篩查做對；規範化更與此無關。' },
+        { text: '簽章設定檔與受信任的驗證金鑰', answer: 'neither', why: '文件明說規範化兩者都不提供；簽章本身也需要受信任的金鑰才有意義。' }
+      ],
+      summary: '簽章證明來源與完整性；規範化只讓位元組一致；對錯要靠驗證者的信任政策。' },
+    { id: 'r4q3', type: 'scn', lo: [4], refs: [{label: '4.3 核心概念', href: '04-aml-receipt-and-freshness.html#c-fresh'}, {label: '4.2 跨 agent 問責', href: '04-aml-receipt-and-freshness.html#am2-receipt'}],
+      stem: '依本章，結算 agent 收下這張收據的做法有什麼問題？',
+      scenario: '白沙支付（虛構）的結算 agent 收到上游篩查 agent 傳來的收據，內容為「screened: true、無命中」，並有發行者簽章與時間戳，另有一欄「本收據有效期 30 天」由發行者自己填寫。結算 agent 驗證簽章通過後直接放行，理由是「簽章與時間戳都在，名單一定夠新」。',
+      options: [
+        { text: '沒有問題，簽章通過就代表篩查正確且名單夠新。', why: '文件明說簽章不證明篩查做對，也不獨立證明名單當時是最新的。' },
+        { text: '問題只在有效期太長，改成 7 天就可以。', why: '重點不在天數，而在上限應由驗證者而非發行者決定。' },
+        { text: '問題在於沒有使用 TLS。', why: '情境與文件都沒有指出 TLS 的問題；文件談的是收據內容與驗證者政策。' },
+        { text: '問題有三：收據沒有名單版本；沒有綁定到這筆交易；有效期由發行者自己宣告，卻應由驗證者強制自己的名單年齡與篩查年齡上限；同時，也要依政策確認發行者是否受信任。', correct: true, why: '符合 4.2 節與 4.3 節。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 「screened」不是布林值，收據要簽進名單來源、版本或日期與篩查時間。(2) 收據要綁定到特定交易或意圖雜湊，才能與別筆交易區分。(3) 文件明說不要讓發行者提供的年齡限制凌駕驗證者的政策。(4) 簽章只提供來源與完整性，驗證者還要確認發行者受信任。</p><p><strong>結論：</strong>補上名單版本與交易綁定，由結算 agent 依自己的政策驗證四項；放行前不可只看簽章。教材不查證相關法規。對應教材：<a href="04-aml-receipt-and-freshness.html#c-fresh">4.3 節</a>。</p>' },
+    { id: 'r4q4', type: 'mc', lo: [4], refs: [{label: '4.4 法規對照表', href: '04-aml-receipt-and-freshness.html#am2-map'}],
+      stem: '依本章，AML 文件第 11 節的法規對照表，現行版本與 2026-06-03 首次提交的版本相比，最主要的差異方向是？',
+      options: [
+        { text: '改得更保守：不把技術控制直接說成法律義務的履行，並加上「不取代」「不是普遍義務」「光是名單篩查不足以證明合規」這類限定。', correct: true, why: '符合 4.4 節。' },
+        { text: '新增了更多法規，涵蓋範圍更廣。', why: '主要的變化是措辭，不是範圍擴大。' },
+        { text: '改得更嚴格：把更多控制升為法律強制要求。', why: '方向相反。' },
+        { text: '整張表被刪除。', why: '現行版本仍有這張表，也仍聲明不是法律意見。' }
+      ],
+      summary: '對照表被改保守：技術控制 ≠ 法律義務履行。' }
+  ]
+});
+</script>
+</body>
+</html>

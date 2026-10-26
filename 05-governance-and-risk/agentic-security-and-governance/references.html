@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜Agentic 安全與治理現況｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Agentic 安全與治理現況主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、未能確認項目、教材的範圍限制、授權。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="agentic-security-and-governance" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 3.2 節與第 8 節）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以作者回到一手來源重新核對：下載報告 PDF 並轉成文字，文字抽取無法判斷的部分（例如矩陣的粗體格子）另轉成圖片逐頁看過。因為這份報告有 139 頁，<strong>本主題是選讀</strong>，本頁最後會明列哪些本教材讀了、哪些沒讀。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">State of Agentic AI Security and Governance</th><td>Version 2.01；2026 年 6 月（PDF 封面）；資源頁日期 2026-06-01；139 頁</td><td>資源頁標題「2.01」與日期；PDF 封面；PDF 建立時間 2026-06-02</td><td>CC BY-SA 4.0（PDF 第 2 頁）；引用須含專案名稱與資產名稱</td></tr>
+<tr><th scope="row">前一版 v1.0</th><td>2025 年 7 月（報告內文提及）</td><td>報告 Executive Summary；本主題不使用 v1.0 內容</td><td>—</td></tr>
+<tr><th scope="row">報告引用的 Top 10 for Agentic Applications</th><td>Version 2026，2025-12（沿用 AI Exchange 主題已核對）</td><td>報告在 Alignment 一節稱「December 2025」</td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>沿用專案已放置的副本</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">報告內容</th><td>「盤點安全與治理框架、治理模型及各國法規」（取自資源頁一句話）</td><td>讀了 PDF：內容包含 agent 分類、威脅分析、AI Safety vs Security、事件追蹤、協定、身分、AI SBOM、可解釋性、法規、兩個成熟度模型、與 Agentic Top 10 的對照、未來趨勢與六個附錄</td><td>五章依實際內容整理</td></tr>
+<tr><th scope="row">法規範圍</th><td>「各國法規」</td><td>附錄 2：42 項文書、10 個司法管轄區、另有 12 項觀察清單，條目驗證至 2026 年 4 月 4 日</td><td>第 5 章說明讀法，不列清單</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　報告內部或來源之間的不一致，與教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各處說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">ASI01 的名稱</th><td>報告資源表：Agent Behavior Hijack；報告其他 12 處（含附錄）與官方 Top 10：Agent Goal Hijack</td><td>一律使用 Agent Goal Hijack；視為報告內部不一致</td></tr>
+<tr><th scope="row">報告日期</th><td>資源頁 2026-06-01；PDF 封面「June 2026」；PDF 建立時間 2026-06-02</td><td>三者互相吻合（6 月初），未發現衝突</td></tr>
+<tr><th scope="row">矩陣的粗體格子</th><td>文字抽取無法判斷</td><td>轉成圖片逐格確認（PDF 第 57–58 頁），見第 5 章</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>報告引用的所有第三方數字與事件：</strong>例如 IBM 資料外洩成本報告的「37%」、a16z 的採用率、CSA 與 CrowdStrike 的調查、NHI 規模、各 CVE 與事故（EchoLeak、ForcedLeak、GTG-1002、hackerbot-claw、LiteLLM 事件等）。本教材只轉述報告的說法，<strong>未查證原始來源</strong>。教材的題目與主體不依賴這些數字。</li>
+  <li><strong>《2026 國際 AI 安全報告》的對應與可靠度數字</strong>（30 分鐘任務 80%、數小時低於 25%）：同上，轉述報告。</li>
+  <li><strong>法規附錄 42 項條目的內容與狀態：</strong>只讀了導言、觀察清單、2.8 小節與歐盟、美國聯邦、亞太的少數條目；未逐條讀；狀態是 2026 年 4 月 4 日的快照，現況未查證。教材不提供任何法規現況。</li>
+  <li><strong>附錄 1（五類 agent 的詳述）：</strong>讀了企業與程式碼 agent 兩類，其他三類只依正文的總表，教材第 2 章只引用總表層級的內容。</li>
+  <li><strong>附錄 4（53 個專案的調查）與附錄 6（個人 agent）：</strong>只讀了開頭與方法論，教材不使用其數據。</li>
+  <li><strong>報告對 OWASP Top 10 for Agentic Applications 的對映正確性：</strong>報告的 ASI 對映是作者群的判斷；本主題不逐條核對 ASI 條目內容（見〈<a href="../../04-agentic-and-mcp/agentic-top-10-2026/index.html">Top 10 for Agentic Applications 2026</a>〉）。</li>
+  <li><strong>是否有 2.01 之後的版本：</strong>在官方站未見；「沒找到」不代表沒有。</li>
+</ol>
+
+<h2 id="ref-scope">5. 本主題讀了什麼、沒讀什麼</h2>
+<div class="table-wrap"><table>
+<caption>表 R-4　閱讀範圍（透明度）</caption>
+<thead><tr><th scope="col">部分</th><th scope="col">頁數（PDF 目錄）</th><th scope="col">作者的讀法</th></tr></thead>
+<tbody>
+<tr><th scope="row">封面、授權、目錄、執行摘要、範圍與受眾</th><td>1–11</td><td>全讀</td></tr>
+<tr><th scope="row">Agents Taxonomy、生態調查與趨勢</th><td>12–21</td><td>全讀</td></tr>
+<tr><th scope="row">Threat Analysis、AI Safety vs AI Security</th><td>21–34</td><td>全讀</td></tr>
+<tr><th scope="row">事件追蹤、協定、身分／NHI、AI SBOM、可解釋性</th><td>35–50</td><td>全讀</td></tr>
+<tr><th scope="row">法規概況、兩個成熟度模型、Top 10 對照</th><td>51–62</td><td>全讀；矩陣轉成圖片核對</td></tr>
+<tr><th scope="row">未來趨勢、結語</th><td>63–69</td><td>全讀</td></tr>
+<tr><th scope="row">附錄 1 agent 詳述</th><td>70–76</td><td>讀前兩類（企業、程式碼）</td></tr>
+<tr><th scope="row">附錄 2 法規地圖</th><td>77–115</td><td>讀導言、觀察清單、2.8 與少數條目</td></tr>
+<tr><th scope="row">附錄 3 風險類別對採用層級</th><td>116–117</td><td>全讀</td></tr>
+<tr><th scope="row">附錄 4 專案調查、附錄 5 FinBot、附錄 6 個人 agent</th><td>118–133</td><td>附錄 5 全讀；附錄 4、6 只讀開頭</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-sources">6. 本主題引用的一手來源</h2>
+<ul>
+  <li>State of Agentic AI Security and Governance 資源頁：<a href="https://genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/">…/state-of-agentic-ai-security-and-governance/</a>；PDF 由資源頁的下載連結取得（需帶瀏覽器標頭）。</li>
+  <li>Agentic Security Initiative 與 GenAI Security Project：<a href="https://genai.owasp.org/initiatives/">genai.owasp.org/initiatives/</a>。</li>
+</ul>
+
+<h2 id="ref-own">7. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 2 章「提示詞注入與供應鏈投毒是同一件事的兩種進入點」的概括。</li>
+  <li>第 3 章圖 3-1（收斂論證示意圖）與情境 A 的整個劇本。</li>
+  <li>第 4 章把身分問題類比到雲端 IAM 的說明。</li>
+  <li>第 5 章表 5-2 的濃縮意譯（原矩陣為報告的表格）、表 5-3 中標示「作者整理」的對應、情境 B 的整個劇本，以及把 Governance Checklist、CoE、COMPASS 串成流程的說法。</li>
+  <li>所有 Mermaid 圖為重新繪製的簡化版，不是官方原圖。</li>
+</ul>
+
+<h2 id="ref-license">8. 授權摘要與再利用</h2>
+<ul>
+  <li>State of Agentic AI Security and Governance：CC BY-SA 4.0；引用須包含專案名稱與資產名稱（PDF 列的寫法含「OWASP Top 10 for LLMs - GenAI Red Teaming Guide」，與本報告名稱不符，疑為模板殘留，未能確認；本教材引用時使用報告的實際名稱與專案名稱）。</li>
+  <li>genai.owasp.org 網站內容：CC BY-SA 4.0。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：State of Agentic AI Security and Governance 2.01、genai.owasp.org 網站 — CC BY-SA 4.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

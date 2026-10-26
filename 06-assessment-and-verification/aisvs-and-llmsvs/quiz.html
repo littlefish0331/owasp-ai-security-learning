@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜AISVS 與 LLMSVS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AISVS 與 LLMSVS 主題總測驗：16 題，涵蓋四個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="aisvs-and-llmsvs" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：AISVS 與 LLMSVS</h1>
+<ul class="meta-row">
+  <li>16 題（選擇題 6、情境判斷題 6、配對題 4）</li>
+  <li>預估時間：約 22 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO4</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–4 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>驗證標準的角色與限制：</strong>區分驗證標準與 Top 10、測試指南、治理框架；說明「可驗證的需求」與建議的差別，以及驗證標準不是什麼。</li>
+  <li><strong>AISVS：</strong>說明十二章的範圍、三個驗證層級、帶版本的引用格式，以及版本演進與標示不一致的處理。</li>
+  <li><strong>LLMSVS：</strong>說明八章的範圍、v2.0 與 v2.1 草稿的差異、層級與「不適用」的規則，以及 OWASP 對認證與審查的明文立場。</li>
+  <li><strong>選用與蒐證：</strong>選目標層級與標準、把需求拆成驗證與證據、比較四份文件的分工，並判斷供應商的認證宣稱。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：OWASP AISVS、OWASP LLMSVS、OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-verification-standards.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-aisvs.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-llmsvs.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-evidence-and-integration.html', a, '第 4 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 驗證標準的角色與限制 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('vs-role', '1.1 表 1-1'), C1('vs-concept', '1.2')],
+    stem: '下列哪一項最能說明驗證標準（AISVS、LLMSVS）和 OWASP Top 10 的差別？',
+    options: [
+      { text: 'Top 10 提供細部技術控制，驗證標準只列出風險名稱。', why: '剛好相反：AISVS 的對照表稱 Top 10 是「對最重要風險的認知」，AISVS 才提供降低這些風險的細部控制。' },
+      { text: '驗證標準把要求寫成能用證據回答是否達成的需求；Top 10 是協助認識風險的認知清單，沒有過／不過的判準。', correct: true, why: '符合 1.1 與 1.2 節：驗證標準的價值在可驗證。' },
+      { text: '兩者都是認知清單，只是驗證標準篇幅比較長。', why: '驗證標準每條需求都寫成「Verify that …」並要有證據，性質不同於認知清單。' },
+      { text: '驗證標準是具法律效力的法規，Top 10 只是建議。', why: '兩者都是 OWASP 的社群文件，不是法規；LLMSVS 也明說它不取代風險評估。' }
+    ],
+    summary: '驗證標準 = 可驗證的判準；Top 10 = 風險認知清單。' },
+
+  { id: 'q02', type: 'scn', lo: [1], refs: [C1('vs-role', '1.1 表 1-1'), C1('vs-limits', '1.4')],
+    stem: '依本教材，主管的要求有什麼問題？',
+    scenario: '風華金融（虛構）的資安主管說：「LLM Top 10 的十項風險我們都讀過、也都有對應的說明了，所以系統已經通過安全驗證，可以直接把 Top 10 當驗收清單交給稽核。」稽核員問：「那你們的『過』是怎麼定義的？」',
+    options: [
+      { text: '沒有問題，Top 10 每一項都附有驗收條件。', why: 'Top 10 是風險認知清單，沒有逐項的過／不過驗收條件。' },
+      { text: '只要再補上治理框架（如 NIST AI RMF），就能當驗收清單。', why: '治理框架管組織如何管理與負責，不是技術控制的驗收判準；AISVS 也說它不是治理框架。' },
+      { text: '應改用測試指南，因為測試指南定義做到什麼才算過。', why: '測試指南告訴你怎麼去檢查；「查什麼、做到什麼才算過」由驗證標準定義。' },
+      { text: 'Top 10 是認知清單，沒有「過／不過」的判準；驗收條件要由驗證標準（AISVS 或 LLMSVS）定義，測試方法再由測試指南提供。', correct: true, why: '對應 1.1 節的分工：認知、判準、方法、組織管理各由不同文件負責。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) Top 10 的角色是讓人認識最關鍵的風險；(2) 「過」要有明確判準與證據，這是驗證標準的工作；(3) 判準定下後，怎麼去測是 AI Testing Guide 與紅隊文件的事。</p><p><strong>結論：</strong>改用 AISVS 或 LLMSVS 定義驗收條件，並蒐證。對應教材：<a href="01-verification-standards.html#vs-role">1.1 節</a>。</p>' },
+
+  { id: 'q03', type: 'match', lo: [1], refs: [C1('vs-concept', '1.2 可驗證的需求'), C2('av-example', '2.2 看幾條真實的需求')],
+    stem: '把下列敘述配對為「可驗證的需求」或「只是建議」。',
+    cats: [
+      { id: 'req', label: '可驗證的需求' },
+      { id: 'rec', label: '只是建議' }
+    ],
+    items: [
+      { text: '超長輸入要被拒絕，而不是被截斷後繼續處理', answer: 'req', why: '審查者能構造超長輸入並觀察結果；這正是 v1.01-C2.1.4 的精神。' },
+      { text: '系統應該具備完善的輸入驗證機制', answer: 'rec', why: '「完善」沒有判準，兩個人可以各自宣稱做到。' },
+      { text: '所有存取控制決定都由應用邏輯或政策引擎執行，不由 AI 模型本身做出', answer: 'req', why: '可以審查架構與程式碼，並用低權限帳號測試；這是 v1.01-C9.5.3。' },
+      { text: '團隊應重視提示詞注入的風險', answer: 'rec', why: '認知層面的呼籲，沒有可蒐集的證據。' }
+    ],
+    summary: '可驗證 = 有明確結果描述，能用證據回答是／否。' },
+
+  /* ================= LO2 AISVS ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C1('vs-limits', '1.4 如何引用'), C2('av-versions', '2.3 版本演進')],
+    stem: '你要在稽核報告中引用 AISVS 的一條需求（章 9、節 4、條 3），希望一年後版本更新時，讀者仍能對應到同一條文字。最恰當的寫法是？',
+    options: [
+      { text: 'v1.01-C9.4.3（小寫 v 加版本，再接識別碼）', correct: true, why: '官方建議在報告與工具中帶版本，因為識別碼、文字與層級可能隨版本改變。' },
+      { text: 'C9.4.3，因為編號永遠不會改變', why: '不帶版本的識別碼指的是最新發布的小版本；小版本可退休、修改需求與層級。' },
+      { text: 'AISVS 最新版的第 9 章第 4 節', why: '「最新版」沒有指定時間點，也沒有指到具體條目。' },
+      { text: 'V1.01-C9.4.3（大寫 V）', why: '官方格式要求 v 小寫。' }
+    ],
+    summary: '引用 AISVS 要寫 v<版本>-C<章>.<節>.<條>。' },
+
+  { id: 'q05', type: 'mc', lo: [2], refs: [C2('av-chapters', '2.2 表 2-2')],
+    stem: '依本教材對 AISVS 1.01 各章的計數，下列哪一項推論最合理？',
+    options: [
+      { text: '各章需求數大致相等，每章都在 15 到 20 條之間。', why: '差異很大：C6 只有 7 條，C9 有 37 條。' },
+      { text: 'C5 的需求大多在層級 1，所以最容易做完。', why: 'C5 的 11 條裡沒有層級 1 的需求。' },
+      { text: 'C9 與 C10 合計 76 條，占 213 條的三分之一以上；各章需求並非平均分佈，選定的層級會讓各章工作量差很多。', correct: true, why: '符合 2.2 節的觀察（作者計數）。' },
+      { text: 'C4 的 14 條幾乎都在層級 1，所以基線要求很重。', why: 'C4 的 14 條裡有 9 條在層級 3，層級 1 只有 3 條。' }
+    ],
+    summary: 'AISVS 各章需求數與層級分佈不均。' },
+
+  { id: 'q06', type: 'scn', lo: [2], refs: [C2('av-versions', '2.3 版本演進')],
+    stem: '依本教材，同事的說法有什麼問題？',
+    scenario: '松江保險（虛構）去年依 AISVS 1.0 完成評估。今年官方出了 1.01，同事說：「1.01 只是小修，編號沒變，不用重新評估，報告換個版本號就好。」你查了 1.01 的發布說明。',
+    options: [
+      { text: '沒有問題，小版本只改錯字。', why: '小版本可以新增、退休或實質修改需求，包含層級調整。' },
+      { text: '有問題：1.01 新增 23 條、移除 1 條，並修改了部分需求與層級（例如 C10.2.7 的文字改變並由層級 2 移到層級 1），修改過與新增的需求都要重新評估，報告要寫明版本。', correct: true, why: '符合 2.3 節：評估轉版時，官方要求重新評估修改與新增的需求。' },
+      { text: '有問題：1.01 重新編號了所有需求，必須從頭重做。', why: '小版本不得移動或重新編號既有需求；移除的識別碼保留占位。' },
+      { text: '有問題：只需看新增的 23 條，被修改的需求不用管。', why: '官方明說要重新評估被修改的需求，不只是新增的。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) RELEASE.md：小版本可新增、退休或實質修改需求，含層級調整，但不重新編號；(2) 1.01 發布說明列出多項修改，例如 C10.2.7 與 C9.2.1；(3) 官方要求轉版評估時重新評估被修改與新增的需求。</p><p><strong>結論：</strong>只列出差異並重評，報告寫 v1.01。對應教材：<a href="02-aisvs.html#av-versions">2.3 節</a>。</p>' },
+
+  { id: 'q07', type: 'match', lo: [2], refs: [C2('av-chapters', '2.2 表 2-2'), C2('av-example', '2.2 看幾條真實的需求')],
+    stem: '把下列驗證重點配對到 AISVS 1.01 最相關的章。',
+    cats: [
+      { id: 'c2', label: 'C2 輸入驗證' },
+      { id: 'c5', label: 'C5 存取控制與身分' },
+      { id: 'c8', label: 'C8 記憶、嵌入與向量資料庫' },
+      { id: 'c9', label: 'C9 編排與 Agentic' },
+      { id: 'c12', label: 'C12 監控與日誌' }
+    ],
+    items: [
+      { text: '檢索管線在每個階段套用終端使用者的授權，而不是只靠服務帳號權限', answer: 'c5', why: 'v1.01-C5.2.2。' },
+      { text: '不可信內容不能靠檢索或工具處理取得更高的指令優先權', answer: 'c2', why: 'v1.01-C2.1.6 屬輸入驗證章。' },
+      { text: '存取控制決定絕不由 AI 模型本身做出', answer: 'c9', why: 'v1.01-C9.5.3。' },
+      { text: 'RAG 向量庫與記憶的存取控制、嵌入清理與過期撤銷', answer: 'c8', why: '表 2-2 對 C8 的整理。' },
+      { text: '看得見模型與其他 AI 元件看到、做了、回傳了什麼', answer: 'c12', why: '表 2-2 對 C12 的整理。' }
+    ],
+    summary: '把驗證重點對到十二章中的對應章。' },
+
+  /* ================= LO3 LLMSVS ================= */
+  { id: 'q08', type: 'mc', lo: [3], refs: [C3('ls-onepage', '3.1'), C1('vs-limits', '1.4')],
+    stem: '關於 LLMSVS 的範圍，下列哪一項說法正確？',
+    options: [
+      { text: '它涵蓋所有應用程式安全，可以取代 ASVS。', why: 'LLMSVS 明說它不取代 ASVS。' },
+      { text: '它只涵蓋模型訓練階段的安全。', why: '它還涵蓋整合、代理與外掛、相依元件、監控等。' },
+      { text: '它和 AISVS 範圍完全相同，只是名稱不同。', why: 'LLMSVS 限定於 LLM 使用與整合，AISVS 涵蓋整個 AI 生命週期並含 MCP、編排等章。' },
+      { text: '它只涵蓋與 LLM 使用及整合有關的需求；一般網路服務等非 LLM 特有的控制，要用 ASVS 等標準另外驗證。', correct: true, why: '符合 3.1 與 3.5 節的官方描述。' }
+    ],
+    summary: 'LLMSVS 只管 LLM 特有的部分；其餘用 ASVS。' },
+
+  { id: 'q09', type: 'scn', lo: [3], refs: [C3('ls-levels', '3.3 核心概念'), C3('ls-versions', '3.4 版本')],
+    stem: '依本教材，評估報告的說法有什麼問題？',
+    scenario: '久安製造（虛構）的評估員在 LLMSVS v2.0 評估報告裡寫道：「依 LLMSVS 的官方定義，層級是累積的：通過層級 2 就代表同時滿足所有層級 1 的需求。」被問到出處時，他引用的是 v2.1 草稿的前言。',
+    options: [
+      { text: '沒有問題，v2.1 比 v2.0 新，應該以它為準。', why: 'v2.1 是草稿，不是發布；README 要求引用 v2.0。' },
+      { text: '勾選表完全沒有資訊，層級只是裝飾。', why: '勾選表標示每條需求適用的層級，是有資訊的；只是 v2.0 沒有用文字明說累積。' },
+      { text: '有問題：v2.0 文件沒有用文字明說層級是累積的，「累積式」是 v2.1 草稿的定義；草稿不是發布，報告應寫明依據 v2.0，並明寫自己採用的層級解讀。', correct: true, why: '對應 3.3 節：這是草稿與現行發布的差別。' },
+      { text: '只要把報告的版本改成 v2.1 就沒問題了。', why: '改成草稿並不合規，現行應引用 v2.0。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) v2.0 是現行發布，層級以勾選表呈現，沒有文字說累積；(2) v2.1 草稿才明文定義累積式，但它不是發布；(3) 因此把草稿的定義說成「官方定義」並套在 v2.0 上是錯的。</p><p><strong>結論：</strong>寫明版本為 v2.0，並說明解讀為評估方的選擇。對應教材：<a href="03-llmsvs.html#ls-levels">3.3 節</a>。</p>' },
+
+  { id: 'q10', type: 'match', lo: [3], refs: [C3('ls-versions', '3.4 表 3-3'), C3('ls-levels', '3.3')],
+    stem: '把下列特徵配對到 LLMSVS 的 v2.0（現行發布）或 v2.1 草稿。',
+    cats: [
+      { id: 'v20', label: 'v2.0（現行發布）' },
+      { id: 'v21', label: 'v2.1 草稿' }
+    ],
+    items: [
+      { text: '需求以「Ensure that …」為主，部分用「Consider …」', answer: 'v20', why: '表 3-3 的 v2.0 欄。' },
+      { text: '層級明文定義為累積式，且「不適用」是明確結果', answer: 'v21', why: '3.3 節：這是草稿的定義。' },
+      { text: '撤回 8 列且識別碼保留不重用', answer: 'v21', why: '表 3-3 的草稿欄。' },
+      { text: '70 條需求，識別碼承襲 0.1', answer: 'v20', why: '表 3-3 的 v2.0 欄。' },
+      { text: '每條改為單一結果的「Verify that …」，附適用標籤與證據說明', answer: 'v21', why: '表 3-3 的草稿欄。' }
+    ],
+    summary: 'v2.0 是現行發布；v2.1 是草稿，不能當現行要求。' },
+
+  { id: 'q11', type: 'mc', lo: [3], refs: [C3('ls-assess', '3.5')],
+    stem: '依 LLMSVS 2.0 官方明載，建議的審查方式是哪一種？',
+    options: [
+      { text: '「開書」審查：評估者可接觸架構師、開發者、專案文件、原始碼與已驗證的介面，並每種使用者角色至少一個帳號。', correct: true, why: '3.5 節第二點，官方明載。' },
+      { text: '純黑箱審查，不給評估者任何內部資訊，以避免被團隊誤導。', why: '官方建議的是開書審查。' },
+      { text: '以供應商填寫的問卷為主，輔以掃描工具輸出。', why: '問卷或掃描報告單獨不構成通過。' },
+      { text: '只跑自動化測試工具，結果全綠即可。', why: '官方指出只靠自動化工具的結果不夠。' }
+    ],
+    summary: '官方建議開書審查，證據不能只靠自動化工具。' },
+
+  /* ================= LO4 選用與蒐證 ================= */
+  { id: 'q12', type: 'scn', lo: [4], refs: [C4('ev-choose', '4.1'), C1('vs-levels', '1.3')],
+    stem: '依本教材，目標層級該怎麼決定？',
+    scenario: '潮汐電信（虛構）要上線面向客戶的客服助理，會處理使用者的帳單與個人資料。工程主管說：「我們先只做層級 1 吧，比較快，之後再說。」資安新人認為不妥，但說不出依據。',
+    options: [
+      { text: '層級由工程團隊的時程決定，只要在報告寫明即可。', why: '目標層級依系統的風險輪廓決定，不是依團隊方不方便。' },
+      { text: '一律做到層級 3，這樣最安全。', why: '層級 3 是給關鍵、安全攸關或受高度監管等高保證環境；不是每個系統都要。' },
+      { text: '依風險輪廓決定：面向客戶並處理個資的系統，AISVS 說多數正式系統至少層級 2；要在測試前選定，並在報告寫明目標層級、理由與對層級是否累積的解讀。', correct: true, why: '符合 1.3 與 4.1 節。' },
+      { text: '等看到測試結果再決定要算哪一層級。', why: '草稿明說先選層級再測試，避免事後挑選。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 層級依風險輪廓選：面向客戶、處理個資 → 層級 2 的範疇；(2) AISVS 說多數正式系統至少層級 2；(3) LLMSVS 草稿明說先選層級再測試；(4) AISVS 對「層級 2 是否包含層級 1」未明說，報告要寫明解讀。</p><p><strong>結論：</strong>以層級 2 為目標並說明理由。對應教材：<a href="04-evidence-and-integration.html#ev-choose">4.1 節</a>。</p>' },
+
+  { id: 'q13', type: 'scn', lo: [4], refs: [C4('ev-evidence', '4.2 表 4-1'), C2('av-example', '2.2')],
+    stem: '依本教材，稽核員應如何看待這項證據？',
+    scenario: '朝日零售（虛構）的客服代理能呼叫「申請退款」工具。稽核員要驗證 AISVS 1.01 的一條需求：存取控制決定絕不由 AI 模型本身做出（v1.01-C9.5.3）。團隊提供的證據是：「我們在系統提示詞裡寫了『一般使用者不得核准退款』。」',
+    options: [
+      { text: '不足：這條需求要求授權決定由應用邏輯或政策引擎執行；提示詞是把判斷交給模型。應改提供架構圖（標出政策決策點）、程式碼審查紀錄，以及低權限帳號被拒絕的測試記錄。', correct: true, why: '對應表 4-1：需求、驗證方法與證據。' },
+      { text: '足夠：提示詞是最直接的控制手段。', why: '需求的核心就是不能讓模型自己做授權判斷。' },
+      { text: '足夠：只要提示詞寫得夠長夠嚴格。', why: '長度與嚴格程度不改變「判斷仍由模型做」這個事實。' },
+      { text: '不足：只因為提示詞應該改用英文。', why: '語言不是問題所在，問題是授權判斷放在哪裡。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) <code>v1.01-C9.5.3</code> 要求存取控制決定由應用邏輯或政策引擎執行，絕不由 AI 模型本身；(2) 系統提示詞是請模型自己遵守，可被提示詞注入繞過，屬於「由模型判斷」；(3) 有效的證據要能證明決策點在模型之外。</p><p><strong>結論：</strong>要求改提供架構、程式碼審查與負向測試記錄。對應教材：<a href="04-evidence-and-integration.html#ev-evidence">4.2 節</a>。</p>' },
+
+  { id: 'q14', type: 'match', lo: [2, 4], refs: [C4('ev-compare', '4.3 表 4-2'), C3('ls-assess', '3.5'), C2('av-chapters', '2.2')],
+    stem: '把下列敘述配對為「官方明載」或「作者整理，非官方」。',
+    cats: [
+      { id: 'official', label: '官方明載' },
+      { id: 'author', label: '作者整理，非官方' }
+    ],
+    items: [
+      { text: 'OWASP 目前不認證任何廠商、驗證者或軟體', answer: 'official', why: 'LLMSVS 2.0 的 Assessment and certification 明文。' },
+      { text: '範圍橫跨代理、MCP 與基礎設施時較適合選 AISVS，以 LLM 應用為主時較適合 LLMSVS', answer: 'author', why: '官方沒有說明兩者的選用準則。' },
+      { text: 'AISVS 的驗證假設應用程式也依對應層級通過 ASVS', answer: 'official', why: 'AISVS 1.01 發布說明與 README 的說明。' },
+      { text: '以層級 2 為目標約需處理 57 + 110 = 167 條需求', answer: 'author', why: '依 ASVS 慣例推算；AISVS 沒有明說層級是否累積。' },
+      { text: '只靠自動化工具的結果不足以作為證據', answer: 'official', why: 'LLMSVS 2.0 認證指引明文。' }
+    ],
+    summary: '分清官方說法與作者推論，是引用文件的基本功。' },
+
+  { id: 'q15', type: 'mc', lo: [4], refs: [C4('ev-compare', '4.3 表 4-2'), C4('ev-choose', '4.1')],
+    stem: '關於「何時用 AISVS、何時用 LLMSVS」，下列哪一項說法最符合本教材？',
+    options: [
+      { text: '官方規定凡是有代理或 MCP 的系統必須使用 AISVS。', why: '本教材沒有找到這樣的官方規定。' },
+      { text: '官方沒有說明兩者的選用準則與關係；依範圍選用是作者整理的建議，兩者併用時各自標明版本與層級，且需求編號不通用。', correct: true, why: '符合 4.1 節與表 4-2 後的未能確認說明。' },
+      { text: '兩者只能擇一，不得併用。', why: '沒有這樣的限制。' },
+      { text: 'LLMSVS 已被 AISVS 取代，因此只需看 AISVS。', why: '沒有這樣的官方說明；LLMSVS 仍有 v2.0 發布與 v2.1 草稿。' }
+    ],
+    summary: '兩者選用準則官方未說明；併用時各標版本與層級。' },
+
+  { id: 'q16', type: 'scn', lo: [3, 4], refs: [C4('ev-scnB', '4.5 情境 B'), C3('ls-versions', '3.4 表 3-3')],
+    stem: '依本教材，採購方最該追問什麼？',
+    scenario: '青松資訊（虛構）收到一份供應商報告，寫著：「依 LLMSVS v2.1，通過層級 2，所有 70 條需求皆通過。」附件只有一份自動化掃描工具的輸出。',
+    options: [
+      { text: '沒有問題，v2.1 比較新，70 條全過代表最高水準。', why: 'v2.1 是草稿，不是發布；而且 70 條是 v2.0 的需求數。' },
+      { text: '只需要請供應商補上「OWASP 認證」字樣。', why: 'OWASP 目前不認證任何廠商、驗證者或軟體。' },
+      { text: '只要把版本改寫成 v2.0，就不用再補證據。', why: '證據不足的問題不會因為改版本消失：自動化工具輸出單獨不夠。' },
+      { text: '追問：v2.1 是草稿而非發布，現行發布是 v2.0；「70 條」是 v2.0 的數字，草稿撤回了 8 列並新增 22 個識別碼，兩者無法直接對應；並要求範圍、評估者與工作底稿等證據，而不是只有掃描輸出。', correct: true, why: '同時對應 3.4 節的版本差異與 3.5、4.5 節的證據要求。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 報告引用 v2.1，但它是草稿；(2) 「70 條」是 v2.0 的需求數，草稿撤回 8 列、新增 22 個識別碼，不能直接套用；(3) 官方要求證據能證明每個控制都被測過，掃描輸出單獨不夠。</p><p><strong>結論：</strong>先追問版本、範圍、評估者與工作底稿，再決定是否抽驗。對應教材：<a href="03-llmsvs.html#ls-versions">3.4 節</a>、<a href="04-evidence-and-integration.html#ev-scnB">4.5 節</a>。</p>' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'aisvs-and-llmsvs', mode: 'final',
+    los: [
+      { n: 1, text: '驗證標準的角色與限制：區分驗證標準與 Top 10、測試指南、治理框架；說明可驗證的需求，以及驗證標準不是什麼。' },
+      { n: 2, text: 'AISVS：十二章的範圍、三個驗證層級、帶版本的引用格式，以及版本演進與標示不一致。' },
+      { n: 3, text: 'LLMSVS：八章的範圍、v2.0 與 v2.1 草稿的差異、層級與不適用，以及對認證與審查的立場。' },
+      { n: 4, text: '選用與蒐證：選層級與標準、把需求拆成驗證與證據、比較文件分工、判斷認證宣稱。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

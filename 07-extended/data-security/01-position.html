@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌與定位｜資料安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Data Security Risks and Mitigations 2026 與 LLM and Gen AI Data Security Best Practices 2025 是什麼、兩者的關係、2026 版的結構，以及它在條目編號上的內部不一致。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="data-security" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌與定位</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="index.html">主題首頁</a></li>
+</ul>
+<p class="lead">OWASP 關於「GenAI 的資料安全」有兩份文件，而且第二份是第一份的演進。這一章先釐清：兩份各是什麼、為什麼被拆開、你該讀哪一份，以及一個容易被忽略的事實：<strong>新的那份文件，自己對條目數量與編號的說法並不一致</strong>。</p>
+
+<h2 id="pos-two">1.1 兩份文件</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　資料安全的兩份文件（2026-10-26 讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">Data Security Risks and Mitigations 2026</th><th scope="col">LLM and Gen AI Data Security Best Practices</th></tr></thead>
+<tbody>
+<tr><th scope="row">版本與日期</th><td>封面：<strong>Version 1.0、March 2026</strong>；資源頁登錄日 2026-03-17；103 頁</td><td>資源頁登錄日 2025-02-13；PDF 62 頁；PDF 內文沒有版本號（封面引用格式寫 "Guide 1.0"）</td></tr>
+<tr><th scope="row">形式</th><td>風險列舉：21 個條目，每條有攻擊如何展開、情境、衝擊，以及分三層的緩解</td><td>白皮書：依資料管線階段與實務寫成，附 Agent 資料流與治理</td></tr>
+<tr><th scope="row">官方自述的定位</th><td>「不是 OWASP Top 10 指南，也不是要取代 OWASP Data Security Top 10」；與 LLM Top 10、Agentic Top 10 對齊並交叉引用</td><td>補充 LLM Top 10 2025；列出該清單十項中「六項與資料安全有關」</td></tr>
+<tr><th scope="row">主要讀者</th><td>未明列；內容跨架構、工程、治理</td><td>三類：技術資安領導、開發者與資料科學家、CISO</td></tr>
+<tr><th scope="row">授權</th><td>CC BY-SA 4.0（封面）</td><td>CC BY-SA 4.0（封面）</td></tr>
+<tr><th scope="row">對應的 LLM Top 10 版本</th><td>引用 <code>LLM03:2025</code> 並帶年份；整體對齊 LLM Top 10 與 Agentic Top 10</td><td>對齊 <strong>2025</strong> 版（<code>LLM01:2025</code> 等）</td></tr>
+</tbody></table></div>
+
+<h2 id="pos-relation">1.2 2026 版如何接續 2025 版</h2>
+<p>2026 版的 Document Scope 段自己交代了關係：它是 2025 年 2 月那份 Best Practices Guide 的「演進與更新」。原本的單一指南被<strong>拆成兩份</strong>：一份是風險與緩解的<strong>列舉</strong>（也就是 2026 版這份），另一份是關於<strong>實作最佳實務</strong>的 companion 文件，目的是提高易讀性，並因應 GenAI 與 Agentic AI 風險快速改版。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="版本關係：2025 年 2 月的 Best Practices Guide 單一指南，演進並拆成兩份：2026 年 3 月的 Data Security Risks and Mitigations 2026 負責風險與緩解的列舉；另一份 companion 實作文件負責實作最佳實務。2026 版與 LLM Top 10 及 Agentic Top 10 對齊並交叉引用。companion 文件是否已發布，未能確認。">
+flowchart LR
+  OLD["Best Practices Guide<br>2025-02<br>單一指南"] --> NEW["Data Security Risks and Mitigations 2026<br>Version 1.0, March 2026<br>風險與緩解的列舉"]
+  OLD --> COMP["Companion 實作文件<br>實作最佳實務<br>（是否已發布：未能確認）"]
+  NEW -. "對齊並交叉引用" .-> LLM["LLM Top 10 / Agentic Top 10"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class COMP author
+</pre>
+<figcaption><strong>圖 1-1　兩份資料安全文件的關係。</strong>2025 版演進並拆成兩份、2026 版對齊 LLM Top 10 與 Agentic Top 10，是 2026 版 Document Scope 段的官方說法；圖為依其簡化重繪。companion 實作文件在 2026 版中被描述為存在或規劃中，<strong>本教材沒有在資源頁清單找到它，是否已發布未能確認</strong>（虛線框）。</figcaption>
+</figure>
+
+<h2 id="pos-count">1.3 官方自己對「幾項」的說法不一致</h2>
+<p>這是引用這份文件時最需要小心的地方。本教材逐處比對了正文：</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　2026 版對條目數量與編號的不同說法</caption>
+<thead><tr><th scope="col">位置</th><th scope="col">說法</th></tr></thead>
+<tbody>
+<tr><th scope="row">目錄與正文實際條目</th><td><strong>DSGAI01 到 DSGAI21，共 21 項</strong>；GenAI Data Risks 一節寫「二十一個條目」(twenty-one entries)</td></tr>
+<tr><th scope="row">What is Data Security 一節</th><td>寫「本文件列舉的風險分類 (DSGAI01-DSGAI25)」，並提到 DSGAI25 與 DSGAI19、DSGAI21 同樣追溯到上下文視窗的根因</td></tr>
+<tr><th scope="row">DSGAI04 的結尾</th><td>交叉引用「DSGAI26 (Disinformation &amp; Integrity Attacks via Data Poisoning)」，而這個標題在目錄裡是 <strong>DSGAI21</strong></td></tr>
+<tr><th scope="row">DSGAI22–DSGAI26</th><td>文件裡<strong>沒有這幾個條目</strong></td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">怎麼處理</p>
+  <p>本教材<strong>採 21 項</strong>（目錄與正文結構一致），並把「DSGAI25」「DSGAI26」視為未清理乾淨的殘留引用，<strong>未能確認</strong>其原意。官方在 GenAI Data Risks 一節說「早期草稿中的條目因攻擊面重疊或控制重複而被合併，編輯註記保留了交叉引用」，這是可能的解釋，但官方沒有說編號缺口就是這個原因，教材不下結論。引用時請<strong>用條目標題</strong>（例如「DSGAI01 Sensitive Data Leakage」），不要只寫編號。</p>
+</div>
+
+<h2 id="pos-concept">1.4 核心概念：這是「列舉」，不是「Top 10」</h2>
+<div class="concept">
+<h3 id="c-enum">風險列舉與 Top 10 的差別</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>OWASP Top 10 類的清單，是用優先順序選出「最關鍵的十項」；2026 版官方明說自己<strong>不是</strong> Top 10 指南，也不取代 OWASP Data Security Top 10。它的目標是針對 LLM、GenAI 與 Agentic AI 的資料風險做「聚焦的列舉」，而且<strong>不重複其他地方已經列過的風險</strong>。</dd>
+  <dt data-n="2">為什麼這點重要</dt>
+  <dd>Top 10 的編號有排序意義（至少讀者會這樣理解）；這份列舉的編號是<strong>依資料在系統中流動的順序</strong>排的：先是直接暴露，再是管線完整性，再是治理，再是 GenAI 獨有的攻擊面，最後是營運基礎設施與模型作為資料產物。所以 DSGAI01 排第一，不代表它最嚴重。</dd>
+  <dt data-n="3">沒意識到時會怎樣</dt>
+  <dd>把 DSGAI 編號當優先順序排工作清單，或把「21 項」當成完整窮盡的清單。官方的目的是提供一個聚焦的鏡頭，並與 LLM Top 10、Agentic Top 10 搭配。</dd>
+  <dt data-n="4">怎麼用</dt>
+  <dd>先用 LLM Top 10 或 Agentic Top 10 認識風險，再用這份列舉追問「<em>資料</em>在這個風險裡扮演什麼角色、衍生物在哪裡、該保護哪一段」。第 5 章會示範這個接法。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「2026 版取代了 2025 版，所以 2025 版可以不看。」2026 版把實作最佳實務拆到另一份 companion 文件，而這份 companion 在本教材讀取時未能確認；2025 版的資料管線階段與治理段仍是目前能讀到的實務描述。兩份並用時，要記得它們對齊的 LLM Top 10 年份不同（2025 對 2025、2026 版文件以 <code>LLM03:2025</code> 帶年份）。</dd>
+</dl>
+</div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>資料安全有兩份文件：2025-02 的 Best Practices（白皮書）與 2026 年 3 月的 Data Security Risks and Mitigations（Version 1.0，風險列舉）。後者是前者的演進，並把實作部分拆去另一份 companion 文件。</li>
+  <li>2026 版官方明說自己不是 Top 10，也不取代 OWASP Data Security Top 10；編號依資料流動順序，不是優先順序。</li>
+  <li>2026 版條目為 DSGAI01–DSGAI21；文中另有 DSGAI25／DSGAI26 的殘留引用，未能確認原意。引用請用標題。</li>
+  <li>2025 版對齊 LLM Top 10 <strong>2025</strong>；引用時務必帶年份。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說明兩份文件的關係，以及各自適合什麼用途。</li>
+  <li>我知道為什麼不能只寫「DSGAI25」，以及該怎麼引用。</li>
+  <li>我知道這份列舉的編號不是優先順序。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-data-surfaces.html">第 2 章　GenAI 的資料面與 AI-DSPM</a>：先理解資料在 GenAI 系統裡為什麼和以前不一樣。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Data Security Risks and Mitigations 2026（Version 1.0，March 2026；Document Scope and Objectives、GenAI Data Risks）：<a href="https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/">genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/</a>；資源頁日期 2026-03-17；2026-10-26 讀取；PDF 封面 CC BY-SA 4.0。</li>
+    <li>OWASP LLM and Gen AI Data Security Best Practices（Audience、Introduction、Potential Risks &amp; Impacts）：<a href="https://genai.owasp.org/resource/llm-and-gen-ai-data-security-best-practices/">genai.owasp.org/resource/llm-and-gen-ai-data-security-best-practices/</a>；資源頁日期 2025-02-13；2026-10-26 讀取；PDF 封面 CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP GenAI Data Security Risks and Mitigations 2026 與 LLM and Gen AI Data Security Best Practices — CC BY-SA 4.0（各 PDF 封面）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'd-ch1', topic: 'data-security', mode: 'chapter',
+  questions: [
+    { id: 'd1q1', type: 'mc', lo: [1], refs: [{label: '1.2 如何接續 2025 版', href: '01-position.html#pos-relation'}],
+      stem: '依 2026 版自己的說明，它與 2025 年 2 月的 Best Practices 指南是什麼關係？',
+      options: [
+        { text: '兩份毫無關係，只是剛好主題相同。', why: '2026 版明說它是 2025 版的演進與更新。' },
+        { text: '2026 版是 2025 版的演進；原單一指南被拆成「風險與緩解的列舉」（2026 版）與一份關於實作最佳實務的 companion 文件。', correct: true, why: '符合 1.2 節與 Document Scope。' },
+        { text: '2026 版完全取代並刪除了 2025 版的實務內容。', why: '實務內容被拆去 companion 文件，不是刪除；且 companion 文件是否已發布未能確認。' },
+        { text: '2025 版是 2026 版的子章節。', why: '兩者是獨立的 PDF。' }
+      ],
+      summary: '2026 版 = 風險列舉；實作最佳實務拆去 companion 文件。' },
+    { id: 'd1q2', type: 'mc', lo: [1], refs: [{label: '1.3 對「幾項」的說法不一致', href: '01-position.html#pos-count'}],
+      stem: '一份內部報告寫：「依 OWASP 資料安全 2026，我們已涵蓋 DSGAI01 到 DSGAI25 共 25 項風險。」依本章，最恰當的處理是？',
+      options: [
+        { text: '沒問題，文件有一處寫了 DSGAI01-DSGAI25。', why: '那是文件內部的不一致；目錄與正文實際只有 DSGAI01 到 DSGAI21，共 21 項。' },
+        { text: '應改為 21 項（DSGAI01–DSGAI21，依目錄與正文），並註明文件內有 DSGAI25／26 的殘留引用、沒有對應條目；引用時用條目標題。', correct: true, why: '符合 1.3 節的處理。' },
+        { text: '應改為 26 項，因為文件提到了 DSGAI26。', why: 'DSGAI26 的標題其實對應目錄中的 DSGAI21，並沒有第 26 個條目。' },
+        { text: '應改為 10 項，因為它是 Top 10。', why: '官方明說它不是 Top 10 指南。' }
+      ],
+      summary: '採 21 項；DSGAI25／26 是殘留引用；引用用標題。' },
+    { id: 'd1q3', type: 'scn', lo: [1], refs: [{label: '1.4 風險列舉與 Top 10', href: '01-position.html#pos-concept'}, {label: '1.3', href: '01-position.html#pos-count'}],
+      stem: '依本章，這份計畫的做法有什麼問題？',
+      scenario: '松濤銀行（虛構）的資安主管要求團隊：「依 OWASP 資料安全 2026 的 DSGAI 編號由小到大排工作，先做 DSGAI01，再做 DSGAI02，依此類推，因為編號就是優先順序。」另一位成員附註：「文件裡好像還有 DSGAI25，要不要也排進去？」',
+      options: [
+        { text: '沒有問題，OWASP 的編號都代表優先順序。', why: '這份文件是依資料流動順序排列的列舉，官方明說不是 Top 10。' },
+        { text: '編號是依資料在系統中流動的順序排列，不是優先順序；優先順序應依自己系統的資料與風險決定。DSGAI25 在文件中沒有對應條目，不應排進計畫，並應確認原意。', correct: true, why: '符合 1.3、1.4 節。' },
+        { text: '應該從最大的編號開始做，因為最新的條目最重要。', why: '編號與重要性無關。' },
+        { text: '應該把文件整份丟掉，因為編號錯亂。', why: '編號的小瑕疵不影響 21 個條目本身的內容。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 官方說明條目依資料在 GenAI 系統中的流動順序組織（先直接暴露、再管線完整性…），並明說不是 Top 10。(2) 因此編號不是優先順序。(3) DSGAI25 在目錄與正文都沒有條目，是殘留引用。</p><p><strong>結論：</strong>用自己系統的資料盤點決定優先順序；DSGAI25 不排入，並標示未能確認。對應教材：<a href="01-position.html#pos-concept">1.4 節</a>、<a href="01-position.html#pos-count">1.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

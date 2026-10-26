@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 章　跨文件整合與收尾｜AI Agent Security Cheat Sheet｜OWASP AI 資安學習教材</title>
+<meta name="description" content="兩份 Cheat Sheet 與 Cheat Sheet 系列其他 AI 速查表、04 階段各主題的關係；遇到某個情況先看哪份文件的決策流程；並用一個虛構的第三方 MCP 伺服器採購審查，把六個問題實際套用一次。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="ai-agent-security-cheat-sheet" data-page="05-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 5 章　跨文件整合與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO5</li>
+  <li>前置：<a href="04-third-party-evidence.html">第 4 章</a></li>
+</ul>
+<p class="lead">前四章把兩份 Cheat Sheet 各自講完了。本章做三件事：把它們放回 Cheat Sheet 系列和 04 階段的地圖、用一個決策流程回答「遇到某個情況先看哪份」，最後用一個虛構的採購審查，把第 4 章的六個問題實際套用一次。</p>
+
+<h2 id="i-series">5.1 在 Cheat Sheet 系列裡的位置</h2>
+<p>OWASP Cheat Sheet Series 的儲存庫（讀取日 2026-10-26）有 9 份與 AI 直接相關的速查表：AI Agent Security、LLM Prompt Injection Prevention、MCP Security、RAG Security、Verifying Third-Party Agent Execution Evidence，以及 Secure AI Model Ops、Secure Coding with AI、AI-Powered Advertising Systems Security、AML Sanctions AI Agent Payments。前五份本站已有內容；後四份<strong>本主題沒有涵蓋，也沒有讀它們的內容</strong>（是否另有本站主題，以首頁學習地圖為準）。</p>
+<div class="table-wrap"><table>
+<caption>表 5-1　兩份 Cheat Sheet 與系列內其他速查表的關係（「文件明寫」＝原文有引用；對應欄的整理為作者整理，非官方）</caption>
+<thead><tr><th scope="col">速查表</th><th scope="col">與本主題兩份的關係</th><th scope="col">本站</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM Prompt Injection Prevention</th><td>文件明寫：AI Agent Security 的第一項風險與第 2 節都指向它，細節技術交給它</td><td><a href="../../03-prompt-injection-rag-practice/prompt-injection/index.html">提示詞注入防護主題</a></td></tr>
+<tr><th scope="row">MCP Security</th><td>文件明寫：Verifying 指向它的第 7 項（選配的訊息層級完整性）；AI Agent Security 的工具示範標為 MCP 工具設定。審查第三方伺服器的治理流程在本站 MCP 主題</td><td><a href="../mcp-security/index.html">MCP 安全主題</a></td></tr>
+<tr><th scope="row">RAG Security</th><td>兩份都沒有引用它。AI Agent Security 把取回文件列為不可信輸入，並把檢索設定列為重測觸發條件；與 RAG 的語意相鄰是作者整理</td><td><a href="../../03-prompt-injection-rag-practice/rag-security/index.html">RAG 安全主題</a></td></tr>
+<tr><th scope="row">Transaction Authorization</th><td>文件明寫：AI Agent Security 第 1 節要求搭配它，處理批准與高衝擊動作</td><td>本站沒有對應主題</td></tr>
+<tr><th scope="row">Logging</th><td>文件明寫：Verifying 指向它，說明如何產生並保護自己的日誌</td><td>本站沒有對應主題</td></tr>
+</tbody></table></div>
+<p>兩份速查表之間也有一條明寫的連結：AI Agent Security 第 6 節說，當日誌來自你沒做的元件，請看 Verifying，判斷這種紀錄能證明什麼。第 3 章的「看見」到第 4 章換成「看見別人給的紀錄」，銜接點就在這裡。</p>
+
+<h2 id="i-which">5.2 遇到某個情況，先看哪份</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="選文件的決策流程：先問紀錄或服務是否來自你沒做的元件。若是，再問是在決定要不要採用還是已在使用而要驗證紀錄：決定採用先看 MCP 安全主題的登錄與治理流程，再看本主題第 4 章的六個問題；已在使用則直接看第 4 章。若不是，則看問題類型：想列出 agent 要先加哪些控制看本主題第 2、3 章；想要風險共同語言看 Agentic Top 10 與威脅與緩解；想落實到架構與生命週期看保護 Agentic 應用指南；注入細節看提示詞注入防護主題；檢索與向量庫看 RAG 安全主題。">
+flowchart TB
+  S["碰到 agent 安全問題"] --> Q{"紀錄或服務來自<br>你沒做的元件？"}
+  Q -->|"是：決定採用"| M["MCP 安全主題<br>登錄與治理<br>再加本主題第 4 章"]
+  Q -->|"是：已在用，要驗紀錄"| E["本主題第 4 章<br>六個問題"]
+  Q -->|"否：自家 agent"| T{"想做什麼？"}
+  T -->|"補控制清單"| C["本主題第 2、3 章"]
+  T -->|"風險共同語言"| A["Agentic Top 10<br>威脅與緩解"]
+  T -->|"落實到架構"| G["保護 Agentic 應用指南"]
+  T -->|"注入或檢索細節"| P["提示詞注入防護<br>RAG 安全"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q,T,M,E,C,A,G,P author
+</pre>
+<figcaption><strong>圖 5-1　遇到某個情況先看哪份。</strong>各文件的定位是官方描述或前幾章整理的內容；把它們串成這張決策圖是<span class="tag author">作者整理，非官方</span>（整張圖皆為虛線框）。三份 04 階段的相鄰主題與其分工見<a href="01-position.html#a1-place">表 1-2</a>。</figcaption>
+</figure>
+
+<h2 id="i-scenario">5.3 情境範例：審查第三方 MCP 伺服器給的執行紀錄</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：青禾物流的路線報價伺服器</h3>
+<p><span class="tag fiction">虛構</span> 青禾物流是虛構的公司。它要採購遠航雲（虛構供應者）的「路線報價」MCP 伺服器，讓公司的調度 agent 呼叫。依 MCP 主題的治理流程，這個伺服器已在試用環境跑了一輪。遠航雲交來一份簽署的執行紀錄，列出試用期間的 48 次工具呼叫，並附一個「驗證頁面」，頁面上顯示「紀錄有效」。以下為虛構，細節停在概念層級。</p>
+<p class="arch"><strong>架構：</strong>調度 agent → 青禾自己的 MCP 閘道（會記錄穿過的呼叫）→ 遠航雲的 MCP 伺服器（遠端）→ 遠航雲的資料庫與其再下游的地圖服務。</p>
+<ol class="steps">
+  <li><strong>先停在「簽章有效」之前：</strong>採購主管認為紀錄有簽章、驗證頁面也寫有效，可以直接當作試用的證據。審查員回到第 4 章：先問<em>要確認哪個屬性</em>，再問<em>誰有能力偽造支撐它的證據</em>。</li>
+  <li><strong>逐題套用：</strong>表 5-2 列出六個問題各自得到什麼，以及分類。</li>
+  <li><strong>決定怎麼用這份紀錄：</strong>它可以用於除錯與日常維運，不能單獨用於事件歸因或爭議。同時，因為伺服器內部看不到，青禾沿用第 2 章的限制：只給調度 agent 這個伺服器最小的工具範圍，高衝擊的下單動作留在自家的執行元件並要求綁定確切動作的批准。</li>
+  <li><strong>對應條目：</strong>Verifying 的六個問題與工作範例；AI Agent Security 第 1 節（最小權限 (Least Privilege)）、第 4 節（批准）、第 6 節（指向 Verifying）；MCP 主題的受信任登錄與五步驟；作者整理：Agentic Top 10 的 ASI04（供應鏈）。</li>
+  <li><strong>學到什麼：</strong>採購審查的重點不是「對方誠不誠實」，而是<strong>哪些結論可以不靠對方的誠實就成立</strong>。能自己重驗的，寫進決定；不能的，限制它能影響的範圍。</li>
+</ol>
+<div class="table-wrap"><table>
+<caption>表 5-2　六個問題套用到青禾的情境（虛構；分類為依第 4 章規則的作者推演，非官方）</caption>
+<thead><tr><th scope="col">問題</th><th scope="col">青禾手上有什麼</th><th scope="col">分類（僅限所述屬性）</th></tr></thead>
+<tbody>
+<tr><th scope="row">1 誰能寫入或改動？</th><td>紀錄由遠航雲的記錄器與簽署服務產生；青禾的閘道記到穿過邊界的 52 次呼叫，與紀錄的 48 次對帳，差 4 次</td><td>供應者的內部動作：<strong>供應者主張</strong>。閘道看得到的呼叫：<strong>獨立可重驗</strong>（結論是紀錄漏列 4 次，不是「全部乾淨」）</td></tr>
+<tr><th scope="row">2 時間證據？</th><td>紀錄內的時間戳是遠航雲寫的；之後青禾送出新的挑戰值，回傳的簽署紀錄包含相符的挑戰值</td><td>時間戳：<strong>供應者主張</strong>。「簽署在挑戰之後」：<strong>獨立可重驗</strong>；各呼叫何時發生：<strong>無資訊</strong></td></tr>
+<tr><th scope="row">3 指向預期的成品與執行？</th><td>預期的成品摘要值來自青禾在登錄審核時自己記下的紀錄，與簽署主體相符；執行識別碼也對上試用那一次。紀錄未提工具定義與設定是否被涵蓋</td><td>成品身分與是哪次執行：<strong>獨立可重驗</strong>；摘要值與識別碼本身不回答「動作是否發生」（要靠問題 1、4 的對帳）；工具定義與設定是否涵蓋：<strong>無資訊</strong></td></tr>
+<tr><th scope="row">4 漏掉的事件看得出來？</th><td>閘道的紀錄是預期事件清單的來源；遠航雲的序號只計它選擇納入的事件</td><td>閘道可見範圍內：<strong>獨立可重驗</strong>；閘道看不到的內部動作：<strong>無資訊</strong></td></tr>
+<tr><th scope="row">5 記錄失敗時？</th><td>青禾無法在遠航雲的環境中中斷記錄路徑；遠航雲提供文件說明會緩衝重送，沒有事故或演練證據</td><td><strong>供應者主張</strong></td></tr>
+<tr><th scope="row">6 不靠偽造能力也能驗？</th><td>驗證頁面由遠航雲自己提供；簽署者憑證根在登錄審核時由青禾自行取得並設定，用維護中的驗證器在本地驗簽</td><td>驗證頁面：<strong>供應者主張</strong>；本地驗簽（簽署者身分）：<strong>獨立可重驗</strong>。若改用共享祕密的 MAC：無法在持有者間歸屬作者</td></tr>
+</tbody></table></div>
+</div>
+
+<h2 id="i-recap">5.4 收尾：把兩份速查表讀成一個完整的問題</h2>
+<p>整個主題可以濃縮成兩個問句（<span class="tag author">作者整理，非官方</span>）：<strong>agent 能做什麼？</strong>（第 2 章：限制）與<strong>發生過什麼、我怎麼知道？</strong>（第 3、4 章：看見，且第 4 章處理「紀錄不是我做的」）。第三個問句則是：這兩者本身是不是會隨變更失效？答案在第 3 章的測試與發佈閘門。三者相扣，缺任何一個，另外兩個都比看起來脆弱。</p>
+
+<h2 id="ch5-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>系列內的明寫連結：AI Agent Security → Prompt Injection Prevention、Transaction Authorization、Verifying；Verifying → Logging、MCP Security 第 7 項。與 RAG Security 沒有明寫連結。</li>
+  <li>選文件先分「紀錄或服務是不是你做的」，再分「補控制、風險語言、落實或細節」。</li>
+  <li>審查第三方紀錄時，同一份紀錄的不同屬性會得到不同分類；能自己重驗的寫進決定，不能的限制它能影響的範圍。</li>
+  <li>後四份 AI 速查表（Secure AI Model Ops、Secure Coding with AI、AI-Powered Advertising Systems Security、AML Sanctions AI Agent Payments）本主題未涵蓋、未讀內容。</li>
+</ul></div>
+<ul class="checklist">
+  <li>給我一個 agent 安全情境，我能說出先看哪份文件。</li>
+  <li>我能對一份第三方執行紀錄，逐題說出該問什麼、手上缺什麼證據。</li>
+  <li>我能分辨哪些對照是文件明寫的，哪些是本教材的整理。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch5-next">接下來讀什麼</h2>
+<p>本主題的 <a href="quiz.html">總測驗（14 題）</a>。想把「測試」做深，可以接著看 06 階段的<a href="../../06-assessment-and-verification/genai-red-teaming/index.html">GenAI 紅隊演練主題</a>；想看全站順序，<a href="../../index.html">回到首頁看學習地圖</a>。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series, <em>AI Agent Security Cheat Sheet</em>、<em>Verifying Third-Party Agent Execution Evidence Cheat Sheet</em>：<a href="https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html">AI Agent Security</a>、<a href="https://cheatsheetseries.owasp.org/cheatsheets/Verifying_Third_Party_Agent_Execution_Evidence_Cheat_Sheet.html">Verifying</a>；無版本號；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP Cheat Sheet Series 儲存庫 <code>cheatsheets/</code> 資料夾的檔案清單（2026-10-26 讀取，用於確認 9 份 AI 相關速查表）：<a href="https://github.com/OWASP/CheatSheetSeries">github.com/OWASP/CheatSheetSeries</a>。</li>
+    <li>本站相鄰主題：<a href="../mcp-security/04-third-party-user.html">MCP 安全第 4 章</a>（登錄與五步驟）、<a href="../agentic-top-10-2026/01-position.html#pos-map">Agentic Top 10 第 1 章</a>（ASI04 名稱）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series（AI Agent Security、Verifying Third-Party Agent Execution Evidence）— CC BY-SA 4.0（站台頁尾與儲存庫 LICENSE.md）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'aas-ch5', topic: 'ai-agent-security-cheat-sheet', mode: 'chapter',
+  questions: [
+    { id: 'a5q1', type: 'mc', lo: [5], refs: [{label: '5.1 表 5-1', href: '05-integration.html#i-series'}],
+      stem: '同事說：「AI Agent Security Cheat Sheet 已經引用 RAG Security Cheat Sheet，所以做 RAG 的團隊讀它就夠了。」依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，兩份之間有明寫的引用。', why: '兩份都沒有引用 RAG Security；明寫的引用是 Prompt Injection Prevention、Transaction Authorization 與 Verifying。' },
+        { text: '不準確：沒有明寫的引用；AI Agent Security 只把取回文件視為不可信輸入、把檢索設定列為重測條件，RAG 的寫入端與讀取端細節要看 RAG 安全主題。', correct: true, why: '符合表 5-1。' },
+        { text: '不準確，因為 RAG Security 已被 AI Agent Security 取代。', why: '沒有這樣的官方說法；兩者各有範圍。' },
+        { text: '正確，因為兩份在同一個系列裡，自然互相涵蓋。', why: '同系列不代表互相涵蓋。' }
+      ],
+      summary: '與 RAG Security 沒有明寫連結。' },
+    { id: 'a5q2', type: 'mc', lo: [5], refs: [{label: '5.2 圖 5-1', href: '05-integration.html#i-which'}],
+      stem: '團隊已經在使用一個第三方 MCP 伺服器，現在要判斷它給的執行紀錄能不能用於一起爭議的歸因。應先看哪份？',
+      options: [
+        { text: 'Agentic Top 10，找對應的 ASI 條目。', why: 'Top 10 是風險的共同語言，不教你判斷一份紀錄能證明什麼。' },
+        { text: '提示詞注入防護主題，看如何過濾輸入。', why: '問題不是輸入過濾，而是紀錄的可信度。' },
+        { text: '本主題第 4 章的六個問題（Verifying Third-Party Agent Execution Evidence）。', correct: true, why: '符合圖 5-1：已在用、要驗紀錄，直接看第 4 章。' },
+        { text: '先看 AI Agent Security 第 2 節的外部輸入。', why: '第 2 節講的是進入上下文的內容；紀錄的判斷在 Verifying。' }
+      ],
+      summary: '已在用、要驗紀錄 → Verifying 的六個問題。' },
+    { id: 'a5q3', type: 'scn', lo: [5], refs: [{label: '5.3 情境與表 5-2', href: '05-integration.html#i-scenario'}],
+      stem: '依本章，採購主管的結論哪裡需要修正？',
+      scenario: '雲杉航運（虛構）要採購一個第三方 MCP 伺服器。供應者提供簽署的執行紀錄，列出試用期間 30 次工具呼叫；雲杉自己的閘道記到 33 次。採購主管說：「簽章驗證通過、供應者的驗證頁面也顯示有效，30 次與 33 次只是統計方式不同，沒什麼大不了，可以拿這份紀錄作為日後出事時的歸因依據。」',
+      options: [
+        { text: '不需要修正，簽章與驗證頁面都通過。', why: '驗證頁面由供應者提供，仍是供應者主張；簽章只說明誰簽的。' },
+        { text: '需要修正，因為任何第三方紀錄都完全不能使用。', why: '文件說供應者主張仍可用於除錯與日常維運。' },
+        { text: '需要修正，只要再請供應者重新簽一次就好。', why: '重新簽署不會增加獨立證據。' },
+        { text: '需要修正：閘道看得到、紀錄卻漏列的 3 次，在閘道可見範圍內是獨立可重驗的缺口；驗證頁面是供應者主張；這份紀錄可用於除錯，不能單獨用於歸因；並應限制該伺服器的權限範圍。', correct: true, why: '符合 5.3 節與表 5-2：不同屬性有不同分類，不能單獨用供應者主張定案。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 閘道是獨立觀察者，33 對 30 的差距是閘道可見範圍內的可重驗缺口，不能當統計差異帶過。(2) 驗證頁面是供應者自己的服務，來源仍是供應者。(3) 文件明說不要用供應者主張單獨解決涉及該供應者的歸因或爭議。</p><p><strong>結論：</strong>紀錄限用於除錯與日常維運，歸因要靠閘道等獨立證據，並用最小權限限制該伺服器。對應教材：<a href="05-integration.html#i-scenario">5.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

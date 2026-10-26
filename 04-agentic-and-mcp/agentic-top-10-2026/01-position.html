@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌、Least Agency 與十項地圖｜Top 10 for Agentic Applications 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP Top 10 for Agentic Applications for 2026 是什麼、版本與日期、跟 LLM Top 10 與 Threats and Mitigations 的關係、Least Agency 概念，以及 ASI01–ASI10 十項的整體地圖。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="agentic-top-10-2026" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌、Least Agency 與十項地圖</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../agentic-threats-and-mitigations/index.html">Agentic 威脅與緩解</a>（至少第 2 章）；<a href="../../01-overview/ai-exchange/05-agentic-genai.html#ga-agentic">AI Exchange 第 5 章</a></li>
+</ul>
+<p class="lead">上一個主題給了你一張 17 項的威脅地圖和六個 Playbook，內容紮實但篇幅很大。OWASP 的另一份文件把它濃縮成大家熟悉的「Top 10」格式：十個條目，每個有說明、常見弱點、攻擊情境和緩解。本章先看這份文件是什麼、為什麼要有它，再用一張地圖把十項放進 agent 的架構裡。</p>
+
+<h2 id="pos-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　Top 10 for Agentic Applications for 2026 一頁式全貌（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">發布者</th><td>OWASP GenAI Security Project 的 Agentic Security Initiative (ASI)。</td></tr>
+<tr><th scope="row">版本與日期</th><td><strong>PDF 封面：Version 2026，December 2025</strong>，共 57 頁；資源頁日期 2025-12-09。資源頁沒有標示草稿或定稿；自稱經「全球同儕審查」並有逾 100 位專家參與。</td></tr>
+<tr><th scope="row">編號格式</th><td><code>ASI01</code>–<code>ASI10</code>。注意它沒有「:2026」後綴，與 LLM Top 10 的 <code><a href="../../02-llm-applications/llm-top-10/02-prompt-injection.html#pi-what">LLM01:2026</a></code> 寫法不同；引用時請寫 <code>ASI01</code>，並另外標明文件版本。</td></tr>
+<tr><th scope="row">給誰用</th><td>建置者、防禦者與決策者。文件自稱是「羅盤與首選參考」，幫資安領導者與實務人員了解最高衝擊的十項威脅並開始行動。</td></tr>
+<tr><th scope="row">每條的結構</th><td>描述、常見弱點範例、攻擊情境、預防與緩解、參考資料。</td></tr>
+<tr><th scope="row">附錄</th><td>A：ASI 對照 LLM Top 10 (2025)、T&amp;M、AIVSS；B：與 CycloneDX／AIBOM 的關係；C：與 Non-Human Identities Top 10 (2025) 的對照；D：Agentic 漏洞與事件追蹤；E：縮寫。</td></tr>
+<tr><th scope="row">授權</th><td>CC BY-SA 4.0（PDF 封面）。</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">GitHub 上沒有定稿，PDF 為準</p>
+  <p>ASI 的 GitHub 儲存庫 <code>GenAI-Agent-Security-Initiative</code> 的 <code>agentic-top-10</code> 資料夾只有 <code>0.5-initial-candidates</code> 與 <code>Sprint 1-first-public-draft-expanded</code> 兩個早期草稿，沒有定稿。依「以最新者為準」，本教材以 PDF（December 2025）為依據，不採 GitHub 上的草稿。</p>
+</div>
+
+<h2 id="pos-why">1.2 為什麼要在 T&amp;M 之外再有一份 Top 10</h2>
+<p>文件的「領導人信」直接回答了這個問題：T&amp;M、威脅建模指南、保護應用指南、治理報告都很完整，但<strong>篇幅讓人難以轉化成日常實務</strong>。Top 10 的目標是「簡化並串接既有指引，而不是再製造一堆重疊的指引」，並明說它對應 T&amp;M，後者「仍是這份 Top 10 所依賴的基礎且詳細的分類」。</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　Agentic 系列文件的分工（官方描述 + 本教材的使用建議）</caption>
+<thead><tr><th scope="col">文件</th><th scope="col">性質</th><th scope="col">什麼時候用</th></tr></thead>
+<tbody>
+<tr><th scope="row">Threats and Mitigations 1.1</th><td>詳細分類：17 項威脅、六個 Playbook</td><td>要逐項深入威脅與緩解</td></tr>
+<tr><th scope="row">Top 10 for Agentic Applications 2026（本主題）</th><td>十項最高衝擊風險的精簡清單</td><td>要快速建立共同語言、做優先排序、向決策者說明</td></tr>
+<tr><th scope="row">Securing Agentic Applications Guide 1.0</th><td>建置、開發、部署的技術建議</td><td>要落實到架構與開發流程（<a href="../securing-agentic-applications/index.html">第三個主題</a>）</td></tr>
+<tr><th scope="row">MAS Threat Modeling Guide v1.0</th><td>用 MAESTRO 做多 agent 威脅建模</td><td>要對具體系統逐層找威脅</td></tr>
+</tbody></table></div>
+<p>與 LLM Top 10 的關係，文件的說法是：Agentic 應用「不會獨立存在，會是開發 LLM 應用的一部分」，所以每個條目都引用 LLM Top 10（本文件引用的是 <strong>2025 版</strong>編號）、其他 OWASP Top 10、CycloneDX、Non-Human Identities Top 10，並用 AIVSS 做評分與優先排序。LLM Top 10 2026 的前言則反過來說：當模型帶著工具、記憶或下游效應行動時，風險就移向 OWASP Agentic Top 10。</p>
+
+<h2 id="pos-agency">1.3 核心概念：最小自主權 (Least Agency)</h2>
+<div class="concept">
+<h3 id="c-agency">最小自主權 (Least Agency)</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>文件在最小權限 (Least Privilege) 與 Excessive Agency 的基礎上新增的概念：<strong>避免不必要的自主性</strong>。「Agency」指的是 agent 自己決定、自己行動的範圍；Least Agency 要你問的不是「這個 agent 該有多少權限」，而是「這件事真的需要 agent 自主決定嗎」。</dd>
+  <dt data-n="2">為什麼重要</dt>
+  <dd>文件的理由是：在不需要的地方部署 agentic 行為，會擴大攻擊面，卻不會增加價值。自主性越多，被劫持時能走的路徑越多；權限再小，agent 若能自己規劃、串接、委派，風險仍會被放大。</dd>
+  <dt data-n="3">怎麼被忽略（概念層級）</dt>
+  <dd>常見做法是先問「能不能讓 agent 做這件事」，然後用最小權限限制它。這樣仍可能把原本固定流程就能完成的任務，交給一個會自行規劃的 agent，白白多出被操縱的空間。</dd>
+  <dt data-n="4">怎麼用</dt>
+  <dd>文件的做法是與最小權限並用，並強調<strong>可觀測性不可妥協</strong>：看不見 agent 做了什麼、為什麼做、呼叫了哪些工具，不必要的自主性就會悄悄擴大攻擊面，讓小問題變成系統性故障。第 2 章 ASI02 的第一項緩解就叫「Least Agency and Least Privilege for Tools」。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「Least Agency 就是 Least Privilege 換個名字。」不是。權限回答「能碰什麼」；自主權回答「能自己決定到什麼程度」。一個權限很小、但可以自由規劃與委派的 agent，仍然有 Least Agency 沒做好的問題。</dd>
+</dl>
+</div>
+<p><span class="tag author">作者整理，非官方</span> 把 Least Agency 想成「對自主性也設一個預算」，是作者的類比；文件沒有給 Least Agency 一套獨立的衡量方式。</p>
+
+<h2 id="pos-map">1.4 十項地圖</h2>
+<p>文件有一張「At a Glance」圖，把十項標在 agent 的輸入、處理與輸出位置上。下表是文字版（名稱與編號取自 PDF 目錄）。</p>
+<div class="table-wrap"><table>
+<caption>表 1-3　ASI01–ASI10 一覽（名稱為官方；「核心一句話」為依各條 Description 改寫）</caption>
+<thead><tr><th scope="col">編號</th><th scope="col">名稱</th><th scope="col">核心一句話</th></tr></thead>
+<tbody>
+<tr><th scope="row">ASI01</th><td>Agent Goal Hijack</td><td>agent 分不清指令與內容，目標與決策路徑被改變</td></tr>
+<tr><th scope="row">ASI02</th><td>Tool Misuse and Exploitation</td><td>在被授予的權限內，把合法工具用在不安全或非預期的方式</td></tr>
+<tr><th scope="row">ASI03</th><td>Identity and Privilege Abuse</td><td>利用委派鏈、角色繼承與快取憑證提權</td></tr>
+<tr><th scope="row">ASI04</th><td>Agentic Supply Chain Vulnerabilities</td><td>第三方的模型、工具、agent、MCP／A2A 介面與登錄可能被竄改</td></tr>
+<tr><th scope="row">ASI05</th><td>Unexpected Code Execution (RCE)</td><td>agent 產生並執行的程式碼被升級為遠端或本機執行</td></tr>
+<tr><th scope="row">ASI06</th><td>Memory &amp; Context Poisoning</td><td>污染 agent 儲存或檢索的記憶與脈絡</td></tr>
+<tr><th scope="row">ASI07</th><td>Insecure Inter-Agent Communication</td><td>agent 之間的即時訊息缺乏驗證、完整性或授權</td></tr>
+<tr><th scope="row">ASI08</th><td>Cascading Failures</td><td>單一故障在 agent 之間傳播、放大成系統性傷害</td></tr>
+<tr><th scope="row">ASI09</th><td>Human-Agent Trust Exploitation</td><td>利用人對 agent 的信任誘導核准有害動作</td></tr>
+<tr><th scope="row">ASI10</th><td>Rogue Agents</td><td>惡意或受損的 agent 偏離原定功能與授權範圍</td></tr>
+</tbody></table></div>
+<figure class="diagram">
+<pre class="mermaid" data-alt="十項在 agent 架構上的位置：輸入端有使用者提示、外部 agent、連接的資料與 RAG；處理端是 agent 與其記憶、政策與治理；輸出端有工具、API 與資源、人類審查。ASI01、ASI03、ASI09 在輸入與人類互動；ASI02 在工具；ASI04、ASI05、ASI08 跨越多處；ASI06 在記憶；ASI07 在 agent 之間；ASI10 在 agent 本身。">
+flowchart LR
+  subgraph IN["輸入"]
+    I1["使用者提示"]
+    I2["外部 agent"]
+    I3["連接的資料與 RAG"]
+  end
+  subgraph PROC["處理"]
+    A["Agent"]
+    M["記憶"]
+    G["政策與治理"]
+  end
+  subgraph OUT["輸出"]
+    O1["工具"]
+    O2["API 與資源"]
+    O3["人類審查"]
+  end
+  I1 --> A
+  I2 --> A
+  I3 --> A
+  A --> M
+  A --> O1
+  A --> O2
+  A --> O3
+  G -.-> A
+  I1 -. "ASI01 ASI03" .-> A
+  A -. "ASI10" .-> A
+  O1 -. "ASI02" .-> O2
+  M -. "ASI06" .-> A
+  I2 -. "ASI07" .-> A
+  O3 -. "ASI09" .-> A
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class G author
+</pre>
+<figcaption><strong>圖 1-1　十項在 agent 架構上的位置（依官方 At a Glance 圖重新繪製，並非官方原圖，標註僅為示意）。</strong>官方圖把 ASI01、ASI03、ASI09 放在輸入端，ASI02 在工具，ASI06 在記憶，ASI07 在 agent 之間，ASI10 在 agent 本身，ASI04、ASI05、ASI08 放在底部、跨越多處。虛線框的「政策與治理」是作者簡化的位置，是<strong>作者整理，非官方</strong>。</figcaption>
+</figure>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>採用的是 <strong>Version 2026、December 2025</strong>（PDF）；GitHub 只有早期草稿，沒有定稿；編號是 <code>ASI01</code>–<code>ASI10</code>，沒有年份後綴。</li>
+  <li>Top 10 是 T&amp;M 的濃縮與串接：T&amp;M 是詳細分類，Top 10 是最高衝擊十項的行動入口。</li>
+  <li><strong>Least Agency</strong>：避免不必要的自主性；與最小權限並用，不等於最小權限。</li>
+  <li>文件引用的 LLM Top 10 編號是 2025 版；引用時要帶年份。</li>
+  <li>十項依「輸入／處理／輸出」可大致定位：目標與身分在輸入、工具與人類審查在輸出、記憶與 agent 本身在處理。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出採用的版本與日期，並知道 GitHub 草稿不能當依據。</li>
+  <li>我能解釋 Least Agency 與最小權限的差別。</li>
+  <li>我能說出 Top 10 與 T&amp;M 的分工。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-goal-tools-identity.html">第 2 章　目標、工具與身分（ASI01–ASI03）</a>：十項裡最常一起出現的三個條目，以及它們之間怎麼區分。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>OWASP Top 10 for Agentic Applications for 2026</em>, Version 2026, December 2025（PDF 封面）：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a>（顯示日期 2025-12-09）；2026-10-26 讀取；封面標示 CC BY-SA 4.0。引用段落：Letter from the Agentic Top 10 Leaders、At a Glance、目錄。</li>
+    <li>GenAI-Agent-Security-Initiative 儲存庫 <code>agentic-top-10</code> 資料夾：<a href="https://github.com/GenAI-Security-Project/GenAI-Agent-Security-Initiative/tree/main/agentic-top-10">GitHub</a>；2026-10-26 以 GitHub API 確認只有兩個草稿資料夾。</li>
+    <li>OWASP Top 10 for LLM Applications 2026 前言（Version 2026，2026-08-04）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/tree/main/2026/final">GitHub 2026/final</a>；僅引用其對 Agentic Top 10 的邊界說明（模型成為帶工具、跨 session 記憶與下游後果的「行動者」時，風險移向 Agentic Top 10）；2026-10-26 讀取前言原文核對。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Top 10 for Agentic Applications 2026、Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'asi-ch1', topic: 'agentic-top-10-2026', mode: 'chapter',
+  questions: [
+    { id: 's1q1', type: 'mc', lo: [1], refs: [{label: '1.1 一頁式全貌', href: '01-position.html#pos-onepage'}],
+      stem: '你要在內部規範引用「Top 10 for Agentic Applications」的第一條。下列哪種寫法最能讓讀者核對？',
+      options: [
+        { text: '「ASI01:2026 Agent Goal Hijack」', why: '文件的編號沒有年份後綴；加上「:2026」會讓人以為是和 LLM Top 10 同格式的官方寫法。' },
+        { text: '「ASI01 Agent Goal Hijack（Top 10 for Agentic Applications, Version 2026, December 2025）」', correct: true, why: '編號照官方寫法，並另外標明文件版本與日期。' },
+        { text: '「Agentic Top 10 第一條」', why: '沒有版本、日期與名稱，讀者無法核對。' },
+        { text: '「AS01」', why: 'AS01 是 PDF 內 ASI10 的筆誤寫法；正確編號是 ASI01。' }
+      ],
+      summary: '編號寫 ASI01；版本與日期另外標明。' },
+    { id: 's1q2', type: 'mc', lo: [1], refs: [{label: '1.1 提示框', href: '01-position.html#pos-onepage'}],
+      stem: '同事說：「ASI 的 GitHub 儲存庫有 agentic-top-10 資料夾，我們直接引用裡面的最新檔案就好。」依本章，最適當的回應是？',
+      options: [
+        { text: '同意，GitHub 一定比 PDF 新。', why: '該資料夾只有早期草稿（initial candidates 與 first public draft），沒有定稿。' },
+        { text: '不同意：資料夾只有早期草稿；定稿以 PDF（December 2025）為準。', correct: true, why: '符合 1.1 節提示框：GitHub 沒有定稿，PDF 為依據。' },
+        { text: '不同意，因為 GitHub 內容都不可信。', why: '問題不是 GitHub 不可信，而是那裡只有草稿。' },
+        { text: '兩者內容相同，隨便引用哪個。', why: '草稿與定稿不同，不能互換。' }
+      ],
+      summary: '依最新者為準；此處 PDF 才是定稿。' },
+    { id: 's1q3', type: 'mc', lo: [1], refs: [{label: '1.3 Least Agency', href: '01-position.html#c-agency'}],
+      stem: '一個 agent 的權限已縮到最小，但它能自行規劃步驟、串接工具並委派給其他 agent。依 Least Agency，下列哪個判斷最準確？',
+      options: [
+        { text: '權限已最小，所以沒有風險。', why: '權限回答「能碰什麼」；自主性本身會放大風險。' },
+        { text: '還有 Least Agency 的問題：應檢討這件事是否真的需要 agent 自主決定，必要時改成固定流程。', correct: true, why: '1.3 節：Least Agency 是避免不必要的自主性，與最小權限不同。' },
+        { text: '只要加更多日誌就能解決。', why: '日誌是可觀測性，重要但不能取代減少不必要的自主性。' },
+        { text: 'Least Agency 是最小權限的別名，所以問題等同於權限。', why: '兩者不同，這正是本章的常見誤解。' }
+      ],
+      summary: 'Least Agency 問「需不需要自主」；最小權限問「能碰什麼」。' },
+    { id: 's1q4', type: 'match', lo: [1], refs: [{label: '1.2 表 1-2', href: '01-position.html#pos-why'}],
+      stem: '把需求配對到最適合先讀的 Agentic 系列文件。',
+      cats: [
+        { id: 'tm', label: 'Threats and Mitigations 1.1' },
+        { id: 'top10', label: 'Top 10 for Agentic Applications 2026' },
+        { id: 'saa', label: 'Securing Agentic Applications Guide' },
+        { id: 'mas', label: 'MAS Threat Modeling Guide' }
+      ],
+      items: [
+        { text: '向決策者快速說明最高衝擊的十項 agentic 風險', answer: 'top10', why: '精簡清單、行動入口。' },
+        { text: '對具體多 agent 系統逐層找威脅', answer: 'mas', why: '用 MAESTRO 七層做威脅建模。' },
+        { text: '把防護落實到架構與開發流程', answer: 'saa', why: '建置、開發、部署的技術建議。' },
+        { text: '逐項深入 17 項威脅與六個 Playbook', answer: 'tm', why: '詳細分類。' }
+      ],
+      summary: '四份文件分工：詳細／精簡／實作／建模。' }
+  ]
+});
+</script>
+</body>
+</html>

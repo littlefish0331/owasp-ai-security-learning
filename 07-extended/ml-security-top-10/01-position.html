@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌與定位｜Machine Learning Security Top 10｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP Machine Learning Security Top 10 是什麼、給誰用、範圍、目前仍是 2023 年的草稿 v0.3，以及引用時該怎麼寫。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="ml-security-top-10" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌與定位</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 5 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="index.html">主題首頁</a></li>
+</ul>
+<p class="lead">在 LLM 風險清單滿天飛的時候，OWASP 其實還有一份更早的清單，談的是「沒有生成式 AI 的機器學習系統」：影像分類器、詐欺偵測、信貸評分。這一章先回答三件事：它是什麼、成熟度到哪裡、怎麼引用才不會誤導讀者。</p>
+
+<h2 id="pos-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　Machine Learning Security Top 10 一頁式全貌（2026-10-26 讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">名稱</th><td>OWASP Machine Learning Security Top 10（網站標題寫 Machine Learning Security Top Ten）</td></tr>
+<tr><th scope="row">版本與成熟度</th><td>2023 edition、<strong>Version 0.3 Draft</strong>；owasp.org 標示 Incubator Project，類別為 Documentation</td></tr>
+<tr><th scope="row">官方自己的提醒</th><td>專案頁寫：目前版本是草稿，<strong>正被頻繁修改</strong>（"is being modified frequently"）</td></tr>
+<tr><th scope="row">條目</th><td>ML01:2023 到 ML10:2023，共十項</td></tr>
+<tr><th scope="row">給誰用</th><td>開發者、機器學習工程與維運人員、應用程式資安人員（官方 Target Audience）</td></tr>
+<tr><th scope="row">領導者</th><td>Shain Singh、Sagar Bhure、Ben Kereopa-Yorke（專案頁與 <code>project.owasp.yaml</code>）</td></tr>
+<tr><th scope="row">授權</th><td>CC BY-SA 4.0（專案頁與 PDF 都寫明）</td></tr>
+<tr><th scope="row">取得方式</th><td>網站（逐條頁面）、PDF（31 頁，標題 "Draft release v0.3"）、GitHub 儲存庫（無正式 release）</td></tr>
+</tbody></table></div>
+<p>「Version 0.3 Draft」這幾個字很重要。它代表這份清單<strong>沒有走完定稿流程</strong>。你可以用它建立「ML 系統有哪幾類風險」的概念地圖，但不要把它當成像 OWASP Top 10（Web）那樣經過多輪票選的標準。</p>
+
+<h2 id="pos-scope">1.2 範圍：傳統 ML，而且不只是攻擊</h2>
+<p>官方的 Scope 段落有兩句值得記住。第一句說明它要提供「機器學習系統十大安全問題的概覽」。第二句說明範圍的特別之處：對抗性攻擊 (adversarial attack) 只是威脅的一類，這個專案<strong>同時涵蓋非對抗情境，例如 ML 營運與工程流程的安全衛生</strong>。</p>
+<p>這是它與你熟悉的 LLM 清單最大的差別。對 LLM 應用開發者來說，「提示詞注入」是從使用者輸入進來的新攻擊面；對傳統 ML 來說，更多風險發生在<strong>資料管線、訓練環境、模型檔案與套件</strong>，而不是使用者在對話框打的字。</p>
+<div class="callout official">
+  <p class="callout-title">本教材怎麼稱呼</p>
+  <p>官方用 "machine learning systems"，沒有定義「傳統」。本教材為了與 LLM 清單區分，把它稱為「傳統機器學習 (ML)」；這是教學上的說法，不是官方分類。官方在專案頁的「相關清單」裡，把 OWASP Top 10 for Large Language Models 列為另一份相關清單。</p>
+</div>
+
+<h2 id="pos-compare">1.3 與相鄰清單的差別</h2>
+<div class="table-wrap"><table>
+<caption>表 1-2　ML Top 10 與相鄰清單的定位比較（「適合的用途」一列為作者整理，非官方）</caption>
+<thead><tr><th scope="col">面向</th><th scope="col">ML Top 10</th><th scope="col">LLM Top 10 2026</th><th scope="col">AI Exchange</th></tr></thead>
+<tbody>
+<tr><th scope="row">對象系統</th><td>機器學習系統（含非生成式）</td><td>LLM 應用</td><td>所有 AI，含傳統 ML 與規則式系統</td></tr>
+<tr><th scope="row">版本狀態</th><td>2023 edition、v0.3 草稿</td><td>2026 版，GitHub 與 PDF 封面 2026-08-04</td><td>持續更新、無版本號</td></tr>
+<tr><th scope="row">編號格式</th><td>ML01:2023</td><td><a href="../../02-llm-applications/llm-top-10/02-prompt-injection.html#pi-what">LLM01:2026</a></td><td>無條目編號，以威脅與控制名稱為主</td></tr>
+<tr><th scope="row">形式</th><td>十條，每條有描述、預防、風險因子表、情境</td><td>十條，每條有預防與緩解策略</td><td>威脅、控制與風險分析的知識庫</td></tr>
+<tr><th scope="row">適合的用途</th><td>認識傳統 ML 的風險類別</td><td>認識 LLM 應用最關鍵的風險</td><td>威脅建模與選擇控制</td></tr>
+</tbody></table></div>
+
+<h2 id="pos-flow">1.4 它在整體地圖的位置</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程：系統是傳統機器學習時用 ML Top 10 認識風險類別，再回到 AI Exchange 做威脅建模與選擇控制；系統是 LLM 應用時看 LLM Top 10 2026；系統有 agent 則再看 Agentic Top 10。ML Top 10 是草稿，引用時要註明 2023 edition、Version 0.3 Draft。">
+flowchart TD
+  S["我的系統是什麼？"] --> Q{"系統類型"}
+  Q -->|"分類器、預測、推薦等傳統 ML"| M["ML Top 10<br>認識十類風險<br>(2023 edition, v0.3 Draft)"]
+  Q -->|"LLM 應用"| L["LLM Top 10 2026"]
+  Q -->|"有 agent 與工具呼叫"| A["Agentic Top 10 2026"]
+  M --> X["回到 AI Exchange<br>威脅建模與選擇控制"]
+  L --> X
+  A --> X
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q,X author
+</pre>
+<figcaption><strong>圖 1-1　依系統類型選擇清單。</strong>三份清單與 AI Exchange 的存在都是官方內容；「依系統類型選」與「最後回到 AI Exchange 做威脅建模」的串接是<strong>作者整理，非官方</strong>（虛線框）。AI Exchange 本身在其參考區塊引用 ML Top 10 的編號（第 4 章表 4-1）。</figcaption>
+</figure>
+
+<h2 id="pos-concept">1.5 核心概念：怎麼引用一份草稿</h2>
+<div class="concept">
+<h3 id="c-draft">引用 Version 0.3 Draft</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>版本標示是這份文件「可以被信任到什麼程度」的線索。ML Top 10 的現行標示是 <em>2023 edition、Version 0.3 Draft</em>，官方還加了一句「頻繁修改中」。</dd>
+  <dt data-n="2">為什麼這點重要</dt>
+  <dd>這份清單的條目頁在 2024 年仍有更動（例如 ML06 的檔案在 2024 年有過更新提交，且條目頁的標題與專案首頁、PDF 的寫法不同，詳見<a href="references.html">參考資料頁</a>）。也就是說，網頁、PDF 與專案首頁的清單文字<strong>彼此可能不一致</strong>；只引用其中一處、又不寫日期，讀者會對不上。</dd>
+  <dt data-n="3">沒意識到時會怎樣（概念層級）</dt>
+  <dd>把「ML03 是第三大風險」當成事實，或把風險因子表裡的數字當成各條的嚴重度排名。官方沒有說明排序依據，各條風險因子表自己也註明只是「依該情境的範例」，不是通用評分。</dd>
+  <dt data-n="4">怎麼引用</dt>
+  <dd>寫「OWASP Machine Learning Security Top 10（2023 edition，Version 0.3 Draft）的 ML0x:2023」，並註明讀取日期。只拿它當分類語言，不要拿條目順序當優先順序。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「它是 2023 年的清單，所以內容一定過時、不用看。」不一定。條目講的是資料、模型與供應鏈的基本風險，概念本身並不依賴某個年份。需要小心的是<strong>成熟度與完整度</strong>：它是草稿，且完全沒有涵蓋生成式 AI 特有的風險。</dd>
+</dl>
+</div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>ML Top 10 的現行標示是 2023 edition、Version 0.3 Draft、Incubator；官方自己寫「頻繁修改中」。</li>
+  <li>範圍是機器學習系統，並且明說包含非對抗情境（ML 營運與工程流程的安全衛生）。</li>
+  <li>官方沒有說明十項的排序依據；不要把編號順序當成嚴重度或優先順序。</li>
+  <li>它與 LLM Top 10 2026、AI Exchange 是互補關係，不是新舊版本關係。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能寫出一個帶版本與日期的正確引用。</li>
+  <li>我能說明它與 LLM Top 10 的範圍差別。</li>
+  <li>我知道為什麼不能用 ML01–ML10 的順序判斷優先順序。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-lifecycle-map.html">第 2 章　十項風險地圖</a>：把十個條目放回 ML 生命週期，分辨容易混淆的條目。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Machine Learning Security Top Ten 專案頁（Overview、Purpose、Target Audience、Scope、Licensing、Related）：<a href="https://owasp.org/www-project-machine-learning-security-top-10/index.html">owasp.org/www-project-machine-learning-security-top-10/index.html</a>（owasp.org 的 index.html 網址會轉址到 owasp.github.io 版本；不帶 index.html 的網址目前顯示 Page not found）；2026-10-26 讀取；頁面標示 Edition 2023、Version 0.3 Draft、Incubator Project、CC BY-SA 4.0。</li>
+    <li>OWASP Machine Learning Security Top 10 – Draft release v0.3（PDF，31 頁，含 Notice 與 Copyright and License 段）：<a href="https://mltop10.info/OWASP-Machine-Learning-Security-Top-10.pdf">mltop10.info/OWASP-Machine-Learning-Security-Top-10.pdf</a>；2026-10-26 讀取。</li>
+    <li>專案設定檔 <code>project.owasp.yaml</code>：<a href="https://github.com/OWASP/www-project-machine-learning-security-top-10">github.com/OWASP/www-project-machine-learning-security-top-10</a>；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Machine Learning Security Top 10 專案頁與 PDF — CC BY-SA 4.0；OWASP AI Exchange、OWASP Top 10 for LLM Applications 2026 僅用於對照，授權見其各自頁面。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'm-ch1', topic: 'ml-security-top-10', mode: 'chapter',
+  questions: [
+    { id: 'm1q1', type: 'mc', lo: [1], refs: [{label: '1.5 引用 Version 0.3 Draft', href: '01-position.html#pos-concept'}],
+      stem: '同事在簡報寫：「依 OWASP ML Top 10，ML03 排名第三，所以模型反推的優先順序比 ML05 模型竊取高。」依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，Top 10 的編號就是嚴重度排名。', why: '官方沒有說明十項的排序依據，所以不能把編號當成排名。' },
+        { text: '不正確，因為 ML Top 10 沒有任何風險因子資料可以參考。', why: '各條頁面確實有風險因子表，只是官方註明那只是依該條情境的範例，不是通用評分。' },
+        { text: '不應這樣推論：官方沒有說明排序依據，風險因子表也只是依單一情境的範例；優先順序要依你自己系統的情況判斷。', correct: true, why: '符合 1.5 節：編號順序不是優先順序，引用時也要註明草稿版本。' },
+        { text: '不正確，因為這份清單已停止維護，不能用來判斷優先順序。', why: '專案頁寫的是「頻繁修改中」的草稿，不是停止維護；判斷優先順序的問題不在維護狀態。' }
+      ],
+      summary: '編號順序 ≠ 優先順序；官方沒有說明排序依據。' },
+    { id: 'm1q2', type: 'mc', lo: [1], refs: [{label: '1.2 範圍', href: '01-position.html#pos-scope'}],
+      stem: '依官方 Scope 說明，ML Top 10 與「只列對抗性攻擊的清單」最大的差別是什麼？',
+      options: [
+        { text: '它同時涵蓋非對抗情境，例如 ML 營運與工程流程的安全衛生。', correct: true, why: '官方 Scope 明寫對抗性攻擊只是威脅的一類，也包含非對抗情境。' },
+        { text: '它只涵蓋生成式 AI，不涵蓋傳統 ML。', why: '正好相反：它談的是機器學習系統（不限生成式）；LLM 風險是另一份清單。' },
+        { text: '它排除任何與供應鏈有關的風險。', why: '它有一條 AI 供應鏈攻擊（ML06:2023），涵蓋函式庫、MLOps 平台與模型庫。' },
+        { text: '它只適用於雲端部署的模型。', why: '官方範圍沒有這樣的限制。' }
+      ],
+      summary: '範圍包含非對抗的 ML 營運與工程衛生。' },
+    { id: 'm1q3', type: 'scn', lo: [1], refs: [{label: '1.1 一頁式全貌', href: '01-position.html#pos-onepage'}, {label: '1.5 引用 Version 0.3 Draft', href: '01-position.html#pos-concept'}],
+      stem: '依本章，這份內部規範的引用有哪些地方要修正？',
+      scenario: '雲嶺保險（虛構）的資料團隊在內部規範寫：「我們遵循 OWASP 的 ML 安全 Top 10 標準，這是 2026 年最新版的正式標準。」審查人員查了官方頁面，看到的是 2023 edition、Version 0.3 Draft、Incubator，頁面還寫「頻繁修改中」。',
+      options: [
+        { text: '沒有問題，反正 OWASP 發布的都是標準。', why: '官方標示是草稿；OWASP 的清單不等於已定稿的標準。' },
+        { text: '應改為引用 AI Exchange，因為 ML Top 10 已被取代。', why: '官方沒有說 ML Top 10 被取代；AI Exchange 在參考區塊同時引用它的編號。' },
+        { text: '只需要把「2026」改成「2023」即可。', why: '年份不對只是其中一點；「正式標準」與「最新版」同樣沒有依據。' },
+        { text: '要改為「OWASP Machine Learning Security Top 10（2023 edition，Version 0.3 Draft）」，並刪掉「2026 年最新版」「正式標準」；也可以註明讀取日期。', correct: true, why: '符合 1.5 節的引用方式：帶版本與草稿標示，不誇大成熟度。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 官方標示 2023 edition，不是 2026。(2) 標示 Version 0.3 Draft，官方還寫「頻繁修改中」，所以不是定稿的正式標準。(3) 沒有任何官方文字說它被取代。</p><p><strong>結論：</strong>引用應帶版本與草稿標示，並註明讀取日期。對應教材：<a href="01-position.html#pos-onepage">1.1 節</a>、<a href="01-position.html#pos-concept">1.5 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

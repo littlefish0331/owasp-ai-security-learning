@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　為什麼需要 AIVSS，以及三層版本｜AIVSS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="為什麼 CVSS 不足以評 AI 系統的弱點、AIVSS 的放大原則，以及目前並存的三套互不相容的 AIVSS 說法（儲存庫通用框架、v0.8 規格、1.0 參考計算器）該怎麼分開讀。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="aivss" data-page="01-why-aivss.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　為什麼需要 AIVSS，以及三層版本</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../../primer-security-for-developers.html#p-risk">資安前置觀念：風險</a>（威脅、漏洞、風險的區別）；知道 CVSS 是什麼更好，不知道也可以，本章會用一段話交代</li>
+</ul>
+<p class="lead">這個主題在 06「評估與驗證」裡負責回答一個很實際的問題：<strong>找到一個 AI 系統的弱點之後，怎麼說它有多嚴重？</strong>紅隊找到問題、測試指南跑出問題、驗證標準列出沒達標的要求，最後都要排優先順序。AIVSS (AI Vulnerability Scoring System) 是 OWASP 為此做的評分專案。但它有一個你必須先知道的麻煩：<strong>目前同時有三套彼此不相容的說法</strong>。本章先講為什麼需要它，再把三套說法分開。</p>
+
+<h2 id="why-cvss">1.1 核心概念：為什麼 CVSS 不夠，以及放大原則</h2>
+<p>先用一段話交代 CVSS：通用弱點評分系統 (Common Vulnerability Scoring System, CVSS) 是軟體弱點最常用的評分方式，用攻擊途徑、複雜度、所需權限、對機密性／完整性／可用性的影響等指標算出 0 到 10 的分數，再分成低、中、高、嚴重四個級別。開發者最熟悉的場景是：套件掃描器報一個 CVE，旁邊附一個 CVSS 分數，你依分數決定先修哪個。</p>
+<div class="concept">
+<h3 id="c-amplify">AIVSS 的核心想法：agent 能力是「放大器」</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>AIVSS 想補的缺口是：同一個技術弱點，部署在不同的 AI 系統裡，真正的危害可以差很多。v0.8 規格把這件事稱為「風險放大」(Agentic Risk Amplification)：傳統軟體的弱點，影響上限由應用程式本身的權限決定；agentic AI 的規劃、用工具與保留記憶的能力，則像「力量倍增器」(Force Multiplier)，把原本的技術弱點放大。<span class="tag official">官方</span></dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>v0.8 列出三個原因：(1) 核心自主性 (Core Agency)：agent 能自己把幾個弱點串成達成目標的路徑；(2) 環境滲透性 (Environmental Permeability)：agent 把自然語言指令和系統執行（工具）接在一起，讓技術缺陷跨越系統邊界；(3) 機率性行為 (Probabilistic Behavior)：弱點可能只在特定隨機條件下觸發，評估要從「可利用性」轉向「機率」。<span class="tag official">官方</span>通用框架的 README 另外列出傳統評分的盲點：對抗式輸入、不透明且難預測的推理、模型隨時間退化、涵蓋資料到維運的生命週期弱點、倫理與社會影響，以及系統本身的動態性。<span class="tag official">官方</span></dd>
+  <dt data-n="3">怎麼被忽略（概念層級）</dt>
+  <dd>以 README 自己的例子說：客服聊天機器人被提示詞注入，洩漏內部指示。系統「照設計在運作」，卻產出不安全的結果，而傳統評分偏重軟體缺陷與可觀察的失效，容易低估這類行為性的風險。<span class="tag official">官方</span>換成開發者的語言：SQL 注入的後果受資料庫帳號權限限制；一個能自己呼叫工具、跨工作階段記憶的 agent，被注入後的後果則取決於它「被授權做什麼」。<span class="tag author">作者整理，非官方</span></dd>
+  <dt data-n="4">怎麼用</dt>
+  <dd>評分時把「技術嚴重度」當基線，再問 agent 的能力（自主性、工具、持久記憶、身分切換等）讓它往上加多少。這個「加多少」是 AIVSS 與 CVSS 的差別所在，也是第 2 章算式的結構。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「AIVSS 是 CVSS 的替代品。」不是。v0.8 規格要求先有 CVSS v4.0 基礎分，再加 agentic 的放大項；1.0 參考計算器更是明白寫成 CVSS v4.0 的擴充，原本的 CVSS 向量與分數保持不變。（細節見第 2、3 章。）</dd>
+</dl>
+</div>
+
+<h2 id="three-layers">1.2 目前有三套說法，而且互不相容</h2>
+<p>本教材在 2026-10-26 讀取官方網站與儲存庫，發現「AIVSS」這個名字底下同時存在三套計分說法。它們都掛在 OWASP AIVSS 專案旁邊，但算法、輸入與成熟度都不同。<strong>本教材不把它們合成一套</strong>，因為它們合不起來。</p>
+<div class="table-wrap"><table>
+<caption>表 1-1　三套 AIVSS 說法（2026-10-26 讀取；官方三者之間的關係未能確認）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">甲：儲存庫 README 的通用框架</th><th scope="col">乙：v0.8 規格（PDF）</th><th scope="col">丙：1.0 參考計算器</th></tr></thead>
+<tbody>
+<tr><th scope="row">來源</th><td>OWASP 儲存庫 <code>www-project-artificial-intelligence-vulnerability-scoring-system</code> 的 README；最近提交 2026-10-22</td><td>aivss.owasp.org 標示「最新發布」的 PDF，98 頁；<strong>發布日未能確認</strong>（封面無日期）</td><td>aivss.owasp.org 的計算器頁（標示 Live）；原始碼連到個人帳號儲存庫 <code>kenhuangus/aivss-v1-candidate</code></td></tr>
+<tr><th scope="row">範圍</th><td>以 LLM 與雲端部署為主、可套用到各類 AI 的通用框架</td><td>OWASP Agentic AI 十項核心風險（針對 agentic AI）</td><td>agentic AI 的弱點（CVSS v4.0 的擴充）</td></tr>
+<tr><th scope="row">算法</th><td>基礎指標 + 9 個 AI 特有指標（連乘）+ 影響 + 時間 + 緩解，加權相加</td><td>以 (CVSS 基礎分 + 放大量) × 緩解係數計算；放大量由 10 個因子加總而來</td><td>查表：CVSS 級別 × Agentic 影響類別（A0／A1／A2／AX）；不對 agentic 指標做算術</td></tr>
+<tr><th scope="row">成熟度自述</th><td>README 自稱「活文件」；結尾有免責聲明；<strong>授權檔只寫「TODO」</strong></td><td>檔名與官網標示 v0.8（0.5 為封存初版）</td><td>自述 Table 6 數值是尚未對獨立評分的發現驗證的「政策設定」；Effect Class 未驗證；補救時間線「未校準」；FIRST 未驗證；並寫明 OWASP 不背書 AIVSS v1</td></tr>
+<tr><th scope="row">本教材的用法</th><td>只講它的存在與觀察，不教公式</td><td>第 2 章教算式</td><td>第 3 章教查表</td></tr>
+</tbody></table></div>
+<p>三套裡哪一套才是「現行官方」？本教材<strong>無法判斷</strong>：官方網站並存了 v0.8 的下載與 1.0 的計算器，沒有說明兩者的取代關係；儲存庫 README 的內容又與兩者都不同。這是本主題最重要的限制，請見下方的「未能確認」說明。</p>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：哪一套是現行有效的 AIVSS</p>
+  <p>依「版本或日期衝突以最新者為準」的規則：最新的<strong>發布規格</strong>是 v0.8 PDF（日期未載明），最新的<strong>計算器與推送</strong>是 1.0 參考計算器與儲存庫（2026-10-22）。但 1.0 自述未驗證、OWASP 不背書，v0.8 沒有日期，本教材因此<strong>不宣稱任何一套是正式現行</strong>。使用時請記錄你用的是哪一套、哪個版本，並以官方最新說明為準。官方網站公告區還有一則標題寫「December 2026 Update」的項目，而本教材讀取的日期是 2026-10-26，原因未能確認（可能是筆誤或預告）。</p>
+</div>
+
+<h2 id="which">1.3 遇到分數時，該讀哪一份？</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程：先問分數宣稱的是哪一套。若分數附有 AIVSS:1.0 開頭的向量，讀 1.0 參考計算器的查表模型；若文件自稱是針對 OWASP Agentic AI 核心風險的 v0.8，讀 v0.8 算式；若只寫 AIVSS 加一個數字沒有版本，先回頭問版本，不要比較；若來源是儲存庫 README 的 AI 特有指標連乘，視為通用框架草稿。">
+flowchart TD
+  S["看到一個『AIVSS 分數』"] --> Q{"分數附了什麼？"}
+  Q -->|"有 AIVSS:1.0 向量<br>（LC、CP、AP、RH、ES）"| C["丙：1.0 查表模型<br>第 3 章"]
+  Q -->|"寫明 v0.8 / 十個放大因子"| B["乙：v0.8 算式<br>第 2 章"]
+  Q -->|"MR、DS、EI… 九個 AI 指標"| A["甲：README 通用框架<br>只當背景，不拿來比較"]
+  Q -->|"只有『AIVSS 7.8』沒有版本"| N["先問版本與輸入<br>不與其他分數比較"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q,C,B,A,N author
+</pre>
+<figcaption><strong>圖 1-1　看到 AIVSS 分數時該讀哪一份。</strong>三條出口各自對應表 1-1 的一欄；整張圖是<strong>作者整理，非官方</strong>，官方沒有提供這樣的辨識流程。實務原則：不同版本的分數不能互相比較，所以記錄分數時一定要連版本一起記。例如只看到「AIVSS 7.6」這樣一個數字、沒有版本與輸入時，先問版本，不要與其他分數比較。</figcaption>
+</figure>
+
+<h2 id="obs">1.4 一個值得知道的觀察：README 的範例分數很低</h2>
+<p>README 附了一段示範程式，註解寫最終分數約 0.323，屬「Low」，並說明這是「簡化、示意」的例子。<span class="tag official">官方</span>本教材另外做了兩個觀察，<strong>都是作者自己的，不是官方說法</strong>：(1) 九個 0 到 1 之間的指標連乘，數值會迅速變小（九個都取 0.9 連乘約為 0.39，九個都取 0.7 約為 0.04），所以這種算法天然會把分數壓低；(2) 本教材用 README 給的算式與數值重算，得到的結果與它的註解數字不同（重算約 0.23，註解寫 0.323；中間的 AI 特有指標得分也不同）。這可能是示意程式的簡化或筆誤，本教材無法確認原因。<span class="tag author">作者整理，非官方（作者計算）</span></p>
+<p>這個觀察對學習的意義是：<strong>不要拿甲套的範例去校準你對嚴重度的直覺。</strong>它的作用是說明框架的組成，而不是示範一個可信的嚴重度分數。</p>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>AIVSS 的出發點是放大原則：agent 的自主性、工具、記憶等能力會把同一個技術弱點「放大」，CVSS 看不到這一層。</li>
+  <li>目前並存三套說法：甲（儲存庫 README 通用框架）、乙（版本 v0.8 的規格）、丙（1.0 參考計算器）；它們的算法與輸入不同，不能混用。</li>
+  <li>現行有效的是哪一套，官方沒有說明，<strong>未能確認</strong>；記錄分數時要連版本一起記，例如註明分數出自 v0.8 還是出自 1.0 計算器。</li>
+  <li>README 範例分數很低，不適合用來建立嚴重度直覺。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能用兩三句話說明為什麼同一個技術弱點在 agent 身上可能更嚴重。</li>
+  <li>我能說出三套 AIVSS 說法各自的來源，並知道為什麼不能把它們的分數比較。</li>
+  <li>我知道為什麼本教材不宣稱哪一套是「正式現行」。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-scoring.html">第 2 章　計分結構</a>：拆開 v0.8 的算式，看十個放大因子、威脅係數與緩解係數各自改變什麼。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AIVSS 儲存庫 README，第 1–3 節與第 9 節範例（Introduction、The Need for AIVSS、Framework Components、Example Assessment）：<a href="https://github.com/OWASP/www-project-artificial-intelligence-vulnerability-scoring-system">github.com/OWASP/www-project-artificial-intelligence-vulnerability-scoring-system</a>；main 最近提交 2026-10-22；授權檔內容為「TODO」，授權未能確認。</li>
+    <li>AIVSS Scoring System For OWASP Agentic AI Core Security Risks v0.8，Executive Summary 與 Part 2 第 1 節 (The Amplification Principle)：<a href="https://aivss.owasp.org/">aivss.owasp.org</a> 提供的 PDF（98 頁；發布日未能確認）。</li>
+    <li>aivss.owasp.org 首頁（Publications、Announcements、Calculators &amp; Demos 區塊）與 <a href="https://aivss.owasp.org/calculator/">1.0 參考計算器頁</a>；2026-10-26 讀取；頁尾 CC BY-SA 4.0（除非另有說明）。</li>
+    <li>AIVSS 1.0 候選儲存庫 README：<a href="https://github.com/kenhuangus/aivss-v1-candidate">github.com/kenhuangus/aivss-v1-candidate</a>；Apache-2.0；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：aivss.owasp.org 網站 — CC BY-SA 4.0（除非另有說明）；v0.8 PDF 內文未標示授權；OWASP AIVSS 儲存庫授權檔內容為「TODO」，未能確認；AIVSS 1.0 候選儲存庫 — Apache-2.0。本頁僅引用名稱、結構與短句重述。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'v-ch1', topic: 'aivss', mode: 'chapter',
+  questions: [
+    { id: 'v1q1', type: 'mc', lo: [1], refs: [{label: '1.1 放大原則', href: '01-why-aivss.html#c-amplify'}],
+      stem: '依本章，AIVSS 想補上 CVSS 的哪一個缺口？',
+      options: [
+        { text: 'CVSS 只能用在傳統網站，不能用在任何 AI 系統。', why: '本章沒有這樣說。CVSS 仍是基礎：v0.8 規格要求先有 CVSS v4.0 基礎分，再加 agentic 放大項。' },
+        { text: '同一個技術弱點部署在擁有自主性、工具與記憶的 agent 上，危害會被放大；CVSS 看不到這一層。', correct: true, why: '這是 1.1 節的放大原則（Force Multiplier）。' },
+        { text: 'CVSS 的分數太精確，AIVSS 改用比較粗的級別。', why: '精確度不是 AIVSS 的出發點；而且 v0.8 的分數仍算到小數一位。' },
+        { text: 'CVSS 不處理機密性，AIVSS 才加入機密性。', why: 'CVSS 本來就評估機密性、完整性、可用性的影響。' }
+      ],
+      summary: 'AIVSS 的重點是放大原則：agent 的能力會放大技術弱點，而不是取代 CVSS。' },
+    { id: 'v1q2', type: 'match', lo: [1], refs: [{label: '1.1 三個放大原因', href: '01-why-aivss.html#c-amplify'}],
+      stem: '把 v0.8 規格說明的三個放大原因，配對到它的意思。',
+      cats: [
+        { id: 'agency', label: '核心自主性 (Core Agency)' },
+        { id: 'perm', label: '環境滲透性 (Environmental Permeability)' },
+        { id: 'prob', label: '機率性行為 (Probabilistic Behavior)' }
+      ],
+      items: [
+        { text: 'agent 把自然語言指令與系統執行（工具）接在一起，讓技術缺陷跨越系統邊界', answer: 'perm', why: '環境滲透性：弱點能跨出原本的系統邊界。' },
+        { text: 'agent 能自己把幾個弱點串起來去達成目標', answer: 'agency', why: '核心自主性：與被動軟體不同，agent 會自主串接弱點。' },
+        { text: '弱點可能只在特定隨機條件下觸發，評估要從「可利用性」轉向「機率」', answer: 'prob', why: '機率性行為：風險不是二元的。' }
+      ],
+      summary: '三個原因：自主串接、跨邊界、機率性。' },
+    { id: 'v1q3', type: 'mc', lo: [1], refs: [{label: '1.2 表 1-1', href: '01-why-aivss.html#three-layers'}],
+      stem: '同事說：「AIVSS 就是一個公式，我把 README 的、v0.8 的和計算器的分數放進同一張表排序就好。」依本章，最恰當的回應是？',
+      options: [
+        { text: '可以，只要把三個分數都換算到 0–10 就能比較。', why: '三套的輸入與算法不同，換算到同一範圍也不代表同一個意思；本章明確說它們互不相容。' },
+        { text: '不行，因為只有 README 的分數才是官方的。', why: '本章沒有判斷哪一套才是官方現行；而且 README 的授權檔只寫「TODO」。' },
+        { text: '不行，因為 AIVSS 完全不能用來排序。', why: '本章沒有這樣說；問題在於不同版本的分數不能互相比較。' },
+        { text: '不要混排：三套的算法與輸入不同，不同版本的分數不能比較；要記錄用的是哪一套、哪個版本。', correct: true, why: '符合 1.2 節與圖 1-1 的原則。' }
+      ],
+      summary: '不同版本的 AIVSS 分數不能混排；先問版本。' },
+    { id: 'v1q4', type: 'scn', lo: [1], refs: [{label: '1.2 未能確認', href: '01-why-aivss.html#three-layers'}, {label: '1.3 圖 1-1', href: '01-why-aivss.html#which'}],
+      stem: '依圖 1-1 與本章，這份報告在引用分數時最需要補上什麼？（提示：圖 1-1 的最後一個出口，是只看到單一數字、沒有版本的情況。）',
+      scenario: '雲杉電商（虛構）的安全團隊在內部報告寫：「客服 agent 的提示詞注入弱點，AIVSS 8.6，嚴重。」報告沒有註明版本、輸入值或計算方式。另一個部門引用同一個弱點時寫「AIVSS 7.6」，兩邊爭論誰比較準。',
+      options: [
+        { text: '補上兩邊使用的 AIVSS 版本（甲、乙、丙哪一套）與各自的輸入，確認是否可比較；不同版本的分數不要互相比較。', correct: true, why: '符合圖 1-1：沒有版本的分數先問版本。' },
+        { text: '兩個分數取平均，當作這個弱點的 AIVSS。', why: '平均不同版本、不同輸入的分數沒有意義；而且第 3 章會說明 AIVSS 分數不應平均。' },
+        { text: '選比較高的那一個，因為保守比較安全。', why: '保守不等於正確；沒有版本與輸入就無法判斷哪個分數對應哪個脈絡。' },
+        { text: '把兩個分數都丟掉，改用 README 的範例分數 0.323 當標準。', why: 'README 的範例是示意用，重算也對不上；本章提醒不要用它校準嚴重度直覺。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 兩份報告只有一個數字（8.6 與 7.6），沒有版本、輸入或向量，無法判斷它們是同一套算法、輸入不同，還是根本不同套。(2) 依圖 1-1，「只有『AIVSS 數字』沒有版本」的出口是先問版本與輸入。(3) 不同版本的分數不能比較，所以爭論誰比較準之前，要先確認它們是否是同一套。</p><p><strong>結論：</strong>補上版本與輸入再比較。對應教材：<a href="01-why-aivss.html#three-layers">1.2 節</a>、<a href="01-why-aivss.html#which">1.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

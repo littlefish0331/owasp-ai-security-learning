@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　AML 與制裁（上）｜受管制領域的 AI 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AML 與制裁速查表的前半：軟體身分與法律客戶要分開、先確認 agent 身分再篩查、操作者篩查、簽署稽核軌跡，以及「未解決不等於放行」的失效即拒絕；並說明它與失效安全、ACS 預設放行的關係。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="ai-in-regulated-industries" data-page="03-aml-identity-and-failclosed.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　AML 與制裁（上）：身分、篩查、稽核軌跡與失效即拒絕</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-advertising.html">第 2 章</a></li>
+</ul>
+<p class="lead">一個 AI agent 代客戶發起付款。付款之前，機構要先問四件事：這是哪個 agent？它替誰行事？對手方在不在制裁名單上？這一切做過什麼、有沒有被改？AML 速查表前半就在處理這四個問題，並且守住一條線：<strong>篩查沒做完，就不等於放行</strong>。本章讀它的關鍵原則與前五節。</p>
+
+<h2 id="am-principle">3.1 先分清楚：軟體身分不是法律客戶</h2>
+<p>文件在 12 節控制之前，先用「法規脈絡」與「關鍵原則」劃出一條界線。法規脈絡列了六類（美國銀行保密法與 OFAC 制裁、FinCEN 的客戶識別與盡職調查、英國與歐盟制裁、資金移轉紀錄保存），每一類的意思都一樣：<strong>適用哪些要求，取決於機構的受管制角色、交易、客戶關係與管轄區</strong>，要由合規負責人去認定。</p>
+<div class="callout warn">
+  <p class="callout-title">下面幾句是文件的陳述，不是法律意見，教材不查證現況</p>
+  <ul>
+    <li>文件寫道：OFAC 並未規定一般性的「必須掃描姓名或使用篩查軟體」；篩查是支持制裁義務的手段，結論前仍要完成必要的分析。</li>
+    <li>文件寫道：為軟體做身分驗證，並不等於辨識法律上的客戶；客戶識別指引區分「帳戶所有人」與「只是代為行事的人」。</li>
+    <li>文件寫道：歐盟制裁的名單比對本身，不足以證明遵守每一項限制。</li>
+  </ul>
+</div>
+<p>關鍵原則把這些收成一句話：<strong>法律客戶與對手方的識別</strong>，要和<strong>軟體的認證與授權</strong>分開。記錄「這個 agent 為哪位客戶行事、可以做什麼」，是應用程式安全控制；而篩查、監控、通報與保存的規則，由合規負責人定義。不要把 agent 憑證或「名單比對成功」當成法律義務已完成的證明。下表把文件的四個問題與回答它們的機制對起來。</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　四個問題、對應的機制與「它沒有證明什麼」（機制取自文件的 Section 1–4；「沒有證明什麼」欄為教材整理自文件各節的限制，非文件原表）</caption>
+<thead><tr><th scope="col">要回答的問題</th><th scope="col">機制（節）</th><th scope="col">沒有證明什麼</th></tr></thead>
+<tbody>
+<tr><th scope="row">這是哪個 agent？</th><td>密碼學身分憑證，綁到每一次篩查請求（文件第 1 節）</td><td>不等於辨識出法律客戶</td></tr>
+<tr><th scope="row">它替誰行事、營運者是誰？</th><td>操作者驗證與篩查，納入 agent 的信任檔案（文件第 3 節）</td><td>不假設每位開發者或部署者都是法律客戶；一次驗證不代表永遠合格</td></tr>
+<tr><th scope="row">交易對手在名單上嗎？</th><td>實體篩查，結構化回傳結果（文件第 2 節）</td><td>名單比對成功不等於義務已完成</td></tr>
+<tr><th scope="row">誰做了檢查、結果如何、有沒有被改？</th><td>簽署且雜湊串接的稽核軌跡（文件第 4 節）</td><td>只讓紀錄可被偵測是否被改動，不證明篩查本身做對了</td></tr>
+</tbody></table></div>
+
+<h2 id="am-three">3.2 三道前置檢查：agent 身分、實體篩查、操作者</h2>
+<p><strong>先確認身分，再篩查（文件第 1 節）。</strong>agent 要存取篩查服務或發起付款之前，身分必須用密碼學驗證；沒有密碼學證明的自我宣告標頭（如 <code>X-Agent-ID</code>）必須拒絕。身分要綁進篩查請求，稽核軌跡才能證明是哪個 agent 做的檢查；每筆日誌記下公鑰指紋或護照 ID。文件建議用分級信任 (Graduated Trust Levels，例：L0 到 L4，文件未定義各級內容) 給不同的存取權；agent 不得自己提升信任等級或修改自己的權限；也不要因為 TLS 在代理處終止，就信任呼叫者自帶的身分標頭。Agent 身分的治理背景見<a href="../../05-governance-and-risk/agentic-security-and-governance/04-protocols-identity.html#c-identity">Agentic 安全與治理現況第 4 章</a>。</p>
+<p><strong>實體篩查（文件第 2 節）。</strong>文件說，agent 是呼叫者時，比對引擎本身「基本上不變」，變的是周邊脈絡。所以：所有對手方在付款前都篩查；把 agent 身分與信任等級放進篩查脈絡，下游才分得出是 agent 還是人發起的；結果回傳機器可讀的結構（比對／不比對／部分比對與分數），因為 agent 讀不懂 PDF；最低比對門檻由機構設定，agent 不得調低。不要讓 agent 繞過篩查直接呼叫付款端點、不要讓快取結果超過可設定的時間窗（名單常更新）、不要把原始名單開放給 agent（它該呼叫篩查 API，而不是下載整份名單）。</p>
+<p><strong>操作者篩查（文件第 3 節）。</strong>要辨認的是「誰負責營運這個 agent」，再依機構核准的合規計畫決定哪些當事人需要篩查；文件提醒不要假設開發者、部署者或營運者就是法律客戶。做法是：上線時驗證負責的組織；在合規計畫中定義重新篩查的觸發條件與頻率；把操作者的篩查狀態記入 agent 的信任檔案；要求 agent 在憑證中宣告營運者。不要以為驗證過一次就永遠沒事；匿名 agent（沒有宣告營運者）不得存取篩查服務；營運者自述要經營業登記或 KYB（認識你的企業）資料庫獨立驗證。</p>
+
+<h2 id="am-audit">3.3 簽署稽核軌跡：讓紀錄「被改了看得出來」</h2>
+<p>Section 4 要的是<strong>防竄改</strong>的紀錄，把已驗證的 agent 與篩查請求、結果連起來。文件特別聲明：接下來的細節描述的是一種<strong>選配</strong>的簽署加雜湊鏈設計；相關的 MCPS Internet-Draft 是個人提交的進行中工作，不是已採納的 MCP 標準；需要這層保護時，要選一個經過審查、可互通的設定檔，而且無論選哪種設計，都要套用日誌保護控制。（這與<a href="../../04-agentic-and-mcp/mcp-security/05-integration.html#n-rc">MCP 安全第 5 章</a>講的 MCPS 定位一致。）</p>
+<p>它描述的設計是：agent 用私鑰簽署每個篩查請求（含唯一的一次性值 nonce 與時間戳）；伺服器簽署每個回應；每筆稽核項目含前一筆的 SHA-256 雜湊，串成雜湊鏈，並記錄 agent 身分、呼叫的工具、<strong>篩查參數的雜湊（不存原始參數，為了隱私）</strong>與結果。保存期間依適用法規（文件寫通常 5 年，教材不查證），並可匯出供監理檢查。不要只靠應用程式日誌（它們不防竄改）；不要把稽核紀錄存在 agent 可控的儲存；不要省略 agent 身分；雜湊鏈出現缺口代表遭竄改或遺失，必須觸發告警。</p>
+
+<h2 id="am-failclosed">3.4 核心概念：未解決不等於放行</h2>
+<div class="concept">
+<h3 id="c-failclosed">失效即拒絕 (Fail-Closed)：篩查沒做完，付款就不能走</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>Section 5 的第一句：不完整或不可用的篩查結果，要視為<strong>未解決</strong>，絕不當作放行。結果未解決時，暫緩交易執行；依機構核准的政策，可以有限次重試、人工審查或拒絕。同一節還特別說：服務失敗<strong>本身不是</strong>確認的制裁命中，要由合規負責人為每種情況定義處置。</dd>
+  <dt data-n="2">為什麼</dt>
+  <dd>錢一旦送出通常難以追回，而篩查失敗是最誘人的「先放過去」時機。文件還提醒一個攻擊面：篩查失敗率升高，可能是有人刻意發動阻斷服務，目的就是逼系統退回放行 (fail-open)。</dd>
+  <dt data-n="3">怎麼被繞過（概念層級）</dt>
+  <dd>常見的是善意的後備邏輯：「篩查逾時就先放行、事後補查」「回應含糊就當沒問題」「錯誤一律寫『系統忙碌』」。最後一種的隱性代價是：錯誤不區分「服務不可用」與「已完成且命中」，agent 與營運人員就無法決定下一步；無上限的重試還可能被拿來做時間差探測。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>見下表；文件另要求長時間不可用時用熔斷器 (Circuit Breaker) 完全停止 agent 發起的付款，並在需要人工核准時，讓核准者看到並確認關鍵交易資料（引用 Transaction Authorization Cheat Sheet）。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「失效即拒絕等於把這筆交易當成命中制裁。」文件明說不是：它是<strong>技術閘門</strong>，防止必要檢查未完成時就執行；與「確認命中後依法必須封鎖」的法律義務是兩回事，後者怎麼處置要由合規負責人決定。</dd>
+</dl>
+</div>
+
+<div class="table-wrap"><table>
+<caption>表 3-2　篩查未完成時：常見後備做法與文件的處置（左欄為作者歸納的常見做法，非文件原文；右欄取自 Section 5 的 Do／Don't）</caption>
+<thead><tr><th scope="col">情況</th><th scope="col">常見但錯誤的後備</th><th scope="col">文件的處置</th></tr></thead>
+<tbody>
+<tr><th scope="row">篩查逾時、服務不可用、結果含糊</th><td>先放行，事後補查</td><td>暫緩或拒絕；不得有任何會繞過篩查的後備邏輯</td></tr>
+<tr><th scope="row">要告訴 agent 失敗了</th><td>回傳通用錯誤</td><td>回傳結構化錯誤，區分「服務不可用」與「已完成且命中」</td></tr>
+<tr><th scope="row">失敗率升高、服務長時間不可用</th><td>視為效能問題，讓 agent 一直重試</td><td>達門檻就通知合規團隊（可能是想逼出 fail-open 的阻斷服務）；失敗要和成功記錄得一樣詳細；熔斷器停止 agent 發起的付款；重試要有速率限制</td></tr>
+</tbody></table></div>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="付款前的決策流程：agent 發起付款。先驗證密碼學身分並確認已宣告營運者，任何一項不通過就拒絕。通過後執行實體篩查。結果有三種：明確未命中則可繼續；命中則依合規負責人定義的處置；未解決（逾時、不可用、含糊）則暫緩交易，可有限次重試、人工審查或拒絕，並記錄失敗與通知合規。所有路徑都寫入稽核軌跡。">
+flowchart TB
+  P["agent 發起付款"] --> I{"密碼學身分已驗證<br>且已宣告營運者？"}
+  I -->|"否"| R1["拒絕"]
+  I -->|"是"| S["實體篩查"]
+  S --> Q{"結果？"}
+  Q -->|"明確未命中"| OK["可繼續"]
+  Q -->|"命中"| M["依合規負責人<br>定義的處置"]
+  Q -->|"未解決：逾時、<br>不可用、含糊"| H["暫緩：有限重試、<br>人工審查或拒絕"]
+  H --> A["記錄失敗、<br>通知合規"]
+  R1 --> L["寫入稽核軌跡"]
+  OK --> L
+  M --> L
+  A --> L
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class L author
+</pre>
+<figcaption><strong>圖 3-1　付款前的決策流程。</strong>身分檢查、三種篩查結果與「未解決則暫緩」都來自 Section 1、2、5；圖是依文件重新繪製的簡化版，把所有路徑都接到稽核軌跡是<strong>作者整理，非官方畫法</strong>（虛線框）。</figcaption>
+</figure>
+
+<h3 id="am-relation">和你已讀過的「失敗姿態」怎麼接</h3>
+<p>詞彙表裡的<a href="../../primer-security-for-developers.html#p-did">失效安全 (Fail Securely)</a>是廣義原則：出錯時落在安全的狀態。失效即拒絕是它的一種具體形式：<strong>當「安全的狀態」就是不執行時</strong>，失敗就拒絕。<a href="../../03-prompt-injection-rag-practice/rag-security/04-generate-and-integrate.html#gi-tools-fail">RAG 安全第 4 章</a>在 RAG 管線也講了同一件事；而<a href="../agent-control-standard/03-failure-posture.html#fp-tradeoff">Agent Control Standard 第 3 章</a>卻說 ACS 預設是<strong>放行</strong>，用強制力換可用性。<span class="tag author">作者整理，非官方</span>：兩者並不矛盾，是在不同動作上做不同選擇；AML 文件處理的是涉及錢與法律義務的動作，所以選了拒絕。ACS 章的情境 B 說退款這種不可逆、涉及金錢的動作不適合 fail-open，與這裡的做法一致。需要記得的是：文件沒有把「失效即拒絕」和 ACS 並列，這個連結是教材的讀法。</p>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：Section 5 被改過，教材採最新版</p>
+  <p>2026-06-03 的首次提交，Section 5 開頭是「系統必須拒絕交易」；2026-10-04 的提交（標題為 <em>Distinguish unresolved sanctions screening from confirmed matches</em>）改成現在的寫法：未解決、不是放行，服務失敗不等於確認命中。教材採最新版。這個修訂本身就說明：技術上的「暫緩」和法律上的「封鎖」是不同的東西。</p>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>軟體的身分驗證與授權，不等於辨識法律客戶；記錄 agent 為誰行事屬應用程式安全控制，義務由合規負責人定義。</li>
+  <li>先用密碼學確認 agent 身分與營運者，才可以篩查；自我宣告標頭一律拒絕，匿名 agent 不得使用篩查服務。</li>
+  <li>簽署且雜湊串接的稽核軌跡是選配設計；雜湊鏈缺口要告警；紀錄存放在機構控制的基礎設施，且只存參數的雜湊。</li>
+  <li>篩查未完成＝未解決，不是放行；失敗要記錄、區分原因、設熔斷器；它是技術閘門，不等於把交易視為制裁命中。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出篩查前要確認哪兩件事（agent 身分與營運者），以及為什麼不能只用自我宣告標頭。</li>
+  <li>我能解釋「未解決不等於放行」，以及它和「命中」的差別。</li>
+  <li>我能說出失效即拒絕與失效安全、ACS 預設放行的關係，並標出哪一句是作者整理。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-aml-receipt-and-freshness.html">第 4 章　AML 與制裁（下）：速率限制、架構、收據與名單新鮮度</a>：篩查做完之後，結果怎麼留成可驗證的收據，並在多個 agent 之間傳遞。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series, <em>AML and Sanctions Compliance for AI Agent Payments Cheat Sheet</em>（Introduction、Regulatory Context、Key Principle、Section 1–5）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/AML_Sanctions_AI_Agent_Payments_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；無版本號；GitHub 首次提交 2026-06-03、最近修改 2026-10-18；2026-10-26 讀取；CC BY-SA 4.0。法規與政府指引為文件的陳述，教材未查證，不是法律意見。</li>
+    <li>OWASP/CheatSheetSeries 提交紀錄（Section 5 的修訂歷史，提交 8e18930，2026-10-04）：<a href="https://github.com/OWASP/CheatSheetSeries">github.com/OWASP/CheatSheetSeries</a>；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series 的 AML and Sanctions Compliance for AI Agent Payments Cheat Sheet — CC BY-SA 4.0（站台頁尾與儲存庫 LICENSE.md）。本頁未使用 NC（非商業）授權的來源。法規相關內容為文件陳述的轉述，不是法律意見。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'r-ch3', topic: 'ai-in-regulated-industries', mode: 'chapter',
+  questions: [
+    { id: 'r3q1', type: 'mc', lo: [3], refs: [{label: '3.1 先分清楚', href: '03-aml-identity-and-failclosed.html#am-principle'}],
+      stem: '依 AML 速查表的關鍵原則，下列哪一種說法最貼近文件？',
+      options: [
+        { text: 'agent 通過密碼學身分驗證，就代表機構已完成客戶識別。', why: '文件說軟體的身分驗證不等於辨識法律客戶。' },
+        { text: '只要名單比對成功，就等於制裁義務已經履行。', why: '文件明說不要把名單比對成功當成義務已完成的證明。' },
+        { text: '軟體的認證完全不必做，因為法規不要求。', why: '文件仍要求先用密碼學確認 agent 身分，理由是技術歸屬與授權。' },
+        { text: '法律客戶與對手方的識別，要和軟體的認證與授權分開；記錄 agent 為誰行事是應用程式安全控制，義務由合規負責人定義。', correct: true, why: '符合 3.1 節的關鍵原則。' }
+      ],
+      summary: '軟體身分 ≠ 法律客戶；名單比對成功 ≠ 義務完成。' },
+    { id: 'r3q2', type: 'match', lo: [3], refs: [{label: '3.2 三道前置檢查', href: '03-aml-identity-and-failclosed.html#am-three'}],
+      stem: '把下列做法配對到它所屬的檢查。',
+      cats: [
+        { id: 'id', label: '先確認 agent 身分（文件第 1 節）' },
+        { id: 'screen', label: '實體篩查（文件第 2 節）' },
+        { id: 'op', label: '操作者篩查（文件第 3 節）' }
+      ],
+      items: [
+        { text: '拒絕只帶 X-Agent-ID 標頭、沒有密碼學證明的呼叫', answer: 'id', why: 'Section 1：自我宣告標頭必須拒絕。' },
+        { text: '結果以機器可讀結構回傳，且 agent 不得調低最低比對門檻', answer: 'screen', why: 'Section 2。' },
+        { text: '匿名 agent（沒有宣告營運者）不得存取篩查服務', answer: 'op', why: 'Section 3。' },
+        { text: '不要把原始名單資料開放給 agent，只讓它呼叫篩查 API', answer: 'screen', why: 'Section 2 的 Don\'t。' }
+      ],
+      summary: '身分、篩查、操作者三道檢查各有自己的要求。' },
+    { id: 'r3q3', type: 'scn', lo: [3], refs: [{label: '3.4 核心概念', href: '03-aml-identity-and-failclosed.html#c-failclosed'}, {label: '表 3-2', href: '03-aml-identity-and-failclosed.html#am-failclosed'}],
+      stem: '依本章，這個設計最大的問題與較合適的修正是什麼？',
+      scenario: '潮汐匯兌（虛構）的付款服務在呼叫外部篩查 API 時設了 2 秒逾時。團隊決定：逾時就先放行，每晚批次補查；錯誤訊息一律回「系統忙碌，請稍後」。上個月篩查服務被大量請求打到不穩，逾時比例升高，客服覺得是效能問題。',
+      options: [
+        { text: '逾時視為未解決，暫緩或拒絕，依核准的政策有限次重試或轉人工審查；錯誤要區分「服務不可用」與「已完成且命中」；失敗率升高要通知合規並設熔斷器。', correct: true, why: '符合 3.4 節與表 3-2。' },
+        { text: '沒有問題：補查可以彌補，逾時本來就是效能問題。', why: '文件明說未完成的結果是未解決、絕不當作放行；失敗率升高也可能是刻意的阻斷服務。' },
+        { text: '把逾時延長到 60 秒就能解決，不必動後備邏輯。', why: '延長逾時不改變「未完成時是否放行」的政策問題。' },
+        { text: '把每次逾時都當成確認命中並通報。', why: '文件明說服務失敗不是確認的制裁命中；處置由合規負責人定義。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 逾時代表篩查未完成，Section 5 要求當作未解決、暫緩執行。(2) 錯誤訊息混為一談，agent 與營運人員無法分辨不可用與命中。(3) 失敗率升高可能是想逼出 fail-open 的阻斷服務，要告警並由熔斷器停止 agent 發起的付款。(4) 但「未解決」不等於「命中」，處置要由合規負責人定義。</p><p><strong>結論：</strong>移除逾時放行的後備，改為暫緩與有限重試、人工審查或拒絕；錯誤分類；失敗率告警與熔斷器。教材不查證相關法規。對應教材：<a href="03-aml-identity-and-failclosed.html#c-failclosed">3.4 節</a>。</p>' },
+    { id: 'r3q4', type: 'mc', lo: [3], refs: [{label: '3.4 和失敗姿態怎麼接', href: '03-aml-identity-and-failclosed.html#am-relation'}],
+      stem: '同事問：「ACS 預設在 Guardian 沒回應時放行，AML 文件卻要求篩查失敗就不放行，兩份官方文件是不是互相矛盾？」依本章，最恰當的回應是？',
+      options: [
+        { text: '是，其中一份是錯的，應採用較新的那份。', why: '兩者處理的是不同種類的動作，不是版本衝突。' },
+        { text: '不矛盾，因為 ACS 其實也預設拒絕。', why: 'ACS 兩個失敗姿態都預設放行。' },
+        { text: '不矛盾：是在不同動作上做不同選擇。AML 文件處理涉及錢與法律義務的動作而選拒絕；ACS 為可用性預設放行並承認代價。這個連結是教材的讀法，文件沒有把兩者並列。', correct: true, why: '符合 3.4 節。' },
+        { text: '不矛盾，因為 AML 文件不是安全文件。', why: 'AML 文件屬 OWASP Cheat Sheet Series，講的就是 agent 支付的安全控制。' }
+      ],
+      summary: '放行或拒絕，取決於動作是否涉及錢與法律義務；連結為作者整理。' }
+  ]
+});
+</script>
+</body>
+</html>

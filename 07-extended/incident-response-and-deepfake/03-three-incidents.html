@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　三種事件的應變｜事件應變與 Deepfake｜OWASP AI 資安學習教材</title>
+<meta name="description" content="GenAI Incident Response Guide 1.0 的三種事件：攻擊 AI 系統、攻擊供應鏈、攻擊第三方模型供應商，各自的偵測、圍堵、根除、復原與事後重點；以及爆炸半徑、SLA 與 AI 事件應變團隊三個準備決定，並以一個虛構情境演練。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="incident-response-and-deepfake" data-page="03-three-incidents.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　三種事件的應變</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 10 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-ai-incidents.html">第 2 章</a></li>
+</ul>
+<p class="lead">第 2 章回答「這是不是 AI 事件、有多嚴重」。這一章回答下一個問題：<strong>接下來做什麼</strong>。指南的事件特定章把 AI 事件分成三種：攻擊 AI 系統、攻擊供應鏈、攻擊第三方模型供應商，每種都依 NIST 生命週期寫出偵測與分析、圍堵、根除、復原、事後活動。不同的事件，第一個動作可能完全不同：有的要隔離系統提示詞，有的要輪換 API 金鑰，有的要盤點某個套件的所有版本。</p>
+
+<h2 id="tp-types">3.1 三種事件，三組重點</h2>
+<div class="table-wrap"><table>
+<caption>表 3-1　三種 AI 事件的應變重點對照（依指南意譯並節略，非完整清單）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">攻擊 AI 系統</th><th scope="col">攻擊供應鏈</th><th scope="col">攻擊第三方模型供應商</th></tr></thead>
+<tbody>
+<tr><th scope="row">適用誰</th><td>針對 AI 系統本身的直接攻擊（例如提示詞注入、投毒），影響模型行為</td><td>主要給<strong>自己開發模型</strong>的組織；以 API 使用基礎模型者請看右欄</td><td>以 API 或其他介面使用<strong>外部基礎模型</strong>的組織</td></tr>
+<tr><th scope="row">指南列的攻擊類型</th><td>提示詞注入（直接、間接；LLM01:2025）、規避、模型投毒（LLM04:2025）、資料外洩（LLM02:2025、LLM07:2025）、RAG 投毒（LLM08:2025）、代理被利用</td><td>訓練資料與模型投毒、後門（LLM03:2025、LLM04:2025）</td><td>上游供應商的供應鏈與投毒風險（LLM03:2025、LLM04:2025），組織看不到訓練過程與權重出處</td></tr>
+<tr><th scope="row">偵測與分析：看什麼</th><td>AI 系統日誌、使用者互動日誌（<strong>含提示詞，有隱私顧慮</strong>）、應用日誌、裝置與基礎設施日誌</td><td>模型指紋與雜湊驗證、行為測試（找觸發候選）、靜態掃描模型封裝、執行期追蹤、預測漂移；<strong>產生 AI-BOM 被視為高信任環境的前提</strong></td><td>輸出結構與延遲的行為異常、對固定金絲雀輸入的預測漂移、客戶端相依（SDK、包裝層）變動、結構化的輸入輸出日誌、告警門檻</td></tr>
+<tr><th scope="row">圍堵</th><td>偵測並隔離提示詞注入（可用金絲雀提示詞）；隔離已暴露的系統提示詞；節流異常查詢量以防模型抽取；切割模型端點與限縮 IAM；移除外洩的架構資訊；通知使用者</td><td>與業務衝擊<strong>成比例</strong>：評估相依後可能下線模型。自家模型：移除容器、停用端點、中斷連線。API 模型：切斷與上游的通訊、輪換機密。惡意套件：盤點所有版本、找出傳播風險</td><td><strong>隔離與回滾</strong>：撤銷或輪換 API 金鑰、暫停與供應商的互動。<strong>輸出風險重新評估</strong>：用替代供應商或內部驗證層重新驗證受影響期間的輸出。<strong>供應商問責</strong>：要求事後報告與根因分析</td></tr>
+<tr><th scope="row">根除與復原</th><td>隔離受疑成品；重算校驗值並驗證簽章；清理訓練資料；限制函式庫載入；程式碼簽署；必要時強化模型；<strong>重新產生 AI-BOM</strong>。復原：完整的功能與行為稽核、持續紅隊、重新評估對齊、強化遙測</td><td>分析傳遞途徑；與已簽署的基準比對（沒有出處追蹤就做完整的相依與設定審查）。復原有五種選項：汰換、回滾到已知良好版本、用驗證過的資料重訓、隔離或沙箱化受限使用、輸出過濾加強監控</td><td>指南這一節把圍堵、根除、復原合併成上列三項（隔離與回滾、輸出風險重新評估、供應商問責），沒有另列根除與復原的細項</td></tr>
+<tr><th scope="row">事後活動</th><td>根因與攻擊向量分析；衝擊與暴露評估；模型完整性與行為驗證（重測並重建基線）；安全重新整合；更新 AI-BOM、政策、劇本，並（去識別後）分享給 ISAC、OWASP、MITRE</td><td>與供應商確認修補完成並取得<strong>書面結案聲明</strong>；驗證簽章與行為；把證據保存在不可變儲存；更新採購與第三方風險評估（含 SLA 中的事故通知條款）</td><td>審查合約與服務條款（通知義務、SLA、補償、責任、稽核權），請法務評估資料保護、出口管制、智財風險，決定是否通報主管機關與客戶；分享情資</td></tr>
+</tbody></table></div>
+<p class="small">指南的 LLM 編號在原文沒有年份，上表已依第 1 章的處理補上 :2025。指南也列了幾個偏研究性質的後門偵測工具（標示給「高度進階的資安團隊」參考），本教材不逐項轉述。</p>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="選用哪一節的簡單判斷：先看異常來自哪裡。若來自自己系統的輸入、輸出、資料或代理行為，用攻擊 AI 系統那一節。若來自模型、資料集、套件或管線被動手腳，而且組織自己開發或訓練模型，用攻擊供應鏈那一節。若組織以 API 使用基礎模型而且懷疑問題出在供應商端，用攻擊第三方模型供應商那一節。實際事件常常重疊，可以同時使用多節。">
+flowchart TD
+  S["AI 事件已宣告<br>（第 2 章）"] --> Q1{"異常來自你自己系統的<br>輸入、輸出、資料、代理行為？"}
+  S --> Q2{"模型、資料集、套件、管線被動手腳，<br>而且你自己開發或訓練模型？"}
+  S --> Q3{"你以 API 使用基礎模型，<br>懷疑問題在供應商端？"}
+  Q1 -- "是" --> A["攻擊 AI 系統"]
+  Q2 -- "是" --> B["攻擊供應鏈"]
+  Q3 -- "是" --> C["攻擊第三方模型供應商"]
+  A -. "常常重疊，可同時使用" .- B
+  B -. "常常重疊，可同時使用" .- C
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class Q1,Q2,Q3 author
+</pre>
+<figcaption><strong>圖 3-1　三節怎麼選。</strong>三種事件的名稱與適用對象來自指南（供應鏈一節明說主要給自己開發模型的組織，API 使用者請看下一節）；三個判斷問題與「可同時使用」是<strong>作者整理，非官方畫法</strong>（虛線的判斷節點）。</figcaption>
+</figure>
+
+<h2 id="tp-prop">3.2 兩個貫穿的原則</h2>
+<div class="concept">
+<h3 id="c-prop">圍堵要「立即而且成比例」</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>供應鏈一節的第一句圍堵建議是：圍堵應<strong>立即且與業務衝擊成比例</strong>。可行的話下線模型，但要先評估相依關係，以及它的輸出是否餵給關鍵業務流程。如果衝擊小，就隔離受影響模型、關閉服務基礎設施。</dd>
+  <dt data-n="2">為什麼</dt>
+  <dd>AI 系統常常被藏在既有應用裡，其輸出被其他系統當作輸入。一刀切下線，可能讓依賴它的流程一起停擺；什麼都不做，則讓受污染的輸出繼續擴散。嚴重度（第 2 章）決定這個權衡往哪邊傾斜：高嚴重度要積極、立即的圍堵（例如下線 AI 系統、切斷 API）。</dd>
+  <dt data-n="3">運作方式</dt>
+  <dd>先查資產清單與網路／工作流程圖，找出誰在使用這個模型的輸出；再依事件類型選用手段：自家模型移除容器、停用端點；API 模型切斷與上游的連線並輪換機密；套件問題則盤點所有版本。</dd>
+  <dt data-n="4">在哪個控制層</dt>
+  <dd>屬於回應 (response) 類控制。<span class="tag author">作者整理，非官方</span>：它依賴準備階段的資產盤點與依賴關係圖，沒有這些，成比例的判斷就沒有依據。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「圍堵就是關機。」指南列的圍堵還包括節流查詢量、限縮 IAM、隔離系統提示詞、金絲雀提示詞、通知使用者，不全是關機。另一個誤解：「嚴重度低就不用圍堵。」指南說的是低嚴重度可以採取破壞性較小的圍堵。</dd>
+</dl>
+</div>
+
+<h2 id="tp-prep">3.3 準備階段要先決定的三件事</h2>
+<p>事件發生時才討論「範圍多大、多快要處理、誰上場」就太晚了。指南在準備階段要求先決定這三件事，並與第 2 章的嚴重度矩陣連動。</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　三個準備決定（意譯）</caption>
+<thead><tr><th scope="col">決定</th><th scope="col">指南怎麼說</th><th scope="col">要先備好什麼</th></tr></thead>
+<tbody>
+<tr><th scope="row">爆炸半徑</th><td>不只受損的基礎設施，還包含：受影響的<strong>模型</strong>版本、<strong>資料集</strong>（訓練、驗證、測試、生產）、依賴其輸出的<strong>應用與服務</strong>（即使沒有直接被攻擊）、受其<strong>決策</strong>影響的使用者與業務決策數量（例如被核准的詐欺交易）、<strong>財務與聲譽</strong>暴露、下游使用其資料或輸出的<strong>其他 AI 系統</strong></td><td>完整的資產清單與網路／工作流程圖，用來對映相依與傳播路徑；能偵測擴散的 AI 專用監控；為嚴重度矩陣各維度訂好衡量準則</td></tr>
+<tr><th scope="row">回應時間義務（SLA）</th><td>SLA 應與嚴重度掛鉤，每個等級都要定義：初步圍堵時間、根除時間、RTO、RPO（對模型較不適用、對資料完整性較適用）、通報頻率。需考慮系統關鍵性、潛在傷害、法規要求、停機成本。<strong>官方範例（Critical，嚴重度 4）：初步圍堵 &lt; 15 分鐘、根除 &lt; 4 小時、RTO &lt; 8 小時、立即通知高階主管</strong></td><td>各嚴重度等級的義務表；適用的資料外洩通報法規；停機成本估算</td></tr>
+<tr><th scope="row">AI 事件應變團隊（AIRT）</th><td>傳統 IT 事件應變角色仍然不可或缺（提示詞注入可能仍需要改防火牆規則；外洩資料集仍需要鑑識的證據保管鏈）；在其上<strong>疊加</strong> AI 專長角色：AI 安全專家、機器學習工程師、提示詞注入／濫用分析師、資料科學家、模型治理負責人（可決定是否回滾或啟動停用開關）、倫理與風險顧問、AI 紅隊負責人、AI 產品負責人、MLSecOps 負責人。附錄建議分層啟動：核心團隊（一律啟動）、延伸團隊（依事件類型）、專家團隊（特定情境）</td><td>角色與人選的名單；每個 AI 系統的對口人</td></tr>
+</tbody></table></div>
+<p class="small">SLA 的數字只是指南給的<strong>範例</strong>，組織應依自己的系統與法規訂定。</p>
+
+<h2 id="tp-scn">3.4 情境範例 A：供應商端的悄悄改變</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：艋舺旅遊的客服助理</h3>
+<p><span class="tag fiction">虛構</span> 艋舺旅遊是虛構的旅行社。它的線上客服助理以 API 呼叫一家外部供應商的基礎模型，回答行程與退改規則。團隊為客服助理設了一組固定的金絲雀輸入，每小時送一次，並記錄回答的分佈。</p>
+<ol class="steps">
+  <li><strong>偵測：</strong>某天，金絲雀輸入的回答分佈明顯偏離歷史基線（預測漂移告警），同時客戶端的 SDK 與包裝層版本<strong>沒有變動</strong>。（對應表 3-1「第三方」一欄：預測漂移與客戶端相依檢查。）團隊不能直接斷言這是攻擊還是供應商的悄悄更新，指南也要求先區分「對抗攻擊」與「故障」，所以他們把它當作未明原因的異常來處理。</li>
+  <li><strong>嚴重度：</strong>評分（示範數字，作者設定，非官方）：A 功能 3（回答不一致，影響顧客決策）、B 資料 2、C 營運 2、D 聲譽與財務 3、E 補救 2。<strong>取最高分，整體 High</strong>。依第 2 章，High 要立即啟動跨職能團隊：資安、AI 工程、客服主管、法務、公關。</li>
+  <li><strong>圍堵：</strong>輪換與該供應商端點相關的 API 金鑰，暫停或限制與供應商的 API 互動並建立異常使用的監控（指南「隔離與回滾」）；同時在沙箱中用固定輸入對 API 做影子推論，看是否有異常行為（指南「輸出風險重新評估」）。因此自動回覆暫停，退改規則類問題改由人工客服處理，這是作者為情境補的營運安排，不是指南的條文。</li>
+  <li><strong>爆炸半徑：</strong>依資產清單，團隊找出漂移期間：(1) 受影響的對話與被回答的退改決定數；(2) 另一個把這些回答摘要後寫進客戶紀錄的內部助理（<strong>下游的其他 AI 系統</strong>）；(3) 已寄出的確認信。範圍因此比「客服助理」大。</li>
+  <li><strong>輸出重新驗證：</strong>用另一家供應商或內部規則層，把漂移期間的回答重新驗證一遍，標出需要更正並通知的顧客。（這需要事先保存輸入輸出對；保存提示詞有隱私顧慮，第 4 章會回到這個張力。）</li>
+  <li><strong>供應商問責與事後：</strong>向供應商的安全與信任團隊升級，要求事後報告與根因分析；重新評估供應商的風險分數；在審查通過前不恢復自動回覆（重新核准流程）。法務審查合約中的通知義務、SLA 與稽核權，並決定是否需要通報主管機關與客戶。去識別化後分享給 AI 事件資料庫等社群。</li>
+  <li><strong>這個情境的提醒：</strong>金絲雀輸入與漂移監控是<strong>事前</strong>就要做的準備，事件發生後才設已經太晚；而且一組固定輸入偵測得到的，只是「分佈變了」，不能告訴你原因。</li>
+</ol>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>指南的事件特定章有三種：攻擊 AI 系統、攻擊供應鏈（主要給自己開發模型者）、攻擊第三方模型供應商（以 API 使用基礎模型者），每種都依偵測與分析、圍堵與根除與復原、事後活動展開。</li>
+  <li>圍堵要立即且與業務衝擊成比例，先看相依再決定要不要下線。</li>
+  <li>爆炸半徑涵蓋模型、資料集、應用與服務、決策、財務與聲譽、下游其他 AI 系統，不只是被入侵的主機。</li>
+  <li>SLA 與嚴重度掛鉤；Critical 的官方範例是 &lt; 15 分鐘圍堵、&lt; 4 小時根除、&lt; 8 小時 RTO。AI 事件應變團隊是在傳統角色上疊加 AI 專長。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能依「我是自己開發模型還是以 API 使用」選對該讀的一節。</li>
+  <li>我能說出爆炸半徑的六個面向。</li>
+  <li>我知道 SLA 範例數字只是範例，要由組織自己訂定。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-deepfake-and-integration.html">第 4 章　Deepfake 與整合</a>：另一種事件——冒充——為什麼指南主張靠流程，不靠辨識；以及這個主題與資料安全、AIBOM 的整合。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Incident Response Guide 1.0（Attacks on AI Systems；Attacks on Supply Chains；Attacks on Third-Party Model Providers，三節各含 Detection and Analysis、Containment/Eradication/Recovery、Post-Incident Activity；Response Plan 的 Blast Radius、Define Response time obligations and SLAs、AI Incident Response Team；Appendix: AI Incident Response Roles）：<a href="https://genai.owasp.org/resource/genai-incident-response-guide-1-0/">genai.owasp.org/resource/genai-incident-response-guide-1-0/</a>；Version 1.0，July 28, 2025；2026-10-26 讀取。表 3-1、3-2 為意譯並節略；指南引用的公開事件與研究型工具本教材未獨立查證。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：GenAI Incident Response Guide 1.0 — PDF 內文未見授權文字，以 genai.owasp.org 網站頁尾 CC BY-SA 4.0（除非另有說明）為準。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'i-ch3', topic: 'incident-response-and-deepfake', mode: 'chapter',
+  questions: [
+    { id: 'i3q1', type: 'mc', lo: [3], refs: [{label: '3.1 圖 3-1 與表 3-1', href: '03-three-incidents.html#tp-types'}],
+      stem: '某公司以 API 使用外部供應商的基礎模型，沒有自己訓練任何模型，現在懷疑問題出在供應商端。依指南，應優先參考哪一節？',
+      options: [
+        { text: '攻擊供應鏈那一節，因為它的名稱最接近供應商問題。', why: '指南明說供應鏈一節主要給自己開發模型的組織，用 API 的請看下一節。' },
+        { text: '攻擊 AI 系統那一節，因為所有事件都從這裡開始。', why: '那一節談的是針對自己系統的輸入、輸出、資料與代理的攻擊；雖然可能一併使用，但不是首選。' },
+        { text: '攻擊第三方模型供應商那一節。', correct: true, why: '指南把以 API 或其他介面使用基礎模型的情況放在這一節。' },
+        { text: '三節都不適用，因為沒有自己訓練模型就沒有 AI 事件。', why: '以 API 使用也會有 AI 事件，這正是第三節存在的原因。' }
+      ],
+      summary: 'API 使用者看第三方供應商那一節。' },
+    { id: 'i3q2', type: 'match', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-three-incidents.html#tp-types'}],
+      stem: '把下列手段配對到指南中提出它的事件類型。',
+      cats: [
+        { id: 'sys', label: '攻擊 AI 系統' },
+        { id: 'chain', label: '攻擊供應鏈' },
+        { id: 'vendor', label: '攻擊第三方模型供應商' }
+      ],
+      items: [
+        { text: '用金絲雀提示詞偵測提示詞洩漏或模型被劫持', answer: 'sys', why: '攻擊 AI 系統一節的圍堵。' },
+        { text: '盤點某個惡意第三方套件在開發與部署環境中的所有版本', answer: 'chain', why: '供應鏈一節的圍堵（惡意套件）。' },
+        { text: '撤銷或輪換與該模型端點相關的 API 金鑰，並暫停與供應商的互動', answer: 'vendor', why: '第三方供應商一節的隔離與回滾。' },
+        { text: '重新計算關鍵模型檔案的校驗值並驗證簽章', answer: 'sys', why: '攻擊 AI 系統一節的根除（驗證 ML 成品）。' }
+      ],
+      summary: '三種事件各有不同的第一步。' },
+    { id: 'i3q3', type: 'scn', lo: [3], refs: [{label: '3.3 表 3-2', href: '03-three-incidents.html#tp-prep'}],
+      stem: '依本章，事件報告的範圍描述有什麼問題？',
+      scenario: '西門町銀行（虛構）發現一個信用評分模型的權重遭人竄改。事件報告寫：「受影響範圍：一台推論伺服器。已重啟該伺服器，事件結束。」但資產清單顯示，這個模型的評分同時被貸款審核系統與一個自動撰寫客戶通知的 AI 助理使用，過去兩週已有數百筆貸款決定參考過它的輸出。',
+      options: [
+        { text: '報告把範圍限縮為一台伺服器；應按爆炸半徑涵蓋受影響的模型版本、資料集、依賴其輸出的應用與服務、受影響的決策數量，以及下游的其他 AI 系統（那個通知助理），並以此評估是否需要重新檢視貸款決定。', correct: true, why: '符合表 3-2 的爆炸半徑。' },
+        { text: '報告沒有問題，重啟伺服器已移除竄改。', why: '重啟不會還原已被竄改的權重，也無法處理已被影響的決策。' },
+        { text: '只需要把範圍擴大到貸款審核系統，不需要考慮通知助理。', why: '指南明說要包含下游使用其輸出的其他 AI 系統。' },
+        { text: '範圍應限縮為單一模型檔案，不需要考慮決策。', why: '指南的爆炸半徑明確包含受影響的決策與財務暴露。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 爆炸半徑涵蓋模型版本、資料集、應用與服務、決策、財務與聲譽、下游其他 AI 系統。(2) 此事件至少牽涉：被竄改的模型版本、貸款審核系統、通知助理、兩週內的數百筆決策。(3) 只重啟伺服器沒有還原權重（應以簽署基準比對與驗證），也沒有處理已被影響的決策。</p><p><strong>結論：</strong>範圍應按爆炸半徑重新界定。對應教材：<a href="03-three-incidents.html#tp-prep">3.3 節</a>。</p>' },
+    { id: 'i3q4', type: 'mc', lo: [3], refs: [{label: '3.3 表 3-2', href: '03-three-incidents.html#tp-prep'}],
+      stem: '關於指南提供的 SLA 範例（Critical，嚴重度 4：初步圍堵 < 15 分鐘、根除 < 4 小時、RTO < 8 小時、立即通知高階主管），下列哪項說法最恰當？',
+      options: [
+        { text: '這是 OWASP 規定所有組織必須達成的標準。', why: '指南稱它是「範例」，組織應依自己的系統與法規訂定。' },
+        { text: '它只適用於模型被竄改的事件。', why: '範例是以嚴重度為單位，與事件類型無關。' },
+        { text: '它沒有任何參考價值，因為時間太短。', why: '它的用途是示範 SLA 要定義哪幾項、如何與嚴重度掛鉤。' },
+        { text: '它是示範：SLA 應與嚴重度掛鉤並定義圍堵、根除、RTO 等項目；實際數字由組織依系統關鍵性、潛在傷害、法規與停機成本決定。', correct: true, why: '符合指南的敘述。' }
+      ],
+      summary: 'SLA 數字是範例，組織自訂。' }
+  ]
+});
+</script>
+</body>
+</html>

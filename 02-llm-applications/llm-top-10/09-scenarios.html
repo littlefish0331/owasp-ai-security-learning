@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 9 章　情境演練｜LLM Top 10 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="三個虛構情境（RAG 客服助理、第三方模型上線、客服 agent 成本暴增），練習一個事件會同時碰到哪些 LLM Top 10 2026 條目，以及遇到事件時用哪三個問題決定該先補哪項控制。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="02-llm-applications" data-topic="llm-top-10" data-page="09-scenarios.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 9 章　情境演練</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3、LO4、LO5</li>
+  <li>前置：<a href="02-prompt-injection.html">第 2 章</a>至<a href="08-evolution.html">第 8 章</a></li>
+</ul>
+<p class="lead">真實事件很少只屬於一個條目。這一章用三個<strong>虛構</strong>系統練習同一個動作：看到一個事件，先決定它在哪一環出問題，再回頭對應條目，最後挑「先補哪一項」。情境只描述到能理解風險與防禦的概念層級，不含可直接使用的攻擊手法。</p>
+
+<h2 id="sc-method">9.1 遇到事件時的三個問題</h2>
+<p>前面八章給了你十個條目的地圖。實務上更有用的是反過來用：從一個事件出發，依序問三個問題。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="遇到事件時的三個問題的決策流程。問題一：資料或指令是從哪一個入口進來的？如果是使用者或取回內容裡的指令，指向 LLM01；如果是模型、資料或轉換環節被動過手腳，指向 LLM04 或 LLM05。問題二：被放大的是哪一個能力？模型能呼叫的工具與權限，指向 LLM03；模型輸出到達的下游，指向 LLM10；隱藏的指令與工具 schema，指向 LLM08；相似度搜尋層，指向 LLM09。問題三：最後的衝擊落在誰身上？資料離開，指向 LLM02；服務可用性或成本，指向 LLM06；錯誤內容被相信並行動，指向 LLM07。最後不論答案，先補的控制要選能限縮後果的那一類：最小權限、完全仲裁、先授權再檢索、硬性花費上限、驗證後才行動。">
+flowchart LR
+  S["一個事件"] --> P1
+  S --> P2
+  S --> P3
+  subgraph P1["問題一　從哪個入口進來？"]
+    direction TB
+    A1["使用者或取回內容裡的指令 → LLM01 提示詞注入"]
+    A2["模型、資料或轉換環節被動手腳 → LLM04 供應鏈、LLM05 投毒"]
+  end
+  subgraph P2["問題二　被放大的是哪個能力？"]
+    direction TB
+    B1["工具與權限 → LLM03 過度授權"]
+    B2["輸出到達的下游 → LLM10 不當輸出處理"]
+    B3["隱藏指令與工具 schema → LLM08 隱藏上下文暴露"]
+    B4["相似度搜尋層 → LLM09 向量與嵌入弱點"]
+  end
+  subgraph P3["問題三　衝擊落在誰身上？"]
+    direction TB
+    C1["資料離開 → LLM02 敏感資訊外洩"]
+    C2["可用性或成本 → LLM06 無限制消耗"]
+    C3["錯誤內容被相信並行動 → LLM07 錯誤資訊"]
+  end
+  P1 --> F
+  P2 --> F
+  P3 --> F
+  F["先補能限縮後果的控制<br>最小權限、完全仲裁、先授權再檢索<br>硬性花費上限、驗證後才行動"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,F author
+</pre>
+<figcaption><strong>圖 9-1　遇到事件時的三個問題（作者整理，非官方）。</strong>三個問題的分類方式沿用官方 Figure 2 的入口、放大器、衝擊三層（見第 1 章），<strong>把它改寫成「事件出發」的決策流程，以及最後一步「優先補限縮後果的控制」，是作者整理</strong>（虛線方框）；官方沒有提供這樣的流程。一個事件常會同時落在多個分支，這是正常的。</figcaption>
+</figure>
+
+<h2 id="sc-a">9.2 情境 A：客服 RAG 助理</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：雲杉保險的理賠問答助理</h3>
+<p><span class="tag fiction">虛構</span> 雲杉保險是虛構的公司。他們為客服人員建了理賠問答助理：知識庫由內部手冊、過去客服工單與合作診所上傳的文件組成，所有客戶的文件放在同一個向量索引。流程是先對整個索引做相似度搜尋，再依客服人員所屬部門在應用層過濾。助理的回覆以 Markdown 渲染，並且有一個「寄送摘要給客戶」的工具，可寄信到任意地址。</p>
+<p class="arch"><strong>架構：</strong>知識庫（手冊、工單、診所文件）→ 共用向量索引 → 檢索 → 託管 LLM（系統提示詞內含寄信工具的說明與一組內部 API 金鑰）→ Markdown 渲染的客服介面。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>某位客服人員在查詢一般理賠流程時，答案裡出現了「僅限理賠審查部」才該看的內部審查標準。事後檢查又發現，某張工單裡有人（來源不明）放了一段文字，其內容會讓助理在回覆中附上一個外部網址的圖片、網址參數帶著對話內容。同時，稽核人員從系統提示詞裡直接看到了那組內部 API 金鑰。</li>
+  <li><strong>哪一環出問題（至少四環）：</strong>(1) 檢索前沒有授權：先搜尋全索引、後過濾；(2) 工單內容被當成可信，但可由第三方寫入；(3) 輸出的 Markdown 圖片會自動載入；(4) 金鑰放在模型看得到的地方；(5) 寄信工具能寄到任意地址。</li>
+  <li><strong>對應條目：</strong>(1) LLM09（跨租戶／跨部門的相似度搜尋）與 LLM02（過度分享與檢索前授權）；(2) LLM01（經檢索內容的間接注入，半可信面）；(3) LLM10（用戶端渲染器自動載入）；(4) LLM08 與 LLM02（嵌入的憑證本身就是外洩）；(5) LLM03（過度功能）。</li>
+  <li><strong>該採什麼控制（官方控制，優先序為作者建議）：</strong>
+    <ul>
+      <li>先授權再檢索：把部門與權限範圍放進索引查詢內，在伺服器端驗證，並以區塊為單位控制（LLM09 #1、LLM02 第 1 層）；</li>
+      <li>金鑰移出提示詞，外部化到模型碰不到的系統；授權由獨立的決定性機制強制（LLM08）；</li>
+      <li>預設關閉 Markdown 圖片自動載入，必須渲染時限定來源允許清單（LLM10）；</li>
+      <li>寄信工具改成只能寄到已核准的收件人，其餘動作要求人工確認；拿掉不必要的功能與權限（LLM03、LLM01 的 Rule of Two）；</li>
+      <li>第三方可寫入的工單，視為半可信的來源：隔離並標示來源、過濾只當輔助（LLM01 第 6 項）。</li>
+    </ul>
+  </li>
+</ol>
+</div>
+<p>注意這個情境沒有一個「單一弱點」。<strong>每個控制都是在某一環讓下一環失敗的代價變小</strong>。如果只修一項，最該修的是「寄信工具」與「先授權再檢索」：前者限縮注入成功後的外洩路徑，後者去掉資料被取回的前提。這個排序是作者的判斷，不是官方的。</p>
+
+<h2 id="sc-b">9.3 情境 B：第三方模型上線</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：青河銀行的內部問答模型</h3>
+<p><span class="tag fiction">虛構</span> 青河銀行是虛構的公司。團隊要上線一個內部問答模型：基礎模型取自公開模型中心的第三方模型，另外下載了一個社群釋出的 LoRA adapter 做領域微調；部署時以「作者／模型名稱」取得模型，並在持續整合流程裡自動轉換格式。上線前檢核的結論是「掃描通過、簽署驗證通過」。三個月後，內部評估發現：模型在某類特殊格式的問題下，回覆中會固定出現一個外部網址，而其他一般評估指標都正常。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>模型只在特定觸發條件下改變行為，標準評估看不出來。</li>
+  <li><strong>哪一環出問題：</strong>(1) 取得模型只用名稱，沒有固定到不可變的摘要；(2) 社群 adapter 沒有經過來源審查；(3) 自動轉換環節沒有被視為高風險晉升點；(4) 上線前檢核只回答了「來源與載入」，沒有回答「行為」。</li>
+  <li><strong>對應條目：</strong>LLM04（名稱參照、無簽署的 adapter、轉換流程）與 LLM05（條件觸發的後門，標準評估看不出來）；若網址被渲染成圖片，還牽涉 LLM10。</li>
+  <li><strong>該採什麼控制：</strong>
+    <ul>
+      <li>以不可變的參照取得成品，維護已簽署的物料清單，納入 adapter 與資料集（LLM04）；</li>
+      <li>把轉換與合併當作高風險的晉升點嚴密監控，對 chat template、tokenizer 設定、adapter 做 diff 與靜態分析（LLM04、LLM05 #12）；</li>
+      <li>針對觸發詞與對抗性輸入做後門探測，並且<strong>每一輪微調或對齊之後都重做</strong>，不要假設對齊會移除後門（LLM05 #10）；</li>
+      <li>簽署只證明來源與完整性，檢核表要補上行為評估（LLM04 第 5 項）。</li>
+    </ul>
+  </li>
+</ol>
+</div>
+
+<h2 id="sc-c">9.4 情境 C：客服 agent 的成本暴增</h2>
+<div class="scenario">
+<h3 id="scn-c">情境 C（虛構）：晨星購物的客服 agent</h3>
+<p><span class="tag fiction">虛構</span> 晨星購物是虛構的公司。客服 agent 使用擴充思考的推理模型，能查詢訂單、並呼叫社群提供的「物流追蹤」工具。系統每個使用者每分鐘最多 10 個請求，並設了一個「帳單超過預算時寄信通知財務」的警示。某個月，帳單遠超預算，但沒有任何服務中斷，也沒有請求量異常。調查後發現：幾位使用者各自維持一個很長的對話；同時，社群的物流追蹤工具在特定條件下會回傳一串「請再次呼叫自己」的指示。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>每個請求都在配額內，但成本持續累積，沒有人被擋下。</li>
+  <li><strong>哪一環出問題：</strong>(1) 只限制請求數，沒有 token 或成本層級的限制；(2) 警示只通知、不中止；(3) 對話上下文累積，每回合重新處理；(4) 工具輸出沒有被視為半可信，agent 沒有步數或遞迴深度上限。</li>
+  <li><strong>對應條目：</strong>LLM06（大上下文濫用、推理迴圈、工具呼叫迴圈、錢包拒絕）；工具輸出裡的指示也有 LLM01 的間接注入與 LLM04 的第三方工具面向。</li>
+  <li><strong>該採什麼控制：</strong>
+    <ul>
+      <li>每個使用者、金鑰、團隊與帳號的硬性花費上限，超過即中止推論（LLM06 #2）；</li>
+      <li>token／天與估計成本的限制，加上推論前預估（LLM06 #1）；</li>
+      <li>agent 的步數、遞迴深度、時間與每次執行成本上限，用狀態雜湊偵測遞迴（LLM06 #9）；</li>
+      <li>第三方工具視為供應鏈面：釘住版本、稽核工具描述與輸出（LLM01 第 10 項、LLM04）。</li>
+    </ul>
+  </li>
+</ol>
+</div>
+<div class="table-wrap"><table>
+<caption>表 9-1　三個情境涉及的條目與優先要補的控制（作者整理，非官方）</caption>
+<thead><tr><th scope="col">情境</th><th scope="col">涉及的條目</th><th scope="col">先補哪一項（作者判斷）</th><th scope="col">為什麼先補它</th></tr></thead>
+<tbody>
+<tr><th scope="row">A　客服 RAG 助理</th><td>LLM09、LLM02、LLM01、LLM10、LLM08、LLM03</td><td>寄信工具限縮與檢索前授權</td><td>前者限縮注入成功後的外洩路徑；後者去掉資料被取回的前提</td></tr>
+<tr><th scope="row">B　第三方模型上線</th><td>LLM04、LLM05、LLM10</td><td>後門探測與行為評估，並改用不可變參照</td><td>已簽署、已掃描無法回答「行為」；而且標準評估看不出條件式後門</td></tr>
+<tr><th scope="row">C　成本暴增的 agent</th><td>LLM06、LLM01、LLM04</td><td>硬性花費上限與 agent 熔斷器</td><td>其他控制只能降低機率；上限直接限制最壞的帳單</td></tr>
+</tbody></table></div>
+
+<h2 id="ch9-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>遇到事件先問三題：從哪個入口進來？被放大的是哪個能力？衝擊落在誰身上？再對應條目。</li>
+  <li>一個事件常同時涉及多個條目；多個控制的價值，是讓下一環失敗的代價變小，不是各自獨立。</li>
+  <li>優先補的是限縮後果的控制（最小權限、完全仲裁、先授權再檢索、硬性花費上限、驗證後才行動）；降低成功率的控制是輔助。</li>
+  <li>上線前檢核要分清「來源與載入的檢查」和「行為的評估」。</li>
+  <li>表 9-1 的「先補哪一項」是作者的優先序判斷，官方並未排序。</li>
+</ul></div>
+<ul class="checklist">
+  <li>給我一個事件描述，我能用三個問題把它對應到至少兩個條目。</li>
+  <li>我能為每個情境說出「先補哪一項」以及理由。</li>
+  <li>我知道哪些檢核項目只證明來源，哪些才檢查行為。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3、LO4、LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch9-next">接下來讀什麼</h2>
+<p><a href="10-integration.html">第 10 章　跨文件整合與收尾</a>：LLM Top 10 與 Agentic Top 10、DSGAI、AISVS 等文件的對應，官方明載與作者整理的界線，以及全主題重點。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>三個情境皆為本教材虛構。情境所引用的風險與控制，來自 OWASP Top 10 for LLM Applications 2026（Version 2026，2026-08-04）的 LLM01–LLM10 條目：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/tree/main/2026/final">GitHub 2026/final</a>；CC BY-SA 4.0。</li>
+    <li>情境的架構與事件內容不取自任何真實事件，也不含可直接使用的攻擊手法。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'l-ch9', topic: 'llm-top-10', mode: 'chapter',
+  questions: [
+    { id: 'l9q1', type: 'mc', lo: [3], refs: [{label: '9.2 情境 A', href: '09-scenarios.html#sc-a'}],
+      stem: '情境 A 中，客服人員查詢一般理賠流程，答案卻出現「僅限理賠審查部」的內部標準。最直接對應的做法是什麼？',
+      options: [
+        { text: '在系統提示詞加上「不得透露審查標準」。', why: '提示詞只是部分控制；而且資料早已被檢索進模型的上下文，缺口在檢索前沒有授權。' },
+        { text: '在索引查詢內放進部門與權限範圍，在伺服器端驗證，並以區塊為單位控制；高敏感部門用分開的索引。', correct: true, why: '符合第 5 章 LLM09 #1 與第 6 章 LLM02 第 1 層「檢索前授權」。' },
+        { text: '只在寄出回覆之前，再掃描一次是否出現審查標準字樣。', why: '這是檢索後過濾；官方指出它無法撤回已提供給模型的區塊，也看不到時序與分數等側面資訊。' },
+        { text: '把取回的區塊數量減少。', why: '減少數量不處理授權問題。' }
+      ],
+      summary: '先授權，再檢索；授權放進索引查詢內。' },
+    { id: 'l9q2', type: 'scn', lo: [4], refs: [{label: '9.4 情境 C', href: '09-scenarios.html#sc-c'}, {label: '第 7 章 表 7-1', href: '07-consumption-misinformation.html#cm-consume'}],
+      stem: '依本章與第 7 章，最先該補哪一項控制？',
+      scenario: '情境 C 的調查結果顯示：沒有任何一次請求超過每分鐘 10 次的限制，帳單卻遠超預算；財務是在月底收到警示信之後才知道。主管問：「接下來最先做哪一件事，才能保證最壞情況下的帳單有上限？」',
+      options: [
+        { text: '把每分鐘請求上限從 10 降到 5。', why: '請求數不反映成本；長對話的單回合成本會隨上下文增長，降低請求數仍擋不住累積。' },
+        { text: '把警示改成每天寄信。', why: '警示再頻繁也只是通知，追不上快速累積的工作負載；官方要求的是能中止推論的強制機制。' },
+        { text: '依 API 金鑰、使用者、團隊與雲端帳號設置不可覆寫的硬性花費上限，超過即中止推論；再補 agent 的步數與遞迴深度熔斷。', correct: true, why: '符合 LLM06 #2 與 #9，也是本章表 9-1 的優先序。' },
+        { text: '換成不使用擴充思考的模型。', why: '或許降低一部分風險，但不能保證上限；且官方的控制是在系統層加上強制上限，而不是靠選模型。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 問題是「保證最壞情況的帳單有上限」，只有能中止推論的強制機制能做到。(2) 請求數限制與警示都不具備這個性質（見第 7 章表 7-1）。(3) LLM06 的硬性花費上限要依金鑰、使用者、團隊與帳號分別設置，並考慮不同模態與工具協定的成本；agent 熔斷器處理工具迴圈。</p><p><strong>結論：</strong>先補硬性花費上限，再補 agent 熔斷器。對應教材：<a href="09-scenarios.html#sc-c">9.4 節</a>、<a href="07-consumption-misinformation.html#cm-consume">第 7 章</a>。</p>' },
+    { id: 'l9q3', type: 'scn', lo: [3], refs: [{label: '9.3 情境 B', href: '09-scenarios.html#sc-b'}, {label: '第 3 章 表 3-3', href: '03-supply-chain-poisoning.html#sc-concept'}],
+      stem: '情境 B 的上線檢核寫「掃描通過、簽署驗證通過」，三個月後仍發現條件式的異常行為。依本章，最恰當的檢討是？',
+      scenario: '青河銀行（虛構）的內部問答模型，在特殊格式的問題下會固定出現一個外部網址，而一般評估指標都正常。團隊檢討時有四種說法，要選最貼近教材的一種。',
+      options: [
+        { text: '掃描器版本太舊，換最新版就好。', why: '官方指出掃描器與安全載入旗標都曾被繞過，換新版仍不是保證。' },
+        { text: '簽署沒有用，以後不要簽署。', why: '簽署仍可防止替換，官方是說它不證明安全，要與其他控制疊加。' },
+        { text: '檢核只回答了來源與載入，沒有回答行為：應補上針對觸發詞與對抗性輸入的後門探測（每一輪微調或對齊後重做），並改用不可變參照與已簽署的物料清單。', correct: true, why: '符合第 3 章：簽署證明完整性與來源，不證明安全；LLM05 #10 要求專門的觸發探測。' },
+        { text: '一般評估指標都正常，所以這只是偶發的幻覺。', why: '條件式、固定出現的行為更像觸發型後門；官方說這類投毒在標準評估下看起來完全正常。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 掃描與簽署回答的是「這個檔案是誰的、載入時會不會執行程式」。(2) 條件式行為屬 LLM05 的後門，官方指出它在標準評估下可以完全正常。(3) 因此要補的是行為層的探測，並讓成品流轉可追溯。</p><p><strong>結論：</strong>補後門探測與行為評估，改用不可變參照與簽署的物料清單。對應教材：<a href="09-scenarios.html#sc-b">9.3 節</a>、<a href="03-supply-chain-poisoning.html#sc-concept">第 3 章 3.5 節</a>。</p>' },
+    { id: 'l9q4', type: 'match', lo: [5], refs: [{label: '9.1 三個問題', href: '09-scenarios.html#sc-method'}, {label: '9.2 情境 A', href: '09-scenarios.html#sc-a'}],
+      stem: '依圖 9-1 的三個問題，把下列事件片段配對到它主要回答的問題。',
+      cats: [
+        { id: 'q1', label: '問題一：從哪個入口進來？' },
+        { id: 'q2', label: '問題二：被放大的是哪個能力？' },
+        { id: 'q3', label: '問題三：衝擊落在誰身上？' }
+      ],
+      items: [
+        { text: '工單裡有第三方放進去的文字，被助理當成指示。', answer: 'q1', why: '指令從檢索內容進來，入口是 LLM01。' },
+        { text: '寄信工具能寄到任意地址，所以注入成功後資料可以被寄出。', answer: 'q2', why: '被放大的是模型能呼叫的工具與權限，LLM03。' },
+        { text: '帳單遠超預算，服務卻沒有中斷。', answer: 'q3', why: '衝擊落在成本，LLM06。' },
+        { text: '助理的回覆在客戶端被自動渲染成會載入外部圖片的內容。', answer: 'q2', why: '被放大的是輸出到達的下游，LLM10。' },
+        { text: '社群的 adapter 被換成帶後門的版本。', answer: 'q1', why: '成品在抵達前被動手腳，入口是 LLM04／LLM05。' }
+      ],
+      summary: '入口、放大器、衝擊：先問三題，再對應條目。' }
+  ]
+});
+</script>
+</body>
+</html>

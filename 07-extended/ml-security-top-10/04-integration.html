@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　跨文件整合與收尾｜Machine Learning Security Top 10｜OWASP AI 資安學習教材</title>
+<meta name="description" content="ML Top 10 與 AI Exchange、LLM Top 10 2026 怎麼對應：哪些是官方明載、哪些是作者整理；名稱相近但意思不同的陷阱；何時該改用其他文件；全主題重點。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="ml-security-top-10" data-page="04-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　跨文件整合與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 5 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="03-defenses-and-scenarios.html">第 3 章</a></li>
+</ul>
+<p class="lead">ML Top 10 很少單獨使用。它會被 AI Exchange 引用，名稱又和 LLM Top 10 2026 有幾組「看起來一樣、其實不同」的條目。這一章整理哪些對應是官方寫的、哪些是作者自己的整理，並教你遇到不同類型的系統時，該換成哪一份文件。</p>
+
+<h2 id="int-table">4.1 對應表：官方寫的 vs. 作者整理的</h2>
+<p>官方明載的對應只有一處：<strong>AI Exchange 在威脅頁的參考區塊，列出了 ML01、ML02、ML05 的編號</strong>（本教材在 <a href="../../01-overview/ai-exchange/08-integration.html#x-table">AI Exchange 第 8 章表 8-1</a> 已整理）。其餘列是作者依概念放在一起的，官方沒有明說，所以逐格標示。</p>
+<div class="table-wrap"><table>
+<caption>表 4-1　ML01–ML10 與 AI Exchange、LLM Top 10 2026 的對應</caption>
+<thead><tr><th scope="col">ML Top 10 條目</th><th scope="col">AI Exchange 概念</th><th scope="col">LLM Top 10 2026</th><th scope="col">性質</th></tr></thead>
+<tbody>
+<tr><th scope="row">ML01 輸入操縱</th><td>規避 (Evasion)</td><td>無對應條目</td><td><span class="tag official">官方</span>（AI Exchange 參考區塊）</td></tr>
+<tr><th scope="row">ML02 資料投毒</th><td>資料投毒</td><td><a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-poison">LLM05:2026</a> Data and Model Poisoning</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">ML05 模型竊取</th><td>模型外洩（輸入輸出收割）</td><td>無對應條目</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">ML03 模型反推、ML04 成員推論</th><td>模型反推、成員推論（AI Exchange 風險分析用語）</td><td><a href="../../02-llm-applications/llm-top-10/06-disclosure.html#dc-what">LLM02:2026</a> Sensitive Information Disclosure：條目把「訓練時記憶」「從可觀察的推論特性推斷事實」列為外洩途徑</td><td><span class="tag author">作者整理，非官方</span>：LLM02 的範圍涵蓋這類資訊外洩，但條目沒有寫它對應 ML03 或 ML04</td></tr>
+<tr><th scope="row">ML06 AI 供應鏈攻擊</th><td>供應鏈（<code class="ctl">SUPPLY CHAIN MANAGE</code>）</td><td><a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-supply">LLM04:2026</a> Supply Chain：涵蓋第三方預訓練模型、資料集、轉接器 (adapter) 與部署平台</td><td><span class="tag author">作者整理，非官方</span>：兩者談同一類問題，但 LLM04 是 LLM 供應鏈，條目沒有寫它對應 ML06</td></tr>
+<tr><th scope="row">ML10 模型投毒</th><td>模型投毒（開發期／執行期）</td><td>LLM05:2026 Data and Model Poisoning：同條目涵蓋資料與模型產物</td><td><span class="tag author">作者整理，非官方</span></td></tr>
+<tr><th scope="row">ML07 遷移學習攻擊</th><td>未找到明確的對應說法</td><td>LLM05:2026 的「Transfer learning / model reuse」一項：被污染的來源模型把問題傳給下游系統</td><td><span class="tag author">作者整理，非官方</span>：LLM05:2026 條目自己列出這個子項，但沒有寫它等同 ML07</td></tr>
+<tr><th scope="row">ML08 模型偏斜</th><td>未找到明確的對應說法</td><td>LLM05:2026 的「Continuous learning pipelines」一項：自動攝入缺少驗證，讓攻擊者逐步塑造模型行為</td><td><span class="tag author">作者整理，非官方</span>：同上，概念接近，官方沒有寫等同 ML08</td></tr>
+<tr><th scope="row">ML09 輸出完整性</th><td>未找到明確的對應說法</td><td>名稱相近但不同：<a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-output">LLM10:2026</a> Improper Output Handling（談下游是否妥善處理模型輸出，不談輸出在途中被改）</td><td><span class="tag author">作者整理，非官方</span>（見 4.2）</td></tr>
+</tbody></table></div>
+
+<h2 id="int-trap">4.2 名稱相近、意思不同的三個陷阱</h2>
+<div class="callout warn">
+  <p class="callout-title">三個容易被誤用的對照（作者整理，非官方）</p>
+  <ul>
+    <li><strong>ML09 輸出完整性 ≠ LLM10:2026 Improper Output Handling。</strong>ML09 說的是模型輸出在傳遞途中<em>被竄改</em>；LLM10 條目自己寫的範圍是「在輸出傳給下游元件之前，驗證、淨化與處理不足」。前者的官方預防措施是簽章與安全通道，後者談的是下游怎麼處理輸出。兩者都跟「輸出」有關，但防的問題不同。</li>
+    <li><strong>ML06 的年份：</strong>ML06 是 <code>:2023</code>，LLM04 是 <code>:2026</code>。引用時務必帶年份；第 1 章已強調 ML 清單的版本標示。</li>
+    <li><strong>ML02 與 LLM05:2026：</strong>名稱相近（資料投毒），但 LLM05:2026 的範圍寬得多：條目自己寫明投毒可發生在預訓練、微調、嵌入與 RAG、模型重用、持續學習管線與模型散布各環節。ML02 的描述只談訓練資料。所以 LLM05:2026 大致涵蓋 ML02，但反過來不成立。</li>
+  </ul>
+</div>
+
+<h2 id="int-flow">4.3 何時改用別的文件</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程：先問系統是否包含 LLM 或生成式模型。若沒有，ML Top 10 適合認識風險類別，再用 AI Exchange 威脅建模；若有 LLM，改看 LLM Top 10 2026；若有 agent 與工具呼叫，加看 Agentic Top 10 2026；若關心整體生命週期的供應鏈透明度，看 AIBOM 主題；若關心訓練與檢索資料本身的保護，看資料安全主題。">
+flowchart TD
+  S["我要評估一個 AI 系統"] --> Q1{"包含 LLM 或生成式模型？"}
+  Q1 -->|"否：分類、預測、推薦"| M["ML Top 10<br>認識風險類別"]
+  Q1 -->|"是"| L["LLM Top 10 2026"]
+  L --> Q2{"模型能呼叫工具、自主行動？"}
+  Q2 -->|"是"| A["加看 Agentic Top 10 2026"]
+  Q2 -->|"否"| X
+  M --> X["AI Exchange<br>威脅建模、選控制"]
+  A --> X
+  X --> Q3{"還要處理什麼？"}
+  Q3 -->|"追蹤模型與套件來源"| B["07 延伸：AIBOM"]
+  Q3 -->|"保護訓練與檢索資料"| D["07 延伸：資料安全"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q1,Q2,Q3,B,D author
+</pre>
+<figcaption><strong>圖 4-1　依系統類型選擇文件。</strong>各文件的存在與用途是官方內容；「依是否含 LLM、是否有 agent 來分流」以及右下兩個延伸主題的接法是<strong>作者整理，非官方</strong>（虛線框）。真實系統常同時符合多個分支，這張圖是入口，不是唯一路徑。</figcaption>
+</figure>
+<p>其中「AI Exchange 威脅建模」那一步，在 <a href="../../01-overview/ai-exchange/07-risk-analysis.html#ra-tree">AI Exchange 第 7 章</a>有完整的檢查序列：它會問誰訓練模型、誰執行模型、是否用於分類，並依答案把「資料投毒」「模型投毒」「規避」等放進候選清單。ML Top 10 在這裡的角色，是提供這些威脅在傳統 ML 世界的條目語言。</p>
+
+<h2 id="ch4-summary">4.4 全主題重點與接下來讀什麼</h2>
+<div class="keypoints"><ul>
+  <li>ML Top 10 的現行標示是 <strong>2023 edition、Version 0.3 Draft</strong>；引用要帶版本與草稿標示，且官方沒有說明排序依據。</li>
+  <li>十項最好依「攻擊者動的是什麼」與生命週期分辨：資料（ML02、ML08）、模型參數（ML10）、只對模型提問（ML03、ML04）、輸入（ML01）、輸出（ML09）、供應鏈（ML06）。分組是作者整理。</li>
+  <li>官方建議的防禦重複出現六類主題：存取控制、監控、驗證、密碼學保護、模型設計、隔離。</li>
+  <li>官方明載的跨文件對應只有 AI Exchange 對 ML01、ML02、ML05 的參考；其餘是作者整理。</li>
+  <li>名稱相近的條目不一定是同一件事：ML09 與 LLM10:2026 就是例子。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能為一個傳統 ML 系統寫出帶版本的引用。</li>
+  <li>我能區分官方明載的對應與作者整理的對應。</li>
+  <li>我能依系統類型決定先看哪一份文件。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p>先做<a href="quiz.html">總測驗</a>。接著建議依你的系統選擇：若你的系統含 LLM，回到 <a href="../../01-overview/ai-exchange/index.html">OWASP AI Exchange</a> 與 <a href="../../02-llm-applications/llm-top-10/index.html">LLM Top 10 2026 主題</a>；若你關心訓練與檢索資料本身的保護，讀 07 延伸的 <a href="../data-security/index.html">資料安全</a>；若你關心模型與套件的來源追蹤，讀 07 延伸的 <a href="../aibom/index.html">AIBOM</a>。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Machine Learning Security Top Ten 專案頁的「Related」區塊與十個條目頁：<a href="https://owasp.github.io/www-project-machine-learning-security-top-10/index.html">owasp.github.io/www-project-machine-learning-security-top-10/</a>；2026-10-26 讀取；Edition 2023、Version 0.3 Draft、CC BY-SA 4.0。</li>
+    <li>OWASP AI Exchange 威脅頁的參考區塊（透過本教材 <a href="../../01-overview/ai-exchange/08-integration.html">AI Exchange 第 8 章</a>整理）：<a href="https://owaspai.org/">owaspai.org</a>；CC0 1.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026（LLM02、LLM04、LLM05、LLM10 的名稱；LLM05 條目的範圍說明）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">GenAI-LLM-Top10/2026/README.md</a> 與 <a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM05_DataModelPoisoning.md">final/LLM05_DataModelPoisoning.md</a>；2026-10-26 讀取；PDF 封面 2026-08-04；CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Machine Learning Security Top 10 專案頁與 PDF — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0；OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'm-ch4', topic: 'ml-security-top-10', mode: 'chapter',
+  questions: [
+    { id: 'm4q1', type: 'mc', lo: [4], refs: [{label: '4.2 三個陷阱', href: '04-integration.html#int-trap'}],
+      stem: '審查報告寫：「我們已經處理了 ML09 輸出完整性，所以 LLM10:2026 Improper Output Handling 也一併涵蓋了。」依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，兩者都是輸出相關的條目。', why: '名稱相近不代表同一件事；兩者防的問題不同。' },
+        { text: '不正確：ML09 談輸出在傳遞中被竄改，防線是簽章與安全通道；LLM10:2026 談下游把模型輸出當可信資料處理，防線是把輸出當不可信資料處理。兩者要分別評估。', correct: true, why: '符合 4.2 的第一點（作者整理）。' },
+        { text: '不正確，因為 LLM10:2026 只存在於 2025 版。', why: 'LLM10:2026 是 2026 版的條目（Improper Output Handling）。' },
+        { text: '不正確，因為 ML09 已經被官方移除。', why: '官方沒有移除 ML09；它仍在專案頁的清單中。' }
+      ],
+      summary: '名稱相近 ≠ 同一件事：ML09 與 LLM10:2026 要分別評估。' },
+    { id: 'm4q2', type: 'match', lo: [4], refs: [{label: '4.1 表 4-1', href: '04-integration.html#int-table'}],
+      stem: '把下列說法配對到「官方明載」或「作者整理」。',
+      cats: [
+        { id: 'off', label: '官方明載（經 AI Exchange 參考區塊）' },
+        { id: 'auth', label: '作者整理，非官方' }
+      ],
+      items: [
+        { text: 'ML02 資料投毒 對應 AI Exchange 的資料投毒', answer: 'off', why: 'AI Exchange 威脅頁參考區塊列出 ML02。' },
+        { text: 'ML05 模型竊取 對應 AI Exchange 的模型外洩', answer: 'off', why: '同上，列出 ML05。' },
+        { text: 'ML06 對應 LLM04:2026 Supply Chain', answer: 'auth', why: '官方資料中沒有這樣的明載對應。' },
+        { text: 'ML03 模型反推在概念上接近 LLM02:2026', answer: 'auth', why: '概念上的接近是作者整理，非官方。' }
+      ],
+      summary: '官方明載的對應只有 ML01、ML02、ML05；其餘是作者整理。' },
+    { id: 'm4q3', type: 'scn', lo: [4], refs: [{label: '4.3 圖 4-1', href: '04-integration.html#int-flow'}, {label: '4.1 表 4-1', href: '04-integration.html#int-table'}],
+      stem: '依圖 4-1，這個團隊該怎麼選文件？對應關係可以怎麼寫進報告？',
+      scenario: '雲杉電商（虛構）有兩個系統：甲是基於交易紀錄的信用評分模型（梯度提升樹，沒有生成式模型），乙是客服用的 LLM 助理，可以呼叫訂單查詢工具。資安負責人要為兩個系統各自選一份風險清單，並在報告裡寫出它們與 AI Exchange 的對應。',
+      options: [
+        { text: '兩個系統都只用 ML Top 10，因為它是 OWASP 的 ML 清單。', why: '乙是 LLM 助理且能呼叫工具，ML Top 10 沒有涵蓋 LLM 特有的風險與 agent 風險。' },
+        { text: '兩個系統都只用 LLM Top 10 2026，因為它是最新版。', why: '甲沒有生成式模型，LLM 清單不是為它設計的。' },
+        { text: '甲先用 ML Top 10 認識風險類別；乙用 LLM Top 10 2026，並加看 Agentic Top 10 2026；兩者最後都回到 AI Exchange 做威脅建模；報告中官方明載與作者整理的對應要分開標示。', correct: true, why: '符合圖 4-1 與表 4-1 的標示。' },
+        { text: '甲和乙都不需要清單，直接用 AI Exchange 就夠了。', why: 'AI Exchange 用於威脅建模與選控制；清單提供條目語言與引用，兩者互補。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 甲沒有生成式模型，屬圖 4-1 的「否」分支，用 ML Top 10。(2) 乙含 LLM，用 LLM Top 10 2026；能呼叫工具，加看 Agentic Top 10 2026。(3) 兩者最後都回到 AI Exchange 做威脅建模。(4) 表 4-1 中官方明載的對應只有 ML01、ML02、ML05，其他要標「作者整理」。</p><p><strong>結論：</strong>依系統類型分流，最後匯整。對應教材：<a href="04-integration.html#int-flow">4.3 節</a>、<a href="04-integration.html#int-table">4.1 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

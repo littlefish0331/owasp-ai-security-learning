@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜資料安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="資料安全主題總測驗：16 題，涵蓋五個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="data-security" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：資料安全</h1>
+<ul class="meta-row">
+  <li>16 題（選擇題 7、情境判斷題 5、配對題 4）</li>
+  <li>預估時間：約 22 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO5</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–5 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位與版本：</strong>說明兩份文件各是什麼、2026 版與 2025 版的關係，以及 2026 版在條目編號上的不一致。</li>
+  <li><strong>資料面向：</strong>說明上下文視窗為何是單一扁平的信任空間，並用六種資料類別與 AI-DSPM 盤點資料。</li>
+  <li><strong>風險分辨：</strong>依官方六個群組分辨 DSGAI01–DSGAI21，並區分容易混淆的條目。</li>
+  <li><strong>控制選擇：</strong>面對資料情境，指出涉及哪些條目，並依三層成熟度與 Buy／Build 選出控制。</li>
+  <li><strong>跨文件整合：</strong>知道與 LLM Top 10、Agentic Top 10、AIBOM、事件應變的對應，並正確處理年份編號。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：OWASP GenAI Data Security Risks and Mitigations 2026、LLM and Gen AI Data Security Best Practices、OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-position.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-data-surfaces.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-dsgai-map.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-tiers-and-scenarios.html', a, '第 4 章 ' + l); };
+  var C5 = function (a, l) { return R('05-integration.html', a, '第 5 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位與版本 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('pos-count', '1.3'), C1('pos-concept', '1.4')],
+    stem: '下列哪一種對 2026 版資料安全文件的描述最正確？',
+    options: [
+      { text: '它是 OWASP Data Security Top 10 的新版本。', why: '官方明說它不是 Top 10 指南，也不取代 OWASP Data Security Top 10。' },
+      { text: '它列出 DSGAI01 到 DSGAI25 共 25 項，每項都有完整條目。', why: '文中一處寫 DSGAI01-DSGAI25，但目錄與正文只有 21 項；DSGAI22–26 沒有條目。' },
+      { text: '它是風險與緩解的列舉：目錄與正文有 DSGAI01–DSGAI21 共 21 項，編號依資料流動順序，不是優先順序。', correct: true, why: '符合 1.3、1.4 節。' },
+      { text: '它是實作最佳實務的操作手冊。', why: '實作最佳實務被拆去另一份 companion 文件。' }
+    ],
+    summary: '2026 版 = 風險列舉，21 項，編號依資料流動順序。' },
+
+  { id: 'q02', type: 'scn', lo: [1], refs: [C1('pos-relation', '1.2'), C1('pos-count', '1.3')],
+    stem: '依本章，這份引用需要怎麼修正？',
+    scenario: '朝陽保險（虛構）的治理文件寫：「依 OWASP 資料安全 2025 版，我們已涵蓋 DSGAI01 到 DSGAI25；若要看實作細節，請見 2026 版的實作章節。」審查人員查到：2025 版是 Best Practices 白皮書，沒有 DSGAI 編號；2026 版是風險列舉，其實作最佳實務被拆到另一份文件。',
+    options: [
+      { text: 'DSGAI 編號屬於 2026 版（Version 1.0，March 2026），不是 2025 版；2026 版有 21 項（DSGAI01–21），不是 25 項；實作最佳實務不在 2026 版內，而在 companion 文件（是否已發布未能確認）。引用時用標題。', correct: true, why: '符合 1.1–1.3 節。' },
+      { text: '不需要修正，兩份文件是同一份的不同年份。', why: '兩份形式與內容不同：2025 版是白皮書，2026 版是 DSGAI 風險列舉。' },
+      { text: '只需要把「2025」改成「2026」。', why: '還有 25 項與實作章節兩處錯誤。' },
+      { text: '整份文件作廢，因為 OWASP 已經撤回 DSGAI。', why: '沒有任何撤回的官方說法。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) DSGAI 編號只存在於 2026 版。(2) 目錄與正文為 21 項；25 與 26 是殘留引用，沒有條目。(3) 2026 版明說實作最佳實務被拆去 companion 文件。</p><p><strong>結論：</strong>改正三處並用標題引用。對應教材：<a href="01-position.html#pos-relation">1.2 節</a>、<a href="01-position.html#pos-count">1.3 節</a>。</p>' },
+
+  { id: 'q03', type: 'mc', lo: [1], refs: [C1('pos-two', '1.1 表 1-1')],
+    stem: '2025 版 Best Practices 對齊的是哪一個年份的 LLM Top 10？引用其風險編號時應怎麼寫？',
+    options: [
+      { text: '2026 年；寫成 LLM07:2026。', why: '2025 版（2025-02）早於 2026 版 LLM Top 10（2026-08）。' },
+      { text: '不用帶年份，LLM 編號永遠不變。', why: '2025 與 2026 的編號不同。' },
+      { text: '2023 年；寫成 LLM01:2023。', why: '2025 版文中明說對齊 OWASP Top 10 for LLM 2025 list。' },
+      { text: '2025 年；寫成 LLM01:2025 等帶年份的編號。', correct: true, why: '2025 版全程使用 2025 編號，且這些與 2026 版不同。' }
+    ],
+    summary: '2025 版對齊 LLM Top 10 2025；編號要帶年份。' },
+
+  /* ================= LO2 資料面向 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C2('ds-flat', '2.2 核心概念')],
+    stem: '在 system prompt 寫「不要輸出機密資料」，依本章最恰當的評價是？',
+    options: [
+      { text: '這是可靠的存取控制，只要寫了就不會洩漏。', why: '那是對模型的請求，不是存取控制。' },
+      { text: '那是請求而非存取控制；上下文視窗沒有內部存取控制，要減少風險，應讓機密內容根本不進入上下文。', correct: true, why: '符合 2.2 節常見誤解。' },
+      { text: '它完全無用，應該刪掉所有 system prompt。', why: '教材沒有主張刪除 system prompt。' },
+      { text: '只要把 system prompt 加密就足夠。', why: '問題不在 system prompt 的儲存，而在上下文視窗的信任模型。' }
+    ],
+    summary: '請求 ≠ 存取控制；不要讓機密進入上下文。' },
+
+  { id: 'q05', type: 'match', lo: [2], refs: [C2('ds-six', '2.1 表 2-1')],
+    stem: '把下列資料配對到官方六類中最貼近的一類。',
+    cats: [
+      { id: 'derived', label: '衍生資料' },
+      { id: 'artifact', label: '模型產物' },
+      { id: 'runtime', label: '執行期資料' },
+      { id: 'exhaust', label: '營運副產物' },
+      { id: 'agent', label: 'Agent 狀態與委派產物' }
+    ],
+    items: [
+      { text: '向量庫中的嵌入與索引', answer: 'derived', why: '嵌入與索引是衍生資料。' },
+      { text: '微調用的 LoRA adapter', answer: 'artifact', why: 'adapter／LoRA 是模型產物。' },
+      { text: '工作階段中的 KV cache 與組好的 prompt', answer: 'runtime', why: '暫存快取與 prompt 屬執行期資料。' },
+      { text: '除錯模式擷取的完整請求追蹤', answer: 'exhaust', why: '日誌與追蹤屬營運副產物。' },
+      { text: 'Agent 之間傳遞的委派鏈與被快取的憑證', answer: 'agent', why: '委派鏈與被快取憑證屬 Agent 狀態與委派產物。' }
+    ],
+    summary: '六類資料；後四類常不在傳統盤點。' },
+
+  { id: 'q06', type: 'scn', lo: [2], refs: [C2('ds-dspm', '2.3 AI-DSPM'), C2('ds-six', '2.1')],
+    stem: '依本章，這個團隊的盤點哪裡不足？',
+    scenario: '碧潭銀行（虛構）為客服助理做了資料盤點：列出所有資料庫、物件儲存與檔案伺服器，並對它們分類。助理使用了一個向量庫（內含客戶訊息的嵌入）、一個把完整請求與回應寫入的追蹤系統，以及一組由多個 Agent 共用的服務帳號。團隊認為盤點「已完整」。',
+    options: [
+      { text: '盤點完整，向量庫和追蹤系統不算資料。', why: '官方把嵌入視為衍生資料、追蹤視為營運副產物，兩者都要盤點。' },
+      { text: '只缺共用服務帳號，其他都算完整。', why: '向量庫與追蹤系統同樣缺漏。' },
+      { text: '不足：向量庫（衍生資料）、追蹤系統（營運副產物）與共用服務帳號（Agent 身分／狀態）都不在清單，且分類標籤也沒有傳遞到嵌入與追蹤。應把它們納入，每個 Agent 有自己的身分與範圍。', correct: true, why: '符合 2.1、2.3 節。' },
+      { text: '不足，因為沒有把所有資料都加密。', why: '情境的缺口是盤點範圍，不是加密。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 盤點只含來源資料。(2) 向量庫＝衍生資料；追蹤＝營運副產物；共用服務帳號牽涉 Agent 身分。(3) AI-DSPM 要求盤點這些、標籤傳遞到衍生物，並讓每個 Agent 有自己的身分。</p><p><strong>結論：</strong>擴大盤點範圍並傳遞標籤。對應教材：<a href="02-data-surfaces.html#ds-six">2.1 節</a>、<a href="02-data-surfaces.html#ds-dspm">2.3 節</a>。</p>' },
+
+  /* ================= LO3 風險分辨 ================= */
+  { id: 'q07', type: 'match', lo: [3], refs: [C3('map-groups', '3.1 表 3-1')],
+    stem: '把下列條目配對到官方的群組。',
+    cats: [
+      { id: 'g1', label: '① 直接暴露' },
+      { id: 'g2', label: '② 管線完整性' },
+      { id: 'g4', label: '④ GenAI 獨有攻擊面' },
+      { id: 'g6', label: '⑥ 模型作為資料產物' }
+    ],
+    items: [
+      { text: 'DSGAI02 Agent Identity &amp; Credential Exposure', answer: 'g1', why: '群組①：DSGAI01–03。' },
+      { text: 'DSGAI04 Data, Model &amp; Artifact Poisoning', answer: 'g2', why: '群組②：DSGAI04–06。' },
+      { text: 'DSGAI12 Unsafe Natural-Language Data Gateways', answer: 'g4', why: '群組④：DSGAI09–13。' },
+      { text: 'DSGAI20 Model Exfiltration &amp; IP Replication', answer: 'g6', why: '群組⑥：DSGAI18–21。' }
+    ],
+    summary: '官方六個群組依資料流動排序。' },
+
+  { id: 'q08', type: 'mc', lo: [3], refs: [C3('map-confuse', '3.2 表 3-2')],
+    stem: 'DSGAI15（過寬的上下文與提示詞過度分享）與 DSGAI01（敏感資料外洩）的主要差別是什麼？',
+    options: [
+      { text: 'DSGAI01 只發生在向量庫。', why: 'DSGAI01 涵蓋模型、RAG 與日誌等多個外洩通道。' },
+      { text: '兩者完全相同。', why: '切分角度不同：輸入端 vs. 輸出端。' },
+      { text: 'DSGAI15 只發生在訓練期。', why: 'DSGAI15 談的是每次請求附上過多的上下文。' },
+      { text: 'DSGAI15 看輸入端一開始就送太多不必要的資料給外部供應商；DSGAI01 看輸出端把敏感內容吐出來。', correct: true, why: '符合表 3-2。' }
+    ],
+    summary: '輸入端（15）vs. 輸出端（01）。' },
+
+  { id: 'q09', type: 'scn', lo: [3], refs: [C3('map-confuse', '3.2'), C3('map-concept', '3.3')],
+    stem: '依本章，這個事件最貼近哪幾個條目？',
+    scenario: '玉山旅行社（虛構）收到客戶刪除個資的要求，法務確認 CRM 與資料湖都已刪除。三個月後，另一位客戶發現客服助理在回答時說出了前者的姓名與行程。調查發現：該客戶的訂單被轉成嵌入存在向量庫；刪除前的夜間備份仍保有原始紀錄；向量庫遷移時的重新索引把備份還了回去；沒有任何血緣紀錄說明嵌入來自哪筆來源。',
+    options: [
+      { text: 'DSGAI01（敏感資料外洩）、DSGAI07（治理：分類與血緣缺失、衍生物比來源活得久）與 DSGAI08（違反抹除義務）。', correct: true, why: '符合 3.3 節，與官方 DSGAI07 情境同型。' },
+      { text: '只有 DSGAI13 向量庫平台。', why: '向量庫平台本身沒有被攻破；問題是衍生物沒被治理。' },
+      { text: 'DSGAI20 模型外洩。', why: '沒有人複製模型；DSGAI20 談的是蒸餾。' },
+      { text: 'DSGAI03 影子 AI。', why: '助理是公司自己部署的。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 已刪除的資料仍被答出＝外洩（DSGAI01）。(2) 根因是嵌入與備份這些衍生物沒有分類標籤、沒有血緣、沒有跟著刪除（DSGAI07）。(3) 抹除義務未履行（DSGAI08）。</p><p><strong>結論：</strong>DSGAI01 / 07 / 08。對應教材：<a href="03-dsgai-map.html#map-concept">3.3 節</a>。</p>' },
+
+  /* ================= LO4 控制選擇 ================= */
+  { id: 'q10', type: 'mc', lo: [4], refs: [C4('tr-how', '4.1 表 4-1')],
+    stem: '依官方定義，Tier 2 控制最貼近下列哪一種描述？',
+    options: [
+      { text: '一個 sprint 用現有工具就能上線、降低最多暴露的基礎控制。', why: '那是 Tier 1。' },
+      { text: '可能需要架構調整、新工具或跨團隊協調，影響高、需要中等投入的控制。', correct: true, why: '符合表 4-1 對 Tier 2 的定義。' },
+      { text: '假設組織已有成熟計畫，例如紅隊、差分隱私、形式驗證的控制。', why: '那是 Tier 3。' },
+      { text: '風險最低、可以忽略的控制。', why: 'Tier 是成熟度，不是風險高低。' }
+    ],
+    summary: 'Tier 1 = 一個 sprint；Tier 2 = 架構或跨團隊；Tier 3 = 成熟計畫。' },
+
+  { id: 'q11', type: 'match', lo: [4], refs: [C4('tr-flow', '4.2 圖 4-1')],
+    stem: '把下列症狀配對到最先該查的條目。',
+    cats: [
+      { id: 'd14', label: 'DSGAI14 遙測外洩' },
+      { id: 'd11', label: 'DSGAI11 對話滲漏' },
+      { id: 'd12', label: 'DSGAI12 自然語言資料閘道' },
+      { id: 'd03', label: 'DSGAI03 影子 AI' }
+    ],
+    items: [
+      { text: '日誌系統被入侵後，洩出大量含 token 與 prompt 的完整請求', answer: 'd14', why: '圖 4-1：日誌外洩查 DSGAI14。' },
+      { text: '使用者在自己的對話裡看到別人上傳的文件', answer: 'd11', why: '圖 4-1：跨租戶滲漏查 DSGAI11。' },
+      { text: '資料問答助理被注入後，產生了涵蓋多表的 SELECT * 查詢', answer: 'd12', why: '圖 4-1：NL 資料閘道查 DSGAI12。' },
+      { text: '業務部門自己用一個未經審查的 AI 外掛處理客戶紀錄', answer: 'd03', why: '圖 4-1：未核准工具查 DSGAI03。' }
+    ],
+    summary: '由症狀推回條目；症狀措辭為作者整理。' },
+
+  { id: 'q12', type: 'scn', lo: [4], refs: [C4('tr-scn-b', '4.4 情境 B'), C4('tr-how', '4.1')],
+    stem: '依本章，這個團隊最先該做哪些控制？',
+    scenario: '寒梅科技（虛構）的 Agent 除錯模式記錄了完整請求，包含客戶貼上的文件與 OAuth token，且沒有到期。一位工程師提議：「我們買一套日誌分析平台，加上自訂的異常偵測模型，最先上線。」另一位說：「先做最少日誌預設，再談其他。」',
+    options: [
+      { text: '先買分析平台與自訂異常偵測，因為偵測最重要。', why: '自訂偵測模型是 Tier 3；基礎的減量控制應先做。' },
+      { text: '把日誌改存到公開儲存桶，方便團隊查閱。', why: '與保護資料的目標相反。' },
+      { text: '關閉所有日誌，不再記錄任何東西。', why: '官方不是要求完全不記錄，而是預設最少、可升級並需核准。' },
+      { text: '先做 DSGAI14 的 Tier 1：預設最少日誌（內容層級記錄預設關閉、高風險欄位寫入前遮蔽）、強化觀測平台的存取控制、日誌保留不超過其所記錄的資料；再做 Tier 2 的除錯需核准且到期；Tier 3 的行為異常偵測放最後。', correct: true, why: '符合 4.4 節的分層。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 症狀是日誌含完整請求與 token，屬 DSGAI14。(2) 官方 Tier 1 第一項是預設最少日誌。(3) 自訂異常偵測模型屬 Tier 3，不是第一步。</p><p><strong>結論：</strong>Tier 1 → Tier 2 → Tier 3。對應教材：<a href="04-tiers-and-scenarios.html#tr-scn-b">4.4 節</a>。</p>' },
+
+  /* ================= LO5 跨文件整合 ================= */
+  { id: 'q13', type: 'mc', lo: [5], refs: [C5('in-llm', '5.1 表 5-1')],
+    stem: '依 LLM Top 10 2026 附錄 A 的官方對照，LLM10:2026（Improper Output Handling）最接近的 ● primary 資料風險是？',
+    options: [
+      { text: 'DSGAI20 模型外洩', why: 'DSGAI20 是 LLM06 的 primary。' },
+      { text: 'DSGAI21 假資訊與完整性攻擊', why: 'DSGAI21 是 LLM07 Misinformation 的 primary。' },
+      { text: 'DSGAI12 不安全的自然語言資料閘道（LLM 到 SQL／Graph）', correct: true, why: '附錄 A：LLM10 的 primary 是 DSGAI12。' },
+      { text: 'DSGAI13 向量庫平台', why: 'DSGAI13 是 LLM09 的 primary。' }
+    ],
+    summary: 'LLM10 → DSGAI12（官方附錄 A）。' },
+
+  { id: 'q14', type: 'match', lo: [5], refs: [C5('in-other', '5.2 表 5-2')],
+    stem: '把下列關係配對到「官方明載」或「作者整理，非官方」。',
+    cats: [
+      { id: 'off', label: '官方明載' },
+      { id: 'auth', label: '作者整理，非官方' }
+    ],
+    items: [
+      { text: 'DSGAI02 指向 ASI03 處理更廣的身分與權限濫用', answer: 'off', why: '2026 版 DSGAI02 結尾明確交叉引用 ASI03。' },
+      { text: 'LLM02:2026 的 primary 是 DSGAI01 與 DSGAI18', answer: 'off', why: 'LLM Top 10 2026 附錄 A 的對照。' },
+      { text: 'DSGAI18 與 ML Top 10 的 ML03、ML04 談同一類攻擊', answer: 'auth', why: '官方沒有明載兩份文件的對應。' },
+      { text: '事件應變的偵測要求與 DSGAI14 的最少日誌之間存在張力', answer: 'auth', why: '兩份文件各自合理，張力是作者的解讀。' }
+    ],
+    summary: '官方對照：附錄 A 與交叉引用；其餘多為作者整理。' },
+
+  { id: 'q15', type: 'scn', lo: [5], refs: [C5('in-year', '5.3'), C5('in-llm', '5.1')],
+    stem: '依本章，這份簡報的哪些地方需要修正？',
+    scenario: '東籬製造（虛構）的簡報寫：「LLM07 Misinformation 對應資料安全的 DSGAI21。這個資料來自 OWASP 2025 版資料安全白皮書。」另一頁寫：「DSGAI21 的標題是 Unsafe Natural-Language Data Gateways。」審查人員查到 2025 版沒有 DSGAI 編號，DSGAI21 的標題也不是那個。',
+    options: [
+      { text: '要修正三處：LLM07 Misinformation 與 DSGAI21 的對應出自 LLM Top 10 <strong>2026</strong> 附錄 A，應寫 LLM07:2026，不是 2025 版白皮書；DSGAI21 的標題是 Disinformation &amp; Integrity Attacks via Data Poisoning；Unsafe Natural-Language Data Gateways 是 DSGAI12。', correct: true, why: '符合 5.1、5.3 節。' },
+      { text: '簡報完全正確。', why: '至少有兩處錯：資料來源年份與 DSGAI21 的標題。' },
+      { text: '只需要把 DSGAI21 改成 DSGAI12。', why: '還有年份與來源兩處需修正。' },
+      { text: '要把 LLM07 改成 LLM09，因為 2026 版的 LLM09 才是 Misinformation。', why: '2026 版 LLM09 是 Vector and Embedding Weaknesses；Misinformation 是 LLM07:2026。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 附錄 A 的 DSGAI 對照屬 LLM Top 10 2026，LLM07:2026 Misinformation 的 primary 是 DSGAI21。(2) 2025 版白皮書沒有 DSGAI 編號。(3) DSGAI21 的標題是 Disinformation &amp; Integrity Attacks via Data Poisoning；DSGAI12 才是 Unsafe Natural-Language Data Gateways。</p><p><strong>結論：</strong>補年份、改來源、用正確標題。對應教材：<a href="05-integration.html#in-llm">5.1 節</a>、<a href="05-integration.html#in-year">5.3 節</a>。</p>' },
+
+  { id: 'q16', type: 'mc', lo: [5], refs: [C5('in-other', '5.2 表 5-2')],
+    stem: 'AI-DSPM 提到的 DBOM（Data Bill of Materials）與 AIBOM Generator 的關係，依本章最恰當的描述是？',
+    options: [
+      { text: '兩者是同一個工具的不同名稱。', why: '2026 版的 DBOM 是概念與建議格式；AIBOM Generator 是針對 Hugging Face 模型的工具。' },
+      { text: '兩者都以 CycloneDX 為基礎，但 DBOM 是資料血緣的概念（建議以 ML-BOM ECMA-424 v1.7 為格式），AIBOM Generator 輸出 CycloneDX 1.6；兩者互補的說法是作者整理，非官方。', correct: true, why: '符合表 5-2。' },
+      { text: 'DBOM 取代了 AIBOM，AIBOM 已被官方棄用。', why: '沒有這樣的官方說法。' },
+      { text: '兩者毫無關係，因為一個談資料、一個談模型。', why: '兩者同樣基於 CycloneDX，且都屬供應鏈透明度。' }
+    ],
+    summary: 'DBOM（資料血緣）與 AIBOM（模型與依賴）：同基於 CycloneDX，互補。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'data-security', mode: 'final',
+    los: [
+      { n: 1, text: '定位與版本：說明兩份文件、2026 版與 2025 版的關係，以及 2026 版的編號不一致。' },
+      { n: 2, text: '資料面向：說明上下文視窗為何是單一扁平的信任空間，並用六類資料與 AI-DSPM 盤點資料。' },
+      { n: 3, text: '風險分辨：依官方六個群組分辨 DSGAI01–DSGAI21，並區分容易混淆的條目。' },
+      { n: 4, text: '控制選擇：面對資料情境，指出條目並依三層成熟度與 Buy／Build 選控制。' },
+      { n: 5, text: '跨文件整合：知道與 LLM Top 10、Agentic Top 10、AIBOM、事件應變的對應，並正確處理年份編號。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　可信度測試與威脅驅動方法｜AI Testing Guide｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP AI Testing Guide 是什麼、為什麼 AI 測試要談可信度而不只是安全、三個測試領域（Security、Privacy、Responsible AI），以及從威脅建模到測試設計的三步方法。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="ai-testing-guide" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　可信度測試與威脅驅動方法</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO1、LO2</li>
+  <li>前置：<a href="../../primer-security-for-developers.html#p-tm">資安前置觀念：威脅建模</a>；<a href="../../01-overview/ai-exchange/index.html">AI Exchange 主題</a>（建議先讀）</li>
+</ul>
+<p class="lead">寫過測試的人都知道：功能測試問「它做對了嗎」，安全測試問「它能被弄壞嗎」。AI Testing Guide 把問題再放大一圈：「它值得被信任嗎」。本章先看這份文件是什麼、為什麼把測試的目標從「安全」改成「可信度」，再看它從威脅建模走到測試案例的三步方法。</p>
+
+<h2 id="tg-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　OWASP AI Testing Guide 一頁式全貌（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">是什麼</th><td>開源、社群驅動的 AI 系統測試方法與最佳實務。官方形容它要成為「AI 可信度測試 (trustworthiness testing)」的標準：技術中立、可重複，評估的不只是安全威脅，也包含負責任、合規的 AI 部署所需的更廣泛可信特性。</td></tr>
+<tr><th scope="row">誰發布</th><td>OWASP 基金會的專案，owasp.org 頁面標示「Incubator Project」，專案領導人為 Matteo Meucci 與 Marco Morana。專案頁在 owasp.org、程式與文件在 OWASP 組織的 GitHub 儲存庫，不在 GenAI Security Project 的八個 Initiatives 清單中。</td></tr>
+<tr><th scope="row">給誰用</th><td>官方列出：AI 資安測試人員、稽核與合規人員、AI 工程師／開發者／MLOps、AI 紅隊人員；並希望延伸到產品負責人、風險與治理人員、QA、DevSecOps、事件應變人員與研究者。</td></tr>
+<tr><th scope="row">版本與日期</th><td>owasp.org 頁面公告「2025-11-26　Version 1 Published」（PDF 與 GitHub 皆可取得）。GitHub 儲存庫 main 分支最近一次提交是 <strong>2026-06-01</strong>，儲存庫沒有 Releases、README 也沒有版本號。<strong>本教材的內容以 GitHub main（2026-10-26 讀取）為準</strong>，因為它比 11 月的公告新；它與 2025-11-26 的 v1 PDF 是否完全一致，<strong>未能確認</strong>（本教材沒有下載 PDF）。</td></tr>
+<tr><th scope="row">在 OWASP AI 資源中的位置</th><td>屬於「評估與驗證」：把威脅轉成可執行的測試案例。它不是風險清單（那是 LLM Top 10），也不是需求清單（那是 AISVS，見<a href="../aisvs-and-llmsvs/index.html">AISVS 與 LLMSVS 主題</a>），而是回答「怎麼測」。</td></tr>
+<tr><th scope="row">授權</th><td>儲存庫的 LICENSE.md 寫 CC BY-SA 4.0；但 GitHub 的授權偵測值是 NOASSERTION（見<a href="references.html#ref-unsure">參考資料頁</a>）。</td></tr>
+</tbody></table></div>
+
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：GitHub main 與 v1 PDF 是否一致</p>
+  <p>owasp.org 說 v1 在 2025-11-26 發布，但儲存庫在那之後到 2026-06-01 仍有提交（修錯字、補圖等）。本教材只讀了 GitHub 上的 Markdown，沒有取得 PDF，所以不知道兩者差在哪裡。本教材引用時寫「GitHub main，2026-10-26 讀取」，不宣稱它就是 v1 PDF。</p>
+</div>
+
+<h2 id="tg-concept">1.2 核心概念：為什麼 AI 測試要談「可信度」，不只「安全」</h2>
+<div class="concept">
+<h3 id="c-trust">可信度測試 (Trustworthiness Testing)</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>官方的主張是「可信 AI = 負責任 AI (Responsible AI) + 資安 AI (Security AI) + 隱私 AI (Privacy AI)」。為什麼要做可信度測試？因為測試不只要找「能不能被攻破」的洞，也要檢查模型會不會產生偏見、幻覺、有毒內容，或過度讓人依賴。</dd>
+  <dt data-n="2">為什麼會這樣</dt>
+  <dd>傳統軟體的行為由程式碼決定，測出的問題多半是可修的缺陷。AI 模型會學習、泛化，並且以非確定性的方式出錯；官方引用 NIST 的對抗式機器學習分類與 LLM Top 10 2025 說明，AI 的失敗原因遠超出傳統意義的資安。因此官方的結論是：「安全不夠，可信度才是真正的目標。」</dd>
+  <dt data-n="3">怎麼被忽略（概念層級）</dt>
+  <dd>只做安全測試的團隊，可能在上線時沒人檢查過模型對不同族群的輸出是否一致、會不會編造不存在的事實、使用者是否被誘導過度信任答案。這些問題不需要任何攻擊者，一般使用者就會碰到。</dd>
+  <dt data-n="4">怎麼做</dt>
+  <dd>把測試案例按三個領域標記（見 1.3 節），在規劃階段就決定「這個系統要滿足哪些領域」，再挑對應的測試。官方的框架表就是這樣標每個測試的領域。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「AI 測試就是紅隊，就是找 prompt injection。」不是。官方框架的 32 項測試裡，領域欄只標負責任 AI (RAI) 的有 11 項（另有 3 項同時標 RAI 與其他領域），涵蓋偏見、幻覺、毒性、過度依賴、可解釋性等；其中不少問題不需要攻擊者，一般使用者就會碰到。</dd>
+</dl>
+</div>
+
+<h2 id="tg-domains">1.3 三個領域：Security、Privacy、Responsible AI</h2>
+<p>官方在原則章 (1.2 Principles of AI Testing) 把「可測試的可信度」拆成三個領域，每個領域各列幾個關注點。下表依官方內容整理，括號內是作者加的白話說明。</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　三個測試領域與官方列出的關注點</caption>
+<thead><tr><th scope="col">領域</th><th scope="col">要確保什麼</th><th scope="col">官方列出的關注點（節錄）</th></tr></thead>
+<tbody>
+<tr><th scope="row">資安 <br>(Security, SecAI)</th><td>對抗性威脅與系統性利用下仍有韌性</td><td>提示詞與輸入控制；對抗式穩健性（規避、投毒、模型竊取、越獄、間接提示詞注入）；基礎設施（API、外掛、RAG、agent 工作流）；供應鏈風險；CI/CD 中的持續測試</td></tr>
+<tr><th scope="row">隱私 <br>(Privacy, PrivacyAI)</th><td>資料機密性與使用者對資料的控制</td><td>資料外洩防範；成員推論與屬性推論的抵抗力；模型萃取與外洩；資料治理合規（最小化、目的限制、同意）</td></tr>
+<tr><th scope="row">負責任 AI <br>(Responsible AI, RespAI／RAI)</th><td>倫理、安全、符合預期的行為</td><td>偏見與公平性稽核；毒性與濫用偵測；安全對齊；護欄 (guardrail) 覆蓋；高影響決策的人在迴路機制</td></tr>
+</tbody></table></div>
+<p>一個測試可以同時屬於多個領域。例如官方表中，AITG-APP-03（敏感資料外洩）標為 Security 與 Privacy；AITG-DAT-05（資料最小化與同意）標為 Privacy 與 RAI。下一章會逐項列出。</p>
+<p>官方還說明<strong>什麼時候測</strong>：原則章依 ISO/IEC 23053 的六個機器學習生命週期階段（規劃與範圍界定、資料準備、模型開發與訓練、驗證與評估、部署與整合、運作與維護）說明各階段該做什麼測試。但要注意官方在同一頁寫的範圍限制：<strong>這個初版的方法，聚焦於「已有可測的初版產品 (test-ready)」之後的完整評估</strong>；更早的預生產階段，官方說之後的更新才會擴及。威脅建模章也提醒，它的範圍是部署後的安全評估，不涵蓋整個 MLOps 生命週期。</p>
+
+<h2 id="tg-method">1.4 方法：從威脅建模到測試設計三步</h2>
+<p>官方目標章 (1.3) 把方法稱為「威脅驅動 (threat-driven)」：先搞清楚哪些威脅最可能影響你的營運或使用者安全，再為這些威脅寫測試。三步如下。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="威脅驅動的三步流程：第一步威脅建模，把系統分解為 Application、Model、Infrastructure、Data 四個元件並標出信任邊界；第二步威脅對應，把找到的威脅對照到 OWASP Top 10 for LLM、OWASP AI Exchange、負責任與可信 AI 框架；第三步測試設計，為每個威脅寫測試案例，內容包含範例輸入、預期結果、偵測策略與工具建議。測試結果再回頭更新威脅模型。">
+flowchart LR
+  A["1 威脅建模<br>分解成四個元件<br>Application／Model／Infrastructure／Data"] --> B["2 威脅對應<br>對照 LLM Top 10、AI Exchange、<br>負責任／可信 AI 框架"]
+  B --> C["3 測試設計<br>每個威脅一組測試案例：<br>範例輸入、預期結果、偵測策略、工具"]
+  C -.->|"結果回饋，更新威脅模型"| A
+</pre>
+<figcaption><strong>圖 1-1　威脅驅動的三步方法。</strong>三步與各步的內容來自官方目標章 (1.3)；「結果回饋更新威脅模型」的虛線箭頭是官方「持續更新威脅模型」說法的圖示化，屬<span class="tag author">作者整理，非官方</span>。</figcaption>
+</figure>
+<p><strong>第一步的四個元件</strong>。官方威脅建模章採用 Google 的安全 AI 框架 (Secure AI Framework, SAIF) 的架構視圖來分解系統：<strong>應用層</strong>（使用者、輸入輸出、應用邏輯、agent／外掛、外部來源）、<strong>模型層</strong>（輸入處理、輸出處理、模型使用）、<strong>基礎設施層</strong>（模型儲存、模型服務、評估、訓練與調校、框架與程式碼、資料儲存）、<strong>資料層</strong>（訓練資料、資料過濾與處理、資料來源、外部資料來源）。官方也承認這個分解層級偏高，RAG 或多代理 (multi-agent) 這類組合式系統需要更細的拆解。</p>
+<p><strong>威脅建模方法的選擇</strong>。官方列舉了幾種可搭配的框架：PASTA（以風險與業務影響為中心的七階段流程）、STRIDE（六類威脅分類）、MITRE ATLAS（對抗式機器學習技術庫）、LINDDUN（隱私導向）、MAESTRO（為 agentic AI 設計）。指引的重點是：依組織目標與系統複雜度挑選，而不是只能用其中一種。</p>
+
+<h3 id="tg-vs">這份指引和其他測試文件的差別</h3>
+<div class="table-wrap"><table>
+<caption>表 1-3　AI Testing Guide 與相鄰文件的定位比較（部分欄位為作者整理）</caption>
+<thead><tr><th scope="col">文件</th><th scope="col">主要問題</th><th scope="col">產出形式</th><th scope="col">備註</th></tr></thead>
+<tbody>
+<tr><th scope="row">AI Testing Guide</th><td>每個威脅「怎麼測」？</td><td>32 項帶編號的測試（AITG-*），每項有目標、預期輸出、修補建議、工具</td><td>涵蓋安全、隱私、負責任 AI；官方列為相關資源的有 GenAI Red Teaming Guide、AIVSS、LLM Top 10、AI Exchange 等</td></tr>
+<tr><th scope="row">GenAI Red Teaming Manual</th><td>如何規劃並執行一場「模擬攻擊者」的演練？</td><td>八階段方法論與交付物</td><td>見<a href="../genai-red-teaming/index.html">GenAI 紅隊演練主題</a>。<span class="tag author">作者整理，非官方</span>：兩者互補，一個提供測試項目庫，一個提供演練流程</td></tr>
+<tr><th scope="row">傳統測試方法論 <br>(NIST SP 800-115、OSSTMM、OWASP WSTG)</th><td>網路、基礎設施與網頁應用怎麼測？</td><td>通用的資安測試流程</td><td>官方明說本指引<strong>不取代、不重複</strong>它們，只聚焦 AI 特有威脅</td></tr>
+</tbody></table></div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>AI Testing Guide 是 OWASP 孵化 (Incubator) 專案，公告 v1 於 2025-11-26 發布；本教材以 GitHub main（2026-10-26 讀取）為準，與 v1 PDF 是否一致未能確認。</li>
+  <li>官方主張「安全不夠，可信度才是目標」：可信 AI = 負責任 AI + 資安 AI + 隱私 AI，測試案例按這三個領域標記。</li>
+  <li>方法是威脅驅動的三步：威脅建模（四個元件）→ 威脅對應 → 測試設計。</li>
+  <li>初版範圍是產品已有可測初版之後的評估；更早的預生產階段、通用的網路與網頁測試都不在範圍內。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能用一句話說明為什麼官方把目標從「安全」改成「可信度」。</li>
+  <li>我能說出三個測試領域，並為每個領域舉一個關注點。</li>
+  <li>我能按順序說出威脅驅動方法的三步，以及第一步分解出的四個元件。</li>
+  <li>我知道這份指引不取代 NIST SP 800-115、OSSTMM、WSTG。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO1、LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-test-map.html">第 2 章　四層 32 項測試地圖</a>：看第三步產出的測試長什麼樣子、有哪四層、怎麼從威脅模型挑出該跑的測試。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Testing Guide，owasp.org 專案頁（Incubator Project；2025-11-26 Version 1 Published 公告）：<a href="https://owasp.org/www-project-ai-testing-guide/">owasp.org/www-project-ai-testing-guide/</a>；2026-10-26 讀取。</li>
+    <li>GitHub 儲存庫 OWASP/www-project-ai-testing-guide，main 分支（最近提交 2026-06-01）：README、<a href="https://github.com/OWASP/www-project-ai-testing-guide/blob/main/Document/README.md">Document/README.md</a>（目錄）、1.2 Principles of AI Testing、1.3 Objectives of AI Testing Guide、2.0 Threat Modeling for AI Systems；授權依儲存庫 LICENSE.md 為 CC BY-SA 4.0。</li>
+    <li>相鄰文件僅用於對照：GenAI Red Teaming Manual Version 1.0（2026-10-20，<a href="https://genai.owasp.org/resource/genai-red-teaming-manual-version-1-0/">資源頁</a>），細節見該主題。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AI Testing Guide — CC BY-SA 4.0（依儲存庫 LICENSE.md；GitHub 偵測值為 NOASSERTION）；GenAI Red Teaming Manual — CC BY-SA 4.0（PDF 封面）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'tg-ch1', topic: 'ai-testing-guide', mode: 'chapter',
+  questions: [
+    { id: 'tg1q1', type: 'mc', lo: [1], refs: [{label: '1.2 可信度測試', href: '01-position.html#tg-concept'}],
+      stem: '一位同事說：「我們的 AI 客服已經做過完整的安全測試，沒有人能繞過它的限制，所以測試做完了。」依 AI Testing Guide 的觀點，最恰當的回應是？',
+      options: [
+        { text: '安全測試通過就代表可信，不需要再測別的。', why: '這正是官方要糾正的看法：官方的結論是「安全不夠，可信度才是目標」。' },
+        { text: '還需要檢查偏見、幻覺、毒性、過度依賴等負責任 AI 的面向；這些問題不需要攻擊者也會出現。', correct: true, why: '符合 1.2 節：可信 AI = 負責任 AI + 資安 AI + 隱私 AI；32 項測試中有 11 項只標 RAI。' },
+        { text: '應該改做更多提示詞注入測試，因為那是 AI 唯一的弱點。', why: '提示詞注入只是安全領域的一部分；官方框架涵蓋的範圍遠比它大。' },
+        { text: '不需要，因為 AI 的行為無法測試。', why: '官方的立場正好相反：官方強調要有可重複、技術中立的測試方法，只是方法要調整。' }
+      ],
+      summary: '可信度 = 負責任 AI + 資安 AI + 隱私 AI；只測安全不夠。' },
+    { id: 'tg1q2', type: 'match', lo: [1], refs: [{label: '1.3 表 1-2', href: '01-position.html#tg-domains'}],
+      stem: '把下列關注點配對到它最主要所屬的測試領域（依官方原則章的分類）。',
+      cats: [
+        { id: 'sec', label: '資安 (Security)' },
+        { id: 'pri', label: '隱私 (Privacy)' },
+        { id: 'rai', label: '負責任 AI (Responsible AI)' }
+      ],
+      items: [
+        { text: '評估模型對不同族群的輸出是否有歧視（偏見與公平性稽核）', answer: 'rai', why: '官方把偏見與公平性稽核列在負責任 AI 領域。' },
+        { text: '模擬攻擊者想複製專有模型（模型萃取與外洩）', answer: 'pri', why: '官方原則章把模型萃取與外洩列在隱私領域。' },
+        { text: '檢查外掛、RAG 管線與 agent 工作流的弱點（基礎設施安全）', answer: 'sec', why: '官方把基礎設施安全列在資安領域。' },
+        { text: '評估模型是否容易被推斷出某筆資料是否曾用於訓練（成員推論）', answer: 'pri', why: '成員推論與屬性推論的抵抗力列在隱私領域。' }
+      ],
+      summary: '三領域：Security、Privacy、Responsible AI；一個測試可橫跨多個領域。' },
+    { id: 'tg1q3', type: 'mc', lo: [2], refs: [{label: '1.4 威脅驅動方法', href: '01-position.html#tg-method'}],
+      stem: '依官方的威脅驅動方法，「測試設計」這一步為每個威脅寫出的測試案例，會包含下列哪一組內容？',
+      options: [
+        { text: '範例輸入、預期結果、偵測策略、工具建議', correct: true, why: '官方 1.3 節列出測試設計包含這四項。' },
+        { text: '只有範例輸入；其餘由測試者自行決定。', why: '官方要求測試案例同時說明預期結果與偵測策略，不是只給輸入。' },
+        { text: '風險分數與修補預算。', why: '評分是 AIVSS 一類文件的工作，不是這份指引測試設計的內容。' },
+        { text: '法規條文與稽核表單。', why: '法規對應是測試的輸入來源之一，不是測試案例本身的內容。' }
+      ],
+      summary: '測試設計：範例輸入＋預期結果＋偵測策略＋工具建議。' },
+    { id: 'tg1q4', type: 'scn', lo: [2], refs: [{label: '1.4 圖 1-1', href: '01-position.html#tg-method'}, {label: '1.3 範圍說明', href: '01-position.html#tg-domains'}],
+      stem: '依本章，這個規劃有什麼問題？',
+      scenario: '柏鯨保險（虛構）打算導入一個核保輔助模型，專案經理的計畫是：「模型還在選型與訓練階段，但我們先拿 AI Testing Guide 把 32 項測試全跑一遍，順便當作通用的網站滲透測試。」',      options: [
+        { text: '沒有問題，指引本來就是設計給所有階段與所有測試用的。', why: '官方明說初版聚焦在產品已有可測初版之後；更早的階段之後才擴及。' },
+        { text: '有兩個問題：初版範圍是產品已有可測初版之後的評估，選型與訓練階段不是它的重點；它也不是通用網站滲透測試方法，這類測試官方建議用 NIST SP 800-115、OSSTMM、WSTG。另外沒有先做威脅建模就跑全部 32 項，也違背威脅驅動的做法。', correct: true, why: '對應 1.3 節的範圍說明與 1.4 節的三步方法與表 1-3。' },
+        { text: '唯一的問題是 32 項測試太少，應該增加到 100 項。', why: '官方方法是依威脅挑測試，不是追求測試數量。' },
+        { text: '問題只在於沒有找紅隊廠商。', why: '指引與紅隊廠商無關；本題的問題在範圍與方法。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 官方說初版方法聚焦在「已有可測的初版產品」之後；選型、訓練是更早的階段。(2) 官方目標章寫明它不取代也不重複通用的網路、基礎設施與網頁測試方法論。(3) 威脅驅動意味著先建模、再對應、再選測試，而不是把所有測試全跑。</p><p><strong>結論：</strong>等產品有可測初版再用；先做威脅建模，挑出相關測試；通用滲透測試另用既有方法論。對應教材：<a href="01-position.html#tg-domains">1.3 節</a>、<a href="01-position.html#tg-method">1.4 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

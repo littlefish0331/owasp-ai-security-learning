@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　三種架構與高風險能力｜保護 Agentic 應用指南｜OWASP AI 資安學習教材</title>
+<meta name="description" content="單 agent、中央協調者、蜂群三種架構各自的安全重點，以及 API 存取、程式碼執行、資料庫、網頁使用、PC 操作、關鍵系統這些高風險能力的控制；並用一個虛構情境練習怎麼組合。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="securing-agentic-applications" data-page="03-architectures-capabilities.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　三種架構與高風險能力</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-lifecycle.html">第 2 章</a></li>
+</ul>
+<p class="lead">指南的第 4、5 節不是按階段，而是按<strong>你選了什麼</strong>來組織：你的系統是單一 agent、有中央協調者、還是蜂群？它能碰 API、執行程式碼、查資料庫、上網、操作電腦嗎？每個選項都有一份對應的控制清單。本章用兩張表把它們攤開，並說明一個共通的規律：選項越廣，控制越多。</p>
+
+<h2 id="a-arch">3.1 三種架構的安全重點</h2>
+<p>指南對每種架構的「強化的安全行動」有一份清單，後者建立在前者之上。差別不在於「要不要」某個控制，而在於<strong>信任從哪裡來</strong>。</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　三種架構的安全重點（指南 4.1–4.4，改寫）</caption>
+<thead><tr><th scope="col">架構</th><th scope="col">特徵</th><th scope="col">額外的控制重點（在前者之上）</th></tr></thead>
+<tbody>
+<tr><th scope="row">4.1 單一 agent</th><td>一個 agent 帶一組工具；基準線</td><td>驗證與授權：OAuth 2.0／OIDC、授權碼流程加 PKCE、明確的同意畫面、短效存取權杖、受管身分服務、依角色與最小權限、區分讀寫並預設唯讀、即時憑證；資料保護：加密、DLP、資料分類與敏感度標籤、資料最小化；程式碼安全；監控與事件應變（含<strong>緊急關閉開關</strong>）；提示安全</td></tr>
+<tr><th scope="row">4.2 多 agent、中央協調者</th><td>協調者負責任務分派、維持整體工作流或狀態</td><td>控制平面分離、每個 agent 用不同權限集；強化協調者的 API；<strong>防範控制流劫持</strong>（驗證 agent 回應、檢查營運中繼資料的完整性）；<strong>緩解混淆代理人問題</strong>；agent 間通訊用 mTLS、預先定義結構描述、憑證或權杖驗證、安全訊息佇列、政策執行點 (PEP)、速率限制；信任邊界：零信任、網路分段、容器化；探索僅限已知可信伺服器</td></tr>
+<tr><th scope="row">4.3 多 agent、蜂群</th><td>沒有中心，agent 自行協作；難以有明確的「正確行動」指引</td><td>把「誰可信、什麼動作對」的決定放在 agentic 流程之外；限制或禁止蜂群在無人指引下新增 agent；去中心化身分 (DID) 與可驗證憑證 (VC)；去中心化的聲譽系統；點對點通訊用合適的協定（含加密與認證）</td></tr>
+<tr><th scope="row">4.4 跨架構</th><td>不論哪種架構都要做</td><td>安全的 API 設計與速率限制、持續安全測試、監控與威脅偵測、安全的更新與維護</td></tr>
+</tbody></table></div>
+<p>最容易被誤讀的是蜂群：指南並不是說「蜂群需要 DID 才安全」，而是說蜂群<strong>缺少中心</strong>，所以信任必須由外部的身分與憑證機制提供；若你的蜂群是封閉環境、成員固定，限制它新增成員比導入 DID 更直接。這個解讀是<span class="tag author">作者整理，非官方</span>；指南只列出做法，沒有給選擇的準則。</p>
+
+<h2 id="a-cap">3.2 六類高風險能力（KC6）的控制</h2>
+<p>指南第 5 節針對 KC6 的每種能力列出核心威脅與控制。以下是比較表。重點是它們的<strong>共同結構</strong>：先縮小能力的形狀（模板、有限級），再隔離，再加人與日誌。</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　高風險能力與控制（指南 5.1–5.6，改寫；T 編號為指南列出的核心威脅）</caption>
+<thead><tr><th scope="col">能力</th><th scope="col">核心威脅</th><th scope="col">最先要做的控制（官方的第一與第二項）</th></tr></thead>
+<tbody>
+<tr><th scope="row">5.1 API 存取</th><td>未授權資料存取、API 濫用與成本暴增（T3、T4、T2）、金鑰外洩（T3、T9）</td><td>以細緻 OAuth scope 或受限 API 金鑰做最小權限；設定允許／拒絕清單（准許的基底 URL）；<strong>偏好 API 模板，而不是讓 LLM 產生完整 API 呼叫</strong></td></tr>
+<tr><th scope="row">5.2 程式碼執行</th><td>任意程式碼執行 (T11、T3)、程式碼注入 (T11、T2)、資源耗盡 (T4)、機密洩漏 (T6)</td><td><strong>強制沙箱</strong>（OS 層隔離、容器、VM、WebAssembly、雲端沙箱）；對 agent 產生的程式碼做靜態分析；資源與時間上限；允許清單、人工核准高風險操作</td></tr>
+<tr><th scope="row">5.3 資料庫執行</th><td>SQL 注入 (T2)、未授權資料暴露或修改 (T3)、RAG 資料污染或敏感資料檢索 (T1、T5、T3)</td><td>用受管向量資料庫與存取控制（<strong>無法保護的資料就不要匯入</strong>）；只用參數化或模板查詢、最小權限帳號（只讀、受限資料表、列欄層級安全）；RAG 檢索後的敏感內容過濾</td></tr>
+<tr><th scope="row">5.4 網頁使用</th><td>惡意網頁內容 (T11)、機密洩漏 (T6)、釣魚 (T7)、SSRF (T2、T3)、存取使用者瀏覽器資料 (T3)</td><td>沙箱化瀏覽器元件（避免在使用者自己的瀏覽器或擴充功能中運作）；URL 允許清單、安全網頁閘道、域名信譽檢查；網路分段防 SSRF</td></tr>
+<tr><th scope="row">5.5 PC 操作</th><td>未授權檔案存取或修改 (T3)、任意 OS 指令執行 (T11、T3、T2)、橫向移動 (T3)</td><td>嚴格隔離（OS 層沙箱、受限使用者、專用容器或 VM）；允許／拒絕清單限定 OS 操作與檔案路徑、攔截 OS 指令；沙箱不累積資料與 session</td></tr>
+<tr><th scope="row">5.6 關鍵系統操作</th><td>災難性的實體後果 (T2、T3、T6、T7)、惡意控制注入 (T2、T6)、錯誤資料影響決策 (T1、T5)</td><td>最大程度隔離（實體隔離或高度分段網路）；<strong>MFA 走 agent 之外的流程</strong>（不用 agent 中介 MFA 或保留特權 session）；每個關鍵動作都強制 HITL，且要精簡到讓人每次都有注意力；預設唯讀監控</td></tr>
+</tbody></table></div>
+<p>官方在 5.6 特別提醒了一件和設計有關的事：<strong>過度或低效率的提示會讓人無差別地批准</strong>。這和 T&amp;M 的 T10（壓垮 HITL）、Agentic Top 10 的 ASI09 是同一個問題，只是這裡從「怎麼做 HITL 才有效」切入。</p>
+
+<h2 id="a-scenario">3.3 情境範例 A：一個什麼都能做的運維助理</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：雲嶼科技的 DevOps 助理</h3>
+<p><span class="tag fiction">虛構</span> 雲嶼科技是虛構的公司。平台團隊做了一個「運維助理」：工程師用自然語言描述需求，助理可以呼叫雲端 API、在跳板機上執行 shell 指令與腳本、查詢監控資料庫、瀏覽內部 wiki 與外部文件，必要時修改基礎設施組態。為了讓使用者「免打斷」，所有動作預設自動核准。以下為虛構，細節停在概念層級。</p>
+<p class="arch"><strong>架構：</strong>單一 agent（4.1）｜KC6.1 廣泛 API 存取、KC6.2 廣泛程式碼執行、KC6.3 資料庫、KC6.4 網頁使用、KC6.5 PC 操作。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>有人在公開的技術部落格留言區貼了一段看似疑難排解的文字。助理上網查資料時讀到它，這段文字夾帶了給助理的指示。助理把它當成合理的下一步，用 shell 執行了其中一個腳本，並用廣泛的 API 存取查詢了不相關的資源。</li>
+  <li><strong>哪一環出問題：</strong>(a) KC6.4 網頁使用沒有沙箱，直接把不可信內容帶進決策；(b) KC6.2 與 KC6.5 的能力是「廣泛」而不是「有限」；(c) KC6.1 讓 LLM 產生完整 API 呼叫，沒有模板與允許清單；(d) 所有動作預設自動核准，沒有 HITL。</li>
+  <li><strong>對應條目：</strong>指南 5.1–5.5 的核心威脅：T2、T3、T11、T6；T&amp;M 的 Playbook 3（工具與供應鏈）；Agentic Top 10：ASI01、ASI02、ASI05。LLM Top 10 2026：<a href="../../02-llm-applications/llm-top-10/02-prompt-injection.html#pi-what">LLM01:2026</a>（間接注入入口）、<a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a> Excessive Agency。</li>
+  <li><strong>該採什麼控制：</strong>
+    <ul>
+      <li>縮小形狀：API 改為預先定義的模板，LLM 只填已定義的參數；shell 改為允許清單中的命令；</li>
+      <li>隔離：瀏覽用沙箱、與內部網路分段（防 SSRF）；腳本與命令在容器或微型虛擬機中跑、不累積 session；</li>
+      <li>最小權限與即時存取：助理用範圍有限、短效的憑證；跳板機以受限使用者執行；</li>
+      <li>人與日誌：會修改基礎設施組態的動作需人核准，且審查介面要精簡；記錄所有工具呼叫與 OS 層動作，串接 SIEM；備妥緊急關閉開關。</li>
+    </ul>
+  </li>
+  <li><strong>學到什麼：</strong>這個助理一次選了所有最廣泛的選項，於是需要所有最重的控制。與其逐一補控制，更有效的是先<strong>縮小選項</strong>：不是每個任務都需要程式碼執行和 PC 操作；能用模板就不用自由產生。這正是 <a href="../agentic-top-10-2026/01-position.html#c-agency">Least Agency</a> 在建置面的樣子。</li>
+</ol>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>三種架構的控制是累加的：單 agent 是基準；中央協調者加上協調者本身與 agent 間通訊的控制；蜂群因無中心，信任須由外部機制提供。</li>
+  <li>高風險能力的控制有共同結構：縮小形狀 → 隔離 → 加人與日誌。</li>
+  <li>偏好 API 模板，而不是讓 LLM 產生完整呼叫；無法保護的資料就不要匯入向量資料庫；MFA 走 agent 之外。</li>
+  <li>HITL 提示過多或低效，會使人無差別批准。</li>
+  <li>選項越廣，控制越多；能縮小選項就先縮小。</li>
+</ul></div>
+<ul class="checklist">
+  <li>給我一個系統的架構與能力，我能列出該先看哪幾張控制清單。</li>
+  <li>我能說出 API 模板為何比讓 LLM 產生完整呼叫安全。</li>
+  <li>我知道為什麼 MFA 不應該由 agent 來中介。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-supply-assurance-hardening.html">第 4 章　供應鏈、驗證、部署與整合</a>：agent 與工具的探索與信任、紅隊與行為測試怎麼做、部署與執行期強化，並整理跨文件整合。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>Securing Agentic Applications Guide</em>, Version 1.0, July 28, 2025：<a href="https://genai.owasp.org/resource/securing-agentic-applications-guide-1-0/">資源頁</a>；2026-10-26 讀取；CC BY-SA 4.0。引用段落：4 Enhanced Security Actions（4.1–4.4）、5 Key Operational Capabilities（5.1–5.6）。</li>
+    <li>OWASP Top 10 for LLM Applications 2026 清單（Version 2026，2026-08-04）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">GitHub 2026/README.md</a>；僅用於情境中的 2026 版編號。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Securing Agentic Applications Guide、Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'saa-ch3', topic: 'securing-agentic-applications', mode: 'chapter',
+  questions: [
+    { id: 'p3q1', type: 'mc', lo: [3], refs: [{label: '3.2 表 3-2', href: '03-architectures-capabilities.html#a-cap'}],
+      stem: '指南在 API 存取（5.1）的控制中，「偏好 API 模板，而不是讓 LLM 產生完整的 API 呼叫」最主要的理由是？',
+      options: [
+        { text: '模板可以讓模型更快回應。', why: '指南講的是安全與可靠性。' },
+        { text: '限縮 LLM 只能填入已定義的參數，減少不安全或畸形的 API 呼叫，並把不變的欄位固定下來。', correct: true, why: '指南 5.1 第 3 項。' },
+        { text: '模板能取代 OAuth scope。', why: '兩者並用：scope 限權限，模板限形狀。' },
+        { text: '模板只對 REST API 有效。', why: '指南的重點是限制形狀，不限協定種類。' }
+      ],
+      summary: '縮小 LLM 能決定的部分。' },
+    { id: 'p3q2', type: 'match', lo: [3], refs: [{label: '3.2 表 3-2', href: '03-architectures-capabilities.html#a-cap'}],
+      stem: '把控制配對到最相關的能力（KC6）。',
+      cats: [
+        { id: 'code', label: '5.2 程式碼執行' },
+        { id: 'db', label: '5.3 資料庫執行' },
+        { id: 'web', label: '5.4 網頁使用' },
+        { id: 'crit', label: '5.6 關鍵系統操作' }
+      ],
+      items: [
+        { text: '強制沙箱，並對 agent 產生的程式碼做靜態分析', answer: 'code', why: '5.2 的第一、二項。' },
+        { text: '只用參數化或模板查詢，帳號只給只讀與受限資料表', answer: 'db', why: '5.3 的查詢安全措施。' },
+        { text: 'URL 允許清單、安全網頁閘道，並以網路分段防止 SSRF', answer: 'web', why: '5.4 的 URL 安全與保護措施。' },
+        { text: 'MFA 走 agent 之外的流程，並對每個關鍵動作都強制 HITL', answer: 'crit', why: '5.6。' }
+      ],
+      summary: '每種能力有自己的控制清單，但結構相似。' },
+    { id: 'p3q3', type: 'mc', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-architectures-capabilities.html#a-arch'}],
+      stem: '依指南，多 agent 蜂群架構與有中央協調者的架構相比，在信任上最大的差別是？',
+      options: [
+        { text: '蜂群不需要任何驗證，因為 agent 彼此平等。', why: '剛好相反，蜂群缺少中心，信任須由外部機制提供。' },
+        { text: '蜂群沒有中心可以做「誰可信、什麼動作對」的判斷，所以這個決定要放在 agentic 流程之外，並限制它無人指引地新增 agent。', correct: true, why: '指南 4.3.1 的說明。' },
+        { text: '蜂群一定要使用區塊鏈。', why: '指南沒有這樣要求；它列的是 DID 與可驗證憑證。' },
+        { text: '蜂群比中央協調者架構更安全。', why: '指南沒有這樣比較。' }
+      ],
+      summary: '蜂群的信任必須外部提供。' },
+    { id: 'p3q4', type: 'scn', lo: [3], refs: [{label: '3.3 情境範例 A', href: '03-architectures-capabilities.html#a-scenario'}, {label: '3.2 表 3-2', href: '03-architectures-capabilities.html#a-cap'}],
+      stem: '依本章，團隊預算只夠先做一件事，最能直接降低整體風險的是？',
+      scenario: '松嵐科技（虛構）的運維助理跟情境 A 類似：它能自由產生並執行 shell 指令、呼叫任意雲端 API、瀏覽任意網頁，且所有動作預設自動核准。盤點後團隊有四個想法：(a) 補上完整日誌；(b) 把 shell 與 API 改成預先定義的命令與模板，LLM 只能填參數；(c) 在每個動作前都彈出核准視窗；(d) 增加一個護欄模型掃描提示詞。',
+      options: [
+        { text: '(a) 完整日誌，因為看不見的風險最危險。', why: '日誌是偵測，重要，但不能縮小這個助理被誘導時能做的事。' },
+        { text: '(b) 縮小形狀：命令與 API 改成預先定義的模板，LLM 只填參數。', correct: true, why: '3.2 節與情境 A 的結論：先縮小選項，因為這直接降低被誘導時能造成的後果。' },
+        { text: '(c) 每個動作都彈出核准視窗。', why: '5.6 提醒過度或低效的提示會使人無差別批准；對低風險動作也核准反而削弱對高風險動作的注意力。' },
+        { text: '(d) 護欄模型，因為它能攔下注入。', why: '護欄可能被繞過；指南把它放在多層之一，而不是承重的唯一一層。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 助理目前的能力全是「廣泛」級，被誘導時可造成的後果最大。(2) 縮小形狀後，即使入口被攻破，可執行的動作也被限縮。(3) 日誌、核准與護欄都重要，但屬後續層；核准視窗用得太廣還會削弱 HITL。</p><p><strong>結論：</strong>先縮小形狀；這是依「最先限縮後果」的作者判斷，不是官方優先順序。對應教材：<a href="03-architectures-capabilities.html#a-scenario">3.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

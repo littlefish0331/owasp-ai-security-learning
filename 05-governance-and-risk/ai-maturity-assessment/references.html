@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜AI 成熟度評估（AIMA）｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AI 成熟度評估（AIMA）主題的來源核對清單：採用的版本與日期、與調查筆記的差異、專案頁與 PDF 的領域數出入、未能確認項目、教材的閱讀範圍、授權。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="ai-maturity-assessment" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 4.13 節）</li>
+</ul>
+<p class="lead">調查筆記說 AIMA 的頁面「<strong>未列出評估領域</strong>，本筆記不推測」。這次改讀 GitHub 儲存庫的原始檔（模型各章、評估方法、Governance 工作表）和 V1 PDF（76 頁）、Excel 工具包，領域與結構都能確認，也因此發現專案頁與 PDF 的領域數不一致。本頁列出採用的版本、與筆記不同之處、取捨，以及本教材讀了與沒讀的範圍。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">OWASP AI Maturity Assessment V1（PDF）</th><td>Version V1.0 — August 11, 2025；76 頁</td><td>PDF 封面；儲存庫 <code>releases/V1/OWASP-AIMA_V1.pdf</code></td><td>CC BY-SA 4.0（儲存庫 LICENSE.md）；PDF 內未見授權文字</td></tr>
+<tr><th scope="row">AIMA Excel 工具包</th><td>v1.0.1（owasp.org 專案頁標示）；另有 <code>OWASP-AIMA-Toolkit_V1.xlsx</code></td><td>專案頁、儲存庫 <code>releases/V1/</code>；4 個分頁（Introduction、Assessment Questions、Results、Graphical visualization）</td><td>同上</td></tr>
+<tr><th scope="row">專案層級與負責人</th><td>Incubator；Matteo Meucci、Philippe Schrettenbrunner</td><td>owasp.org 專案頁；PDF 前言署名</td><td>—</td></tr>
+<tr><th scope="row">儲存庫</th><td>最近推送 2026-03-09；原始檔在 <code>source/latest/</code> 與 <code>source/v1/</code>（兩份結構相同）</td><td>GitHub API 與檔案樹</td><td>CC BY-SA 4.0（LICENSE.md）；GitHub 偵測 NOASSERTION</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>沿用專案已放置的副本</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">評估領域</th><td>「頁面未列出評估領域，本筆記不推測」</td><td>PDF 目錄與原始檔：<strong>八個領域</strong>、24 個實務，每個領域與實務的名稱都有列出</td><td>第 2 章表 2-1</td></tr>
+<tr><th scope="row">文件版本</th><td>「V1（PDF）；工具包 v1.0.1」</td><td>屬實；PDF 封面為 Version V1.0 — August 11, 2025</td><td>第 1 章</td></tr>
+<tr><th scope="row">模型來源</th><td>（未提）</td><td>前言明說改編自 OWASP SAMM</td><td>第 1 章 1.2 節</td></tr>
+<tr><th scope="row">Excel 工具包</th><td>v1.0.1</td><td>4 個分頁：說明、評估問題、結果、圖形化；本教材只確認分頁名稱，沒有檢查內容與公式</td><td>第 3 章註明</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各處說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">領域數</th><td>owasp.org 專案頁簡介（<code>index.md</code>）：「五個核心領域：Strategy、Design、Implementation、Operations、Governance」；PDF 前言、模型章節、目錄與儲存庫模型原始檔：八個領域</td><td>採八個（PDF 2025-08-11 與原始檔）；專案頁簡介的撰寫日期不明，<strong>未能確認</strong>其為何不同</td></tr>
+<tr><th scope="row">第一個負責任 AI 實務的名稱</th><td>PDF 目錄與 3.1.1：Ethical Values and Societal Impact；PDF 領域導言與儲存庫資料夾：Ethical and Societal Impact</td><td>採目錄寫法；兩者視為同一實務</td></tr>
+<tr><th scope="row">「A／B 流」的名稱</th><td>模型章節：A＝Create &amp; Promote、B＝Measure &amp; Improve；Governance 工作表：流名依實務而異（如 Strategy Alignment／Metric Management）</td><td>兩者並列；<strong>未能確認</strong>兩套名稱的關係</td></tr>
+<tr><th scope="row">授權</th><td>儲存庫 LICENSE.md：CC BY-SA 4.0；GitHub API：NOASSERTION；PDF 內文未見授權文字</td><td>以 LICENSE.md 為準，並說明偵測值</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>專案頁「五個領域」與 PDF「八個領域」的出入：</strong>見表 R-3。</li>
+  <li><strong>Governance 工作表以外的七張工作表：</strong>本教材沒有逐題核對題目與分級；教材不列題目，也不保證它們與 Governance 工作表結構完全相同。</li>
+  <li><strong>24 個實務各自的三級細節：</strong>本教材讀了八個領域的導言、模型章節與評估方法，沒有逐一讀完每個實務的目標、活動、成果三級。</li>
+  <li><strong>Excel 工具包的公式與結果算法：</strong>只確認分頁名稱；教材的「同一級在兩個流都要 Yes」是作者對文字的較嚴格解讀，官方沒有明說，標為作者整理。</li>
+  <li><strong>兩個流的名稱關係：</strong>見表 R-3。</li>
+  <li><strong>是否有 V1.0 之後的版本：</strong>儲存庫有 <code>source/latest/</code> 與 <code>source/v1/</code>，內容目前相同；官方站未見 V2；「沒找到」不代表沒有。</li>
+  <li><strong>專案頁簡介的撰寫日期：</strong>未標示。</li>
+</ol>
+
+<h2 id="ref-scope">5. 本主題讀了什麼、沒讀什麼</h2>
+<div class="table-wrap"><table>
+<caption>表 R-4　閱讀範圍（透明度）</caption>
+<thead><tr><th scope="col">部分</th><th scope="col">作者的讀法</th></tr></thead>
+<tbody>
+<tr><th scope="row">PDF 目錄、前言、簡介、模型章節（領域導言）</th><td>全讀</td></tr>
+<tr><th scope="row">評估方法（Using the AIMA Maturity Levels、Conducting AIMA Assessments）</th><td>全讀（儲存庫原始檔與 PDF 對照）</td></tr>
+<tr><th scope="row">Governance 評估工作表</th><td>全讀；逐表計算題數（18 題）</td></tr>
+<tr><th scope="row">其餘七個領域的工作表</th><td>未逐題讀</td></tr>
+<tr><th scope="row">24 個實務的實務頁（目標、活動、成果）</th><td>未逐一讀</td></tr>
+<tr><th scope="row">附錄詞彙表</th><td>瀏覽</td></tr>
+<tr><th scope="row">Excel 工具包</th><td>只確認分頁名稱</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-sources">6. 本主題引用的一手來源</h2>
+<ul>
+  <li>專案頁：<a href="https://owasp.org/www-project-ai-maturity-assessment/">owasp.org/www-project-ai-maturity-assessment/</a>。</li>
+  <li>GitHub 儲存庫：<a href="https://github.com/OWASP/www-project-ai-maturity-assessment">github.com/OWASP/www-project-ai-maturity-assessment</a>（<code>index.md</code>、<code>info.md</code>、<code>LICENSE.md</code>、<code>source/latest/</code>、<code>releases/V1/</code>）。</li>
+  <li>V1 PDF：<a href="https://raw.githubusercontent.com/OWASP/www-project-ai-maturity-assessment/main/releases/V1/OWASP-AIMA_V1.pdf">releases/V1/OWASP-AIMA_V1.pdf</a>。</li>
+</ul>
+
+<h2 id="ref-own">7. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 2 章表 2-1「想防止什麼事」一欄、圖 2-1 的三群分法、「Privacy 不等於隱私法規遵循」的說明；表 2-2 的對應與「該不該做、怎麼排、做得夠不夠成熟」的三層說法。</li>
+  <li>第 3 章「同一級在兩個流都要 Yes」的解讀，與情境 A 的整個劇本。</li>
+  <li>第 4 章表 4-1「評的對象」一欄、圖 4-1 的 05 階段工作流、「級別不能跨組織比較」的觀察、情境 B。</li>
+  <li>所有 Mermaid 圖為重新繪製的簡化版，不是官方原圖。</li>
+</ul>
+
+<h2 id="ref-license">8. 授權摘要與再利用</h2>
+<ul>
+  <li>OWASP AIMA：CC BY-SA 4.0（LICENSE.md）。本教材以自己的話整理，短引用均標示來源；若你要再散布，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：OWASP AIMA — CC BY-SA 4.0（儲存庫 LICENSE.md；GitHub 偵測值為 NOASSERTION）；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

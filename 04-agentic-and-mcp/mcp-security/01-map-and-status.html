@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　MCP 文件地圖與成熟度｜MCP 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP 的 MCP 相關文件有哪些、各自給誰用、成熟度差在哪裡；MCP 的三個角色與兩種傳輸；MCP Top 10 的 Beta 狀態與 MCP06 改名的版本演進。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="mcp-security" data-page="01-map-and-status.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　MCP 文件地圖與成熟度</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../agentic-threats-and-mitigations/index.html">Agentic 威脅與緩解</a>（至少 T16 與 Playbook 3 的協定提醒）</li>
+</ul>
+<p class="lead">MCP (Model Context Protocol) 把 agent 接到工具與資料，所以 OWASP 圍繞它出了好幾份文件。它們的性質差很多：有 PDF 指南、有 Cheat Sheet、有仍在 Beta 的 Top 10，還有只有 README 的儲存庫。這一章先畫地圖，說清楚「誰給誰讀」與「哪一份比較成熟」，再把 MCP 的三個角色講清楚，並處理 MCP Top 10 的版本演進（包括 MCP06 被改名）。</p>
+
+<h2 id="m-map">1.1 文件地圖：四份主要文件，三種讀者</h2>
+<p>MCP 的安全文件有一個容易搞混的切法：<strong>你是 MCP 伺服器的開發者，還是使用別人伺服器的人</strong>？兩者的責任和攻擊面不一樣。</p>
+<div class="table-wrap"><table>
+<caption>表 1-1　四份主要 MCP 安全文件（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">文件</th><th scope="col">版本與日期</th><th scope="col">給誰</th><th scope="col">性質</th><th scope="col">授權</th></tr></thead>
+<tbody>
+<tr><th scope="row">A Practical Guide for Secure MCP Server Development</th><td>PDF 封面 <strong>Version 1.0、February 2026</strong>；17 頁；資源頁 2026-02-16</td><td>軟體架構師、平台工程師、MCP 伺服器開發團隊</td><td>官方 PDF 指南：八大類控制加「最低標準」檢查表</td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">A Practical Guide for Securely Using Third-Party MCP Servers（Cheat Sheet）</th><td>PDF 封面 <strong>Version 1.0、October 23, 2025</strong>；16 頁；資源頁 2025-11-04</td><td>使用「非自家開發」MCP 伺服器的公司與開發者（官方明說這不是給 MCP 開發者的）</td><td>官方 PDF 速查表：風險、客戶端安全與探索、驗證授權、工具、治理</td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">MCP Security Cheat Sheet（Cheat Sheet Series）</th><td>無版本號；GitHub 提交紀錄：2026-10-04 建立，<strong>最近修改 2026-10-16</strong>（兩次修訂都在近兩週）</td><td>一般實務人員；涵蓋用戶端與伺服器</td><td>12 項最佳實務，含 Do／Don't；會隨修訂演進</td><td>網站標示為準（Cheat Sheet Series 為 CC BY-SA 4.0）</td></tr>
+<tr><th scope="row">OWASP MCP Top 10</th><td>無版本號；條目皆標 2025；<strong>Beta</strong>（Phase 3）；GitHub 最近提交 2026-07-29</td><td>建置者與防禦者</td><td>十項風險清單（<a href="02-top10-groups.html">第 2 章</a>）</td><td><strong>授權文字自相矛盾</strong>（見 1.4 節）；保守標為 <span class="tag nc">NC</span></td></tr>
+</tbody></table></div>
+<p>另有幾個 OWASP 名下的 MCP 儲存庫（MCP Governance and Risk Project、Security Testing Guide、Taxonomy、Threat Modeling、Verification Standard），調查筆記標示它們成熟度不一、有些幾乎是空的，本教材<strong>沒有逐一核對其內容</strong>；本教材不教這些，只在這裡指出它們存在。Agentic Top 10 的 ASI04 納入 MCP／A2A 供應鏈，這點本教材在 <a href="../agentic-top-10-2026/index.html">Top 10 for Agentic Applications 2026 主題</a>的 PDF 中核對過；筆記也提到 AISVS 有 MCP 安全一章，但本教材沒有核對（相關對應見第 5 章）。</p>
+
+<h2 id="m-roles">1.2 MCP 的三個角色與兩種傳輸</h2>
+<p>三份文件都用同樣的術語，先固定下來：</p>
+<ul>
+  <li><strong>MCP Host：</strong>承載 AI 的應用程式（如 AI agent 執行環境、桌面應用、IDE 外掛），管理用戶端並路由請求。</li>
+  <li><strong>MCP Client：</strong>與<em>一個</em> MCP 伺服器溝通的連接器；把工具定義交給 LLM。</li>
+  <li><strong>MCP Server：</strong>對外提供三種原語：<strong>Tools</strong>（可被呼叫的函式）、<strong>Resources</strong>（提供脈絡的資料來源）、<strong>Prompts</strong>（可重用的提示範本）。</li>
+  <li><strong>傳輸：</strong>本機用 STDIO（或 Unix socket）；遠端用 Streamable HTTP。Cheat Sheet 指出舊的 HTTP+SSE 傳輸已被淘汰。</li>
+</ul>
+<p>一個對安全很關鍵的事實，出現在 Cheat Sheet 的架構概觀：<strong>LLM 會在脈絡裡看到所有已連線伺服器的所有工具描述</strong>。這解釋了為什麼一個壞伺服器能影響別的伺服器的工具（後面第 3 章的 Tool Shadowing）。</p>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="MCP 的角色與信任邊界：使用者連到 MCP Host（AI 應用）；Host 內有 LLM 與多個 MCP Client；每個 Client 連到一個 MCP Server；Server 再連到工具、資料與 API。所有伺服器的工具描述都會進入同一個 LLM 脈絡。圖中標出三個值得檢查的邊界：Host 與 Server 之間、Server 與下游 API 之間、各 Server 之間。">
+flowchart LR
+  U["使用者"] --> H
+  subgraph H["MCP Host（AI 應用）"]
+    L["LLM<br>看到所有伺服器的工具描述"]
+    C1["MCP Client 1"]
+    C2["MCP Client 2"]
+    L --- C1
+    L --- C2
+  end
+  C1 -->|"邊界 1：STDIO 或 Streamable HTTP"| S1["MCP Server A<br>Tools、Resources、Prompts"]
+  C2 -->|"邊界 1"| S2["MCP Server B"]
+  S1 -->|"邊界 2：下游權杖與權限"| D1["工具、資料、API"]
+  S2 --> D2["工具、資料、API"]
+  S1 -. "邊界 3：伺服器之間不應互相影響" .- S2
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class L author
+</pre>
+<figcaption><strong>圖 1-1　MCP 的角色與三個值得檢查的邊界（依三份官方文件的描述重新繪製，並非官方原圖）。</strong>角色與傳輸取自官方；「邊界 1／2／3」的標法是<strong>作者整理，非官方</strong>，用來提示本主題後面各章控制的落點。</figcaption>
+</figure>
+
+<h2 id="m-status">1.3 成熟度：為什麼同一個「OWASP MCP」文件不能一視同仁</h2>
+<div class="concept">
+<h3 id="c-maturity">文件成熟度與引用方式</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>四份文件的「成熟度」不同：兩份是有版本號與發布日期的 PDF 指南，版本都是 1.0；一份是 Cheat Sheet Series 內持續被修訂、沒有版本號的網頁；一份是自我定位為 Beta、條目皆標 2025 的 Top 10。</dd>
+  <dt data-n="2">為什麼重要</dt>
+  <dd>引用時的可核對性不同。PDF 可以寫「Version 1.0, Feb 2026」；Cheat Sheet 只能寫「讀取日 2026-10-26，最近修改 2026-10-16」，因為它隨時會再改；MCP Top 10 要寫明是 Beta、條目年份是 2025，且目前可能已有或即將有新版。</dd>
+  <dt data-n="3">沒意識到時會怎樣（概念層級）</dt>
+  <dd>把 Beta 清單的編號當作穩定標準寫進規範；或把 Cheat Sheet 的某條當作永遠不變的要求。兩者都可能在下次修訂後失效或改名（MCP06 就是例子，見下表）。</dd>
+  <dt data-n="4">怎麼用</dt>
+  <dd>以 PDF 指南當作「相對穩定的基準」，以 Cheat Sheet 當作「最新的實務補充」，以 MCP Top 10 當作「風險語言」，引用時分別寫明版本或讀取日。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「MCP Top 10 在 owasp.org 標 Production，所以是穩定標準。」同一頁的路線圖寫著 Phase 3（Beta），而且 <code>index.md</code> 的下一階段寫「Next Release in October 2026」。層級標籤與實際成熟度的對應沒有官方說明（見參考資料頁）。</dd>
+</dl>
+</div>
+
+<h2 id="m-evo">1.4 MCP Top 10 的版本演進：MCP06 的名字變了</h2>
+<p>調查筆記把 MCP06 記為「Prompt Injection via Contextual Payloads」。讀 GitHub 倉庫的提交歷史後發現，這是<strong>較舊的名字</strong>。下表是作者實際比對的結果：</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　MCP Top 10 的演進與各來源的不一致（2026-10-26 讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">舊說法</th><th scope="col">較新說法</th><th scope="col">依據與採用</th></tr></thead>
+<tbody>
+<tr><th scope="row">MCP06 名稱</th><td>Prompt Injection via Contextual Payloads（owasp.org 頁與 README 仍是此名）</td><td><strong>Intent Flow Subversion</strong>（<code>index.md</code>、條目檔名與條目內標題）</td><td>GitHub 提交紀錄：2026-01-12 的 <code>index.md</code> 提交 "add-intent-flow-subversion"。<strong>採較新的 Intent Flow Subversion</strong>，並標明舊名</td></tr>
+<tr><th scope="row">MCP01 名稱</th><td>Token Mismanagement &amp; Secret Exposure（index.md 與 README）</td><td>條目標題寫 "Token Mismanagement <em>and</em> Secret Exposure"</td><td>用字差異，不影響內容；本教材用 index.md 的寫法</td></tr>
+<tr><th scope="row">授權</th><td><code>LICENSE.md</code>（2025-11-02）：CC BY-SA 4.0</td><td><code>README.md</code> 與 <code>index.md</code>（2025-11-21，較新）：CC BY-<strong>NC</strong>-SA 4.0；但同一句又描述為 Attribution-ShareAlike</td><td><strong>自相矛盾，未能確認</strong>；本教材保守標 NC，並只引用名稱、編號與簡短描述，不複製內文</td></tr>
+<tr><th scope="row">成熟度</th><td>owasp.org 專案頁「Production Project」</td><td>路線圖「Phase 3 – Beta Release and Pilot Testing – We are here right now」；下一階段「Phase 5 – … Next Release in October 2026」</td><td>頁面標籤與路線圖不一致；採保守說法：<strong>Beta</strong></td></tr>
+<tr><th scope="row">Recommended Controls</th><td>調查筆記未提</td><td>倉庫另有 <code>2025/recommended-controls/</code>：Client-Side Tool Risk Gating（2026-07-11）與 MCPS Cryptographic Security Layer（2026-03-13）</td><td>第 3 章簡述；兩者都是社群貢獻的「建議控制」，非 Top 10 條目</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：現在是不是已經有 2026 版</p>
+  <p><code>index.md</code> 說「Next Release in October 2026」，而今天是 2026-10-26。作者 clone 了倉庫確認：最近提交是 2026-07-29，沒有 <code>2026</code> 資料夾，所以<strong>沒有看到新版</strong>；但「是否已在其他地方發布或延後」本教材無法判斷。教材採用倉庫現況（條目皆標 2025）。</p>
+</div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>MCP 安全文件有四份主要的：伺服器開發指南（給開發者）、第三方使用 Cheat Sheet（給使用者）、MCP Security Cheat Sheet（持續修訂）、MCP Top 10（Beta）。</li>
+  <li>MCP 有 Host、Client、Server 三個角色，Server 提供 Tools、Resources、Prompts；<strong>LLM 會看到所有已連線伺服器的所有工具描述</strong>。</li>
+  <li>成熟度不同，引用方式也不同：PDF 寫版本；Cheat Sheet 寫讀取日與最近修改日；Top 10 寫 Beta 與 2025。</li>
+  <li>MCP06 現名 <strong>Intent Flow Subversion</strong>（舊名 Prompt Injection via Contextual Payloads）；授權文字自相矛盾，保守標 NC。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出哪份文件是給 MCP 伺服器開發者、哪份是給使用者。</li>
+  <li>我能說出 MCP 的三個角色與兩種傳輸，並解釋為什麼「所有工具描述進同一個脈絡」是安全問題。</li>
+  <li>我知道 MCP06 的現名與舊名，以及為什麼引用 MCP Top 10 時要標 Beta。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-top10-groups.html">第 2 章　MCP Top 10 十項分組</a>：把十項依「資產、信任與流程」分成三組，並看它們如何對應到 Agentic Top 10。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>A Practical Guide for Secure MCP Server Development</em>, Version 1.0, February 2026：<a href="https://genai.owasp.org/resource/a-practical-guide-for-secure-mcp-server-development/">資源頁</a>（顯示日期 2026-02-16）；2026-10-26 讀取；PDF 封面標示 CC BY-SA 4.0。</li>
+    <li>OWASP GenAI Security Project, <em>CheatSheet – A Practical Guide for Securely Using Third-Party MCP Servers 1.0</em>, Version 1.0, October 23, 2025：<a href="https://genai.owasp.org/resource/cheatsheet-a-practical-guide-for-securely-using-third-party-mcp-servers-1-0/">資源頁</a>（顯示日期 2025-11-04）；2026-10-26 讀取；PDF 封面標示 CC BY-SA 4.0。</li>
+    <li>OWASP Cheat Sheet Series, <em>MCP Security Cheat Sheet</em>：<a href="https://cheatsheetseries.owasp.org/cheatsheets/MCP_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；無版本號；2026-10-26 讀取；GitHub 提交紀錄 (<code>OWASP/CheatSheetSeries</code>) 顯示 2026-10-04 起、最近 2026-10-16。</li>
+    <li>OWASP MCP Top 10：<a href="https://owasp.org/www-project-mcp-top-10/">owasp.org 專案頁</a>、<a href="https://github.com/OWASP/www-project-mcp-top-10">GitHub 倉庫</a>（2026-10-26 clone 並讀取 <code>index.md</code>、<code>README.md</code>、<code>LICENSE.md</code>、條目檔與提交紀錄）。本教材僅引用條目名稱、編號與簡短描述（保守視為 NC）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Secure MCP Server Development 指南、第三方 MCP 使用 Cheat Sheet — CC BY-SA 4.0（PDF 封面）；MCP Security Cheat Sheet — Cheat Sheet Series 網站標示。<span class="tag nc">NC</span> OWASP MCP Top 10 的授權文字自相矛盾（LICENSE.md 為 CC BY-SA 4.0；README 與 index.md 為 CC BY-NC-SA 4.0），本教材保守視為非商業授權，僅引用其名稱、編號與簡短描述。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'mcp-ch1', topic: 'mcp-security', mode: 'chapter',
+  questions: [
+    { id: 'm1q1', type: 'match', lo: [1], refs: [{label: '1.1 表 1-1', href: '01-map-and-status.html#m-map'}],
+      stem: '把讀者情境配對到最適合先讀的 MCP 文件。',
+      cats: [
+        { id: 'dev', label: 'Secure MCP Server Development 指南' },
+        { id: 'use', label: '第三方 MCP 使用 Cheat Sheet' },
+        { id: 'cs', label: 'MCP Security Cheat Sheet' },
+        { id: 'top', label: 'MCP Top 10' }
+      ],
+      items: [
+        { text: '你的團隊要自己開發並部署一個對外的 MCP 伺服器', answer: 'dev', why: '官方給架構師、平台工程師與 MCP 伺服器開發團隊。' },
+        { text: '你的公司想導入一個別人開發的 MCP 伺服器給員工用', answer: 'use', why: '官方明說這份是給使用「非自家」MCP 伺服器的人，不是給 MCP 開發者。' },
+        { text: '你想要一份持續修訂、涵蓋用戶端與伺服器的 12 項最佳實務清單', answer: 'cs', why: 'Cheat Sheet Series 的 MCP Security Cheat Sheet。' },
+        { text: '你想要一套描述 MCP 最高風險的共同語言（仍在 Beta）', answer: 'top', why: 'MCP Top 10 是風險清單，自述 Beta。' }
+      ],
+      summary: '先分清楚你是開發者還是使用者。' },
+    { id: 'm1q2', type: 'mc', lo: [1], refs: [{label: '1.2 角色與傳輸', href: '01-map-and-status.html#m-roles'}],
+      stem: '依 Cheat Sheet 的架構概觀，下列哪個事實最能解釋「一個壞的 MCP 伺服器為何能影響其他伺服器的工具」？',
+      options: [
+        { text: '所有 MCP 伺服器共用同一個作業系統帳號。', why: '文件沒有這樣說。' },
+        { text: 'LLM 會在脈絡中看到所有已連線伺服器的所有工具描述。', correct: true, why: '壞伺服器的工具描述也在同一個脈絡裡，可以影響模型對其他伺服器工具的使用。' },
+        { text: 'MCP 的傳輸一律不加密。', why: '文件談的是脈絡共享，不是傳輸加密。' },
+        { text: 'MCP 用戶端只能連一個伺服器。', why: '用戶端各連一個，但一個 Host 可以有多個用戶端。' }
+      ],
+      summary: '所有工具描述共處同一個脈絡。' },
+    { id: 'm1q3', type: 'mc', lo: [1], refs: [{label: '1.4 表 1-2', href: '01-map-and-status.html#m-evo'}],
+      stem: '你要引用 MCP Top 10 的第六項。依本章，下列哪種寫法最能避免日後失效或混淆？',
+      options: [
+        { text: '「MCP06 Prompt Injection via Contextual Payloads」，因為 owasp.org 頁面這樣寫。', why: '那是較舊的名字；GitHub 的 index.md 與條目已改名。' },
+        { text: '「MCP06:2025 Intent Flow Subversion（舊名 Prompt Injection via Contextual Payloads）；MCP Top 10 Beta，2026-10-26 讀取」', correct: true, why: '用較新的名稱、標明舊名與 Beta 狀態及讀取日。' },
+        { text: '「MCP 第六條」', why: '沒有名稱、年份與版本。' },
+        { text: '「LLM06」', why: '那是 LLM Top 10 的編號，且不同年份意義不同。' }
+      ],
+      summary: '寫現名、舊名、Beta、讀取日。' },
+    { id: 'm1q4', type: 'scn', lo: [1], refs: [{label: '1.3 成熟度', href: '01-map-and-status.html#c-maturity'}, {label: '1.4 表 1-2', href: '01-map-and-status.html#m-evo'}],
+      stem: '依本章，這份內部規範的引用方式有什麼問題？',
+      scenario: '雲杉科技（虛構）的資安規範寫：「所有 MCP 伺服器必須符合 OWASP MCP Top 10（Production 專案）的十項要求，詳見 owasp.org 專案頁。MCP Security Cheat Sheet 第 6 條永遠有效。」法務要求核對。',
+      options: [
+        { text: '沒有問題，owasp.org 的 Production 標籤代表它是穩定標準。', why: '同一頁的路線圖寫 Phase 3 Beta；標籤與實際成熟度的對應沒有官方說明。' },
+        { text: 'MCP Top 10 是 Beta 清單，且名稱和編號會變（MCP06 已改名）；Cheat Sheet 沒有版本號、近期才修訂過，不能保證「永遠有效」。規範應寫明版本或讀取日。', correct: true, why: '1.3 與 1.4 節。' },
+        { text: '只需要把 Production 改成 Lab。', why: '層級標籤不是重點，重點是版本與可核對性。' },
+        { text: '應該改為引用 LLM Top 10，因為它更穩定。', why: '那是另一份文件，不能取代 MCP 的專屬風險。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) MCP Top 10 在路線圖上自述 Beta，條目年份是 2025，MCP06 已改名，授權文字還自相矛盾。(2) MCP Security Cheat Sheet 沒有版本號，GitHub 顯示 2026-10 內有數次修訂。(3) 兩者都不適合被寫成「穩定且永遠有效」的要求。</p><p><strong>結論：</strong>規範應引用 PDF 指南的版本，Cheat Sheet 寫讀取日，Top 10 寫 Beta 與年份。對應教材：<a href="01-map-and-status.html#c-maturity">1.3 節</a>、<a href="01-map-and-status.html#m-evo">1.4 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

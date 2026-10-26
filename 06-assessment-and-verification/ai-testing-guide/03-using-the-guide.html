@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　限制、黑灰白箱與跨文件整合｜AI Testing Guide｜OWASP AI 資安學習教材</title>
+<meta name="description" content="測試 AI 系統時的黑箱限制、灰箱與白箱需要的資訊、一個預算有限的情境，以及 AI Testing Guide 與紅隊、驗證標準、弱點評分等文件如何接力；含重點整理與自我檢核。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="ai-testing-guide" data-page="03-using-the-guide.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　限制、黑灰白箱與跨文件整合</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4（並回顧 LO1–LO3）</li>
+  <li>前置：<a href="02-test-map.html">第 2 章</a></li>
+</ul>
+<p class="lead">一份測試清單看起來很完整，但實際對一個 LLM 系統動手時，你會立刻遇到傳統測試沒有的麻煩：同一個輸入跑兩次結果不同、護欄本身也是 LLM、每次測試都在燒 token。官方框架章專門有一節談這些限制，並說明要多拿到哪些資訊才能測得更省、更準。本章先講限制與黑／灰／白箱，再看測試和其他評估文件如何接力。</p>
+
+<h2 id="us-limits">3.1 黑箱測試的五個限制</h2>
+<p>官方框架章 (3. Framework) 的「Testing Limitations and Requirements」說，對 LLM／GenAI 系統（尤其是多代理架構）做純<strong>黑箱</strong> (black-box) 測試會有明顯限制。依官方內容整理如下（用語為作者改寫）。</p>
+<ol>
+  <li><strong>沒有原始碼可讀。</strong>模型是數值權重與數學函式，不是寫成程式碼的流程。傳統應用可以讀程式碼判斷某類問題「有沒有」，在 GenAI 應用裡這常常很難，甚至做不到。</li>
+  <li><strong>結果不一定能重現。</strong>許多模型的 temperature（控制輸出隨機程度的參數）大於零，同一個攻擊向量要重複多次才有意義，結果也難以重現。官方還指出，即使 temperature 設為零，浮點運算的非結合性 (non-associativity) 也可能讓結果隨批次大小、GPU 數量或 GPU 型號而不同。</li>
+  <li><strong>護欄 (guardrail) 本身常是 LLM。</strong>要測的防護自己也不確定，分析更複雜。</li>
+  <li><strong>多代理架構的驗證成本很高。</strong>第一個 agent 的輸出是下一個的輸入，每個元件都要驗證，需要的時間與請求數可能高到不切實際，甚至做不到。</li>
+  <li><strong>外部模型按 token 計費。</strong>大規模自動化測試要先算成本；多代理系統的 token 不只含使用者輸入與最終輸出，還含 agent 之間所有的中間提示與輸出。失控的用量可能造成服務拒絕 (DoS) 或錢包拒絕 (Denial of Wallet, DoW)。</li>
+</ol>
+
+<h2 id="us-boxes">3.2 灰箱與白箱：多拿到什麼資訊，換來什麼</h2>
+<p>官方接著列出三項「需求」，拿到它們能用更少時間與資源得到更好的結果，但代價是測試方式要偏向<strong>灰箱</strong> (gray-box) 或<strong>白箱</strong> (white-box)。</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　黑箱的限制 vs. 能改善它們的資訊（前兩欄依官方整理；第三欄的對應是作者整理，非官方）</caption>
+<thead><tr><th scope="col">黑箱遇到的問題</th><th scope="col">官方列出的所需資訊</th><th scope="col">能改善什麼（作者整理）</th></tr></thead>
+<tbody>
+<tr><th scope="row">看不見多代理之間發生什麼；不知道哪一步出問題</th><td><strong>詳細的應用日誌</strong>：開發者通常用日誌工具看 agent 之間的輸入與輸出</td><td>測試更有針對性，減少 token 消耗與驗證時間</td></tr>
+<tr><th scope="row">沒有原始碼可判斷；測試次數多、成本高</th><td><strong>提示詞、架構與原始碼</strong>：官方說在 GenAI 測試中，這比一般應用測試「重要得多」</td><td>能針對該應用的提示詞量身設計，減少測試數量</td></tr>
+<tr><th scope="row">無從得知第三方模型服務的設定、費用門檻與護欄設定</th><td><strong>第三方服務管理主控台的唯讀存取</strong>：內含使用的模型、費用與門檻、日誌、護欄設定等</td><td>才有辦法評估 DoS／DoW 這類與設定有關的風險</td></tr>
+</tbody></table></div>
+<div class="callout official">
+  <p class="callout-title">官方在同一頁強調的設計原則</p>
+  <p>AITG-APP-06 的設計考量寫道：提示詞注入目前只能緩解、無法完全防止，LLM 又有非確定性，所以安全控制「盡可能放在 agent 的控制之外」，尤其是驗證與授權。工具要自己在內部做完所有授權檢查，只回傳目前使用者可見的資料；若依賴 agent 傳來的資訊去選資料，提示詞注入就可能繞過。測試時要盡量驗證這類設計問題是否存在。</p>
+</div>
+<p>黑／灰／白箱的說法也出現在 GenAI Red Teaming Manual：它說要選與「你要模擬的攻擊者、演練目標」相符的存取層級，灰箱要「確實記錄提供了什麼」。這與官方測試指引的說法互相呼應；紅隊演練的流程見<a href="../genai-red-teaming/index.html">GenAI 紅隊演練主題</a>。</p>
+
+<h2 id="us-scenario">3.3 情境範例 B：預算有限，為什麼要談日誌與重複次數</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：霧嶺銀行的 agent 稽核</h3>
+<p><span class="tag fiction">虛構</span> 霧嶺銀行是虛構的公司。它的「對帳助理」由三個 agent 串成：第一個解析使用者請求，第二個查詢帳務系統，第三個產生摘要與建議；模型由外部供應商提供，按 token 計費。內部稽核員建豪拿到一筆測試預算，排程是「純黑箱，只從前端輸入，每項測試只跑一次」。</p>
+<ol class="steps">
+  <li><strong>先發現同一項測試跑第二次結果不同。</strong>建豪對 AITG-APP-06 的其中一項檢查跑了兩次，一次看似通過、一次沒有。這符合 3.1 節第 2 點：temperature 大於零時，單次結果不能代表整體，要重複，並且記錄次數。</li>
+  <li><strong>發現黑箱看不見中間。</strong>前端只看到最終摘要；建豪分不清是第一個 agent 就出錯，還是第三個。3.1 節第 4 點指出多代理的驗證成本可能高到不可行；他向開發團隊要「詳細的應用日誌」，有了 agent 之間的輸入輸出，才能把測試對準有問題的那一段（3.2 節）。</li>
+  <li><strong>算 token 帳。</strong>他把中間 agent 之間交換的提示也算進去，發現總用量遠超預期。依 3.1 節第 5 點，他先請供應商管理主控台的唯讀存取，確認費用上限與速率門檻，再決定自動化測試的規模，避免測試本身造成 DoW。</li>
+  <li><strong>檢查設計問題。</strong>「查詢帳務」工具的授權檢查是不是在工具後端做的？若它信任第一個 agent 傳來的帳號參數，那是 APP-06 設計考量提到的問題：授權必須在 agent 的控制之外。</li>
+  <li><strong>怎麼寫進報告。</strong>建豪把這次的存取層級標為「灰箱：取得日誌與主控台唯讀」，並記錄每項測試重複次數與當時的模型設定。（<span class="tag author">作者整理，非官方</span>：官方指引說明了限制與需求，沒有規定報告格式；Red Teaming Manual 對可重現性的要求更具體，見紅隊主題。）</li>
+</ol>
+<p><strong>這個情境的提醒：</strong>預算有限時，「多要一點資訊」往往比「多跑一些測試」更划算；這正是官方把日誌、提示詞與架構、主控台存取列為需求的原因。</p>
+</div>
+
+<h2 id="us-integration">3.4 跨文件整合：測試怎麼和其他文件接力</h2>
+<p>AI Testing Guide 自己是「怎麼測」；要得到完整的評估，還需要「測什麼」「合格標準是什麼」「問題多嚴重」。下表整理這份指引與其他文件的關係。</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　AI Testing Guide 與相鄰文件的關係：官方明載 vs. 作者整理</caption>
+<thead><tr><th scope="col">相鄰文件</th><th scope="col">關係</th><th scope="col">依據</th></tr></thead>
+<tbody>
+<tr><th scope="row">OWASP LLM Top 10、OWASP AI Exchange</th><td>測試的威脅來源（框架表 Threat Source 欄）；注意引用的是 LLM Top 10 <strong>2025</strong></td><td><span class="tag official">官方</span>：框架表與目標章</td></tr>
+<tr><th scope="row">GenAI Red Teaming Guide</th><td>README 列為「現有資源」之一</td><td><span class="tag official">官方</span>：README</td></tr>
+<tr><th scope="row">AIVSS</th><td>README 列為相關資源，描述為 CVSS 在 AI 領域的調整版評分框架</td><td><span class="tag official">官方</span>：README</td></tr>
+<tr><th scope="row">AISVS</th><td>AISVS 1.01 的發布說明寫：範圍指引指向 AI Testing Guide 作為測試程序的出處</td><td><span class="tag official">官方</span>：AISVS 1.01 release notes（出處是 AISVS，不是本指引）</td></tr>
+<tr><th scope="row">NIST AI 100-2 E2025</th><td>README 列為相關資源；owasp.org 專案頁也引用 NIST 的對抗式機器學習分類說明 AI 的失敗原因</td><td><span class="tag official">官方</span>：README、owasp.org 專案頁</td></tr>
+<tr><th scope="row">NIST SP 800-115、OSSTMM、OWASP WSTG</th><td>通用安全測試，本指引不取代也不重複</td><td><span class="tag official">官方</span>：1.3</td></tr>
+<tr><th scope="row">GenAI Red Teaming Manual</th><td>演練流程與交付物；本指引提供可挑選的測試項目</td><td><span class="tag author">作者整理，非官方</span>：兩份文件之間官方沒有互相指定關係</td></tr>
+<tr><th scope="row">AISVS／LLMSVS 的需求</th><td>需求提供「合格標準」，測試提供「驗證的方法」</td><td><span class="tag author">作者整理，非官方</span>（分工說法是作者的推論）</td></tr>
+</tbody></table></div>
+<figure class="diagram">
+<pre class="mermaid" data-alt="評估與驗證文件的接力：威脅模型與 LLM Top 10 等風險清單提供要測什麼；AI Testing Guide 提供怎麼測，產出測試結果；AISVS 與 LLMSVS 提供可驗證的需求作為合格標準；GenAI Red Teaming 提供模擬攻擊者的演練流程；AIVSS 為發現的弱點評分排序；最後結果進入修補與回歸測試，再回到威脅模型。">
+flowchart TD
+  R["風險與威脅<br>威脅模型、LLM Top 10、AI Exchange"] --> T["怎麼測<br>AI Testing Guide 的 AITG 測試"]
+  R --> RT["模擬攻擊者演練<br>GenAI Red Teaming"]
+  V["合格標準<br>AISVS／LLMSVS 的可驗證需求"] -.-> T
+  T --> F["測試發現"]
+  RT --> F
+  F --> S["評分與排序<br>AIVSS"]
+  S --> X["修補與回歸測試"]
+  X -.-> R
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class R,T,RT,V,F,S,X author
+</pre>
+<figcaption><strong>圖 3-1　評估與驗證文件如何接力（作者整理，非官方）。</strong>整張圖的串接都是<span class="tag author">作者整理，非官方</span>：官方沒有畫出這條流程。各文件的細節見 <a href="../genai-red-teaming/index.html">GenAI 紅隊演練</a>、<a href="../aisvs-and-llmsvs/index.html">AISVS 與 LLMSVS</a>、<a href="../aivss/index.html">AIVSS</a> 三個主題。</figcaption>
+</figure>
+
+<h2 id="us-wrap">3.5 全主題重點整理</h2>
+<div class="keypoints"><ul>
+  <li><strong>定位（LO1）：</strong>AI Testing Guide 是 OWASP 孵化專案，談 AI 的「可信度測試」：安全、隱私、負責任 AI 三領域；GitHub main 為本教材依據，與 2025-11-26 的 v1 PDF 是否一致未能確認。</li>
+  <li><strong>方法（LO2）：</strong>威脅驅動三步（威脅建模 → 威脅對應 → 測試設計）；四個元件對應四層測試，共 32 項（14／7／6／5）。</li>
+  <li><strong>地圖的用法（LO3）：</strong>威脅 → 元件 → 測試；Threat Source 指的是 LLM Top 10 2025，用名稱比對並標年份；碰不到的測試標不適用。</li>
+  <li><strong>限制與整合（LO4）：</strong>黑箱有五個限制，灰／白箱需要日誌、提示詞與架構、主控台唯讀；測試與紅隊、驗證標準、評分的分工是作者整理。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出黑箱測試 LLM 系統的至少三個限制，以及能改善它們的三項資訊。</li>
+  <li>我知道為什麼 temperature 為零也不保證結果可重現。</li>
+  <li>我能區分「官方明載的文件關係」與「作者整理的分工」。</li>
+  <li>我知道 32 項測試的編號格式，以及引用 LLM Top 10 編號時要帶年份。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<ol>
+  <li><strong>先做這個主題的 <a href="quiz.html">總測驗</a>（12 題）</strong>，檢查各學習目標的掌握度。</li>
+  <li>需要核對來源時，看 <a href="references.html">參考資料與來源核對</a>。</li>
+  <li><strong>相鄰主題：</strong><a href="../genai-red-teaming/index.html">GenAI 紅隊演練</a>（演練流程）、<a href="../aisvs-and-llmsvs/index.html">AISVS 與 LLMSVS</a>（驗證需求）、<a href="../aivss/index.html">AIVSS</a>（弱點評分）。</li>
+</ol>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Testing Guide，GitHub main：<a href="https://github.com/OWASP/www-project-ai-testing-guide/blob/main/Document/content/3.0_OWASP_AI_Testing_Guide_Framework.md">3.0 Framework 的「Testing Limitations and Requirements」</a>、1.3 Objectives、README（相關資源）、<a href="https://github.com/OWASP/www-project-ai-testing-guide/blob/main/Document/content/tests/AITG-APP-06_Testing_for_Agentic_Behavior_Limits.md">AITG-APP-06</a>；2026-10-26 讀取；CC BY-SA 4.0（依儲存庫 LICENSE.md）。</li>
+    <li>OWASP AISVS 1.01 發布說明：<a href="https://github.com/OWASP/AISVS/releases/tag/v1.01">github.com/OWASP/AISVS/releases/tag/v1.01</a>（2026-10-16 發布於 GitHub Releases）。</li>
+    <li>GenAI Red Teaming Manual Version 1.0（2026-10-20）：<a href="https://genai.owasp.org/resource/genai-red-teaming-manual-version-1-0/">資源頁</a>，「AI Red Teaming Posture」。</li>
+    <li>OWASP AIVSS：<a href="https://aivss.owasp.org/">aivss.owasp.org</a>（僅引用 README 對它的描述）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AI Testing Guide — CC BY-SA 4.0（依儲存庫 LICENSE.md；GitHub 偵測值為 NOASSERTION）；OWASP AISVS、GenAI Red Teaming Manual — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'tg-ch3', topic: 'ai-testing-guide', mode: 'chapter',
+  questions: [
+    { id: 'tg3q1', type: 'mc', lo: [4], refs: [{label: '3.1 黑箱的五個限制', href: '03-using-the-guide.html#us-limits'}],
+      stem: '測試員把 temperature 設為 0，覺得這樣每次結果都會一樣，所以每項測試只跑一次。依官方框架章，這個想法有什麼問題？',
+      options: [
+        { text: '沒有問題，temperature 為 0 就保證輸出完全一致。', why: '官方指出並不保證：浮點運算的非結合性可能讓結果隨批次大小、GPU 數量或型號而不同。' },
+        { text: '即使 temperature 為 0，浮點運算的非結合性也可能讓結果不可重現，所以仍要考慮重複測試與記錄條件。', correct: true, why: '符合 3.1 節第 2 點。' },
+        { text: '問題在於 temperature 只影響圖片模型。', why: '官方談的是 LLM；temperature 控制輸出的隨機性。' },
+        { text: '問題在於應該把 temperature 調到最高。', why: '調高只會讓結果更隨機，更難重現。' }
+      ],
+      summary: '結果不可重現不只因為 temperature；要重複並記錄條件。' },
+    { id: 'tg3q2', type: 'match', lo: [4], refs: [{label: '3.2 表 3-1', href: '03-using-the-guide.html#us-boxes'}],
+      stem: '把下列困難配對到官方列出、最能改善它的資訊。',
+      cats: [
+        { id: 'log', label: '詳細的應用日誌' },
+        { id: 'arch', label: '提示詞、架構與原始碼' },
+        { id: 'console', label: '第三方服務管理主控台唯讀存取' }
+      ],
+      items: [
+        { text: '看不出多代理流程中是哪一個 agent 先出錯', answer: 'log', why: '日誌顯示 agent 之間的輸入與輸出，能讓測試更有針對性。' },
+        { text: '要評估外部模型的費用門檻與護欄設定，才能判斷 DoW 風險', answer: 'console', why: '主控台含模型、費用與門檻、日誌、護欄設定。' },
+        { text: '想針對這個應用的提示詞量身設計測試，減少測試數量', answer: 'arch', why: '官方說這在 GenAI 測試中比一般應用更重要。' }
+      ],
+      summary: '日誌、提示詞／架構／原始碼、主控台唯讀：三項灰／白箱需求。' },
+    { id: 'tg3q3', type: 'scn', lo: [4], refs: [{label: '3.3 情境 B', href: '03-using-the-guide.html#us-scenario'}, {label: '3.1 限制', href: '03-using-the-guide.html#us-limits'}],
+      stem: '依本章，這份預算規劃最先該修正什麼？',
+      scenario: '雲渡電商（虛構）有一個三 agent 串接的訂單助理，模型由外部供應商提供、按 token 計費。測試經理排出：「純黑箱，從前端對 10,000 個提示跑自動化測試，不需要看日誌，也不需要供應商主控台。」第一週結束，帳單遠超預算，而且沒人知道問題出在哪個 agent。',
+      options: [
+        { text: '應該再加預算，把 10,000 個提示增加到 100,000 個。', why: '多跑只會燒更多 token，也不會讓你看見中間發生什麼。' },
+        { text: '先取得應用日誌與供應商主控台的唯讀存取，算清楚含中間提示在內的 token 用量與門檻，再決定自動化測試規模。', correct: true, why: '對應 3.1 節第 4、5 點與 3.2 節三項需求。' },
+        { text: '改成只測第一個 agent，其餘 agent 不測。', why: '多代理的風險常出在 agent 之間的傳遞，略過會漏掉。' },
+        { text: '把 temperature 調到最高，讓每個提示都有不同結果。', why: '這會讓結果更難重現，與問題無關。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 多代理架構中，token 不只含使用者輸入與最終輸出，也含 agent 之間的中間提示，用量大幅增加（3.1 節第 5 點）。(2) 純黑箱看不到中間，驗證成本高（第 4 點）。(3) 官方的解法是取得日誌與主控台唯讀存取（3.2 節），才能針對性地測並評估 DoS／DoW 風險。</p><p><strong>結論：</strong>先補資訊與算帳，再決定測試規模。對應教材：<a href="03-using-the-guide.html#us-limits">3.1 節</a>、<a href="03-using-the-guide.html#us-boxes">3.2 節</a>。</p>' },
+    { id: 'tg3q4', type: 'mc', lo: [4], refs: [{label: '3.4 表 3-2', href: '03-using-the-guide.html#us-integration'}],
+      stem: '下列關於 AI Testing Guide 與其他文件關係的說法，哪一項是「官方明載」而非「作者整理」？',
+      options: [
+        { text: '本指引負責「怎麼測」，AISVS 負責「合格標準」，兩者是固定的分工流程。', why: '這樣的分工是作者整理，官方沒有這樣規定。' },
+        { text: '本指引不取代也不重複 NIST SP 800-115、OSSTMM、OWASP WSTG 這類通用安全測試方法論。', correct: true, why: '官方 1.3 節明確寫出。' },
+        { text: '本指引是 GenAI Red Teaming Manual 其中一個階段的附錄。', why: '兩者是不同的 OWASP 文件；官方沒有把其中一份定位為另一份的附錄，兩者的互補關係是作者整理。' },
+        { text: '圖 3-1 是官方畫出的標準評估流程。', why: '圖 3-1 明標作者整理，非官方。' }
+      ],
+      summary: '官方明載：不取代通用測試方法論；分工與流程圖是作者整理。' }
+  ]
+});
+</script>
+</body>
+</html>

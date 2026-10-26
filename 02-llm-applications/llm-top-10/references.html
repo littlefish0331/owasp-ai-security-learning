@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜LLM Top 10 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Top 10 for LLM Applications 2026 主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="02-llm-applications" data-topic="llm-top-10" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 2.1、2.2 節與第 8 節）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以本教材回到一手來源重新核對：2026 版與 2025 版的官方 PDF、GitHub 的 <code>2026/final</code> 原始碼、官方資源頁與目錄頁。本頁列出：每個項目採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。舊版資訊只出現在版本演進（第 8 章）與本頁。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">OWASP Top 10 for LLM Applications 2026</th><td>Version 2026；發布日 <strong>2026-08-04</strong></td><td>GitHub README（「published August 4, 2026」）與 <code>2026/README.md</code>（Status: Published，Release date: August 4, 2026）；PDF 封面「August 4th, 2026」；<code>CITATION.cff</code> 的 date-released 2026-08-04；資源頁中繼資料 datePublished 2026-08-04T05:50:36 UTC</td><td>CC BY-SA 4.0（PDF、GitHub README、CITATION.cff）</td></tr>
+<tr><th scope="row">2026 版內容（十個條目）</th><td>GitHub <code>2026/final/</code>（官方稱為 canonical source）與 122 頁 PDF 實質一致</td><td>逐句比對十個條目：唯一未直接比對到的是 LLM01 一句斷行引用，已用詞組搜尋確認 PDF 內有。自 2026-08-04 以來，<code>2026/final</code> 沒有任何提交</td><td>同上</td></tr>
+<tr><th scope="row">OWASP Top 10 for LLM Applications 2025</th><td>Version 2025；<strong>2024-11-18</strong></td><td>PDF 封面與修訂歷史；資源頁中繼資料 datePublished 2024-11-18T03:32 UTC（資源頁畫面寫 November 17, 2024）；dateModified 2025-04-28</td><td>CC BY-SA 4.0（PDF）</td></tr>
+<tr><th scope="row">2023/24 版（僅用於表 8-1）</th><td>PDF 修訂歷史：2023-08-01 Version 1.0、2023-10-16 Version 1.1；官網存檔頁列「LLM Top 10 for LLMs 2024」，頁面日期 2024-04-11</td><td><a href="https://genai.owasp.org/llm-top-10-2023-24/">存檔頁</a>十項清單；條目內文本主題沒有讀</td><td>CC BY-SA 4.0（網站頁尾）</td></tr>
+<tr><th scope="row">附錄 A（相關框架對照）與 AISVS 對照附錄</th><td>隨 2026 版發布；AISVS 對照的版本為 AISVS <strong>1.0</strong></td><td>GitHub <code>2026/final/Appendix_A_…</code> 與 <code>LLMZZ_Appendix_AISVS_Mapping.md</code>；附錄 A 的 Framework Sources &amp; Versions 表（ASI 2026、DSGAI v1.0、ATLAS v2026.06、ATT&amp;CK v19.1、CWE 4.20、NIST AI 600-1 v1.0、NIST AI RMF v1.0、CSA AICM v1.1、AIVSS v0.8）</td><td>CC BY-SA 4.0；各外部框架有自己的授權，本主題僅引用名稱與版本</td></tr>
+<tr><th scope="row">Charter（章程）</th><td>頁面無版本與日期</td><td>GitHub 儲存庫根目錄的 Charter 檔</td><td>CC BY-SA 4.0（儲存庫 README）</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0（沿用先前主題已放置的副本）</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">Figure 1（排名遷移圖）</th><td>PDF 內有顏色標示各條排名遷移，但「本次無法讀取圖像」，順位只列了文字描述的幾項</td><td>已取得並看過該圖（官方 <code>report/images/</code>）：灰線不變（LLM01、LLM02）；藍線上升（過度授權、無限制消耗、錯誤資訊）；橘線下移（供應鏈、投毒、向量、不當輸出處理）；紅色虛線為更名／重新界定範圍（System Prompt Leakage → Hidden Context Exposure）</td><td>第 8 章表 8-1 的 2025→2026 名次對照，依此圖；前言文字未提的「錯誤資訊 9→7」「供應鏈、投毒、向量各下移一位」這幾項只有圖示，教材已標「圖示」</td></tr>
+<tr><th scope="row">條目附錄</th><td>筆記只提到「附錄含框架對照（NIST、MITRE ATLAS、CWE、AISVS、Agentic Top 10）與架構／威脅建模」</td><td>附錄 A 對照 <strong>9</strong> 個外部框架（含 OWASP DSGAI、CSA AICM、MITRE ATT&amp;CK、NIST AI RMF、AIVSS，筆記沒列）；AISVS 是另一份獨立附錄（對照 AISVS 1.0 的 12 個控制章節）；附錄 B 是一張威脅模型圖；它取代了各條目內的「Related Frameworks」小節</td><td>第 10 章表 10-1 列出九個框架與釘住的版本</td></tr>
+<tr><th scope="row">LLM Top 10 的專案定位</th><td>筆記著重層級與日期</td><td>章程另有「元件與行動者」的邊界：LLM Top 10 管模型當元件的風險，Agentic Top 10 管模型當行動者的風險；同一類風險兩邊都有時，LLM Top 10 講基礎弱點，Agentic Top 10 講放大後的風險</td><td>第 1 章 1.3 節與表 1-1</td></tr>
+<tr><th scope="row">官網 LLM Top 10 目錄頁</th><td>筆記已指出仍顯示 2025 版</td><td>2026-10-26 重測屬實：頁面列 LLM01:2025 至 LLM10:2025，沒有任何 2026 條目；<code>CITATION.cff</code> 給的引用網址正是這一頁</td><td>第 1 章提醒，並建議從資源頁或 GitHub 讀 2026 版</td></tr>
+<tr><th scope="row">方法論數字</th><td>7,714 筆事件、6,639 筆分類、投票 3/4 與事件 1/4</td><td>屬實（前言與 <code>LLM00_Preface.md</code> 文字一致）</td><td>第 1 章，標示為官方自述，未獨立驗證</td></tr>
+<tr><th scope="row">情境描述中的事件案例</th><td>（筆記未逐條列出各條目的真實事件）</td><td>各條目引用許多真實事件與研究（例如特定產品的漏洞、CVE、論文）</td><td>本教材不複製這些事件細節，只轉述條目的結論；情境一律為虛構</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">2026 版發布日</th><td>資源頁畫面寫 August 3, 2026；資源頁中繼資料 datePublished 為 2026-08-04T05:50 UTC；GitHub、PDF 封面、CITATION.cff 為 2026-08-04；PDF 封面同時殘留「[Publication date to be set]」，修訂歷史最後一列仍是「[2026 release date] Version 2026 Release」；新聞稿 2026-09-01</td><td>採<strong>較新的 2026-08-04</strong>。畫面日期與中繼資料差一天，<strong>可能是 UTC 與當地時區的顯示差，但這是推論，官方沒有說明</strong>；2025 版也出現同樣模式（畫面 11-17、中繼資料 11-18）。因 PDF 的佔位文字仍在，正式發布日列為「未能確認」</td></tr>
+<tr><th scope="row">2025 版發布日</th><td>資源頁畫面 2024-11-17；PDF 封面與修訂歷史、資源頁中繼資料 2024-11-18</td><td>採 2024-11-18（較新；多數來源）</td></tr>
+<tr><th scope="row">專案層級</th><td>GitHub README 的徽章：OWASP Flagship；owasp.org 的 LLM Top 10 專案登記頁：Lab Project（2026-10-26 重測，頁面顯示「Lab Project」、0 次 Flagship）</td><td><strong>未能確認</strong>現行有效標示；教材第 1 章不引用層級，沿用 GenAI Security Project 主題的並列說法</td></tr>
+<tr><th scope="row">AISVS 版本</th><td>LLM Top 10 的 AISVS 對照附錄釘住 AISVS 1.0；先前主題（AI Exchange）依「取較新」採 1.01（GitHub）</td><td>兩者不矛盾：附錄釘住的是撰寫當時的版本。第 10 章在「AISVS 版本的小提醒」說明，引用時寫清楚哪一版</td></tr>
+<tr><th scope="row">授權</th><td>PDF 與 GitHub README 皆標示 CC BY-SA 4.0；GitHub API 的 license 欄位為空（無偵測值）</td><td>以來源文件自己的標示為準：CC BY-SA 4.0。GitHub 偵測值為空是 API 現象，不代表沒有授權</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>2026 版的正式發布日：</strong>見 R-3。採 2026-08-04，但 PDF 封面的佔位文字與修訂歷史空白列仍在。Zenodo 上的 DOI 紀錄可能有日期，本教材讀取時回 403，未能查看。</li>
+  <li><strong>專案現行層級：</strong>GitHub 徽章 Flagship，owasp.org 登記頁 Lab Project，與 GenAI Security Project 主題的 U-D1 同一個問題。</li>
+  <li><strong>DOI 是否有效：</strong>README 與 <code>CITATION.cff</code> 給的概念 DOI 10.5281/zenodo.22109014 與版本 DOI 10.5281/zenodo.22109015，本教材只在這兩處讀到，Zenodo 回 403，未驗證。</li>
+  <li><strong>Insecure Plugin Design 與 Model Theft 的去向：</strong>2023/24 版條目，2025 與 2026 版沒有獨立條目，官方未明述去向（筆記第 8 節第 4 項）。第 8 章列出本教材讀到的現象，但明標「未能確認」。</li>
+  <li><strong>2023/24 資源頁（2024-04-11「LLM Top 10 for LLMs 2024」）與 PDF 修訂歷史 Version 1.1（2023-10-16）是否同一份：</strong>筆記指出「1.1」只見於網址 slug。本教材無法判斷，兩者並列。</li>
+  <li><strong>官方 Figure 2 的「虛線方框 = 同時屬於不止一層」：</strong>圖例有這句話，但沒有標明跨哪幾層。教材第 1 章圖 1-1 不推測。</li>
+  <li><strong>2026 版事件資料集的取得方式與分類器：</strong>官方自述，語料與方法未能取得（附錄與 working 資料夾可能有，本次未逐一讀 <code>2026/working/</code>；GitHub API 在查詢該資料夾時達到速率上限）。</li>
+  <li><strong>附錄 A 的各外部框架內容：</strong>MITRE ATLAS、ATT&amp;CK、CWE、NIST AI 600-1、NIST AI RMF、CSA AICM、AIVSS 的具體對照元素，本主題只讀了覆蓋矩陣、ASI 與 DSGAI 兩節；其餘七個框架的對照表沒有逐項讀。</li>
+  <li><strong>DSGAI（資料安全 2026 v1.0）的內容：</strong>本主題未直接閱讀，只引用 LLM Top 10 附錄 A 對它的對照。</li>
+  <li><strong>各條目引用的外部研究與事件：</strong>CVE、論文、事件報告等，教材只轉述條目對它們的說法，未回到原文核對。</li>
+  <li><strong>ML Top 10 的現行版本：</strong>owasp.org 專案頁網址 <code>/www-project-machine-learning-security-top-10/</code> 回傳 404；表 1-1 沿用調查筆記與 AI Exchange 主題的描述（2023 edition、Draft v0.3），未重新核對。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<h3>LLM Top 10 2026</h3>
+<ul>
+  <li>資源頁：<a href="https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/">genai.owasp.org/resource/owasp-genai-llm-top-10-2026/</a>（含 PDF 下載連結，122 頁）</li>
+  <li>GitHub 儲存庫：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10">GenAI-Security-Project/GenAI-LLM-Top10</a>；<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/README.md">README</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">2026/README.md</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/CITATION.cff">CITATION.cff</a>、Charter 檔（儲存庫根目錄）</li>
+  <li><code>2026/final/</code> 內各檔：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM00_Preface.md">LLM00_Preface.md</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM01_PromptInjection.md">LLM01</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM02_SensitiveInformationDisclosure.md">LLM02</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM03_ExcessiveAgency.md">LLM03</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM04_SupplyChain.md">LLM04</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM05_DataModelPoisoning.md">LLM05</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM06_UnboundedConsumption.md">LLM06</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM07_Misinformation.md">LLM07</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM08_HiddenContextExposure.md">LLM08</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM09_VectorAndEmbeddingWeaknesses.md">LLM09</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM10_ImproperOutputHandling.md">LLM10</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/Appendix_A_Related_Framework_Mappings.md">Appendix A</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLMZZ_Appendix_AISVS_Mapping.md">AISVS 對照附錄</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/tree/main/2026/final/report/images">report/images</a>（Bump Chart、Concentric Threat Flow、Threat Model 圖）</li>
+</ul>
+<h3>前版與目錄頁</h3>
+<ul>
+  <li>2025 版：<a href="https://genai.owasp.org/resource/owasp-top-10-for-llm-applications-2025/">資源頁</a>與 PDF（45 頁）；官網目錄頁：<a href="https://genai.owasp.org/llm-top-10/">genai.owasp.org/llm-top-10/</a></li>
+  <li>2023/24 存檔頁：<a href="https://genai.owasp.org/llm-top-10-2023-24/">genai.owasp.org/llm-top-10-2023-24/</a></li>
+</ul>
+<h3>相鄰文件（僅用於對照）</h3>
+<ul>
+  <li>Agentic Top 10 資源頁：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">…/owasp-top-10-for-agentic-applications-for-2026/</a>（資源頁 2025-12-09，中繼資料 2025-12-10）</li>
+  <li>MCP Top 10 專案頁：<a href="https://owasp.org/www-project-mcp-top-10/">owasp.org/www-project-mcp-top-10/</a>（Production Project）</li>
+  <li>owasp.org 的 LLM Top 10 專案登記頁：<a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/">owasp.org/www-project-top-10-for-large-language-model-applications/</a>（Lab Project）</li>
+  <li>OWASP AI Exchange：<a href="https://owaspai.org/go/aiatowasp">owaspai.org/go/aiatowasp</a>（沿用 AI Exchange 主題）</li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 1 章：「事件資料保留」的提醒；圖 1-1 是依官方 Figure 2 簡化重繪（分層歸屬取自官方，不是原圖）。</li>
+  <li>第 2 章：圖 2-1 的控制點 A／B／C 位置；表 2-3「歸類」欄把 11 項控制分成降低成功率、限縮後果與驗證。</li>
+  <li>第 3 章：圖 3-1 把兩組追問標在成品流轉的哪個環節；表 3-3「主要回答的問題」欄；表 3-1 的並排方式。</li>
+  <li>第 4 章：圖 4-1 兩個閘門的排法；表 4-2 的出口分組；表 4-3 的邊界整理。</li>
+  <li>第 5 章：表 5-1 把官方的四項放大關係放進各嚴重度列；圖 5-1 兩欄並排；「LLM08 與 LLM09 合為一個原則」的整理。</li>
+  <li>第 6 章：圖 6-1 的虛線歸位；表 6-1 與表 6-2 的整理。</li>
+  <li>第 7 章：表 7-1、7-2 的控制配對；圖 7-1 的層次排列。</li>
+  <li>第 8 章：表 8-1 中 2023/24 → 2025 的名稱比對（Insecure Output Handling → Improper Output Handling、Training Data Poisoning → Data and Model Poisoning、Overreliance → Misinformation）；表 8-2 對「官方明載／比對／未能確認」的分類；「只下移一位可能只是被擠」的觀察。</li>
+  <li>第 9 章：全章的三個虛構情境、圖 9-1 的三問題決策流程、表 9-1 的「先補哪一項」優先序。</li>
+  <li>第 10 章：圖 10-1 從風險到驗證的串接順序；表 10-3 的界線整理；表 10-2 的「節錄」選擇（哪些對照值得放）。</li>
+  <li>所有 Mermaid 圖皆為重新繪製，不是官方原圖。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>OWASP Top 10 for LLM Applications 2023/24、2025、2026（含附錄與 GitHub 原始碼）、genai.owasp.org 網站：CC BY-SA 4.0。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>附錄 A 中引用的外部框架（MITRE ATLAS／ATT&amp;CK／CWE、NIST、CSA AICM、OWASP AIVSS）：本教材只引用名稱與版本，各自的授權以其來源為準，未使用其內容。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：OWASP Top 10 for LLM Applications 2023/24、2025、2026 與 genai.owasp.org 網站 — CC BY-SA 4.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

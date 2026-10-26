@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　防禦與情境｜Machine Learning Security Top 10｜OWASP AI 資安學習教材</title>
+<meta name="description" content="彙整 ML Top 10 各條目官方建議的防禦如何反覆出現同幾個主題，並用兩個虛構情境練習：回饋迴路遭污染、被替換的模型檔案。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="ml-security-top-10" data-page="03-defenses-and-scenarios.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　防禦與情境</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-lifecycle-map.html">第 2 章</a></li>
+</ul>
+<p class="lead">每個條目頁都有一段 How to Prevent。把十段放在一起讀，你會發現官方建議的防禦其實<strong>反覆出現同幾個主題</strong>：存取控制、監控、驗證、密碼學完整性、模型設計、隔離。這一章先整理這個規律，再用兩個虛構情境練習「看到症狀，推回條目，再選防禦」。</p>
+
+<h2 id="df-themes">3.1 十段預防措施，其實只有幾種主題</h2>
+<p>下表的「出現在哪些條目」是作者逐條數官方 How to Prevent 的結果；「主題」這個歸類是<strong>作者整理，非官方</strong>。官方是各條各自列舉，並沒有做這樣的跨條目彙整。</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　官方預防措施的重複主題（歸類為作者整理，非官方）</caption>
+<thead><tr><th scope="col">主題</th><th scope="col">出現在哪些條目的預防欄</th><th scope="col">官方寫到的做法（摘要）</th></tr></thead>
+<tbody>
+<tr><th scope="row">存取控制</th><td>ML02、ML03、ML05、ML08（各有獨立的 Access control 項目）；ML06 在部署項最後一句也要求</td><td>限制誰能碰訓練資料、模型、預測結果、回饋迴路與 MLOps 平台；ML05 提到雙因素驗證。</td></tr>
+<tr><th scope="row">監控、稽核與異常偵測</th><td>ML02、ML03、ML04、ML05、ML07、ML08、ML09（各有獨立項目）</td><td>監控資料與輸出分佈、稽核使用紀錄、對回饋資料做異常偵測、持續比對預測與實際結果。</td></tr>
+<tr><th scope="row">輸入與資料驗證</th><td>ML01、ML02、ML03、ML08、ML09</td><td>檢查輸入是否異常、驗證訓練與回饋資料、對模型輸出也做檢查。</td></tr>
+<tr><th scope="row">密碼學保護</th><td>ML02（加密儲存）、ML05（Encryption）、ML08（簽章與校驗碼）、ML09、ML10；ML06 的「驗證套件數位簽章」屬完整性驗證</td><td>加密、數位簽章、雜湊與校驗碼，用來保護資料與模型不被讀走，或確認套件、回饋資料、輸出與模型參數沒被改動。</td></tr>
+<tr><th scope="row">模型本身的設計</th><td>ML01、ML02（模型集成）、ML04、ML05（程式碼模糊化）、ML07（差分隱私）、ML10</td><td>對抗訓練、穩健架構、正則化 (regularisation)、差分隱私 (differential privacy)、輸出加入雜訊。</td></tr>
+<tr><th scope="row">隔離與安全部署</th><td>ML02（資料分離）、ML06（安全部署 MLOps）、ML07（模型隔離）</td><td>訓練資料與正式資料分開、訓練環境與部署環境隔離、依廠商建議部署 MLOps 平台並限制網頁介面的對外存取。</td></tr>
+</tbody></table></div>
+<p>這張表有兩個用法。第一，當你面對一個新的 ML 系統，可以先問「這六類控制，我各有沒有」，而不是逐條背十個條目。第二，注意<strong>各條的覆蓋不均</strong>：ML10 模型投毒的預防欄只有三項（正則化、穩健設計、密碼學保護參數），而 ML02 列了八項。數量不代表風險大小，只代表官方這一版寫了多少。表中某一格沒列出某個條目，只代表官方在那一條<strong>沒有獨立列出</strong>該主題，不代表那一條不需要它。</p>
+
+<h2 id="df-official">3.2 官方給的範例情境，出問題的環節在哪</h2>
+<div class="table-wrap"><table>
+<caption>表 3-2　官方範例情境與「出問題的環節」（環節欄為作者整理，非官方）</caption>
+<thead><tr><th scope="col">官方範例情境</th><th scope="col">條目</th><th scope="col">出問題的環節</th></tr></thead>
+<tbody>
+<tr><th scope="row">對垃圾郵件分類器的訓練資料投毒</th><td>ML02</td><td>訓練資料的來源與驗證</td></tr>
+<tr><th scope="row">竄改專案依賴的開源套件並上傳到公共套件庫</th><td>ML06</td><td>套件來源與完整性驗證</td></tr>
+<tr><th scope="row">對信貸模型的回饋迴路灌入假回饋</th><td>ML08</td><td>回饋資料被當成可信的訓練資料</td></tr>
+<tr><th scope="row">竄改醫院診斷模型的輸出</th><td>ML09</td><td>模型與使用端之間的輸出缺少完整性保護</td></tr>
+<tr><th scope="row">改動支票手寫辨識模型的參數</th><td>ML10</td><td>模型參數缺少存取與完整性保護</td></tr>
+</tbody></table></div>
+<p>這五個情境有個共同點：模型本身的數學沒有被「破解」，出問題的是模型<strong>前後那段沒有人顧的管線</strong>——資料怎麼進來、套件從哪來、輸出怎麼出去。這也呼應官方 Scope 說的「ML 營運與工程流程的安全衛生」。</p>
+
+<h2 id="df-flow">3.3 從症狀推回條目</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="從症狀推回條目與防禦：模型表現逐週下滑且與回饋資料有關，查 ML08，先看回饋資料的驗證與異常偵測；模型檔案的雜湊與預期不符，查 ML06 與 ML10，先看來源與完整性驗證；輸出到達使用端前被改，查 ML09，先看簽章與安全通道；有人反覆查詢模型並推論訓練資料，查 ML03 與 ML04，先看存取控制與輸出暴露；訓練集出現不明來源的資料，查 ML02，先看資料驗證與來源。">
+flowchart TD
+  S["觀察到的症狀"] --> Q{"哪一類？"}
+  Q -->|"表現逐週下滑，且與回饋資料有關"| A1["ML08 模型偏斜<br>先看：回饋資料驗證與異常偵測"]
+  Q -->|"模型檔案或套件的雜湊與預期不符"| A2["ML06 AI 供應鏈攻擊 / ML10 模型投毒<br>先看：來源與完整性驗證"]
+  Q -->|"輸出到使用端前被改"| A3["ML09 輸出完整性<br>先看：簽章與安全通道"]
+  Q -->|"有人大量查詢模型來推論訓練資料"| A4["ML03 模型反推 / ML04 成員推論<br>先看：存取控制與輸出暴露"]
+  Q -->|"訓練集混入不明來源資料"| A5["ML02 資料投毒<br>先看：資料驗證與來源"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q,A1,A2,A3,A4,A5 author
+</pre>
+<figcaption><strong>圖 3-1　由症狀推回條目與優先檢查的控制。</strong>條目名稱與其官方預防措施是官方內容；「症狀」的措辭與整張圖的串接是<strong>作者整理，非官方</strong>（虛線框）。真實事件常同時符合多個症狀，這張圖是入口，不是診斷結論。</figcaption>
+</figure>
+
+<h2 id="df-scn-a">3.4 情境範例 A：越學越差的詐欺偵測模型</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：青檜市集的詐欺偵測</h3>
+<p><span class="tag fiction">虛構</span> 青檜市集是虛構的線上二手交易平台。它的詐欺偵測模型每週重新訓練一次，訓練資料包含買家按下「這是詐欺／這不是詐欺」的回報。三個月後，資料團隊發現偵測表現逐週下滑，而且下滑集中在某幾類商品。</p>
+<ol class="steps">
+  <li><strong>先看症狀：</strong>模型沒有被入侵，程式碼沒有變動，下滑與回饋資料有關。對照圖 3-1，指向 ML08 模型偏斜。</li>
+  <li><strong>哪一環出問題：</strong>回報被當成可信的標籤，直接進入每週的訓練資料。沒有驗證回報者身分，也沒有檢查回報的分佈是否異常。這與官方 ML08 的情境同型：有人操縱回饋迴路，讓模型的判斷逐步偏向對攻擊者有利。</li>
+  <li><strong>對應條目與相近條目：</strong>主要是 ML08。回饋資料一旦進入訓練集，效果上也像資料投毒 (ML02)，但入口不同——ML08 的入口是部署後的回饋迴路。</li>
+  <li><strong>該採的控制（取自官方 ML08 的預防清單）：</strong>限制誰能寫入回饋迴路、驗證回饋資料的真實性、清理與驗證後才納入訓練、對回饋資料做異常偵測、持續把預測與實際結果比對、用已驗證的資料重新訓練。</li>
+  <li><strong>這個情境的提醒：</strong>只做「定期重新訓練」反而讓問題更快進入模型。重新訓練本身是官方建議的一環，但前提是資料已經驗證。</li>
+</ol>
+</div>
+
+<h2 id="df-scn-b">3.5 情境範例 B：下載來的預訓練模型</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：霧嶼影像的肺部影像模型</h3>
+<p><span class="tag fiction">虛構</span> 霧嶼影像是虛構的醫療影像新創。團隊從公開模型庫下載一個預訓練模型，再用自家資料微調。上線前的驗證集表現正常，但半年後，另一位工程師發現正式環境模型檔案的雜湊值，與當初下載時記下的不一致。</p>
+<ol class="steps">
+  <li><strong>先看症狀：</strong>模型檔案的雜湊與預期不符，對照圖 3-1，指向 ML06 與 ML10。</li>
+  <li><strong>哪一環出問題：</strong>模型來源與完整性沒有持續驗證。官方 ML06 的預防清單第一項就是驗證套件完整性；模型檔案同樣屬於 ML 專案依賴的元件。</li>
+  <li><strong>兩個條目的分工：</strong>ML06 描述的是「<em>怎麼進來</em>」——攻擊者動了你依賴的元件或模型庫；ML10 描述的是「<em>結果是什麼</em>」——模型參數被改動。兩者可以是同一次事件的兩個面向。</li>
+  <li><strong>該採的控制：</strong>從可信來源取得模型與套件、驗證完整性（簽章或雜湊）、依廠商建議安全部署 MLOps 平台並限制其介面的對外存取（ML06）；用密碼學方式保護模型參數、設計穩健的模型（ML10）。上線前的驗證集可以發現一部分問題，但官方 ML02 的預防清單把「用未參與訓練的驗證集驗證模型」列為偵測資料投毒的手段，並沒有把它當成對模型檔案被替換的保證。</li>
+  <li><strong>這個情境的提醒：</strong>「上線前驗證通過」只證明<em>當時</em>的檔案表現正常。持續比對完整性，才能發現上線之後的改動。</li>
+</ol>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>官方預防措施可歸成六類重複主題：存取控制、監控與異常偵測、驗證、密碼學保護、模型設計、隔離（歸類是作者整理，非官方）。</li>
+  <li>官方範例情境的共同點：問題出在模型前後的資料、套件與輸出管線。</li>
+  <li>ML08 的入口是回饋迴路，防線在回饋資料進入訓練集之前。</li>
+  <li>ML06 說「怎麼進來」，ML10 說「結果是什麼」；一次事件可同時符合兩條。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能對一個 ML 系統問出「六類控制各有沒有」。</li>
+  <li>給我一個症狀，我能說出最先要查的條目與控制。</li>
+  <li>我能說明為什麼「定期重新訓練」在資料未驗證時可能讓問題更糟。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-integration.html">第 4 章　跨文件整合與收尾</a>：看 ML Top 10 與 AI Exchange、LLM Top 10 2026 怎麼對應，以及何時該換成別的文件。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Machine Learning Security Top 10 的十個條目頁，取其 How to Prevent 與 Example Attack Scenarios：<a href="https://owasp.github.io/www-project-machine-learning-security-top-10/index.html">owasp.github.io/www-project-machine-learning-security-top-10/</a>；2026-10-26 讀取；頁面標示 Edition 2023、Version 0.3 Draft、CC BY-SA 4.0。</li>
+    <li>OWASP Machine Learning Security Top 10 – Draft release v0.3（PDF）：<a href="https://mltop10.info/OWASP-Machine-Learning-Security-Top-10.pdf">mltop10.info/OWASP-Machine-Learning-Security-Top-10.pdf</a>；2026-10-26 讀取，用於比對條目文字。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Machine Learning Security Top 10 專案頁與 PDF — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'm-ch3', topic: 'ml-security-top-10', mode: 'chapter',
+  questions: [
+    { id: 'm3q1', type: 'mc', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-defenses-and-scenarios.html#df-themes'}],
+      stem: '依表 3-1，下列哪一類控制，在官方預防措施裡「有獨立項目」的條目數最多？',
+      options: [
+        { text: '隔離與安全部署', why: '只出現在 ML02、ML06、ML07 三條。' },
+        { text: '輸入與資料驗證', why: '出現在 ML01、ML02、ML03、ML08、ML09 五條，不是最多。' },
+        { text: '存取控制', why: '有獨立項目的是 ML02、ML03、ML05、ML08 四條（ML06 只在一句話中提到）。' },
+        { text: '監控、稽核與異常偵測', correct: true, why: '在 ML02、ML03、ML04、ML05、ML07、ML08、ML09 共七條各有獨立項目。' }
+      ],
+      summary: '監控與稽核是出現最多的主題；歸類為作者整理。' },
+    { id: 'm3q2', type: 'match', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-defenses-and-scenarios.html#df-themes'}, {label: '3.3 圖 3-1', href: '03-defenses-and-scenarios.html#df-flow'}],
+      stem: '把下列官方建議的控制，配對到它最直接對應的條目。',
+      cats: [
+        { id: 'ml05', label: 'ML05 模型竊取' },
+        { id: 'ml08', label: 'ML08 模型偏斜' },
+        { id: 'ml09', label: 'ML09 輸出完整性' },
+        { id: 'ml02', label: 'ML02 資料投毒' }
+      ],
+      items: [
+        { text: '為模型加上浮水印，以便被竊後追溯來源', answer: 'ml05', why: '浮水印出現在 ML05 的預防清單。' },
+        { text: '用數位簽章與校驗碼驗證回饋資料的真實性', answer: 'ml08', why: '出現在 ML08 的預防清單。' },
+        { text: '維護防竄改日誌，記錄模型的所有輸入與輸出', answer: 'ml09', why: '防竄改日誌 (tamper-evident logs) 出現在 ML09。' },
+        { text: '把訓練資料與正式資料分開存放', answer: 'ml02', why: '資料分離出現在 ML02 的預防清單。' }
+      ],
+      summary: '每個條目有幾項特徵性的控制，可作為對照線索。' },
+    { id: 'm3q3', type: 'scn', lo: [3], refs: [{label: '3.4 情境 A', href: '03-defenses-and-scenarios.html#df-scn-a'}, {label: '3.3 圖 3-1', href: '03-defenses-and-scenarios.html#df-flow'}],
+      stem: '依本章，這位主管提議的解法有什麼問題？最先該補的是哪一類控制？',
+      scenario: '蒼鷺旅宿（虛構）的推薦模型每天用使用者的「有幫助／沒幫助」點擊重新訓練。最近發現某些旅館的排名異常上升，且點擊集中在少數新建立的帳號。主管提議：「把重新訓練改成每小時一次，這樣模型能更快修正自己。」',
+      options: [
+        { text: '沒有問題，更頻繁的重新訓練是官方 ML08 建議的核心。', why: '官方建議的是用「已驗證」的資料重新訓練；沒有驗證就加快頻率只會更快吸收被操縱的資料。' },
+        { text: '問題在於重新訓練本身，應該完全停止重新訓練。', why: '官方並未建議停止重新訓練；問題在於資料進入訓練前沒有驗證。' },
+        { text: '應先在回饋資料進入訓練集之前加上驗證：限制寫入、驗證真實性、清理、異常偵測（例如少數新帳號的集中點擊）；再用已驗證的資料重新訓練。', correct: true, why: '符合 3.4 節與官方 ML08 的預防清單。' },
+        { text: '應改用更大的模型，大模型比較不會被偏斜。', why: '教材與官方 ML08 都沒有這樣的說法。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 症狀是排名異常、點擊集中在新帳號，對照圖 3-1 指向 ML08 模型偏斜。(2) 問題的環節是回饋資料直接進入訓練。(3) 加快頻率會讓被操縱的資料更快進入模型。</p><p><strong>結論：</strong>先補回饋資料的驗證與異常偵測，再重新訓練。對應教材：<a href="03-defenses-and-scenarios.html#df-scn-a">3.4 節</a>。</p>' },
+    { id: 'm3q4', type: 'mc', lo: [3], refs: [{label: '3.5 情境 B', href: '03-defenses-and-scenarios.html#df-scn-b'}],
+      stem: '依情境 B，ML06 與 ML10 的關係，最正確的描述是？',
+      options: [
+        { text: 'ML06 描述怎麼進來（依賴的元件或模型庫被動手腳），ML10 描述結果（模型參數被改動）；一次事件可以同時符合兩條。', correct: true, why: '符合 3.5 節第 3 點。' },
+        { text: 'ML06 與 ML10 是同一個條目的兩個名稱。', why: '兩者是清單中不同編號的獨立條目。' },
+        { text: 'ML10 只發生在訓練期，ML06 只發生在推論期。', why: '與官方描述不符：ML06 針對函式庫、MLOps 與模型庫等供應鏈，ML10 是模型參數被直接竄改。' },
+        { text: '只要上線前驗證集通過，就不需要考慮 ML06 與 ML10。', why: '驗證通過只證明當時的表現；情境 B 的重點是上線後的改動。' }
+      ],
+      summary: 'ML06 = 怎麼進來；ML10 = 結果是什麼。' }
+  ]
+});
+</script>
+</body>
+</html>

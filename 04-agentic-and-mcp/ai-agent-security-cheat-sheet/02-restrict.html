@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　限制 agent 能做什麼｜AI Agent Security Cheat Sheet｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AI Agent Security Cheat Sheet 限制群的六節：工具、外部輸入、記憶、人在迴路、多 agent、資料保護；核心是授權放在執行元件、批准綁定確切動作。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="ai-agent-security-cheat-sheet" data-page="02-restrict.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　限制 agent 能做什麼</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position.html">第 1 章</a></li>
+</ul>
+<p class="lead">限制群的六節看起來像六份清單，其實反覆出現同一個原則：<strong>不要靠 agent 或模型自己守規矩，把決定權放在它碰不到的執行元件</strong>。本章先用一張表掃過六節的「危險 vs 安全」，再把最關鍵的一組控制——授權放在執行元件、批准綁定確切動作——當作核心概念講透。</p>
+
+<h2 id="r-six">2.1 五節一覽：危險做法與安全做法</h2>
+<p>第 4 節（人在迴路）留到 2.3，先看其餘五節。原文每節多半附 Python 示範；下表第三欄用文字描述示範的差別，不貼程式碼。</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　限制群五節的要點與示範差別（要點為改寫；示範差別為依原文示範描述）</caption>
+<thead><tr><th scope="col">節</th><th scope="col">官方要點（改寫）</th><th scope="col">示範的差別</th></tr></thead>
+<tbody>
+<tr><th scope="row">1 工具與最小權限 <br>(Least Privilege)</th><td>只給任務所需的最少工具；每個工具分範圍（唯讀或可寫、限定資源）；內部與面向使用者的 agent 用不同工具組；敏感操作要明確授權</td><td><strong>危險：</strong>一個能執行任何 shell 指令的工具，允許清單寫成萬用字元。<strong>安全：</strong>改成只能讀報告資料夾的檔案讀取工具，限定唯讀，並封鎖金鑰、環境設定這類檔名樣式</td></tr>
+<tr><th scope="row">2 外部輸入</th><td>使用者訊息、取回文件、API 回應、電子郵件一律視為不可信；放進上下文前先淨化；用分隔符區分指令與資料；比對已知注入樣式；可另用一次 LLM 呼叫先驗證或摘要不可信內容。細節交給 Prompt Injection Prevention</td><td>無程式碼示範</td></tr>
+<tr><th scope="row">3 記憶與上下文</th><td>寫入前驗證與淨化；使用者與 session 之間隔離；設到期與大小上限；持久化前檢查敏感資料；長期記憶用密碼學完整性檢查</td><td><strong>危險：</strong>把使用者訊息原樣存進持久記憶。<strong>安全：</strong>每位使用者一個獨立記憶物件，限制筆數與長度、設到期，寫入前遮蔽敏感樣式，每筆附雜湊檢查碼，讀取時驗證並略過過期項目</td></tr>
+<tr><th scope="row">7 多 agent</th><td>agent 之間設信任邊界；驗證並淨化 agent 間訊息；防止沿 agent 鏈提權；隔離執行環境；用熔斷器 (Circuit Breaker) 防止連鎖失效 (Cascading Failures)</td><td>2026-10-04 的提交把程式碼示範換成文字規則（見 2.4）</td></tr>
+<tr><th scope="row">8 資料保護</th><td>縮減放進上下文的敏感資料；資料分級與處理規則；靜態與傳輸加密；保留與刪除政策；遵循隱私法規（原文舉 GDPR、CCPA）</td><td>依內容樣式把資料分成公開、內部、機密、受限（個資、財務、健康）四級，再依「放進上下文、寫進日誌、輸出」三種用途決定完全遮蔽、部分遮蔽或原樣</td></tr>
+</tbody></table></div>
+<p>三點提醒。其一，示範碼不是可部署的實作：<span class="tag official">官方</span> 2026-06-27 有一次提交（標題為補上示範碼缺少的匯入與未定義的參照）。其二（<span class="tag author">作者整理，非官方</span>），用樣式比對遮蔽敏感資料只抓得到寫得出樣式的那一類，應視為最後一道淺層過濾。其三，第 2 節只是摘要；本站<a href="../../03-prompt-injection-rag-practice/prompt-injection/index.html">提示詞注入防護主題</a>的<a href="../../03-prompt-injection-rag-practice/prompt-injection/02-fragile-layers.html#fl-stance">第 2 章</a>說明輸入篩選、結構化提示這類做法是「層」而不是「邊界」，所以要搭配本章其他限制，不能單獨依賴。</p>
+
+<h2 id="r-concept">2.2 核心概念：授權在執行元件，批准綁定確切動作</h2>
+<div class="concept">
+<h3 id="c-bind">agent 只能提議，執行元件才能放行</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>Cheat Sheet 的「Tool Authorization Middleware」與「High-Impact Action Integrity Controls」合起來說一件事：agent 只負責<strong>提議</strong>動作；放行的是它之外的執行元件（或政策服務），由後者獨立檢查範圍、權限與批准狀態。批准是一份綁定「確切動作」的紀錄，不是一個布林旗標。</dd>
+  <dt data-n="2">為什麼是這樣</dt>
+  <dd>模型輸出不可信，Do's and Don'ts 也明寫「不要只靠模型輸出做授權決定」。授權若在 agent 的上下文裡，被注入的 agent 也能自己宣稱「已確認」。官方曾用「使用者已確認」旗標（原文的 <code>user_confirmed</code>）當示範，2026-10-04 被換掉，並明寫旗標不夠。</dd>
+  <dt data-n="3">批准沒綁定會怎樣（概念層級）</dt>
+  <dd>同一份批准可套用到不同對象或金額；可被重複使用或並發重複送出；過期仍有效；沒列在表裡的未知工具被預設放行；批准服務或稽核日誌掛了，系統照常執行。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>官方列出的做法：<strong>(1)</strong> 決策與執行分離；<strong>(2)</strong> 批准紀錄含行動者、工具名、目標資源、正規化後的參數、時間與到期；<strong>(3)</strong> 短效授權憑證加重放保護 (Replay Protection)；<strong>(4)</strong> 帳號復原、發起付款、權限變更、批量刪除、正式環境部署這類關鍵動作要升級驗證 (Step-up Authentication)；<strong>(5)</strong> 高衝擊動作盡量冪等 (Idempotent)，做不到就要明確的重複確認；<strong>(6)</strong> 風險分級、批准驗證、政策查詢或稽核紀錄任何一個失敗，都失效即拒絕 (Fail-Closed)；<strong>(7)</strong> 檢查與消耗批准在同一個原子步驟、緊接執行之前，目標或參數一變就要新的批准。官方也點名要搭配 Transaction Authorization Cheat Sheet（本站沒有對應主題）。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「有人按過確認，就算有批准。」批准還要屬於當前行動者與這一次呼叫、未過期、未被用過。另一個誤解是把風險分級表當授權：文件明寫分級「不授予執行工具的權限」。</dd>
+</dl>
+</div>
+<figure class="diagram">
+<pre class="mermaid" data-alt="一次工具呼叫的放行流程：agent 提議呼叫；先問工具是否登記，未登記則拒絕；再問行動者是否有權使用，沒有則拒絕；再問是否需要批准，低風險工具不需要，直接執行；需要批准時問批准是否綁定這個確切動作、未過期、未被消耗，不是則拒絕；是則原子地檢查並消耗批准後執行。任何檢查失敗或無法判定都拒絕並留下紀錄。">
+flowchart TB
+  A["agent 提議一次工具呼叫"] --> B{"工具已登記？"}
+  B -->|"否"| X["拒絕並留紀錄"]
+  B -->|"是"| C{"行動者有權使用？"}
+  C -->|"否"| X
+  C -->|"是"| D{"需要批准？<br>非低風險"}
+  D -->|"否"| E["執行"]
+  D -->|"是"| F{"批准綁定這個動作、<br>未過期、未用過？"}
+  F -->|"否"| X
+  F -->|"是"| G["原子地檢查並消耗批准，<br>再執行"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class A,B,C,D,E,F,G,X author
+</pre>
+<figcaption><strong>圖 2-1　一次工具呼叫的放行檢查。</strong>每個檢查點都來自 Cheat Sheet 的文字規則（未知工具失效即拒絕、授權在執行元件、批准綁定且原子消耗）；把它們串成一條流程是<span class="tag author">作者整理，非官方</span>（虛線框）。任何元件失敗或無法判定，都走向「拒絕」。</figcaption>
+</figure>
+
+<h2 id="r-risk">2.3 風險分級：哪些動作需要人批准</h2>
+<p>第 4 節要求高衝擊或不可逆動作先經人明確批准，並提供動作預覽、依風險設自主邊界、保留決策與動作的稽核軌跡、讓使用者能中斷與回復。它的分級示範如下（工具名取自原文示範）：</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　行動分級示範：誰免審、誰要審</caption>
+<thead><tr><th scope="col">等級</th><th scope="col">示範中的工具</th><th scope="col">需要人批准？</th></tr></thead>
+<tbody>
+<tr><th scope="row">低</th><td><code>search_documents</code>、<code>read_file</code></td><td>不需要（唯一免審的兩個）</td></tr>
+<tr><th scope="row">中</th><td><code>write_file</code></td><td>需要</td></tr>
+<tr><th scope="row">高</th><td><code>send_email</code>、<code>execute_code</code>；<strong>未列在表裡的任何工具也預設為高</strong></td><td>需要</td></tr>
+<tr><th scope="row">關鍵</th><td><code>database_delete</code>、<code>transfer_funds</code></td><td>需要</td></tr>
+</tbody></table></div>
+<p>「未知工具預設為高」就是失效即拒絕的實例。分級的好處（<span class="tag author">作者整理，非官方</span>）是只讓人審真正高風險的動作，避免審查者被淹沒；威脅與緩解文件把這個問題稱為 T10，見<a href="../agentic-threats-and-mitigations/02-threat-taxonomy.html#tax-list">壓垮人在迴路</a>。</p>
+
+<h2 id="r-multi">2.4 多 agent 訊息：簽章不等於權限</h2>
+<p>第 7 節現行的規則比示範碼更值得記，有兩個細節與 2.2 的原則同源：</p>
+<ul>
+  <li><strong>有效簽章不授予權限。</strong>接收端要認證通訊雙方，並依「寄件者的權限」決定能不能做；簽章要涵蓋寄件者、收件者、訊息類型、內容、建立與到期時間，以及唯一的訊息識別碼。使用簽章時應採用維護中的協定實作；官方連到 RFC 9421 說明為什麼驗證必須要求所有與安全相關的元件都被簽署。</li>
+  <li><strong>防重放要有共用狀態。</strong>時間戳只能限制有效期，窗口內仍可重複執行。接收端要原子地檢查並記下識別碼，記錄要保留整個接受窗口（含時鐘誤差），並讓所有可能接收該訊息的實例共用；狀態不可用時拒絕訊息。官方引用 RFC 9449 的 DPoP 重放指引，說明各伺服器沒有共用狀態時，單次使用的檢查可能做不到。傳輸加密仍要保留，因為簽章不提供機密性。</li>
+</ul>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>限制群的共同原則：決定權放在 agent 碰不到的執行元件；agent 只提議。</li>
+  <li>危險 vs 安全的示範差別，多半是「萬用字元與全開」對「限定範圍與預設拒絕」。</li>
+  <li>批准要綁定行動者、工具、目標、正規化參數與到期，並在緊接執行前原子地檢查與消耗；風險分級不等於授權。</li>
+  <li>未知工具預設為高風險；風險分級、批准驗證、政策查詢或稽核紀錄失敗時，一律失效即拒絕。</li>
+  <li>多 agent 訊息的有效簽章不授予權限；防重放要有共用的原子狀態。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能把一個「危險 vs 安全」的工具、記憶或資料示範，說成限制了什麼。</li>
+  <li>我能列出批准紀錄至少要綁哪些欄位，並說明為什麼旗標不夠。</li>
+  <li>我能說明簽章與權限、時間戳與重放保護的差別。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-see-and-test.html">第 3 章　看見、驗證與測試</a>：看見群的三節（輸出驗證、監控、測試），以及一個虛構情境把限制與看見串在一起。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series, <em>AI Agent Security Cheat Sheet</em>（Best Practices 第 1、2、3、4、7、8 節；Do's and Don'ts）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；無版本號；2026-10-26 讀取；GitHub 提交紀錄 2025-12-17 至 2026-10-04；CC BY-SA 4.0。</li>
+    <li>OWASP Cheat Sheet Series 儲存庫的提交紀錄（2026-06-27 補示範碼匯入、2026-09-30 行動分級修正、2026-10-04 示範替換與批准原子消耗）：<a href="https://github.com/OWASP/CheatSheetSeries">github.com/OWASP/CheatSheetSeries</a>。</li>
+    <li>RFC 9421、RFC 9449：由 Cheat Sheet 引用；本教材只轉述 Cheat Sheet 對它們的說法，沒有讀規格本身。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series（AI Agent Security）— CC BY-SA 4.0（站台頁尾與儲存庫 LICENSE.md）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'aas-ch2', topic: 'ai-agent-security-cheat-sheet', mode: 'chapter',
+  questions: [
+    { id: 'a2q1', type: 'mc', lo: [2], refs: [{label: '2.2 核心概念', href: '02-restrict.html#r-concept'}],
+      stem: '某團隊的工具層只檢查一個「使用者已確認」的旗標，旗標為真就執行。依 Cheat Sheet，這個設計最主要的缺口是？',
+      options: [
+        { text: '旗標沒有加密。', why: '問題不在加密，而在旗標沒有表示「誰、批准了哪一個確切動作、是否仍有效」。' },
+        { text: '旗標沒有綁定當前行動者與這一次確切呼叫，也不管是否過期或已被用過；授權也應在執行元件，用原子步驟檢查並消耗批准。', correct: true, why: '符合 2.2 節：旗標不足以代表綁定確切動作的批准。' },
+        { text: '旗標應該改由 agent 自己設定，這樣最快。', why: '授權若由 agent 自己決定，被注入的 agent 也能宣稱已確認；應在 agent 之外的執行元件。' },
+        { text: '只要把旗標改成每天重設一次就安全了。', why: '每日重設仍允許同一批准在窗口內被重複使用或套到別的參數。' }
+      ],
+      summary: '批准要綁定確切動作並原子消耗；旗標不夠。' },
+    { id: 'a2q2', type: 'mc', lo: [2], refs: [{label: '2.3 表 2-2', href: '02-restrict.html#r-risk'}],
+      stem: '依行動分級示範，一個沒有列在分級表裡的新工具 refund_all 該怎麼處理？',
+      options: [
+        { text: '視為低風險，直接放行，以免影響使用體驗。', why: '示範的規則是只有明確列為低風險的兩個工具免審。' },
+        { text: '先放行，事後再補分級。', why: '這等於失效即放行，與文件的失效即拒絕相反。' },
+        { text: '交給模型自己判斷風險。', why: 'Do\'s and Don\'ts 明寫不要只靠模型輸出做授權決定。' },
+        { text: '預設視為高風險，需要人批准；分級也不等於授予執行權限，執行元件仍要檢查行動者權限與確切動作的批准。', correct: true, why: '符合表 2-2 與 2.2 節：未知工具失效即拒絕。' }
+      ],
+      summary: '未知工具預設為高；分級不等於授權。' },
+    { id: 'a2q3', type: 'match', lo: [2], refs: [{label: '2.2 核心概念', href: '02-restrict.html#r-concept'}, {label: '2.4 多 agent', href: '02-restrict.html#r-multi'}],
+      stem: '把下列設計缺陷配對到最直接補上它的控制。',
+      cats: [
+        { id: 'bind', label: '批准綁定確切動作' },
+        { id: 'atomic', label: '原子地檢查並消耗' },
+        { id: 'state', label: '共用的重放狀態' },
+        { id: 'perm', label: '依寄件者權限授權' }
+      ],
+      items: [
+        { text: '核准了 100 元的退款，之後被改成 10,000 元仍然放行', answer: 'bind', why: '目標與參數一變就要新的批准。' },
+        { text: '同一份批准被並發送出兩次，兩次都執行了', answer: 'atomic', why: '檢查與消耗要在同一個原子步驟。' },
+        { text: '三個接收實例各自記錄識別碼，同一則訊息分別送到不同實例都被接受', answer: 'state', why: '各實例要共用狀態，不可用時拒絕。' },
+        { text: '一則簽章有效的訊息，要求接收端做寄件者本來沒有權限的事', answer: 'perm', why: '有效簽章不授予權限。' }
+      ],
+      summary: '四種缺陷對應四種控制。' },
+    { id: 'a2q4', type: 'scn', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-restrict.html#r-six'}, {label: '2.2 核心概念', href: '02-restrict.html#r-concept'}],
+      stem: '依本章，這個設計最該先修正的是哪一點？',
+      scenario: '松木家居（虛構）的客服 agent 有一個「執行系統指令」工具，允許清單寫成萬用字元，理由是「之後要加功能比較方便」。同一個 agent 也把每位顧客的對話原樣存進共用的持久記憶，沒有到期時間。團隊正在討論的是要不要再加一個內容過濾器。',
+      options: [
+        { text: '先加內容過濾器，其他以後再說。', why: '過濾只降低成功率，工具與記憶的範圍問題沒有被限制。' },
+        { text: '先把記憶改成加密，工具維持原樣。', why: '加密沒有限制 agent 能做什麼，也沒有解決共用與無到期。' },
+        { text: '先限制：把萬用工具換成限定範圍的唯讀工具，記憶改為每位顧客隔離、設到期與大小上限、寫入前淨化；之後再談過濾。', correct: true, why: '符合表 2-1 第 1、3 節的危險 vs 安全。' },
+        { text: '只要每次都請使用者確認就好。', why: '批准要綁定確切動作並由執行元件檢查；且萬用工具讓可批准的範圍無法定義。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 萬用字元工具讓任何被誘導的指令都可能執行，是第 1 節點名的危險做法。(2) 共用且無到期的原樣記憶，同時違反第 3 節的隔離、到期與寫入前淨化。(3) 過濾器與確認都屬後續層，不能取代範圍限制。</p><p><strong>結論：</strong>先縮小工具與記憶的範圍，再加其他層。對應教材：<a href="02-restrict.html#r-six">2.1 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

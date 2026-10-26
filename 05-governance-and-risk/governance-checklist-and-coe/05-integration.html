@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 章　跨文件整合與收尾｜治理檢核表與卓越中心｜OWASP AI 資安學習教材</title>
+<meta name="description" content="什麼時候用 Governance Checklist、什麼時候用 CoE Guide；與官方列出的 OWASP 與 MITRE 資源的對應、與其他主題的關係、使用限制與全主題重點。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="governance-checklist-and-coe" data-page="05-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 5 章　跨文件整合與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 5 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO1、LO4、LO5</li>
+  <li>前置：第 1–4 章</li>
+</ul>
+<p class="lead">兩份文件各自講完了。最後要回答三個實務問題：我的組織現在該先用哪一份？它們與其他 OWASP 文件怎麼接？用到什麼地方就該停下來換別的文件？</p>
+
+<h2 id="int-which">5.1 現況決定先用哪一份</h2>
+<p>下面的決策流程是 <span class="tag author">作者整理，非官方</span>：官方沒有寫「先用哪一份」，作者依兩份文件各自的用途整理出判斷方式。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程：先問組織是否已有人整體負責 AI 治理。沒有，先成立 CoE 的領導團隊（CoE Guide）。已有，再問是否要在特定導入案之前做準備度盤點：是，用 Checklist 的 13 個區塊；否，若要持續追蹤用 CoE 的 KPI。不論哪條路，最後都回到風險登記冊記錄決定。要排風險優先順序則換用 Threat Defense COMPASS；要評估成熟度則換用 AIMA。">
+flowchart TD
+  Q1{"組織裡有沒有人<br>整體負責 AI 治理？"}
+  Q1 -->|"沒有"| A["先組 CoE 領導團隊<br>CoE Guide 第 1 階段"]
+  Q1 -->|"有"| Q2{"要在某個導入案前<br>做準備度盤點？"}
+  Q2 -->|"是"| B["用 Checklist 13 區塊<br>每區塊指定主人"]
+  Q2 -->|"否，要持續追蹤"| C["CoE 的 OKR 與 KPI"]
+  A --> D["記錄決定與殘餘風險"]
+  B --> D
+  C --> D
+  B -.->|"需要排風險優先順序"| X["Threat Defense COMPASS<br>（下一個主題）"]
+  C -.->|"需要評估成熟度"| Y["AIMA<br>（同階段後續主題）"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class Q1,Q2,A,B,C,D,X,Y author
+</pre>
+<figcaption><strong>圖 5-1　先用哪一份的判斷流程（作者整理，非官方）。</strong>整張圖是教材作者依文件用途整理的建議；官方沒有寫這個判斷。</figcaption>
+</figure>
+<p>注意流程裡兩份文件是<strong>互補而非互斥</strong>。CoE 成立後，檢核表正好是它第一份可使用的工作清單；檢核表跑完後，哪些區塊沒有主人，又會回頭成為 CoE 要補的角色。</p>
+
+<h2 id="int-table">5.2 與其他文件的對應：官方寫了什麼、作者整理了什麼</h2>
+<p>Checklist 末尾的「Resources」一節，官方列出了可以搭配使用的 OWASP 與 MITRE 資源，這是兩份文件<strong>最明確的官方對應</strong>。其餘對應另外標示。</p>
+<div class="table-wrap"><table>
+<caption>表 5-1　Checklist 官方列出的搭配資源，與作者補充的對應</caption>
+<thead><tr><th scope="col">資源</th><th scope="col">官方在 Checklist 的說法（改寫）</th><th scope="col">性質</th></tr></thead>
+<tbody>
+<tr><th scope="row">OWASP SAMM <br>（Software Assurance Maturity Model）</th><td>以可衡量的方式分析並改善組織的安全開發生命週期，迭代且以風險為導向</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">OWASP AI Security and Privacy Guide、OWASP AI Exchange</th><td>前者是 AI 安全與隱私考量的清單；後者是其輸入管道。這裡的名稱是 2024 年的用法（後來演進為 AI Exchange，見 <a href="../../01-overview/ai-exchange/index.html">AI Exchange 主題</a>）</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">OWASP Machine Learning Security Top 10</th><td>ML 系統最重要的安全議題；並稱它是 OWASP 中 AI 全球法規與隱私資訊最好的資源（官方原話，教材未查證）</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">OpenCRE、OWASP Threat Modeling、CycloneDX、SCVS、API Security、ASVS、TaSM、Defect Dojo</th><td>OpenCRE 用來串接各安全標準；CycloneDX 是 BOM 標準；ASVS 用於安全需求與發布測試；TaSM 把主要威脅與 NIST CSF 功能對在一起</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">MITRE ATT&amp;CK、ATLAS</th><td>把 LLM 資安策略對照到 ATT&amp;CK 與 ATLAS，找出哪些已被既有流程涵蓋、哪裡有洞</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">NIST AI Framework（TEVV）</th><td>建議在整個 AI 生命週期持續做 TEVV</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">Threat Defense COMPASS</th><td>同屬 AI Security Governance Initiative 的產出；兩份 PDF 本身都沒有提到它（COMPASS 後於 2025 年發布）</td><td><span class="tag author">作者整理，非官方</span></td></tr>
+<tr><th scope="row">AI Exchange 的 Manage 類控制</th><td>與 Checklist 的治理、資產清冊等區塊目的相近</td><td><span class="tag author">作者整理，非官方</span></td></tr>
+<tr><th scope="row">AIMA</th><td>以八個領域評估成熟度；Checklist 與 CoE 沒有提到它</td><td><span class="tag author">作者整理，非官方</span></td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：兩份文件的後繼或更新版</p>
+  <p>本教材在官方站與 GitHub 組織中，沒有找到 Checklist v1.1 之後的更新版或 CoE Guide 的 1.0 正式版；GenAI-Top-10-Governance 儲存庫在 2026-10-26 讀取時，API 回應 403，內容未能讀取（調查筆記說它只是指向 Checklist 的連結頁，教材沿用，未驗證）。<strong>「沒找到」不代表沒有</strong>，使用前請到資源頁確認是否有新版。</p>
+</div>
+
+<h2 id="int-limit">5.3 用到什麼地方該換文件</h2>
+<div class="concept">
+<h3 id="c-stop">這兩份文件的邊界</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>它們是組織層級的提問與結構文件，不是技術控制手冊。</dd>
+  <dt data-n="2">為什麼會有邊界</dt>
+  <dd>Checklist 的「使用或實作」區塊每條只有一句話；RAG 區塊只列參考資料；紅隊區塊只有一項行動。更深的技術內容留給其他文件。</dd>
+  <dt data-n="3">什麼時候該換</dt>
+  <dd>要選控制與做風險分析：<a href="../../01-overview/ai-exchange/index.html">AI Exchange</a>。要認識 LLM 應用風險條目：見〈<a href="../../02-llm-applications/llm-top-10/index.html">Top 10 for LLM Applications 2026</a>〉。系統有 agent：見〈<a href="../../04-agentic-and-mcp/agentic-top-10-2026/index.html">Top 10 for Agentic Applications 2026</a>〉與〈<a href="../../04-agentic-and-mcp/agentic-threats-and-mitigations/index.html">Agentic 威脅與緩解</a>〉。要做紅隊與驗證：見 06 階段的〈<a href="../../06-assessment-and-verification/genai-red-teaming/index.html">GenAI 紅隊演練</a>〉與〈<a href="../../06-assessment-and-verification/ai-testing-guide/index.html">AI Testing Guide</a>〉。要評估成熟度：見〈<a href="../ai-maturity-assessment/index.html">AIMA</a>〉。要依威脅排優先順序：見〈<a href="../threat-defense-compass/index.html">COMPASS</a>〉。</dd>
+  <dt data-n="4">怎麼防止誤用</dt>
+  <dd>把兩份文件放在「決定要管什麼、由誰管」的位置，不要期待它告訴你「這個提示詞注入怎麼擋」。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「治理文件太籠統，所以沒有用。」籠統是因為層級不同。沒有這一層，技術控制常常沒有人買單、沒有人認領、沒有人持續追蹤。</dd>
+</dl>
+</div>
+
+<h2 id="ch5-key">全主題重點整理</h2>
+<div class="keypoints"><ul>
+  <li><strong>定位：</strong>Checklist（v1.1，資源頁 2024-05-07）列出 13 個要想清楚的面向；CoE Guide（資源頁 2024-10-06，內頁 1.0rc）說明誰來做。兩者同屬 AI Security Governance Initiative，都不是法律意見、都不窮盡。</li>
+  <li><strong>策略：</strong>五個威脅標籤、「不使用」也有成本、影子 AI 是最迫切的非攻擊者威脅；六步導入策略與六種部署類型（內文寫五種，圖畫六種）。</li>
+  <li><strong>13 個區塊：</strong>是「該有人回答的問題」；法務與合規描述是 2024 年快照。</li>
+  <li><strong>CoE：</strong>領導團隊＋工作小組；五個目標；十一種角色可裁剪；12 個月四階段是範例。</li>
+  <li><strong>整合：</strong>互補而非互斥；官方明列的搭配資源在 Checklist 的 Resources 一節；其餘對應是作者整理。</li>
+</ul></div>
+
+<h2 id="ch5-self">自我檢核清單</h2>
+<ul class="checklist">
+  <li>我能用一句話分別說明 Checklist 與 CoE Guide 解決的問題，以及它們的版本日期。</li>
+  <li>我能說出五個威脅標籤，並解釋影子 AI。</li>
+  <li>給我一個治理問題，我能指出它屬於 13 個區塊的哪一個。</li>
+  <li>我能說出 CoE 的五個目標與領導團隊的組成，並知道角色可以裁剪。</li>
+  <li>我知道哪些是官方明列的搭配資源，哪些對應是作者整理的。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO1、LO4、LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch5-next">接下來讀什麼</h2>
+<ul>
+  <li>先做本主題的 <a href="quiz.html">總測驗（14 題）</a>。</li>
+  <li>想把「風險排優先順序」做成可操作的工具：<strong>Threat Defense COMPASS</strong>（05 階段下一個主題，同屬 AI Security Governance Initiative）。</li>
+  <li>想要有個衡量組織成熟度的框架：見〈<a href="../ai-maturity-assessment/index.html">AI 成熟度評估（AIMA）</a>〉。</li>
+  <li>想補 agent 與 MCP 的範圍：<a href="../../01-overview/ai-exchange/05-agentic-genai.html">AI Exchange 第 5 章</a>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，LLM Applications Cybersecurity and Governance Checklist v1.1：Resources 一節（OWASP Resources 與 MITRE Resources 兩張表）、TEVV 一節；資源頁日期 2024-05-07；CC BY-SA 4.0；<a href="https://genai.owasp.org/resource/llm-applications-cybersecurity-and-governance-checklist-english/">genai.owasp.org/resource/llm-applications-cybersecurity-and-governance-checklist-english/</a>；2026-10-26 讀取。</li>
+    <li>OWASP GenAI Security Project，LLM and Generative AI Security Center of Excellence Guide（PDF 內頁 1.0rc）：Summary；<a href="https://genai.owasp.org/resource/llm-and-generative-ai-security-center-of-excellence-guide/">genai.owasp.org/resource/llm-and-generative-ai-security-center-of-excellence-guide/</a>；2026-10-26 讀取。</li>
+    <li>GenAI-Top-10-Governance 儲存庫（2026-10-26 嘗試讀取，API 回應 403，內容未能讀取）：<a href="https://github.com/GenAI-Security-Project/GenAI-Top-10-Governance">github.com/GenAI-Security-Project/GenAI-Top-10-Governance</a>。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Governance Checklist、CoE Guide — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'gc-ch5', topic: 'governance-checklist-and-coe', mode: 'chapter',
+  questions: [
+    { id: 'gc5q1', type: 'scn', lo: [5], refs: [{label: '5.1 圖 5-1', href: '05-integration.html#int-which'}],
+      stem: '依本章的判斷流程（作者整理），這家公司最合理的做法是什麼？',
+      scenario: '海港保險（虛構）已任命一位資安副總整體負責 AI 治理。下個月客服部門要導入對話助理，副總想在上線前先確認公司準備好了沒有，並替每個面向找到負責人。盤點後發現缺口不少，團隊想知道該先補哪幾項。',
+      options: [
+        { text: '用 Checklist 的 13 個區塊做上線前的準備度盤點，每個區塊指定主人；缺口多、需要排風險優先順序時，改用 Threat Defense COMPASS。', correct: true, why: '圖 5-1：已有人整體負責，且要在導入案前盤點，走 Checklist 的 13 個區塊；需要排風險優先順序時，由這一支接到 COMPASS。這個判斷流程是作者整理。' },
+        { text: '先組 CoE 領導團隊，因為所有 AI 治理都得從 CoE 開始。', why: '圖 5-1 的第一個問題是「有沒有人整體負責」；這家公司已經有人，不需要退回到成立 CoE 領導團隊那一步。' },
+        { text: '改用 AIMA 排風險優先順序。', why: '圖 5-1 把 AIMA 接在「持續追蹤」那一支，用途是評估成熟度；要依威脅排優先順序的是 COMPASS。' },
+        { text: '只用 CoE 的 OKR 與 KPI 追蹤，不需要另外盤點。', why: 'KPI 對應的是「持續追蹤」；這個情境是導入案之前的準備度盤點，屬於 Checklist 那一支。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 圖 5-1 的第一問「組織裡有沒有人整體負責 AI 治理」：有，所以不必先成立 CoE 領導團隊。(2) 第二問「要在某個導入案前做準備度盤點嗎」：是，客服助理下個月上線，所以用 Checklist 的 13 個區塊，並讓每個區塊有主人。(3) 缺口多、需要排風險優先順序時，圖上由這一支以虛線接到 COMPASS；AIMA 則接在「持續追蹤」支線，用於評估成熟度。</p><p><strong>結論：</strong>先用 Checklist 盤點並指定主人，再視需要用 COMPASS 排優先順序。整張圖是作者整理，非官方。對應教材：<a href="05-integration.html#int-which">5.1 節</a>。</p>' },
+    { id: 'gc5q2', type: 'match', lo: [5], refs: [{label: '5.3 該換的文件', href: '05-integration.html#int-limit'}],
+      stem: '下列情況已經超出 Checklist 與 CoE Guide 的範圍。把每個情況配對到本章建議改查的文件。',
+      cats: [
+        { id: 'ax', label: 'AI Exchange' },
+        { id: 'llm', label: 'Top 10 for LLM Applications 2026' },
+        { id: 'agt', label: 'Top 10 for Agentic Applications 2026' },
+        { id: 'aima', label: 'AIMA（AI 成熟度評估）' }
+      ],
+      items: [
+        { text: '要替一套已規劃好的系統挑選控制，並做風險分析', answer: 'ax', why: '5.3 節：要選控制與做風險分析，改查 AI Exchange。' },
+        { text: '想逐條認識 LLM 應用的風險條目', answer: 'llm', why: '5.3 節：要認識 LLM 應用風險條目，見 Top 10 for LLM Applications 2026。' },
+        { text: '系統加入了會自己行動、呼叫工具的 agent，想知道 agent 特有的風險', answer: 'agt', why: '5.3 節：系統有 agent，見 Top 10 for Agentic Applications 2026（與 Agentic 威脅與緩解）。' },
+        { text: '想評估組織目前的成熟度', answer: 'aima', why: '5.3 節：要評估成熟度，見 AIMA。' }
+      ],
+      summary: '兩份治理文件管「管什麼、由誰管」；要選控制、認識條目、處理 agent、評估成熟度時，換成對應的文件。' },
+    { id: 'gc5q3', type: 'mc', lo: [1, 5], refs: [{label: '5.2 表 5-1', href: '05-integration.html#int-table'}],
+      stem: '一份內部簡報寫道：「依 OWASP 官方，Checklist 與 Threat Defense COMPASS、AIMA 互相對應，且 Checklist 在 v1.1 之後沒有更新版。」依 5.2 節，最準確的修正是哪一項？',
+      options: [
+        { text: '不需要修正，兩句都是官方說法。', why: '表 5-1 把 COMPASS 與 AIMA 標為作者整理；「沒有更新版」也只是教材讀取當時的結果。' },
+        { text: '兩處都要改：COMPASS 與 AIMA 的對應是作者整理（Checklist 與 CoE 的 PDF 都沒有提到它們）；「沒有更新版」只是教材讀取當時沒找到，沒找到不代表沒有，使用前應到資源頁確認。', correct: true, why: '表 5-1 與 5.2 節的「未能確認」提醒：兩項對應都標「作者整理，非官方」，版本則要回資源頁核對。' },
+        { text: '只有 AIMA 的對應要改，COMPASS 是官方在 Checklist 中明列的。', why: '表 5-1 說明兩份 PDF 本身都沒有提到 COMPASS（它後於 2025 年發布），所以這項也是作者整理。' },
+        { text: '只有版本那一句要改；兩項對應都是官方明列的搭配資源。', why: '官方明列的是 SAMM、AI Exchange、Machine Learning Security Top 10、MITRE ATT&amp;CK 與 ATLAS 等資源；COMPASS 與 AIMA 不在其中。' }
+      ],
+      summary: '官方明列的搭配資源在 Checklist 的 Resources 一節；COMPASS、AIMA 的對應是作者整理；版本「沒找到」不等於「沒有」。' },
+    { id: 'gc5q4', type: 'scn', lo: [4, 5], refs: [{label: '5.1 兩份互補', href: '05-integration.html#int-which'}, {label: '4.3 表 4-2', href: '04-coe.html#coe-roles'}],
+      stem: '依本章，對這個主張最合理的回應是什麼？',
+      scenario: '東岳物流（虛構）已有資安長整體負責 AI 治理，並用 Checklist 完成盤點：13 個區塊中，法規與合規相關的區塊沒有任何人認領，客服與業務端也沒有人被指派。有人主張：「Checklist 和 CoE 二選一，既然已經用了 Checklist，就不必再看 CoE Guide。」',
+      options: [
+        { text: '同意：兩份文件互斥，用了其中一份就完成了。', why: '5.1 節明說兩份文件是互補而非互斥；盤點完才發現沒有主人的區塊，正是 CoE 要處理的。' },
+        { text: '同意，但把沒人認領的區塊都交給資安長一個人兼任。', why: '單一人回答所有區塊，無法覆蓋法務與業務端的問題；CoE 的設計是把不同領域的代表放進同一個跨部門結構。' },
+        { text: '不同意：改成只做 CoE，不再使用 Checklist。', why: '兩者互補：CoE 成立後，Checklist 正好是它第一份可使用的工作清單，不是用 CoE 取代它。' },
+        { text: '不同意：兩者互補。沒有主人的區塊回頭成為 CoE 要補的角色（例如法務與合規、業務單位代表），再用 CoE 的 OKR 與 KPI 持續追蹤。', correct: true, why: '5.1 節的互補關係，加上 4.3 節表 4-2 的角色：Legal and Compliance 與 Line of Business Representation 正好對應缺人的區塊。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 5.1 節：兩份文件互補而非互斥；CoE 成立後，Checklist 是它第一份工作清單；Checklist 跑完後，沒有主人的區塊又會回頭成為 CoE 要補的角色。(2) 這家公司的缺口是「法規與合規區塊沒人認領、客服與業務端沒人被指派」，在 4.3 節表 4-2 中，對應的角色是 Legal and Compliance 與 Line of Business Representation。(3) 補上人之後，要確認有沒有在運作，這是 CoE 的 OKR 與 KPI 的用途（4.2 節）。</p><p><strong>結論：</strong>兩者並用：用 CoE 補角色，用 Checklist 當工作清單，用 KPI 持續追蹤。這個接法屬 5.1 節的作者整理。對應教材：<a href="05-integration.html#int-which">5.1 節</a>、<a href="04-coe.html#coe-roles">4.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

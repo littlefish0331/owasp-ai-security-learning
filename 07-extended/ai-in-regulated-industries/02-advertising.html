@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　廣告系統：五道關卡｜受管制領域的 AI 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AI-Powered Advertising Systems Security Cheat Sheet 的五節：同意作為 AI 決策的閘門、語料、推論與提示邊界、結果事件與 agentic 行動、供應鏈與生成內容的來源證明；以及文件自己標出的邊界與縱深。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="ai-in-regulated-industries" data-page="02-advertising.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　廣告系統：五道關卡</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position.html">第 1 章</a></li>
+</ul>
+<p class="lead">廣告平台每收到一個廣告請求，就要用 AI 做一次帶金額的決定：誰看到、出多少價、哪個創意能上架。這份速查表把控制切成五節，每節守一個「攻擊者碰得到 AI 的地方」。本章依序走過這五道關卡，但真正要學的是文件反覆標出的區別：<strong>哪些是邊界，哪些只是縱深</strong>。</p>
+
+<h2 id="ad-five">2.1 五節總覽：守的是什麼、誰碰得到</h2>
+<div class="table-wrap"><table>
+<caption>表 2-1　廣告速查表五節總覽（「誰碰得到」欄為作者整理，非官方）</caption>
+<thead><tr><th scope="col">節</th><th scope="col">守的資產</th><th scope="col">誰碰得到（作者整理）</th></tr></thead>
+<tbody>
+<tr><th scope="row">1 以同意作為 AI 決策的閘門 <br>(Gate AI Decisions on Consent)</th><td>個人資料何時可以進模型</td><td>使用者的同意與撤回；兒童導向流量</td></tr>
+<tr><th scope="row">2 保護語料 <br>(Protect the Corpus)</th><td>訓練資料與 RAG 索引</td><td>以高頻率寫入的對抗性參與者</td></tr>
+<tr><th scope="row">3 保護推論與提示邊界 <br>(Protect Inference and the Prompt Boundary)</th><td>對付費夥伴開放的評分介面；讀不可信文字的 LLM</td><td>付費夥伴、發布者網頁、廣告主著陸頁與 brief 欄位</td></tr>
+<tr><th scope="row">4 保護結果事件與 agentic 行動 <br>(Protect Outcome Events and Agentic Actions)</th><td>結果回呼（同時是錢與訓練標籤）；有工具的 agent</td><td>偽造回呼者；被注入的 agent</td></tr>
+<tr><th scope="row">5 保護 AI 供應鏈與生成內容的來源證明 <br>(Protect the AI Supply Chain and Generative Provenance)</th><td>模型成品、特徵庫、生成端點</td><td>不經過廣告投放面的路徑；供應鏈上偽冒的賣方</td></tr>
+</tbody></table></div>
+<p>每一節的最後都有一張三欄表：<strong>威脅 → 證據 → 執行期訊號</strong>。「證據」是用什麼測試或稽核證明這項控制有效，「執行期訊號」是上線後看什麼指標才知道它還在運作。例如第 1 節第一列：威脅是「模型對未同意的使用者執行」，證據是整合測試證明未同意的請求不會產生模型呼叫，訊號是依同意狀態分組的模型呼叫率。這個格式本身就是值得帶走的做法。</p>
+
+<h2 id="ad-consent">2.2 第一關：同意是授權檢查</h2>
+<div class="concept">
+<h3 id="c-consent">把同意放在模型呼叫之前，而不是丟給模型</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>文件的第一條原則：把同意 (Consent) 當成<strong>授權檢查</strong>，不是模型特徵。也就是由程式碼在模型呼叫之前判斷這個請求有沒有資格走到模型，而不是把「是否同意」當成一個輸入欄位，指望模型自己權衡。</dd>
+  <dt data-n="2">為什麼</dt>
+  <dd>文件的法規陳述（教材只轉述、不查證）：用個人資料跑個人化、定向、排名或相似受眾模型，就是剖析 (Profiling)；只讀頁面內容、不碰使用者資料的情境式審查不在此列，但一旦輸出被連到使用者識別碼，這個豁免就結束，所以<strong>「連接」的那一刻才是同意附著的地方</strong>。文件要求把「寫入識別碼」與「呼叫模型」分開設閘，並說模型呼叫是團隊最常漏掉的那一道。</dd>
+  <dt data-n="3">怎麼被繞過（概念層級）</dt>
+  <dd>兒童導向流量的判斷若只信請求端自己的宣告就會失守：文件指出 OpenRTB 的 <code>regs.coppa</code> 由發送方自行宣告，省略時還預設放行 (fail open)，所以它只能提高門檻，不是邊界。另一條路是撤回同意之後，衍生物（分群、相似受眾分數、LLM 服務用的 KV 快取、轉接器暖池）仍留著，模型照樣用。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>(a) 兒童導向以平台掌控的分類（發布者端旗標、成年年齡訊號、兒童帳號標籤）拒絕模型呼叫；沒有這類分類時<strong>失效即拒絕</strong>，視為兒童導向。(b) 即時退出訊號（文件列 Sec-GPC、<code>regs.gpp</code>、ATT 等）在「取特徵」這一步就要尊重。(c) 退出時使衍生物失效。(d) 訓練語料依同意範圍切分。(e) 測試能否從一般輸入推論出特殊類別。(f) 就業、住房、信貸廣告走更嚴格的路徑；文件為此列舉了歐盟與美國的法規，教材不展開。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「系統裡存了同意字串，所以模型可以用。」文件要的是證據：整合測試證明未同意請求沒有模型呼叫、「撤回再重放」回歸測試證明撤回後模型沒有再跑，以及執行期看得到的訊號（依同意狀態的模型呼叫率、退出後的快取命中／未命中率，加上過期快取告警）。</dd>
+</dl>
+</div>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="同意閘門決策流程：廣告請求進來，先用平台掌控的分類判斷是否兒童導向；是或分類不可用則拒絕模型呼叫。否則看是否用到使用者資料或要把結果連到識別碼；若只讀頁面內容則走情境式審查，不以剖析同意為閘門。若用到，則檢查同意有效且沒有即時退出訊號；沒有就不寫入識別碼也不呼叫模型；有才呼叫模型，退出時再使衍生物失效。">
+flowchart TB
+  A["廣告請求進來"] --> B{"平台分類：<br>兒童導向？"}
+  B -->|"是，或分類不可用"| X["拒絕模型呼叫<br>視為兒童導向"]
+  B -->|"否"| C{"用到使用者資料，<br>或要連到識別碼？"}
+  C -->|"否：只讀頁面內容"| M["情境式審查<br>不以剖析同意為閘門"]
+  C -->|"是"| D{"同意有效，<br>且無即時退出？"}
+  D -->|"否"| N["不寫識別碼<br>不呼叫模型"]
+  D -->|"是"| E["呼叫模型"]
+  E --> F["退出時：衍生物失效<br>分群、分數、快取"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class F author
+</pre>
+<figcaption><strong>圖 2-1　同意閘門的決策流程。</strong>各分支取自第 1 節的條文；圖是依其重新繪製的簡化版。「退出時衍生物失效」接在流程末端是作者為了完整而加的畫法，屬作者整理，非官方畫法（虛線框）。</figcaption>
+</figure>
+
+<h2 id="ad-mid">2.3 第二至第四關：語料、推論、事件</h2>
+<p><strong>第二關，語料。</strong>文件的前提是：訓練資料與 RAG 索引由對抗性參與者高頻率寫入（通用管線控制見<a href="../../03-prompt-injection-rag-practice/rag-security/index.html">RAG 安全主題</a>）。它獨有的做法是：每一列訓練資料與每個區塊都貼<strong>參與者來源標籤 (Participant-Provenance Tag)</strong>，讓「排除夥伴 X 在 Y 期間送的所有資料」不必重新雜湊就能回答；結果事件進訓練前先隔離一段裁決視窗，之後依無效流量的裁決回頭移除。</p>
+<p><strong>第三關，推論與提示邊界。</strong>每個對付費夥伴開放的評分介面都是可被查詢的神諭，所以回傳等級標籤而不是原始分數，並用技術手段落實契約中的查詢預算 (Query Budget)。對攻擊者可控的文字（發布者 HTML、著陸頁、brief 欄位），文件要求雙 LLM 結構性交接 (Dual-LLM)：隔離的 LLM 只輸出固定結構，特權的 LLM 只讀該結構（<a href="../../03-prompt-injection-rag-practice/prompt-injection/03-architectural-defense.html">提示詞注入防護第 3 章</a>講過這個模式）；每個會改變營收的布林判決，再與<strong>非 LLM 規則基線</strong>交叉比對。</p>
+<p><strong>第四關，結果事件與 agentic 行動。</strong>文件的一句話：每個結果回呼都是「錢與訓練標籤合在同一個封包」。所以回呼簽署範圍要含金鑰 ID、事件類型、事件 ID、時間戳、金額與接收端點；事件類型必須在內，因為同一個曝光 ID 會在不同事件類型間重複使用。只簽欄位還不夠，內容本文也要涵蓋（把內容摘要列為被涵蓋的元件，並對照收到的位元組重新驗證）；去重用事件 ID，不用「事件 ID 加時間戳」；財務結算與訓練標籤的產生要分開。文件另有一句值得記住：<strong>驗證事件是資料事件</strong>，憑證洩漏後除了輪替，還要把暴露期間的資料列標為可疑、使該夥伴的權重與模型成品失效。agentic 工具依風險分級，人在迴路 (Human-in-the-Loop, HITL) 的核准綁定六元組（行動者、工具、目標、正規化參數、時間戳、到期時間），並預先部署規則式出價器當後備，由控制平面一次切換接手流量。</p>
+
+<h2 id="ad-supply">2.4 第五關，以及文件自己標出的「邊界」與「縱深」</h2>
+<p><strong>第五關，供應鏈與生成內容的來源證明 (Provenance)。</strong>文件指出模型成品、特徵庫、RAG 索引與生成端點，都有不經過廣告投放面的到達路徑。所以簽署每個模型成品、簽章失敗就阻擋部署；把 CycloneDX ML-BOM 條目綁到第 2 節的參與者來源標籤，作為「範圍性回滾查詢」的主鍵（物料清單的觀念見<a href="../aibom/index.html">AIBOM 主題</a>）；依投放模式驗證參與者來源（程式化購買、零售、搜尋、CTV 各有不同的驗證方式）；影片程式化與 CTV 直接拒絕 VPAID，因為它讓廣告自帶 JavaScript 在播放器內執行，文件說沙箱化不可行。生成端點方面，文件陳述平台與廣告主依歐盟 AI 法案分別是提供者與部署者，各有標記與揭露義務（教材不查證）；技術上要求在輸出位元組上做 C2PA 的硬綁定、每個轉譯版本重新簽署，涉及真人肖像或聲音的 brief 必須先有使用授權文件；事件期間可從控制平面凍結生成模型的版本。</p>
+<p>讀完五節，最有價值的是文件自己標出的限制。下表整理它在哪些地方明說「這不是邊界」（引用的第三方研究是文件的引用，教材未查證）：</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　文件自己標出的「不是邊界」（原因欄為文件自述，節略）</caption>
+<thead><tr><th scope="col">控制</th><th scope="col">文件的定位</th><th scope="col">文件給的理由</th></tr></thead>
+<tbody>
+<tr><th scope="row">OpenRTB 的 <code>regs.coppa</code> 旗標</th><td>提高門檻的訊號，不是邊界</td><td>由發送方自行宣告，省略時預設放行</td></tr>
+<tr><th scope="row">固定錨點區塊 (k of n)</th><td>檢索完整性檢查，不是邊界；非 LLM 規則基線才是最後防線</td><td>選哪一組錨點的類別判斷，本身來自攻擊者可控的文字，上游被引導就能整個跳過</td></tr>
+<tr><th scope="row">多樣性取樣檢索 (MMR)</th><td>縱深防禦 (Defense in Depth)，不是邊界</td><td>所引研究沒有針對對抗性前綴評估 MMR，且前綴能壓過「忽略無關脈絡」的指示</td></tr>
+<tr><th scope="row">更新後模型的觸發掃描</th><td>縱深，不是邊界</td><td>所引 NIST 文件稱某些偵測法對乾淨標籤後門無效；所引研究稱安全訓練移除不了；來源證明約束誰能出貨，卻不驗證訓練了什麼，被授權的供應商也能簽署帶後門的成品</td></tr>
+<tr><th scope="row">回傳等級標籤而非原始分數</th><td>提高萃取成本，並非防止</td><td>所引研究只靠標籤也能萃取出吻合逾 99% 輸入的模型，只是查詢最多多 100 倍，所以<strong>查詢預算才是控制</strong>（協定必須的金額欄位仍要精確）</td></tr>
+<tr><th scope="row">兩個不同訓練的 VLM 並用</th><td>縱深；規則式創意政策分類器是自動化底線，人工審查是邊界</td><td>所引研究顯示同一張圖可跨模型轉移，共用 LLM 骨幹時最明顯，兩者仍可能同時判錯</td></tr>
+<tr><th scope="row">語音複製／AI 內容偵測器</th><td>只用來排序審查優先順序</td><td>跨生成器、語言與雜訊音訊都有限制；偵測為負不代表有權使用該聲音，授權要獨立驗證</td></tr>
+</tbody></table></div>
+<p class="small"><span class="tag author">作者整理，非官方</span>：這種「縱深、提高成本、真正邊界」的區分，和提示詞注入七層防線把層 1–2 歸為降低成功率、層 3–7 歸為限縮後果相近（<a href="../../01-overview/ai-exchange/04-seven-layers.html#sl-concept">AI Exchange 第 4 章</a>）；把廣告文件的標示放進那個框架，是作者的讀法。</p>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>廣告速查表五節：同意、語料、推論與提示邊界、結果事件與 agentic 行動、供應鏈與生成內容的來源證明；每節附「威脅／證據／執行期訊號」表。</li>
+  <li>同意是授權檢查，放在模型呼叫之前；寫入識別碼與呼叫模型分開設閘；發送方宣告的旗標只提高門檻；撤回時衍生物一併失效。</li>
+  <li>結果回呼是錢與標籤合一：簽署範圍含事件類型與內容本文，以事件 ID 去重；驗證事件是資料事件。</li>
+  <li>文件反覆標出「不是邊界」：錨點檢查、MMR、觸發掃描、等級標籤、VLM 並用、偵測器、提示詞保密；真正的邊界是非 LLM 規則基線、查詢預算、人工審查與確定性後處理器。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說明同意為什麼是授權檢查，以及兒童導向判斷為什麼不能只信請求端的宣告。</li>
+  <li>我能說出一個結果回呼簽署需要涵蓋哪些欄位，以及為什麼只簽欄位不夠。</li>
+  <li>我能對文件中的一個控制，說出它是邊界還是縱深，以及文件給的理由。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-aml-identity-and-failclosed.html">第 3 章　AML 與制裁（上）：身分、篩查、稽核軌跡與失效即拒絕</a>：換到支付領域，看同一批原則怎麼出現在另一份速查表。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series, <em>AI-Powered Advertising Systems Security Cheat Sheet</em>（第 1–5 節）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/AI-Powered_Advertising_Systems_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；無版本號；GitHub 首次提交 2026-09-14、最近修改 2026-10-04；2026-10-26 讀取；CC BY-SA 4.0。文件所引法規、標準與第三方研究，教材只轉述文件的說法，未逐一查證。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series 的 AI-Powered Advertising Systems Security Cheat Sheet — CC BY-SA 4.0（站台頁尾與儲存庫 LICENSE.md）。本頁未使用 NC（非商業）授權的來源。法規相關內容為文件陳述的轉述，不是法律意見。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'r-ch2', topic: 'ai-in-regulated-industries', mode: 'chapter',
+  questions: [
+    { id: 'r2q1', type: 'mc', lo: [2], refs: [{label: '2.2 核心概念', href: '02-advertising.html#c-consent'}],
+      stem: '依廣告速查表，「同意」在系統中最恰當的位置是？',
+      options: [
+        { text: '放在模型呼叫之前的授權檢查，並且和「寫入識別碼」分開各設一道閘。', correct: true, why: '符合 2.2 節：模型呼叫是團隊最常漏掉的閘。' },
+        { text: '當成一個模型輸入特徵，讓模型學會在不同意時給保守的預測。', why: '文件明說同意是授權檢查，不是模型特徵。' },
+        { text: '只在寫入使用者識別碼時檢查；模型呼叫不需要再看同意。', why: '文件特別指出模型呼叫是最常漏掉的閘，兩者要分開設。' },
+        { text: '只在事後稽核時檢查，確認有沒有違規即可。', why: '文件要的是呼叫前的閘門，加上證據與執行期訊號。' }
+      ],
+      summary: '同意 = 呼叫前的授權檢查；識別碼寫入與模型呼叫分開設閘。' },
+    { id: 'r2q2', type: 'scn', lo: [2], refs: [{label: '2.2 怎麼被繞過', href: '02-advertising.html#c-consent'}, {label: '表 2-2', href: '02-advertising.html#ad-supply'}],
+      stem: '依本章，這個設計最需要補的是什麼？',
+      scenario: '遠帆廣告（虛構）的需求端平台，以請求中 OpenRTB 的 regs.coppa 欄位決定要不要對某次請求呼叫個人化模型：欄位為 1 就跳過模型，其餘一律呼叫。某些來源的請求完全沒有帶這個欄位。',
+      options: [
+        { text: '沒有問題，欄位是業界標準，來源應該都會帶。', why: '文件指出該欄位由發送方自行宣告，省略時預設放行。' },
+        { text: '改成欄位缺失時一律呼叫模型，以提高廣告收益。', why: '這正是文件警告的 fail open。' },
+        { text: '改成欄位為 1 時才呼叫模型。', why: '方向相反，仍然信任發送方的宣告。' },
+        { text: '把該欄位當成提高門檻的訊號；邊界改用平台掌控的分類（發布者端旗標、年齡訊號、兒童帳號標籤），沒有這類分類時視為兒童導向並拒絕模型呼叫。', correct: true, why: '符合 2.2 節與表 2-2 第一列。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 文件指出 regs.coppa 是發送方宣告、省略時預設放行，所以不是邊界。(2) 邊界要靠平台自己掌控的分類。(3) 分類不可用時要失效即拒絕，視為兒童導向。</p><p><strong>結論：</strong>把旗標降級為「提高門檻」的訊號，補上平台分類與缺失時的拒絕。教材不查證相關法規的現況。對應教材：<a href="02-advertising.html#c-consent">2.2 節</a>。</p>' },
+    { id: 'r2q3', type: 'match', lo: [2], refs: [{label: '2.4 表 2-2', href: '02-advertising.html#ad-supply'}],
+      stem: '把下列控制配對到文件對它的定位。',
+      cats: [
+        { id: 'depth', label: '縱深防禦：降低機率，不是邊界' },
+        { id: 'cost', label: '提高成本，並非防止；真正的控制是另一項' },
+        { id: 'floor', label: '最後防線／真正的邊界' }
+      ],
+      items: [
+        { text: '多樣性取樣檢索 (MMR)', answer: 'depth', why: '表 2-2：縱深，不是邊界。' },
+        { text: '對付費夥伴回傳等級標籤而非原始分數', answer: 'cost', why: '表 2-2：提高萃取成本；查詢預算才是控制。' },
+        { text: '非 LLM 的規則基線（錨點不足時改走）', answer: 'floor', why: '表 2-2：錨點檢查本身不是邊界，規則基線才是最後防線。' },
+        { text: '對更新後的模型做觸發掃描', answer: 'depth', why: '表 2-2：縱深；來源證明也不驗證訓練了什麼。' }
+      ],
+      summary: '文件把控制分為縱深、提高成本與真正邊界。' },
+    { id: 'r2q4', type: 'mc', lo: [2], refs: [{label: '2.3 第四關', href: '02-advertising.html#ad-mid'}],
+      stem: '依廣告速查表，為什麼結果回呼的簽署範圍要包含「事件類型」，並且要涵蓋內容本文，而不只是幾個欄位？',
+      options: [
+        { text: '因為事件類型欄位比較長，簽起來比較安全。', why: '理由與長度無關。' },
+        { text: '因為簽署事件類型之後就不需要再去重了。', why: '文件另外要求以事件 ID 去重，兩者不同。' },
+        { text: '同一個曝光 ID 會在不同事件類型間重複使用；而只簽欄位時，其他內容（如幣別、數量、標籤）仍可被改動，簽章卻照樣驗得過。', correct: true, why: '符合 2.3 節第四關。' },
+        { text: '因為內容本文簽署可以取代 TLS。', why: '文件沒有這樣說，兩者是不同層的保護。' }
+      ],
+      summary: '簽署範圍：含事件類型；涵蓋內容本文；另以事件 ID 去重。' }
+  ]
+});
+</script>
+</body>
+</html>

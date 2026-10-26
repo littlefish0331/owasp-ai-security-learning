@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 章　兩個領域的共同模式與收尾｜受管制領域的 AI 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="把廣告與 AML 兩份領域速查表放在一起：可稽核的證據、預設拒絕、失敗時的姿態三個共同模式；與 ACS、事件應變、資料安全的銜接（標明文件有寫與作者整理）；以及兩個虛構情境，練習把通用控制翻譯到自己的領域。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="ai-in-regulated-industries" data-page="05-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 5 章　兩個領域的共同模式與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO5</li>
+  <li>前置：<a href="04-aml-receipt-and-freshness.html">第 4 章</a></li>
+</ul>
+<p class="lead">廣告平台與支付機構幾乎沒有共同的業務，兩份速查表卻反覆出現同樣的幾個想法。這一章把它們並排看：哪些模式是兩份文件都有寫的，哪些銜接是文件寫的、哪些是教材的讀法；最後用兩個虛構情境，練習把通用控制翻譯到一個文件<strong>沒有寫到</strong>的領域。</p>
+
+<h2 id="ig-pattern">5.1 三個共同模式</h2>
+<p>下表的第二、三欄是文件的內容（意譯）；「共同模式」這個歸納與右欄的對應連結，是<span class="tag author">作者整理，非官方</span>，兩份文件沒有互相引用。</p>
+<div class="table-wrap"><table>
+<caption>表 5-1　兩份速查表的三個共同模式（模式名稱與右欄對應為作者整理，非官方）</caption>
+<thead><tr><th scope="col">共同模式</th><th scope="col">廣告速查表</th><th scope="col">AML 與制裁速查表</th><th scope="col">通用文件的對應</th></tr></thead>
+<tbody>
+<tr><th scope="row">可稽核的證據</th><td>每個威脅都配「證據」與「執行期訊號」；資料列與區塊貼來源標籤，ML-BOM 作為範圍性回滾的主鍵；簽署清單與成品</td><td>簽署、雜湊串接的稽核軌跡；收據含名單版本、時間戳並綁定交易；稽核紀錄可匯出供監理檢查</td><td>清單是前提不是防線（<a href="../aibom/02-why-and-what.html#wh-concept">AIBOM 第 2 章</a>）；證據的定義（<a href="../../06-assessment-and-verification/aisvs-and-llmsvs/04-evidence-and-integration.html#ev-evidence">AISVS 與 LLMSVS 第 4 章</a>）</td></tr>
+<tr><th scope="row">預設拒絕 <br>(Deny by Default)</th><td>沒有平台掌控的分類，就視為兒童導向並拒絕模型呼叫；簽章失敗阻擋部署；直接拒絕 VPAID</td><td>沒有密碼學證明的自我宣告標頭一律拒絕；匿名 agent 不得存取篩查服務；agent 不得繞過篩查直接呼叫付款端點</td><td><a href="../../primer-security-for-developers.html#p-lp">資安前置觀念 §5</a>（最小權限、預設拒絕）</td></tr>
+<tr><th scope="row">失敗時的姿態</th><td>錨點不足就改走非 LLM 規則基線，並視它為最後防線；預先部署規則式出價器，一次切換接手流量</td><td>篩查未完成是未解決、不是放行；失敗要記錄、告警；熔斷器停止 agent 發起的付款</td><td><a href="../agent-control-standard/03-failure-posture.html#fp-tradeoff">ACS 第 3 章</a>（預設放行的取捨）、<a href="../../03-prompt-injection-rag-practice/rag-security/04-generate-and-integrate.html#gi-tools-fail">RAG 安全第 4 章</a>（失效即拒絕）</td></tr>
+</tbody></table></div>
+<p>三個模式背後有一個兩份文件都明說的前提：<strong>證據不等於正確</strong>。廣告文件說，來源證明約束誰能出貨，卻不驗證訓練了什麼；AML 文件說，簽章提供來源與完整性，不證明發行者的篩查做對。所以「可稽核」是讓事後查得出來，而不是讓事前就正確；預設拒絕與失敗姿態才負責事前與出錯當下。</p>
+
+<h2 id="ig-link">5.2 與前面主題的銜接：文件寫了什麼、作者怎麼讀</h2>
+<div class="table-wrap"><table>
+<caption>表 5-2　銜接點與依據（「依據」欄標明是文件原文或作者整理，非官方）</caption>
+<thead><tr><th scope="col">銜接的主題</th><th scope="col">銜接點</th><th scope="col">依據</th></tr></thead>
+<tbody>
+<tr><th scope="row">RAG 安全、提示詞注入防護、MCP 安全</th><td>兩份文件把通用機制明寫指回這些速查表（表 1-2）</td><td>文件原文</td></tr>
+<tr><th scope="row"><a href="../agent-control-standard/03-failure-posture.html">Agent Control Standard 第 3 章</a></th><td>ACS 預設放行並要求放行時留痕；AML 文件要求失敗與成功記錄得一樣詳細。涉及錢與不可逆動作的選擇，與 ACS 章情境 B 的結論一致</td><td>作者整理，非官方（ACS 與兩份速查表沒有互相引用）</td></tr>
+<tr><th scope="row"><a href="../aibom/02-why-and-what.html">AIBOM 第 2 章</a>與 <a href="../incident-response-and-deepfake/index.html">事件應變主題</a></th><td>廣告文件把 ML-BOM 當回滾查詢的主鍵，並要求事件時從控制平面凍結生成模型版本、驗證事件視為資料事件；IR 指南在根除階段要求重新產生 BOM</td><td>前半是廣告文件原文；與 IR 指南的連結是作者整理，非官方</td></tr>
+<tr><th scope="row"><a href="../incident-response-and-deepfake/04-deepfake-and-integration.html#c-integ">事件應變第 4 章（日誌的張力）</a>與資料安全</th><td>AML 稽核項目記錄「參數的雜湊，而不是原始參數，為了隱私」。這與資料安全文件的最少日誌原則同一方向</td><td>作者整理，非官方（文件沒有互相引用；兩邊是否有意互補，未能確認）</td></tr>
+<tr><th scope="row"><a href="../../04-agentic-and-mcp/agentic-top-10-2026/index.html">Agentic 系列</a></th><td>廣告文件的人在迴路核准綁定六元組；AML 文件在需要人工核准時，要核准者看到並確認關鍵交易資料。兩者都在處理「核准的是什麼」</td><td>前半文件原文；歸為同一類問題是作者整理，非官方</td></tr>
+</tbody></table></div>
+
+<h2 id="ig-translate">5.3 步驟：把通用控制翻譯到自己的領域</h2>
+<p>前面各章的做法可以歸納成一條流程。這條流程是<span class="tag author">作者整理，非官方</span>：文件沒有給這樣的步驟，但它的格式（威脅、證據、執行期訊號）和各節的邊界標示，是流程的依據。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="翻譯步驟：選一個通用控制。第一步，找出這個領域的資產，以及誰能寫入或操縱它。第二步，寫下失敗時的姿態，是拒絕還是放行並留痕，涉及錢、不可逆動作或法律義務的傾向拒絕。第三步，為這項控制寫出證據與執行期訊號。第四步，標出它是邊界還是縱深，以及文件或你自己說不證明什麼。第五步，需要法規判斷的部分交給法務，不自行補充。">
+flowchart TB
+  S["選一個通用控制"] --> A["1 領域資產<br>誰能寫入或操縱"]
+  A --> B["2 失敗姿態<br>拒絕或放行並留痕"]
+  B --> C["3 證據與<br>執行期訊號"]
+  C --> D["4 邊界或縱深<br>不證明什麼"]
+  D --> E["5 法規判斷<br>交給法務"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,A,B,C,D,E author
+</pre>
+<figcaption><strong>圖 5-1　翻譯通用控制的五個步驟。</strong>整張圖是<strong>作者整理，非官方</strong>（虛線框）；格式來自廣告文件各節的威脅／證據／執行期訊號表與 AML 文件的關鍵原則。</figcaption>
+</figure>
+
+<h2 id="ig-scn-a">5.4 情境 A：偽造的轉換回呼</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：藍灣媒體的零售廣告</h3>
+<p><span class="tag fiction">虛構</span> 藍灣媒體是虛構的零售媒體平台。夥伴品牌透過回呼把「轉換」事件傳回平台，平台依這些事件結算費用，同時拿它們當訓練標籤，讓出價模型自動調整。某夥伴的回呼簽署憑證外洩，平台只做了輪替。</p>
+<p class="arch"><strong>架構：</strong>夥伴系統 → 簽署回呼 → 平台驗章與去重 → 結算系統與訓練管線 → 出價模型。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>憑證外洩期間，有人用它送出看起來合法的轉換回呼。出價模型開始偏愛某些版位，夥伴的對帳也出現差異。</li>
+  <li><strong>哪一環出問題：</strong>(a) 憑證輪替後，暴露期間的資料列沒有被標為可疑，仍進了訓練；(b) 簽署範圍沒有包含事件類型與內容本文，回呼被改成別種事件仍驗得過；(c) 去重用「事件 ID 加時間戳」，重新簽署過的同一個事件通過了。</li>
+  <li><strong>對應文件：</strong>廣告速查表第 4 節（簽署範圍、去重、驗證事件是資料事件）與第 2 節（結果事件隔離期）。</li>
+  <li><strong>該採的控制：</strong>輪替憑證之外，還要標記暴露期間的資料列、使該夥伴的權重與模型成品失效；簽署範圍補上事件類型並涵蓋內容本文；改用事件 ID 去重；財務結算與訓練標籤分開產生；證據用「憑證輪替演練」確認三個資料面動作都有觸發，訊號看輪替後以夥伴為單位的模型漂移監控。</li>
+  <li><strong>學到什麼：</strong>這個情境的關鍵是<strong>驗證事件同時是資料事件</strong>：只處理憑證，沒有處理已進入模型的資料，傷害還在。</li>
+</ol>
+</div>
+
+<h2 id="ig-scn-b">5.5 情境 B：文件沒有寫到的領域</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：海燕保險的理賠付款 agent</h3>
+<p><span class="tag fiction">虛構</span> 海燕保險是虛構的保險公司。它讓一個 AI agent 在理賠審核通過後發起付款，付款前要呼叫一個外部的名單比對服務。兩份速查表都沒有談保險，也沒有談理賠；以下是用圖 5-1 的步驟做的<span class="tag author">作者整理，非官方</span>練習，不代表任何官方的建議，也不涉及任何法規判斷。</p>
+<ol class="steps">
+  <li><strong>步驟 1，資產與操縱者：</strong>資產是付款動作與比對結果；能操縱的包括提交文件的人（寫進 agent 脈絡的文字）與比對服務本身（可能被阻斷）。</li>
+  <li><strong>步驟 2，失敗姿態：</strong>比對服務逾時，是「未解決」，不是「通過」；付款是不可逆動作，傾向暫緩。比照 AML 文件的做法，錯誤要能區分「服務不可用」與「已比對且命中」。</li>
+  <li><strong>步驟 3，證據與訊號：</strong>證據：整合測試證明比對逾時時不會發出付款；訊號：比對失敗率，達門檻通知負責人。收據要寫明比對所用名單的版本與時間，並綁定該筆付款。</li>
+  <li><strong>步驟 4，邊界或縱深：</strong>收據的簽章只證明來源與完整性，不證明比對服務做得對；下游驗證者要自己設定可接受的名單年齡。agent 的身分憑證不等於「客戶是誰」的認定。</li>
+  <li><strong>步驟 5，法規判斷：</strong>是否有法定的比對、保存或通報義務，由海燕的合規與法務判斷；教材不補充任何法規。</li>
+</ol>
+</div>
+
+<h2 id="ch5-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>三個共同模式（作者歸納）：可稽核的證據、預設拒絕、失敗時的姿態；背後的前提是證據不等於正確。</li>
+  <li>銜接要分清楚：文件明寫的只有「通用機制指回通用速查表」；與 ACS、IR 指南、資料安全的連結是作者整理，兩份速查表與它們沒有互相引用。</li>
+  <li>翻譯到自己的領域：資產與操縱者、失敗姿態、證據與訊號、邊界或縱深、法規交給法務。</li>
+  <li>驗證事件同時是資料事件；涉及錢的動作，「未完成」不是「通過」。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能舉出兩個共同模式，並各說出兩份文件中對應的一條控制。</li>
+  <li>我能分辨一個銜接是文件原文，還是作者整理。</li>
+  <li>我能用五個步驟，把一個通用控制翻譯到文件沒有談到的領域，並說出哪一步必須交給法務。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch5-next">接下來讀什麼</h2>
+<p>先做<a href="quiz.html">總測驗</a>，再看<a href="references.html">參考資料與來源核對</a>。若你的系統涉及 agent 的通用安全，回到 04 階段的主題；若你的領域有自己的合規要求，這個主題教的是讀法，不是答案，請與法務一起讀。其他 07 延伸主題見<a href="../../index.html">首頁學習地圖</a>。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series, <em>AI-Powered Advertising Systems Security Cheat Sheet</em>：<a href="https://cheatsheetseries.owasp.org/cheatsheets/AI-Powered_Advertising_Systems_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；無版本號；GitHub 首次提交 2026-09-14、最近修改 2026-10-04；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP Cheat Sheet Series, <em>AML and Sanctions Compliance for AI Agent Payments Cheat Sheet</em>：<a href="https://cheatsheetseries.owasp.org/cheatsheets/AML_Sanctions_AI_Agent_Payments_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；無版本號；GitHub 首次提交 2026-06-03、最近修改 2026-10-18；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>與本教材其他主題的銜接為作者整理，來源見各主題的「本章來源」。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series 的兩份速查表 — CC BY-SA 4.0（站台頁尾與儲存庫 LICENSE.md）。本頁未使用 NC（非商業）授權的來源。情境皆為虛構，不是法律意見。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'r-ch5', topic: 'ai-in-regulated-industries', mode: 'chapter',
+  questions: [
+    { id: 'r5q1', type: 'match', lo: [5], refs: [{label: '5.1 表 5-1', href: '05-integration.html#ig-pattern'}],
+      stem: '把下列兩份速查表中的控制，配對到它所屬的共同模式（共同模式的歸納是作者整理）。',
+      cats: [
+        { id: 'evid', label: '可稽核的證據' },
+        { id: 'deny', label: '預設拒絕' },
+        { id: 'fail', label: '失敗時的姿態' }
+      ],
+      items: [
+        { text: '收據簽入名單版本與時間戳，並綁定到交易', answer: 'evid', why: '表 5-1：可稽核的證據。' },
+        { text: '沒有平台掌控的分類時，視為兒童導向並拒絕模型呼叫', answer: 'deny', why: '表 5-1：預設拒絕。' },
+        { text: '篩查逾時視為未解決，暫緩付款並通知合規', answer: 'fail', why: '表 5-1：失敗時的姿態。' },
+        { text: '匿名 agent 不得存取篩查服務', answer: 'deny', why: '表 5-1：預設拒絕。' }
+      ],
+      summary: '證據、預設拒絕、失敗姿態各有廣告與 AML 的對應控制。' },
+    { id: 'r5q2', type: 'mc', lo: [5], refs: [{label: '5.2 表 5-2', href: '05-integration.html#ig-link'}],
+      stem: '下列關於「兩份速查表與 ACS、IR 指南的銜接」的說法，哪一項最符合本章的標示方式？',
+      options: [
+        { text: '兩份速查表明確引用了 ACS 與 IR 指南，因此銜接是官方的。', why: '表 5-2 指出它們沒有互相引用。' },
+        { text: '所有銜接都是作者整理，文件完全沒有指向其他文件。', why: '兩份文件明寫指向 RAG、提示詞注入、MCP、AI Agent Security 等速查表。' },
+        { text: '文件明寫的是「通用機制指回通用速查表」；與 ACS、IR 指南、資料安全的連結是作者整理，要標「作者整理，非官方」。', correct: true, why: '符合 5.2 節與表 5-2 的依據欄。' },
+        { text: '銜接只在 AML 文件中存在，廣告文件沒有。', why: '廣告文件也明寫指向多份速查表。' }
+      ],
+      summary: '分清文件原文與作者整理。' },
+    { id: 'r5q3', type: 'scn', lo: [5], refs: [{label: '5.5 情境 B', href: '05-integration.html#ig-scn-b'}, {label: '5.3 步驟', href: '05-integration.html#ig-translate'}],
+      stem: '依本章，這份設計說明哪裡越過了界線？',
+      scenario: '山海保險（虛構）的設計說明寫：「理賠付款 agent 在名單比對逾時時先放行付款，事後補查；收據簽章通過就代表比對正確；依 OWASP 速查表，這樣符合所有反詐欺與制裁法規。」',
+      options: [
+        { text: '有三處：逾時放行是把未解決當成通過；簽章只證明來源與完整性，不證明比對做對；說「符合所有法規」超出了教材與速查表能說的範圍，要由法務判斷。', correct: true, why: '符合 5.3 與 5.5 節，並呼應第 3、4 章。' },
+        { text: '沒有問題，逾時放行可以提高理賠效率。', why: '涉及錢與不可逆動作，未完成應視為未解決，不是通過。' },
+        { text: '只有「符合所有法規」這句有問題，其餘都正確。', why: '逾時放行與簽章解讀也有問題。' },
+        { text: '問題在於不該使用收據，改用日誌即可。', why: '重點不在收據或日誌，而在未完成的處置與簽章的意義。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 失敗姿態：涉及錢的不可逆動作，未完成是「未解決」，應暫緩（第 3 章）。(2) 證據不等於正確：簽章提供來源與完整性，不證明篩查做對（第 4 章）。(3) 法規：速查表自己標明不是法律意見，教材不查證現況，是否「符合法規」要由合規與法務判斷。</p><p><strong>結論：</strong>移除逾時放行的後備、修正對簽章的說法、刪去「符合所有法規」的宣稱。對應教材：<a href="05-integration.html#ig-scn-b">5.5 節</a>。</p>' },
+    { id: 'r5q4', type: 'mc', lo: [5], refs: [{label: '5.4 情境 A', href: '05-integration.html#ig-scn-a'}],
+      stem: '情境 A 中，夥伴的回呼簽署憑證外洩，平台只輪替了憑證。依本章，還缺什麼？',
+      options: [
+        { text: '什麼都不缺，輪替憑證就是完整的處置。', why: '廣告文件說驗證事件也是資料事件。' },
+        { text: '只要增加回呼的 TLS 版本。', why: '問題不在傳輸層，而在簽署範圍與已進入模型的資料。' },
+        { text: '只要停止使用該夥伴的資料，其餘不必處理。', why: '文件要求的是資料面的完整處置，不只是停用夥伴。' },
+        { text: '還要把暴露期間的資料列標為可疑、使該夥伴的權重與模型成品失效；簽署範圍補上事件類型並涵蓋內容本文，並改用事件 ID 去重。', correct: true, why: '符合 5.4 節。' }
+      ],
+      summary: '驗證事件同時是資料事件。' }
+  ]
+});
+</script>
+</body>
+</html>

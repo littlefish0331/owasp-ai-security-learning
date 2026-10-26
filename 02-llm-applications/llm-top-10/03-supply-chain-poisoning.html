@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　LLM04 供應鏈與 LLM05 資料與模型投毒｜LLM Top 10 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="LLM04:2026 供應鏈與 LLM05:2026 資料與模型投毒：同一批成品的兩個追問（它是不是它宣稱的那個、它學進去的東西有沒有被動手腳），以及簽署、掃描、驗證與後門探測各自的限制。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="02-llm-applications" data-topic="llm-top-10" data-page="03-supply-chain-poisoning.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　LLM04 供應鏈與 LLM05 資料與模型投毒</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 10 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position.html">第 1 章</a>（三層地圖）、<a href="02-prompt-injection.html">第 2 章</a></li>
+</ul>
+<p class="lead">三層地圖的入口層除了提示詞注入，還有兩項：攻擊者不是在執行期送輸入，而是在模型與資料「抵達你之前」就動了手腳。這兩項最容易被混為一談，本章要教你用兩個不同的問題把它們分開查。</p>
+
+<h2 id="sc-two">3.1 同一批成品，兩個不同的追問</h2>
+<p>你的 LLM 應用會用到一大串「別人做的東西」：預訓練模型、微調資料集、LoRA 這類參數高效微調 (PEFT) 的 adapter、轉換與合併工具、託管平台。這些成品進到你的環境之前，可以問兩個不同的問題：</p>
+<ul>
+  <li><strong>它是不是它宣稱的那個？</strong>來源是誰、有沒有被替換、經過哪些轉換、載入時會不會執行程式。這是 LLM04:2026 供應鏈 (Supply Chain)。</li>
+  <li><strong>它學進去的東西，有沒有被動過手腳？</strong>資料或模型行為本身是否被植入偏誤、後門 (backdoor) 或弱點，而且這種改變是持久的。這是 LLM05:2026 資料與模型投毒 (Data and Model Poisoning)。</li>
+</ul>
+<p>官方自己也說這兩項有重疊：LLM04 說明「部分風險也在 LLM05 討論，本條目聚焦其供應鏈面向」。所以一個被竄改的預訓練模型，兩個條目都會提到。差別在你拿來追問的角度。</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　LLM04 與 LLM05 並排（官方條目內容；並排方式為作者整理）</caption>
+<thead><tr><th scope="col"></th><th scope="col">LLM04:2026 供應鏈</th><th scope="col">LLM05:2026 資料與模型投毒</th></tr></thead>
+<tbody>
+<tr><th scope="row">關心的是</th><td>訓練資料、模型、adapter、轉換流程與部署平台的<strong>完整性與來源</strong></td><td>資料或模型成品被動手腳，<strong>持久地</strong>改變模型行為</td></tr>
+<tr><th scope="row">攻擊落點</th><td>成品流轉的環節：發布、下載、轉換、合併、量化、建置、晉升</td><td>資料進入與被學習的環節：預訓練、微調、嵌入、RAG 語料、持續學習管線</td></tr>
+<tr><th scope="row">修補的代價</th><td>換掉來源、固定版本、重新驗證成品</td><td>官方：可能需要資料重新驗證、重新訓練、更換模型，或重新設計管線，昂貴且擾動營運</td></tr>
+<tr><th scope="row">官方劃出的邊界</th><td>Agentic 的供應鏈（MCP server、工具註冊中心）歸 ASI04</td><td>推論時經檢索內容送進來的指令歸 LLM01；利用嵌入幾何的攻擊歸 LLM09；agent 的記憶、工具整合與 RLHF 回饋迴圈深入處理在 Agentic Top 10</td></tr>
+</tbody></table></div>
+
+<h2 id="sc-supply">3.2 LLM04：成品在流轉中的哪些環節出問題</h2>
+<p>官方把 LLM 供應鏈的攻擊面從傳統的「程式碼與相依套件」擴張到「模型成品、來源證明 (provenance) 與轉換／合併流程」，並說裝置端 LLM 又讓它更寬。條目列的七個風險裡，下面五個最能幫你建立直覺（其餘兩項是授權風險，以及模型供應商條款與隱私政策不清）：</p>
+<ul>
+  <li><strong>已知元件與幻覺套件：</strong>過時的套件、服務框架與模型本身，和傳統的「易受攻擊與過時元件」同理，但用在開發、微調或推論時風險更高。程式助理還會編出看似合理、實際不存在的套件名稱，攻擊者預先註冊這些名稱（官方稱 slopsquatting），讓沒驗證就採用的相依套件解析到惡意程式碼。</li>
+  <li><strong>被竄改的預訓練模型：</strong>模型成品很難全面檢查，靜態分析不能證明行為安全。Python pickle 這類格式在載入時可執行任意程式；改用較安全的格式只是降低、不是消除風險，因為後門可以直接埋在計算圖裡（官方舉 ONNX），崩壞的檔案也可能利用格式解析器的記憶體錯誤（官方舉 llama.cpp 的 GGUF 解析）。</li>
+  <li><strong>來源證明薄弱、成品沒有簽署：</strong>Model Card 描述模型，但不證明它的來源；被攻陷或長得很像的供應商帳號可以用可信的名字發布惡意模型。流水線若用<strong>可變的參照</strong>（例如 <code>latest</code> 標籤）而不是<strong>不可變的摘要 (digest)</strong> 取得成品，就可能在晉升邊界被悄悄換掉。</li>
+  <li><strong>adapter 與轉換、合併、量化流程：</strong>惡意 adapter 會破壞基礎模型的完整性；轉換與合併服務可能在格式轉換時引入惡意修改，繞過審查。量化也有風險：官方引用的研究指出，權重可被設計成「全精度版本評估起來正常，量化後卻出現攻擊者選定的行為」，所以全精度的保證不會自動轉移到實際部署的量化版本。</li>
+  <li><strong>裝置端 LLM：</strong>出貨到裝置的模型，把製造過程、作業系統與韌體漏洞和被重新打包的應用都帶進供應鏈。</li>
+</ul>
+<p>官方的案例各自打破一種「以為安全」的假設：<strong>模型名稱被原作者釋出後遭人重新註冊</strong>（只用 <code>Author/ModelName</code> 取模型的流水線會抓到攻擊者的版本）、<strong>掃描器與「安全載入」旗標被繞過</strong>、<strong>建置流水線被攻陷</strong>（成品由組織自己的基礎設施簽署，所以通過下游的來源檢查）。</p>
+
+<h2 id="sc-poison">3.3 LLM05：不是一個 bug，是學習過程被動了手腳</h2>
+<p>官方給 LLM05 的定義涵蓋「任何資料被攝入、轉換、檢索或重複使用的地方」：預訓練、微調、嵌入建立、RAG，以及模型散布。結果是一個<strong>看起來仍能運作</strong>、卻在信任、安全或資安上出問題的系統。官方的關鍵句是：投毒針對的是模型的「學習過程」，而不是單一的執行期 bug——不像一般軟體弱點修完程式碼就好。</p>
+<p>官方依生命週期列了五個階段，可以拿來當檢查表：</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　投毒可能發生的階段（官方列舉）與各階段的官方範例</caption>
+<thead><tr><th scope="col">階段</th><th scope="col">發生什麼</th><th scope="col">官方範例（概念層級）</th></tr></thead>
+<tbody>
+<tr><th scope="row">預訓練</th><td>惡意或受污染的語料讓模型吸收有害模式</td><td>開源資料集被貢獻惡意資料，觸發詞傳到所有以它微調的下游模型</td></tr>
+<tr><th scope="row">微調</th><td>被操縱的資料集帶入特定領域的失效模式或隱藏觸發</td><td>針對性地侵蝕拒絕行為卻保留一般準確度，標準評估看不出來</td></tr>
+<tr><th scope="row">嵌入與向量化</th><td>竄改已儲存的向量，影響檢索結果</td><td>以單一最佳化過的毒文本覆蓋檢索語料中的正確內容</td></tr>
+<tr><th scope="row">遷移學習與模型重用</th><td>被攻陷的來源模型把問題傳給下游</td><td>公開庫散布內含後門的模型，下載者繼承隱藏觸發</td></tr>
+<tr><th scope="row">持續學習管線</th><td>沒有充分驗證的自動攝入，讓攻擊者逐步塑造行為</td><td>只需一般使用者介面的輸入，餵進自動重新訓練的回饋迴圈，造成緩慢漂移</td></tr>
+</tbody></table></div>
+<p>兩個細節值得多想一下。<strong>第一，規模不是保護：</strong>官方引用的研究指出，少至 250 份被毒化的文件，就能讓 6 億到 130 億參數的模型被植入後門，與資料集大小無關（Souly 等人，2025）。<strong>第二，模型成品裡不只有權重：</strong>官方特別提醒，經共享庫散布的模型可能帶著「非權重」的成品，包括被竄改的 chat template、tokenizer 設定、LoRA／PEFT adapter、量化成品，以及惡意反序列化 (例如 pickle)，載入時就能改變行為或執行程式。這類後門可以平常行為正常，直到觸發條件出現才改變，官方稱這種模型能成為潛伏型後門 (sleeper agent)。</p>
+
+<h2 id="sc-flow">3.4 兩個追問落在流轉的哪裡</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="成品流轉與兩組控制的位置。資料來源（開源資料集、爬取內容、標註）進入訓練、微調或建立嵌入，產出成品（權重、adapter、chat template、tokenizer 設定）；成品發布到模型中心或供應商，以名稱或 latest 標籤取得；再經過轉換、合併、量化；然後在建置與晉升環節被接受進受信任的環境；最後部署到伺服器或裝置。LLM05 的控制（資料驗證、異常偵測、後門探測）標在資料與訓練階段以及成品上；LLM04 的控制（簽署、雜湊、不可變參照）標在取得、轉換與晉升階段。兩組標記在成品處重疊，因為官方把被竄改的預訓練模型同時放在兩個條目。">
+flowchart TB
+  D["資料來源<br>開源資料集、爬取內容、標註"] --> T["訓練、微調、建立嵌入"]
+  T --> M["成品<br>權重、adapter、chat template、tokenizer 設定"]
+  M --> H["模型中心或供應商<br>以名稱或 latest 標籤取得"]
+  H --> C["轉換、合併、量化"]
+  C --> P["建置與晉升<br>CI/CD 接受成品進受信任環境"]
+  P --> R["部署<br>伺服器或裝置端"]
+  Q5["LLM05 的追問<br>學進去的東西有沒有被動手腳<br>資料驗證、異常偵測、後門探測"] -.-> D
+  Q5 -.-> T
+  Q5 -.-> M
+  Q4["LLM04 的追問<br>它是不是它宣稱的那個<br>簽署、雜湊、不可變參照"] -.-> M
+  Q4 -.-> H
+  Q4 -.-> C
+  Q4 -.-> P
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class Q4,Q5 author
+</pre>
+<figcaption><strong>圖 3-1　成品流轉與兩個追問（作者整理，非官方）。</strong>流程中各環節（資料、訓練、發布、轉換、晉升、部署）是官方兩個條目描述過的攻擊落點；<strong>把兩組控制標在哪個環節，是作者整理</strong>（虛線方框）。兩組標記在「成品」處重疊，反映官方把被竄改的預訓練模型同時放在兩個條目。</figcaption>
+</figure>
+
+<h2 id="sc-concept">3.5 核心概念：簽署證明來源，不證明安全</h2>
+<div class="concept">
+<h3 id="c-sc">LLM04 與 LLM05 的控制，各自回答不同的問題</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>供應鏈控制回答「這個成品是誰做的、有沒有被換過」；投毒控制回答「這個成品的行為可不可信」。兩類控制要疊加，而不是擇一。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>模型成品難以全面檢查；來源證明薄弱；成品要經過許多轉手環節；且投毒的結果會在標準評估下看起來完全正常。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>攻擊者在成品抵達之前介入：發布一個名字像樣的模型、劫持轉換服務、占用被釋出的名稱、攻陷建置流水線，或往資料集與回饋迴圈裡摻入少量資料，使模型只在觸發條件出現時才改變行為。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>見下表：簽署與雜湊釘住、維護已簽署的物料清單、對成品做安全審查與行為評估、資料驗證與異常偵測、專門的後門探測，並把 chat template 等推論用成品當成安全相關的程式碼。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「模型有簽署就安全」（官方：簽署證明完整性與來源，不證明安全）。「掃描過、用了安全格式就沒事」（官方：掃描器與安全載入旗標都曾被繞過，要視為縱深防禦而非保證）。「資料集很大，少量毒資料沒影響」（官方引用的研究：250 份文件即可）。「安全對齊訓練會把後門洗掉」（官方：不要這樣假設）。</dd>
+</dl>
+</div>
+<div class="table-wrap"><table>
+<caption>表 3-3　供應鏈與投毒的控制（官方措施）與官方註記的限制</caption>
+<thead><tr><th scope="col">控制</th><th scope="col">主要回答的問題（<span class="tag author">作者整理，非官方</span>）</th><th scope="col">官方註記的限制或提醒</th></tr></thead>
+<tbody>
+<tr><th scope="row">加密簽署、檔案雜湊、不可變參照（以摘要而非 <code>latest</code> 標籤取得）</th><td>它是誰做的、有沒有被換過</td><td>只證明完整性與來源，不證明安全：被攻陷或本就惡意的合法供應商仍可簽出有後門的模型；建置流水線被攻陷時，成品由組織自己的基礎設施簽署，會通過來源檢查。模型訓練不保證可重現建置。</td></tr>
+<tr><th scope="row">惡意程式掃描、安全載入器、安全格式</th><td>載入時會不會執行程式</td><td>掃描器與安全載入旗標都曾被繞過並被指派 CVE；「安全」格式的計算圖後門沒有可執行程式碼讓掃描器標記。</td></tr>
+<tr><th scope="row">已簽署的物料清單：SBOM 延伸到模型、adapter、資料集（AIBOM、ML-BOM）</th><td>我有哪些成品、什麼授權、什麼版本</td><td>官方要求清單本身也要簽署且定期稽核，並同時追蹤授權；官方列的選項包括 OWASP CycloneDX ML-BOM 與 OWASP AIBOM 專案。</td></tr>
+<tr><th scope="row">資料驗證、供應商審查、異常偵測、資料版本控制</th><td>學進去的東西是否可信</td><td>要同時監控訓練損失、輸出與漂移；資料版本控制（如 DVC）讓偵測到投毒時可以回溯與鑑識。</td></tr>
+<tr><th scope="row">對抗性輸入與觸發詞的紅隊演練</th><td>行為上有沒有隱藏的後門</td><td>官方：不要假設安全對齊會移除後門；每一輪對齊之後都需要專門的觸發探測 (Hubinger 等人，2024)。</td></tr>
+<tr><th scope="row">把 chat template、tokenizer 設定、adapter、量化成品當成安全相關的程式碼</th><td>非權重成品有沒有被改</td><td>部署前要簽署、雜湊驗證、diff 檢查與靜態分析；量化後的成品要獨立評估，全精度的保證不會自動轉移。</td></tr>
+</tbody></table></div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>LLM04 問「成品是不是它宣稱的那個」，LLM05 問「它學進去的東西有沒有被動手腳」；同一個被竄改的模型兩個條目都會提，要各用一個角度查。</li>
+  <li>LLM04 的攻擊面包含模型成品、來源證明與轉換／合併／量化流程，不只是程式碼相依；程式助理幻覺出的套件名稱可被攻擊者預先註冊 (slopsquatting)。</li>
+  <li>LLM05 針對的是學習過程，不是單一 bug；修補可能需要重新訓練或更換模型；少量被毒化的文件即可植入後門。</li>
+  <li>簽署證明完整性與來源，不證明安全；掃描器與安全載入旗標是縱深防禦的一層，不是保證；對齊訓練不保證洗掉後門。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能用兩個不同的追問區分 LLM04 與 LLM05，並說明為什麼同一個成品兩個條目都會提。</li>
+  <li>我能解釋為什麼「簽署過、掃描過」仍不能保證模型安全。</li>
+  <li>我能說出投毒可能發生的五個階段。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-agency-output.html">第 4 章　LLM03 過度授權與 LLM10 不當輸出處理</a>：進到放大器層——成品與輸入都已經「進來」之後，什麼讓一次出錯或被騙變成真正的傷害。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Top 10 for LLM Applications 2026（Version 2026，2026-08-04），LLM04:2026 Supply Chain 與 LLM05:2026 Data and Model Poisoning（Description、Common Examples of Risk、Prevention and Mitigation Strategies、Example Attack Scenarios）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM04_SupplyChain.md">LLM04_SupplyChain.md</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM05_DataModelPoisoning.md">LLM05_DataModelPoisoning.md</a>；與<a href="https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/">官方 PDF</a> 內容實質一致；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026，附錄 A（LLM04 與 ASI04 的分工）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/Appendix_A_Related_Framework_Mappings.md">Appendix_A_Related_Framework_Mappings.md</a>。</li>
+    <li>官方引用的外部研究與事件（Souly 等人 2025、Hubinger 等人 2024、Fogel 等人 2026、各項 CVE 與事件報告）：本章只轉述條目對它們的說法，未回到原文核對。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'l-ch3', topic: 'llm-top-10', mode: 'chapter',
+  questions: [
+    { id: 'l3q1', type: 'mc', lo: [2], refs: [{label: '3.1 兩個追問與表 3-1', href: '03-supply-chain-poisoning.html#sc-two'}],
+      stem: '下列哪一個說法最能正確區分 LLM04:2026 供應鏈與 LLM05:2026 資料與模型投毒？',
+      options: [
+        { text: 'LLM04 只談軟體相依套件；LLM05 才涵蓋模型與資料。', why: '不對。LLM04 的攻擊面明確包含模型、adapter、資料集、轉換流程與平台，不只是程式碼相依。' },
+        { text: 'LLM04 追問成品是不是它宣稱的那個（來源、完整性、流轉）；LLM05 追問資料或模型行為本身是否被動手腳而持久改變。兩者常共用同一個成品，要各用一個角度查。', correct: true, why: '符合 3.1 節與表 3-1：官方也說兩個條目的風險部分重疊，LLM04 聚焦其供應鏈面向。' },
+        { text: '經由 RAG 取回的內容夾帶指令，屬於 LLM05。', why: '官方把推論時經檢索內容送進來的指令歸 LLM01；LLM05 針對的是持久的資料或模型污染。' },
+        { text: 'LLM05 只發生在預訓練階段，微調和 RAG 不算。', why: '官方列的階段包含預訓練、微調、嵌入與向量化、遷移學習與模型重用、持續學習管線。' }
+      ],
+      summary: 'LLM04 = 成品是不是它宣稱的那個；LLM05 = 學進去的東西有沒有被動手腳。' },
+    { id: 'l3q2', type: 'scn', lo: [2], refs: [{label: '3.5 表 3-3', href: '03-supply-chain-poisoning.html#sc-concept'}, {label: '3.2 LLM04', href: '03-supply-chain-poisoning.html#sc-supply'}],
+      stem: '這份上線前檢核的結論有什麼問題？',
+      scenario: '青禾物流（虛構）要上線一個內部問答模型，基礎模型是從公開模型中心下載的第三方模型。上線前檢核表寫著：「已用惡意程式掃描器掃描，通過；模型檔案有發布者的簽署，驗證通過；使用安全載入選項載入。結論：此模型無風險，可上線。」另一位工程師質疑這個結論下得太快。',
+      options: [
+        { text: '沒有問題，三項檢查都通過就代表模型安全。', why: '官方正好反對這個推論：簽署與掃描各有明確限制。' },
+        { text: '問題只在掃描器版本太舊，換最新版就能保證安全。', why: '官方指出掃描器與安全載入旗標都曾被繞過並被指派 CVE，換新版仍不是保證。' },
+        { text: '三項檢查回答的是「來源與載入安全」，不是「行為安全」：簽署只證明完整性與來源；掃描器與安全載入旗標只是縱深防禦；「安全」格式的計算圖後門沒有可執行碼可被標記。結論應改為：還需要行為評估與後門探測，並維持已簽署的物料清單。', correct: true, why: '符合 3.5 節表 3-3 的官方限制，並呼應 LLM05 對對齊與後門的提醒。' },
+        { text: '問題在於應該改用完全不簽署的模型，因為簽署會帶來假的安全感。', why: '簽署仍有價值（防替換），官方建議它與其他控制疊加，而不是不用。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 簽署：官方說它證明完整性與來源，不證明安全；供應商本身被攻陷或惡意時，簽署仍然有效。(2) 掃描器與安全載入選項：官方列出它們被繞過的案例，要當成縱深防禦的一層；而「安全」格式的計算圖後門沒有可標記的可執行碼。(3) 上面三項都沒有評估模型的行為，LLM05 要求專門的觸發探測，且不能假設對齊會移除後門。</p><p><strong>結論：</strong>檢核表要補上行為評估、後門探測，並以已簽署的物料清單記錄這個成品。對應教材：<a href="03-supply-chain-poisoning.html#sc-concept">3.5 節</a>、<a href="03-supply-chain-poisoning.html#sc-supply">3.2 節</a>。</p>' },
+    { id: 'l3q3', type: 'match', lo: [2], refs: [{label: '3.2 LLM04', href: '03-supply-chain-poisoning.html#sc-supply'}, {label: '3.3 LLM05', href: '03-supply-chain-poisoning.html#sc-poison'}],
+      stem: '把下列情況配對到它主要對應的條目。',
+      cats: [
+        { id: 'l04', label: 'LLM04:2026 供應鏈' },
+        { id: 'l05', label: 'LLM05:2026 資料與模型投毒' }
+      ],
+      items: [
+        { text: '流水線只用 Author/ModelName 取模型，原作者帳號被釋出後有人重新註冊同名並發布惡意模型。', answer: 'l04', why: '模型名稱重用，屬於成品來源與流轉的問題（官方 LLM04 情境）。' },
+        { text: '攻擊者在共享的開源資料集裡塞入觸發詞，下游所有以它微調的模型都繼承。', answer: 'l05', why: '官方 LLM05 範例：開源資料集供應鏈投毒，使行為被持久改變。' },
+        { text: '程式助理建議一個不存在的套件名稱，攻擊者預先註冊該名稱，開發者照裝。', answer: 'l04', why: '官方把「幻覺出的套件名稱被註冊成供應鏈載體」歸在 LLM04（slopsquatting）。' },
+        { text: '模型的 chat template 被改成遇到觸發條件才切換行為，平常表現正常。', answer: 'l05', why: '官方 LLM05 情境：非權重成品被竄改，造成條件式行為改變。' },
+        { text: '模型轉換服務被劫持，轉換出來的公開模型被注入惡意行為。', answer: 'l04', why: '官方 LLM04 情境：轉換／合併服務是高風險的晉升點。' }
+      ],
+      summary: '流轉與來源問題 → LLM04；學習過程被動手腳 → LLM05；同一個成品常兩者都沾。' }
+  ]
+});
+</script>
+</body>
+</html>

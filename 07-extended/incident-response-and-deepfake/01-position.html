@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌與定位｜事件應變與 Deepfake｜OWASP AI 資安學習教材</title>
+<meta name="description" content="GenAI Incident Response Guide 1.0 與 Guide for Preparing and Responding to Deepfake Events 是什麼、誰做的、版本與日期（含發布日的衝突）、授權、與 NIST 事件應變生命週期的對齊，以及 LLM 編號沒有年份的問題。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="incident-response-and-deepfake" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌與定位</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="index.html">主題首頁</a></li>
+</ul>
+<p class="lead">你的公司出了 GenAI 事故，你多半不是 AI 專家，而是被叫去處理的資安人員。這正是 OWASP 做這兩份指南的出發點：官方在 Incident Response Guide 的導言直接說，專案成員意識到「如果真有 GenAI 事件，被指派處理的很可能就是我們」，而公開可用的指引很少。這一章回答：兩份指南各是什麼、誰做的、版本日期為何有出入，以及它們有什麼共同的設計取向。</p>
+
+<h2 id="pos-two">1.1 兩份指南</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　兩份指南一頁式比較（2026-10-26 讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">GenAI Incident Response Guide</th><th scope="col">Guide for Preparing and Responding to Deepfake Events</th></tr></thead>
+<tbody>
+<tr><th scope="row">版本與日期</th><td>封面：<strong>Version 1.0、July 28, 2025</strong>；資源頁 2025-07-28；82 頁</td><td>PDF 頁尾 "Version: 1"；修訂表：第 1 版 <strong>2024-09-10 Published</strong>；資源頁登錄日 <strong>2024-09-23</strong>；35 頁</td></tr>
+<tr><th scope="row">製作單位</th><td>OWASP Gen AI Security Project 的 AI Threat Intelligence &amp; Response Initiative（CTI Initiative）專家小組</td><td>PDF 署名「CTI Layer」團隊：2024 年初由社群志願者成立的資源小組，專注對抗性使用 AI 的實務指引；導言稱這是 CTI Layer「計畫中的數份出版品的第一份」。網站現把這份指南歸在 AI Threat Intelligence and Response Initiative 之下；CTI Layer 與該 Initiative 的關係官方文件沒有說明（<strong>未能確認</strong>）</td></tr>
+<tr><th scope="row">讀者</th><td>一般資安從業者，<strong>不預設懂 GenAI</strong>；其他可能的讀者：資安領導、系統架構師</td><td>資安從業者與領導層，要建立 playbook 與應變計畫</td></tr>
+<tr><th scope="row">自我定位</th><td>是<strong>既有事件應變流程的補充</strong>，不是完整的 IR 手冊，只談 GenAI 獨有的部分</td><td>以「流程遵守」而非「偵測偽造」為核心的實務指南；明說不是法律意見</td></tr>
+<tr><th scope="row">授權</th><td>PDF 內文<strong>未見授權文字</strong>；以 genai.owasp.org 網站頁尾 CC BY-SA 4.0（除非另有說明）為準</td><td>CC BY-SA 4.0（PDF 授權頁）</td></tr>
+<tr><th scope="row">對齊的生命週期</th><td>NIST 事件應變生命週期（導言）</td><td>NIST SP 800-61 Revision 3 的四個階段 (Overview)</td></tr>
+</tbody></table></div>
+
+<div class="callout official">
+  <p class="callout-title">為什麼放在同一個主題：一份談「AI 被攻擊」，一份談「AI 被拿來攻擊人」</p>
+  <p>IR 指南的員工訓練段明說：該節「不討論威脅行為者<strong>使用 AI</strong> 的威脅」，並請讀者參考 OWASP GenAI Security Project 的 Deepfake 指南了解社交工程。所以兩份是互補的：IR 指南處理<strong>你的 AI 系統出事</strong>（提示詞注入、投毒、供應鏈），Deepfake 指南處理<strong>攻擊者用生成式 AI 冒充人</strong>。這是官方文件之間的明確分工，不是本教材的歸類。</p>
+</div>
+
+<h2 id="pos-conflict">1.2 日期與編號的三個小問題</h2>
+<div class="callout official unsure">
+  <p class="callout-title">問題 1：Deepfake 指南的「發布日」有兩個</p>
+  <p>PDF 修訂表寫第 1 版 <strong>2024-09-10</strong> 為「Published」；資源頁登錄日是 <strong>2024-09-23</strong>；風險評估段又寫「撰寫時 (July 2024)」。資源頁日期較晚，但它是網站登錄日，不一定是文件發布日。依「以最新為準」，本教材把兩者並列：<strong>版本 1，PDF 修訂表發布日 2024-09-10，資源頁登錄日 2024-09-23</strong>，哪個是正式發布日<strong>未能確認</strong>。</p>
+</div>
+<div class="callout official unsure">
+  <p class="callout-title">問題 2：Deepfake 指南自己說「三類」又列了四類</p>
+  <p>Scope 段與事件章前言寫「三類」(three categories／three most common types)，卻列出四項：以冒充詐取金錢、求職面試詐欺、冒充以促成網路攻擊、假資訊 (Mis/Dis/Mal information)；Overview 又說「四種情境」。目錄與正文的事件章實際是四節。本教材<strong>採四類</strong>，並註明官方文字有「三」「四」兩種說法。</p>
+</div>
+<div class="callout official unsure">
+  <p class="callout-title">問題 3：IR 指南的 LLM 編號沒有年份</p>
+  <p>IR 指南處處用 LLM Top 10 的編號（例如 Air Canada 事件標「LLM06 - Excessive Agency、LLM09 - Misinformation」，供應鏈章標「LLM03: Supply Chain、LLM04: Data and Model Poisoning」，另有「LLM07: System Prompt Leakage」），但<strong>都沒有寫年份</strong>。這些名稱與編號與 <strong>2025 版</strong>吻合（2025 版：LLM03 Supply Chain、LLM04 Data and Model Poisoning、LLM06 Excessive Agency、LLM07 System Prompt Leakage、LLM09 Misinformation），在 <a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">2026 版</a>則不同（Supply Chain 是 <a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-supply">LLM04:2026</a>、Excessive Agency 是 <a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a>）。這與 Agentic Skills Top 10 白皮書的問題不同：IR 指南的編號與 2025 版<strong>內部一致</strong>，只是沒有標年份。教材處理：引用時一律寫 <code>LLMnn:2025</code>（例如 Excessive Agency 寫成 LLM06:2025）。</p>
+</div>
+
+<h2 id="pos-concept">1.3 核心概念：兩份指南的共同取向——補充，不取代</h2>
+<div class="concept">
+<h3 id="c-complement">補充既有流程，而不是另起爐灶</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>IR 指南的導言說得很清楚：它不是要提供完整的事件應變活動，而是<strong>補充既有流程</strong>，只談 GenAI 獨有的部分，並對齊 NIST 事件應變生命週期。Deepfake 指南也對齊 NIST SP 800-61 的四階段：準備、偵測與分析、圍堵／根除／復原、事後活動。</dd>
+  <dt data-n="2">為什麼這樣設計</dt>
+  <dd>讀者是已經有資安維運的人。他們已經有 IR 計畫、SIEM、職責分離與財務控管；他們缺的是「GenAI 這個新東西哪裡不一樣」。所以兩份指南把篇幅放在<strong>差異</strong>上：什麼算 AI 事件、怎麼判斷嚴重度、AI 特有的證據與圍堵手段，而不是重講通用步驟。</dd>
+  <dt data-n="3">對你的含意（概念層級）</dt>
+  <dd>這兩份指南<strong>不能單獨當成你的 IR 計畫</strong>。你應該先有一份基本的事件應變計畫，再把指南的 AI 特有項目嵌進去。反過來，如果你還沒有任何 IR 流程，這兩份指南的補充性質也意味著你要另外找通用的基礎。</dd>
+  <dt data-n="4">怎麼用</dt>
+  <dd>對每個階段問：「我既有的流程在這一步有沒有涵蓋 AI 特有的東西？」例如偵測階段，既有流程有沒有收集 prompts 與模型輸出？圍堵階段，有沒有「限制模型查詢」或「隔離 system prompt」這類手段？</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「讀完這兩份指南就有了完整的 AI 事件應變計畫。」官方明說不是。另一個誤解是：「Deepfake 指南教你怎麼辨識 deepfake。」恰好相反：它的核心主張是<strong>不要靠辨識</strong>（第 4 章）。</dd>
+</dl>
+</div>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="兩份指南與 NIST 事件應變生命週期的對齊：準備；偵測與分析；圍堵、根除與復原；事後活動。IR 指南在準備階段補上 AI 資產盤點、嚴重度矩陣與 AI 事件應變團隊，並在後三個階段依三種事件類型（攻擊 AI 系統、攻擊供應鏈、攻擊第三方模型供應商）補充 AI 特有項目。Deepfake 指南依四類 deepfake 事件補充。">
+flowchart LR
+  P["準備<br>AI 資產盤點、嚴重度矩陣、AI 事件應變團隊"] --> D["偵測與分析<br>AI 特有的證據與診斷"]
+  D --> C["圍堵、根除、復原<br>AI 特有的圍堵與驗證"]
+  C --> PI["事後活動<br>更新 AI-BOM、劇本與政策"]
+  PI -. "回饋到準備" .-> P
+  IR["IR 指南<br>三種事件類型"] -. "補充 D、C、PI" .-> D
+  DF["Deepfake 指南<br>四類事件"] -. "補充 D、C、PI" .-> D
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class IR,DF author
+</pre>
+<figcaption><strong>圖 1-1　兩份指南與 NIST 事件應變生命週期的關係。</strong>四個階段來自指南自述的對齊對象 (NIST)；指南各自補充哪幾個階段，以及「事後回饋到準備」的循環，是依其章節結構<strong>作者整理，非官方畫法</strong>（虛線）。</figcaption>
+</figure>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>兩份指南都屬 AI Threat Intelligence &amp; Response Initiative 的產出：IR 指南 Version 1.0（2025-07-28）、Deepfake 指南 Version 1（PDF 修訂表發布日 2024-09-10；資源頁登錄日 2024-09-23，哪個是正式發布日未能確認）。</li>
+  <li>授權：Deepfake 指南 CC BY-SA 4.0；IR 指南 PDF 內文未見授權文字，以網站頁尾為準。</li>
+  <li>兩者都是對 NIST 事件應變生命週期的「補充」，不是完整的 IR 計畫。</li>
+  <li>Deepfake 指南自己對「三類」與「四類」說法不一；IR 指南的 LLM 編號是 2025 版且沒有年份。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出兩份指南的版本與日期，以及哪個日期有衝突。</li>
+  <li>我知道它們為什麼不能單獨當作 IR 計畫。</li>
+  <li>引用 IR 指南的 LLM 編號時，我知道要補上 :2025。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-ai-incidents.html">第 2 章　什麼算 AI 事件、有多嚴重</a>：先學怎麼判斷這是不是「AI 事件」、嚴重度怎麼算。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Incident Response Guide 1.0（Introduction、Who is this guide for?、Guide Structure；封面）：<a href="https://genai.owasp.org/resource/genai-incident-response-guide-1-0/">genai.owasp.org/resource/genai-incident-response-guide-1-0/</a>；Version 1.0，July 28, 2025；2026-10-26 讀取；PDF 內文未見授權文字。</li>
+    <li>OWASP Guide for Preparing and Responding to Deepfake Events（Revision History、License and Usage、Note from OWASP CTI Layer Lead Authors、Overview、Scope）：<a href="https://genai.owasp.org/resource/guide-for-preparing-and-responding-to-deepfake-events/">genai.owasp.org/resource/guide-for-preparing-and-responding-to-deepfake-events/</a>；Version 1；2026-10-26 讀取；PDF 授權頁 CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Guide for Preparing and Responding to Deepfake Events — CC BY-SA 4.0（PDF 授權頁）；GenAI Incident Response Guide 1.0 — PDF 內文未見授權文字，以 genai.owasp.org 網站頁尾 CC BY-SA 4.0（除非另有說明）為準。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'i-ch1', topic: 'incident-response-and-deepfake', mode: 'chapter',
+  questions: [
+    { id: 'i1q1', type: 'mc', lo: [1], refs: [{label: '1.3 補充，不取代', href: '01-position.html#pos-concept'}],
+      stem: '一家新創沒有任何事件應變計畫，主管說：「讀完 OWASP 的 GenAI Incident Response Guide 就有完整的 AI 事件應變計畫了。」依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，這份指南是完整的事件應變計畫。', why: '官方明說它不是完整的 IR 手冊，而是對既有流程的補充，只談 GenAI 獨有的部分。' },
+        { text: '不完全：指南是對既有事件應變流程的補充，對齊 NIST 生命週期，聚焦 GenAI 獨有的部分；公司仍需要基本的事件應變計畫，再把指南的 AI 特有項目嵌進去。', correct: true, why: '符合 1.3 節。' },
+        { text: '不正確，因為這份指南只談 deepfake。', why: 'deepfake 是另一份指南；IR 指南談三種 AI 事件。' },
+        { text: '正確，因為指南取代了 NIST 的事件應變生命週期。', why: '指南是對齊 NIST，不是取代。' }
+      ],
+      summary: '補充既有 IR 流程，不是完整計畫。' },
+    { id: 'i1q2', type: 'scn', lo: [1], refs: [{label: '1.2 三個小問題', href: '01-position.html#pos-conflict'}, {label: '1.1 表 1-1', href: '01-position.html#pos-two'}],
+      stem: '依本章，這份內部標準的引用有哪些地方需要修正？',
+      scenario: '三峽銀行（虛構）的標準寫：「依 OWASP Deepfake 指南（2024-09-23 發布）列出三類事件；依 OWASP GenAI 事件應變指南，Excessive Agency 事件請對照 LLM Top 10 的 LLM06。」審查人員查到：Deepfake 指南 PDF 修訂表寫 2024-09-10 發布；指南列了四類；IR 指南是 2025 年發布的，LLM Top 10 現行版本是 2026。',
+      options: [
+        { text: '不需要修正，指南的日期以資源頁為準。', why: '兩個日期並存且未能確認哪個是正式發布日，應並列；而且「三類」與官方列出的四類不符。' },
+        { text: '要修正三處：Deepfake 指南日期並列「PDF 修訂表 2024-09-10、資源頁 2024-09-23」，不單選；事件類型是四類（官方文字有三／四兩種說法）；LLM06 是 2025 版的 Excessive Agency 編號，應寫 LLM06:2025（2026 版是 LLM03:2026）。', correct: true, why: '符合 1.2 節三個小問題。' },
+        { text: '只需要把 LLM06 改成 LLM03。', why: '還有日期與事件類型數量兩處需修正；而且 IR 指南用的是 2025 版編號，直接改 LLM03 會變成混用兩版。' },
+        { text: '只需要刪掉日期。', why: '日期應如實標示，問題在於只寫了其中一個且未標明衝突。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) Deepfake 指南 PDF 修訂表發布日 2024-09-10，資源頁登錄日 2024-09-23，應並列。(2) 官方列出四類事件，文字有「三／四」兩種說法。(3) IR 指南的 LLM06 Excessive Agency 是 2025 版編號，2026 版是 LLM03:2026。</p><p><strong>結論：</strong>三處都要改。對應教材：<a href="01-position.html#pos-conflict">1.2 節</a>。</p>' },
+    { id: 'i1q3', type: 'mc', lo: [1], refs: [{label: '1.1 表 1-1', href: '01-position.html#pos-two'}],
+      stem: '關於兩份指南的授權，依本章，哪一項最正確？',
+      options: [
+        { text: '兩份的 PDF 內文都明載 CC BY-SA 4.0。', why: 'IR 指南 PDF 內文未見授權文字。' },
+        { text: 'Deepfake 指南 PDF 授權頁明載 CC BY-SA 4.0；IR 指南 PDF 內文未見授權文字，以 genai.owasp.org 網站頁尾 CC BY-SA 4.0（除非另有說明）為準。', correct: true, why: '符合表 1-1。' },
+        { text: '兩份都是 CC BY-NC-SA 4.0。', why: '本主題的來源沒有 NC 授權。' },
+        { text: '兩份都沒有授權，可任意使用。', why: '有授權，只是 IR 指南的標示位置在網站而不在 PDF。' }
+      ],
+      summary: 'Deepfake：PDF 載 CC BY-SA 4.0；IR：以網站頁尾為準。' }
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌與方法論｜LLM Top 10 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP Top 10 for LLM Applications 2026 是什麼、怎麼排出來（社群投票加事件資料）、管到哪裡為止（元件與行動者的邊界），以及十個條目的三層結構與正確的引用方式。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="02-llm-applications" data-topic="llm-top-10" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌與方法論</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../../primer-security-for-developers.html">資安前置觀念</a>；建議讀過 <a href="../../01-overview/genai-security-project/index.html">GenAI Security Project 架構</a></li>
+</ul>
+<p class="lead">這一章先回答三件事：這份清單是什麼、名次怎麼排出來的、它管到哪裡為止。看完你會有一張十個條目的「三層地圖」，後面每一章都會回到這張圖上標位置。</p>
+
+<h2 id="ov-onepage">1.1 一頁式全貌</h2>
+<p><strong>OWASP Top 10 for LLM Applications 2026</strong>（資源頁標題寫作 OWASP GenAI LLM Top 10 2026）是 OWASP 針對「用大型語言模型 (Large Language Model, LLM) 蓋出來的應用」整理的十大風險清單。它由 OWASP GenAI Security Project 底下的 Top 10 for LLM and GenAI 工作小組維護，是該專案最早、最知名的產出（工作小組的分工見 <a href="../../01-overview/genai-security-project/03-initiatives.html">GenAI 專案第 3 章</a>）。</p>
+<ul>
+  <li><span class="tag official">官方</span> <strong>版本與日期：</strong>Version 2026，發布日 2026-08-04（GitHub README 與 <code>2026/README.md</code>、PDF 封面皆寫 8 月 4 日）。資源頁畫面日期寫 August 3, 2026，但同一頁的結構化中繼資料 <code>datePublished</code> 是 2026-08-04T05:50 UTC。依「取較新」的規則，本教材採 2026-08-04；PDF 封面另殘留一行「[Publication date to be set]」，所以正式發布日仍列入<a href="references.html#ref-unsure">未能確認</a>。</li>
+  <li><span class="tag official">官方</span> <strong>負責人：</strong>Project Lead Steve Wilson，Co-Lead Rock Lambros（PDF 與 <code>CITATION.cff</code>）。</li>
+  <li><span class="tag official">官方</span> <strong>形式：</strong>122 頁 PDF，以及 GitHub 上的 Markdown 原始碼（<code>2026/final/</code>，官方稱為 canonical source）。內容含十個條目、附錄 A（對照 9 個外部框架）、附錄 B（架構與威脅建模圖）和 AISVS 對照。授權 CC BY-SA 4.0。</li>
+  <li><span class="tag official">官方</span> <strong>讀者與性質：</strong>開發者、架構師、資料科學家、資安人員與組織。它是社群共識的「認知文件 (awareness document)」；章程明說它不是完整的弱點分類，也不是規範性標準或合規框架。</li>
+  <li><strong>怎麼引用：</strong>README 建議引用概念 DOI <code>10.5281/zenodo.22109014</code>（永遠指向最新版）；要鎖定 2026 版則用版本 DOI <code>10.5281/zenodo.22109015</code>。這兩個 DOI 本教材只在 README 與 <code>CITATION.cff</code> 讀到，Zenodo 的紀錄頁無法讀取（回 403），未能驗證。</li>
+</ul>
+<div class="callout unsure official">
+  <p class="callout-title">一個容易踩到的坑：官網目錄頁還是舊版</p>
+  <p>2026-10-26 本教材讀 <a href="https://genai.owasp.org/llm-top-10/">genai.owasp.org/llm-top-10/</a>，頁面仍列 2025 版十項（LLM01:2025 … LLM10:2025），完全沒提 2026 版；而 <code>CITATION.cff</code> 給的引用網址正是這一頁。要讀 2026 版，請從<a href="https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/">資源頁</a>下載 PDF，或讀 GitHub 的 <code>2026/final/</code>。這就是為什麼本教材一律標明版本與日期。</p>
+</div>
+
+<h2 id="ov-method">1.2 方法論：社群投票加事件資料</h2>
+<p>前幾版的名次都是「專家判斷」。2026 版第一次拿判斷去對照事實：專案蒐集了 7,714 筆來自公開弱點資料庫與 AI 傷害資料庫的真實事件，用分類器處理，其中 6,639 筆資訊足夠、可以歸類。最後的名次由<strong>社群投票占 3/4、事件資料占 1/4</strong> 加權決定。官方的理由是：這是共識產物，一年的雜訊資料不該推翻從業者的判斷；但 1/4 的權重已足以在信念與證據落差很大時，讓一個條目移動一個層級。</p>
+<p>編者在前言指出兩個最明顯的落差，它們也是理解整份清單的鑰匙：</p>
+<ul>
+  <li><strong>提示詞注入 (Prompt Injection)：</strong>從業者排第 1；但單看事件紀錄，它掉出前十。官方的解讀是「防禦效應」：團隊很努力擋，乾淨的利用案例較少流進公開資料庫，公開件數低估了風險；但只要模型會讀不可信輸入（也就是幾乎處處），攻擊面就在。所以它維持第 1。</li>
+  <li><strong>錯誤資訊 (Misinformation)：</strong>投票排很後，事件紀錄卻排很前，是「票低、證據高」落差最大的一項。結果它排在中段（第 7）。官方的論點：當模型流暢又有自信的輸出驅動一個決策或工具呼叫，錯誤的答案就變成錯誤的行動。</li>
+</ul>
+<p>編者的立場可以濃縮成一句：<em>不要試著造出騙不倒的模型；要把模型周圍的系統做好，讓模型被騙時，重要的東西不會壞。</em>這個「架構重於攔截」的態度貫穿十個條目，你在第 2 章會第一次看到它的完整形態。</p>
+<div class="callout author">
+  <p class="callout-title"><span class="tag author">作者整理，非官方</span> 讀「事件資料」時的保留</p>
+  <p>7,714 筆事件、分類器、1/4 權重都是官方自述，本教材沒有取得語料或分類方法，無法獨立驗證。另外，公開弱點資料庫天生偏向「被發現且被登記的洩漏」，這也是官方自己用「防禦效應」解釋的原因。教材把這些數字當作「官方說明了怎麼排名」，不當作風險大小的測量值。</p>
+</div>
+
+<h2 id="ov-boundary">1.3 邊界：元件與行動者，以及相鄰的文件</h2>
+<p>這份清單只管一種情況：<strong>模型是你應用裡的一個元件</strong>——輸入處理、輸出產生與工具互動都由應用程式指揮，應用保有決策與執行範圍的控制權。一旦模型變成<strong>行動者 (actor)</strong>，自己選工具、帶著記憶跨對話、在下游引發後果，風險就移到 OWASP Top 10 for Agentic Applications（以下簡稱 Agentic Top 10）。官方章程的分工原則是：同一類風險同時存在兩邊時，LLM Top 10 講「基礎弱點」，Agentic Top 10 講「自主、持續與多步執行放大後的風險」。</p>
+<div class="table-wrap"><table>
+<caption>表 1-1　LLM Top 10 與相鄰文件的差異</caption>
+<thead><tr><th scope="col">文件</th><th scope="col">管什麼</th><th scope="col">版本標示</th><th scope="col">什麼時候先看它</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM Top 10 2026</th><td>模型是「元件」時的十項風險</td><td>Version 2026；2026-08-04；條目編號 LLM01:2026–LLM10:2026</td><td>你在用 LLM 蓋應用，要建立共同的風險語言</td></tr>
+<tr><th scope="row">Agentic Top 10 2026</th><td>模型是「行動者」時的十項風險（ASI01–ASI10）</td><td>Version 2026；資源頁 2025-12-09</td><td>系統會自己選工具、保有記憶、做多步行動</td></tr>
+<tr><th scope="row">MCP Top 10</th><td>MCP（Model Context Protocol）生態的十項風險</td><td>條目標籤 MCP01:2025 起；owasp.org 專案頁標 Production；無版本號</td><td>你在建置或使用 MCP Server</td></tr>
+<tr><th scope="row">Machine Learning Security Top 10</th><td>傳統機器學習系統的十項風險</td><td>2023 edition、Draft v0.3（沿用調查筆記與 AI Exchange 主題；本主題<strong>未重新核對</strong>）</td><td>你的系統是傳統 ML，不是 LLM 應用</td></tr>
+<tr><th scope="row">OWASP AI Exchange</th><td>涵蓋所有 AI 的威脅、控制與風險分析知識庫</td><td>無版本號，用快照日期引用</td><td>要做威脅建模、挑控制、或一次看全貌</td></tr>
+</tbody></table></div>
+<p>前三列的分工是官方明載的（章程與前言）；「什麼時候先看它」那一欄是作者的使用建議。Agentic Top 10 與 MCP Top 10 之後有各自的主題（04 階段），這裡只需要記得一件事：<strong>邊界不是二選一</strong>。官方前言的原話意思是：讀這裡的條目掌握「模型當元件」的失效；模型開始自己行動時，兩份要搭配讀，因為單看任何一份都蓋不住那一塊。</p>
+
+<h2 id="ov-layers">1.4 十項的三層地圖</h2>
+<p>官方用一張「同心圓攻擊流」(Figure 2) 把十項放進三層：<strong>入口</strong>（攻擊從哪裡進來）、<strong>放大器／機制</strong>（讓進來的東西造成更大傷害的機器）、<strong>衝擊</strong>（最後落在誰身上）。攻擊由外向內流，防禦由內向外推。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="三層同心結構的簡化重繪。第一層入口：LLM01 提示詞注入、LLM04 供應鏈、LLM05 資料與模型投毒。第二層放大器與機制：LLM08 隱藏上下文暴露、LLM09 向量與嵌入弱點、LLM03 過度授權、LLM10 不當輸出處理。第三層衝擊：LLM02 敏感資訊外洩、LLM06 無限制消耗、LLM07 錯誤資訊。攻擊由入口經放大器流向衝擊；官方註記 LLM04 並非所有攻擊都向內流，有些直接造成衝擊。">
+flowchart TB
+  subgraph V["1 入口 Entry vectors"]
+    L1["LLM01 提示詞注入"]
+    L4["LLM04 供應鏈"]
+    L5["LLM05 資料與模型投毒"]
+  end
+  subgraph A["2 放大器 Amplifiers"]
+    L8["LLM08 隱藏上下文暴露"]
+    L9["LLM09 向量與嵌入弱點"]
+    L3["LLM03 過度授權"]
+    L10["LLM10 不當輸出處理"]
+  end
+  subgraph I["3 衝擊 Impacts"]
+    L2["LLM02 敏感資訊外洩"]
+    L6["LLM06 無限制消耗"]
+    L7["LLM07 錯誤資訊"]
+  end
+  V --> A
+  A --> I
+  L4 -. "部分攻擊直接造成衝擊" .-> I
+</pre>
+<figcaption><strong>圖 1-1　LLM Top 10 2026 的三層結構（依官方 Figure 2 簡化重繪，非官方原圖）。</strong>分層和歸屬取自官方圖；官方圖例說虛線方框的條目「同時屬於不止一層」，圖中 LLM03、LLM08、LLM09、LLM10 為虛線，但沒有標明跨哪幾層，本教材不推測。</figcaption>
+</figure>
+<div class="table-wrap"><table>
+<caption>表 1-2　LLM Top 10 2026 十個條目一覽</caption>
+<thead><tr><th scope="col">編號與名稱</th><th scope="col">一句話</th><th scope="col">官方圖 2 的層</th><th scope="col">本教材</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM01:2026 提示詞注入 (Prompt Injection)</th><td>任何輸入改變了模型行為；指令與資料同在一條 token 串流</td><td>入口</td><td>第 2 章</td></tr>
+<tr><th scope="row">LLM02:2026 敏感資訊外洩 (Sensitive Information Disclosure)</th><td>機敏資料經未授權的通道離開；通道不只最終答案</td><td>衝擊</td><td>第 6 章</td></tr>
+<tr><th scope="row">LLM03:2026 過度授權 (Excessive Agency)</th><td>模型輸出異常時，有破壞力的行動真的被執行</td><td>放大器</td><td>第 4 章</td></tr>
+<tr><th scope="row">LLM04:2026 供應鏈 (Supply Chain)</th><td>資料、模型、adapter、轉換流程與平台的完整性</td><td>入口</td><td>第 3 章</td></tr>
+<tr><th scope="row">LLM05:2026 資料與模型投毒 (Data and Model Poisoning)</th><td>資料或模型成品被竄改，埋入偏誤或後門</td><td>入口</td><td>第 3 章</td></tr>
+<tr><th scope="row">LLM06:2026 無限制消耗 (Unbounded Consumption)</th><td>推論沒有上限，傷害可用性、成本或智慧財產</td><td>衝擊</td><td>第 7 章</td></tr>
+<tr><th scope="row">LLM07:2026 錯誤資訊 (Misinformation)</th><td>看似可信的錯誤輸出被採信並驅動行動</td><td>衝擊</td><td>第 7 章</td></tr>
+<tr><th scope="row">LLM08:2026 隱藏上下文暴露 (Hidden Context Exposure)</th><td>隱藏的指令與營運脈絡被取出或推得</td><td>放大器</td><td>第 5 章</td></tr>
+<tr><th scope="row">LLM09:2026 向量與嵌入弱點 (Vector and Embedding Weaknesses)</th><td>相似度搜尋層本身的弱點（RAG、記憶、語意快取）</td><td>放大器</td><td>第 5 章</td></tr>
+<tr><th scope="row">LLM10:2026 不當輸出處理 (Improper Output Handling)</th><td>模型輸出未經驗證就交給下游元件</td><td>放大器</td><td>第 4 章</td></tr>
+</tbody></table></div>
+<p>中文譯名裡，「過度授權」是沿用前兩個主題的暫譯；官方原文 agency 指「被授予的行動能力」，成因包含功能、權限與自主三項，不只是權限（第 4 章會解釋）。其他譯名見<a href="../../glossary.html">詞彙表</a>。</p>
+
+<h2 id="ov-cite">1.5 怎麼正確引用</h2>
+<p>三條規則，後面每一章都會用到：</p>
+<ol>
+  <li><strong>編號一律帶年份：</strong>寫 LLM03:2026，不要只寫 LLM03。2025 與 2026 版只有 LLM01、LLM02 的編號相同，其餘八項都換了位置（完整對照在<a href="08-evolution.html#ev-numbers">第 8 章</a>）。</li>
+  <li><strong>引用文件要帶版本與日期：</strong>「OWASP Top 10 for LLM Applications，Version 2026，2026-08-04」，而不是「OWASP LLM Top 10 最新版」。</li>
+  <li><strong>別用官網目錄頁或舊簡報當 2026 版的依據：</strong>它們可能還是 2025 版。</li>
+</ol>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>LLM Top 10 2026（Version 2026，2026-08-04）是模型「當元件」時的十項風險認知清單，不是標準或合規框架。</li>
+  <li>名次 = 社群投票 3/4 + 事件資料 1/4。提示詞注入雖在事件紀錄中掉出前十，仍因「防禦效應」與無處不在的攻擊面保持第 1；錯誤資訊因證據高於票數而升到第 7。</li>
+  <li>模型當元件看 LLM Top 10；模型開始自己行動時，搭配 Agentic Top 10。</li>
+  <li>十項分三層：入口（LLM01、04、05）、放大器（LLM08、09，以及 LLM03、10）、衝擊（LLM02、06、07）。</li>
+  <li>引用要帶年份、版本與日期；官網目錄頁可能仍是 2025 版。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能用一句話說明 LLM Top 10 2026 是什麼，以及它「不是」什麼。</li>
+  <li>我能說明名次怎麼加權，並解釋提示詞注入和錯誤資訊各自的「落差」。</li>
+  <li>給我一個系統描述，我能判斷主要看 LLM Top 10，還是要搭配 Agentic Top 10。</li>
+  <li>我能把十個條目放進入口、放大器、衝擊三層。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-prompt-injection.html">第 2 章　LLM01 提示詞注入</a>：三層地圖上最外面、也是最難根治的入口。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Top 10 for LLM Applications 2026（Version 2026，2026-08-04）：<a href="https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/">資源頁</a>（PDF 122 頁，含前言 Letter from the Project Leads、What's New、Figure 2 與目錄）；<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/README.md">GitHub README</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">2026/README.md</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM00_Preface.md">LLM00_Preface.md</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/CITATION.cff">CITATION.cff</a>；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications Charter（元件與行動者的邊界、文件性質）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/OWASP%20Top%2010%20for%20LLM%20Applications%20Charter.md">GitHub 儲存庫根目錄</a>；頁面無版本與日期。</li>
+    <li>官網 LLM Top 10 目錄頁：<a href="https://genai.owasp.org/llm-top-10/">genai.owasp.org/llm-top-10/</a>（2026-10-26 仍列 2025 版）。</li>
+    <li>相鄰文件的版本標示：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">Agentic Top 10 資源頁</a>（2025-12-09）、<a href="https://owasp.org/www-project-mcp-top-10/">MCP Top 10 專案頁</a>，頁面標示為 Production Project；ML Top 10 與 AI Exchange 的描述沿用<a href="../../01-overview/ai-exchange/08-integration.html">AI Exchange 第 8 章</a>。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Top 10 for LLM Applications 2026 與其章程、GitHub 儲存庫 — CC BY-SA 4.0；genai.owasp.org 網站 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'l-ch1', topic: 'llm-top-10', mode: 'chapter',
+  questions: [
+    { id: 'l1q1', type: 'mc', lo: [1], refs: [{label: '1.2 方法論', href: '01-position.html#ov-method'}],
+      stem: '依本章，為什麼提示詞注入 (Prompt Injection) 在事件紀錄的排名掉出前十，2026 版仍把它放在第 1？',
+      options: [
+        { text: '因為事件資料只占 1/4 權重，所以它對名次完全沒有影響。', why: '說得太絕對。官方說 1/4 的權重足以在信念與證據落差很大時讓一個條目移動一個層級（錯誤資訊就是例子）。提示詞注入留在第 1，是因為另有理由。' },
+        { text: '因為官方認為事件資料不可信，所以沒有採用。', why: '事件資料有被採用，占 1/4 權重；官方只是刻意讓投票占更重。' },
+        { text: '因為社群投票占 3/4；而且官方認為公開資料庫的件數低估了風險（團隊積極防禦，乾淨的利用較少進入公開紀錄），攻擊面又遍及模型讀取不可信輸入的每個地方。', correct: true, why: '符合 1.2 節：官方稱這個落差為「防禦效應」，並因此維持第 1。' },
+        { text: '因為 2026 版沒有調整任何條目的名次。', why: '2026 版調動很大：過度授權升到第 3、無限制消耗上升四名、不當輸出處理從第 5 降到第 10。' }
+      ],
+      summary: '名次 = 投票 3/4 + 事件資料 1/4；提示詞注入靠「防禦效應」與無處不在的攻擊面保持第 1。' },
+    { id: 'l1q2', type: 'scn', lo: [1], refs: [{label: '1.3 邊界', href: '01-position.html#ov-boundary'}],
+      stem: '依本章的元件與行動者邊界，資安團隊該怎麼選用文件？',
+      scenario: '雲谷科技（虛構）有兩個系統。系統甲：客服網站把使用者的問題送給 LLM 產生答覆，由程式碼決定要不要顯示，LLM 沒有工具、沒有記憶。系統乙：內部助理會自己選擇工具、讀寫跨對話的記憶，還能對外寄信。資安團隊要決定各自主要參考哪份風險清單。',
+      options: [
+        { text: '兩個系統都只看 LLM Top 10 就夠了，因為它們都用 LLM。', why: '系統乙的模型已是行動者（自選工具、帶記憶、有下游後果），官方明說這時要搭配 Agentic Top 10。' },
+        { text: '系統甲以 LLM Top 10 為主；系統乙一樣讀 LLM Top 10 處理「模型當元件」的失效，再搭配 Agentic Top 10 處理自主行動放大的風險。', correct: true, why: '符合 1.3 節：官方前言說行動者情境要兩份搭配讀，因為單看任何一份都蓋不住那一塊。' },
+        { text: '系統乙改看 Agentic Top 10 就好，LLM Top 10 不再適用。', why: '不是取代：章程說同一類風險兩邊都有時，LLM Top 10 講基礎弱點，Agentic Top 10 講放大後的風險，基礎弱點仍然存在。' },
+        { text: '兩個系統都改看 Agentic Top 10，因為它比較新。', why: '新舊不是選擇依據；系統甲的模型只是元件，LLM Top 10 正是對口文件。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 判斷依據是「模型在系統裡扮演什麼角色」，不是它用不用 LLM。(2) 系統甲：應用保有決策與執行的控制權，模型只是元件 → LLM Top 10。(3) 系統乙：自己選工具、帶跨對話記憶、能對外寄信 → 模型已是行動者，風險移向 Agentic Top 10；但提示詞注入、敏感資訊外洩等基礎弱點仍在，所以兩份搭配。</p><p><strong>結論：</strong>甲看 LLM Top 10；乙兩份搭配。對應教材：<a href="01-position.html#ov-boundary">1.3 節</a>。</p>' },
+    { id: 'l1q3', type: 'match', lo: [1], refs: [{label: '1.4 三層地圖', href: '01-position.html#ov-layers'}],
+      stem: '依官方 Figure 2（本章圖 1-1），把下列條目配對到它所在的層。',
+      cats: [
+        { id: 'entry', label: '入口（Entry vectors）' },
+        { id: 'amp', label: '放大器（Amplifiers）' },
+        { id: 'impact', label: '衝擊（Impacts）' }
+      ],
+      items: [
+        { text: 'LLM05:2026 資料與模型投毒', answer: 'entry', why: '官方圖把 LLM01、LLM04、LLM05 放在入口層。' },
+        { text: 'LLM09:2026 向量與嵌入弱點', answer: 'amp', why: '官方圖把 LLM08、LLM09 放在放大器層（LLM03、LLM10 也在此層）。' },
+        { text: 'LLM07:2026 錯誤資訊', answer: 'impact', why: '官方圖的衝擊層是 LLM02、LLM06、LLM07。' },
+        { text: 'LLM01:2026 提示詞注入', answer: 'entry', why: '入口層：攻擊從這裡進入。' },
+        { text: 'LLM06:2026 無限制消耗', answer: 'impact', why: '衝擊層：可用性、成本與模型被複製是最終落點。' }
+      ],
+      summary: '入口：LLM01、04、05；放大器：LLM08、09（及 03、10）；衝擊：LLM02、06、07。' }
+  ]
+});
+</script>
+</body>
+</html>

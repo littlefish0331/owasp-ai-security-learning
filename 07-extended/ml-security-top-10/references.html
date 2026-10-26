@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜Machine Learning Security Top 10｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Machine Learning Security Top 10 主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="ml-security-top-10" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 5.1 節與第 8 節）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以本教材回到一手來源重新核對。本頁列出：採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">Machine Learning Security Top 10 專案頁</th><td>2023 edition；Version 0.3 Draft；Incubator Project；類別 Documentation</td><td><a href="https://owasp.github.io/www-project-machine-learning-security-top-10/index.html">專案頁</a>（owasp.org 網址轉址至此）；頁面寫「目前版本是草稿，正被頻繁修改」</td><td>CC BY-SA 4.0（專案頁 Licensing 段）</td></tr>
+<tr><th scope="row">PDF</th><td>"Draft release v0.3"；31 頁；PDF 建立日 2025-02-01；Release 段 "currently at v0.3 draft release"</td><td><a href="https://mltop10.info/OWASP-Machine-Learning-Security-Top-10.pdf">mltop10.info PDF</a></td><td>CC BY-SA 4.0；版權 "2003-2023 The OWASP Foundation"</td></tr>
+<tr><th scope="row">十個條目頁</th><td>ML01:2023–ML10:2023；頁面標題前綴 "OWASP Machine Learning Security Top Ten 2023"</td><td>專案頁清單所連結的 <code>/docs/ML0x_2023-….html</code></td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">GitHub 儲存庫</th><td>無 release；最近提交 2026-10-07（依賴機器人合併，非內容更動）</td><td><a href="https://github.com/OWASP/www-project-machine-learning-security-top-10">github.com/OWASP/www-project-machine-learning-security-top-10</a></td><td>授權欄由專案頁決定；GitHub 未偵測到授權檔</td></tr>
+<tr><th scope="row">OWASP Top 10 for LLM Applications 2026（對照用）</th><td>PDF 封面 2026-08-04（沿用既有主題的取捨）</td><td><a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">2026/README.md</a>、final/ 各條目</td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0（沿用既有副本）</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">ML06 的名稱與描述</th><td>ML06:2023 AI Supply Chain Attacks；描述為「攻擊 ML 專案依賴的函式庫、MLOps 工具與共享模型庫」</td><td>專案首頁清單、mltop10.info 目錄、PDF 內文：<strong>AI</strong> Supply Chain Attacks（PDF 描述較短：修改或取代系統使用的 ML 函式庫或模型，也可包含相關資料）。條目頁標題與 front-matter：<strong>ML</strong> Supply Chain Attacks，描述較長，提到 MLOps 平台、資料管理平台、模型管理軟體、模型庫。條目頁的檔案在 2024-06-24（"new version of ML06"）與 2024-08-27（"updated name"）有更新提交</td><td>清單名稱採專案首頁與 PDF 的 "AI Supply Chain Attacks"；描述採較新的條目頁內容；在表 2-1 同時註明條目頁標題的寫法</td></tr>
+<tr><th scope="row">ML04 的描述</th><td>「判斷特定資料是否在訓練集中，進而推知個資」</td><td>筆記的說法與條目頁的預防措施、情境一致；但條目頁自己的 Description 一句話寫成「攻擊者<em>操縱</em>訓練資料，使其表現出洩漏敏感資訊的行為」，與預防措施和情境不符（網頁與 PDF 此句一致）</td><td>依預防措施與情境理解，並在第 2 章 2.4 節如實揭露</td></tr>
+<tr><th scope="row">風險因子表（Exploitability、Detectability、Technical 等）</th><td>（筆記未提）</td><td>各條目頁有風險因子表與數字（例如 ML01 的 Exploitability 5 (Easy)）。頁面自己寫「這個表只是依下方情境的範例，實際風險取決於各 ML 系統的具體情況」</td><td>教材不引用數字、不據以排序（見第 1 章 1.5 節）</td></tr>
+<tr><th scope="row">領導者</th><td>Shain Singh、Sagar Bhure、Ben Kereopa-Yorke</td><td><code>project.owasp.yaml</code> 與 owasp.org 專案頁相同；專案頁的 Contribution 段只寫「初版由 Sagar Bhure 與 Shain Singh 貢獻」</td><td>第 1 章只列領導者，不評論貢獻</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">ML06 名稱</th><td>見 R-2</td><td>以專案首頁與 PDF 的 "AI Supply Chain Attacks" 為清單名稱，並於教材註明條目頁寫成 "ML Supply Chain Attacks"；這是「同一條目兩種寫法」，不是兩個條目</td></tr>
+<tr><th scope="row">ML06 描述（PDF vs. 條目頁）</th><td>條目頁較新（2024-08-27 有名稱更新提交）；PDF 建立於 2025-02-01，但內文描述與條目頁不同</td><td><strong>無法判斷 PDF 內文是否反映條目頁的最新更新</strong>。教材只用兩者共同的部分（函式庫、模型、MLOps 工具、模型庫）。標「未能確認」</td></tr>
+<tr><th scope="row">版本標示</th><td>專案頁「Version 0.3 Draft」；PDF "Draft release v0.3"；mltop10.info 標題 "Draft release v0.3"</td><td>一致，採 v0.3 Draft</td></tr>
+<tr><th scope="row">專案層級</th><td>owasp.org 專案頁：Incubator Project；<code>project.owasp.yaml</code>：<code>level: 2</code></td><td>採頁面標籤 Incubator；<code>level</code> 數字與標籤的對應規則官方頁面未說明，教材不解讀</td></tr>
+<tr><th scope="row">授權</th><td>專案頁與 PDF 一致為 CC BY-SA 4.0</td><td>無衝突</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>排序依據：</strong>專案頁、PDF 都沒有說明十項為何依此順序、是否有投票或評分方法。教材因此不把編號當成優先順序。</li>
+  <li><strong>是否有 2025／2026 年更新版：</strong>本教材在專案頁、PDF、GitHub 最近提交中沒有找到更新版的跡象（最近提交皆為依賴機器人合併）。「沒有找到」不等於「沒有」，可看專案維護者的公告。</li>
+  <li><strong>專案頁提到的 Release Notes、Changelog、wiki 內容：</strong>連結存在（GitHub releases 與 wiki），本教材只確認了連結，沒有逐頁閱讀 wiki；因此「專案發布時程」未能確認。</li>
+  <li><strong>ML06 PDF 內文是否反映最新條目頁：</strong>見 R-3。</li>
+  <li><strong>與 LLM Top 10 2026、AI Exchange 的逐條對應：</strong>官方只在 AI Exchange 威脅頁的參考區塊列出 ML01、ML02、ML05 等編號（本教材沿用 AI Exchange 主題已整理的內容）。其餘對應官方沒有明載；LLM Top 10 2026 的條目也沒有寫它們對應哪個 ML 條目。</li>
+  <li><strong><code>owasp.org/…/index.html</code> 以外的網址行為：</strong>筆記提到不帶 <code>index.html</code> 的網址曾回傳 404；本次讀取時 <code>index.html</code> 版本轉址至 owasp.github.io 版本，本教材沒有再重測 404 的現象。</li>
+  <li><strong>MLSecOps Verification Standard：</strong>筆記提到 <code>www-project-mlsecops-verification-standard</code> 儲存庫（README 僅為通用貢獻指南）。本次未讀，與本主題無直接關係，不引用。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<ul>
+  <li>專案頁：<a href="https://owasp.org/www-project-machine-learning-security-top-10/index.html">owasp.org/www-project-machine-learning-security-top-10/index.html</a>（轉址至 <a href="https://owasp.github.io/www-project-machine-learning-security-top-10/index.html">owasp.github.io 版本</a>）</li>
+  <li>條目頁：<code>/docs/ML01_2023-Input_Manipulation_Attack.html</code> 至 <code>/docs/ML10_2023-Model_Poisoning.html</code>（ML06 的檔名為 <code>ML06_2023-AI_Supply_Chain_Attacks.html</code>）</li>
+  <li>PDF 與專案網站：<a href="https://mltop10.info">mltop10.info</a>、<a href="https://mltop10.info/OWASP-Machine-Learning-Security-Top-10.pdf">PDF</a></li>
+  <li>GitHub：<a href="https://github.com/OWASP/www-project-machine-learning-security-top-10">OWASP/www-project-machine-learning-security-top-10</a>（<code>project.owasp.yaml</code>）</li>
+  <li>OWASP AI Exchange（對照）：<a href="https://owaspai.org/">owaspai.org</a></li>
+  <li>OWASP Top 10 for LLM Applications 2026（對照）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/tree/main/2026">GenAI-LLM-Top10/2026</a>（README 與 final/LLM02、LLM04、LLM05、LLM10）</li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>圖 1-1「依系統類型選清單，最後回到 AI Exchange」的串接（第 1 章）。</li>
+  <li>圖 2-1 的三個生命週期分組與各條目的歸屬（第 2 章）；表 2-2 的「攻擊者動的是什麼」歸類方式。</li>
+  <li>表 3-1 的六類防禦主題與逐條出現次數的統計（第 3 章）；表 3-2 的「出問題的環節」欄；圖 3-1 的症狀措辭與串接。</li>
+  <li>表 4-1 中標示「作者整理」的列；4.2 節三個陷阱；圖 4-1 的分流。</li>
+  <li>「傳統機器學習」這個稱呼（官方用 machine learning systems，沒有定義「傳統」）。</li>
+  <li>表 4-1 與 4.2 節中，讀過 LLM02、LLM04、LLM05、LLM10 的條目描述後寫的範圍比較，是作者讀出的範圍說明，不是官方寫的對照。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>OWASP Machine Learning Security Top 10（專案頁與 PDF）：CC BY-SA 4.0。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>OWASP Top 10 for LLM Applications 2026：CC BY-SA 4.0；OWASP AI Exchange：CC0 1.0（僅用於對照）。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：OWASP Machine Learning Security Top 10 — CC BY-SA 4.0；OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>框架對照與標準｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="GenAI Security Industry Framework Crosswalk 與 AI Exchange 和各標準的關係：學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="framework-crosswalk-and-standards" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>框架對照與標準</h1>
+<ul class="meta-row">
+  <li>05 治理與風險｜主題 4</li>
+  <li>預估學習時間：約 50–60 分鐘（4 章閱讀約 28 分鐘；章末檢核與總測驗約 22–25 分鐘）</li>
+  <li>採用來源：GenAI Security Project 的 Crosswalk 儲存庫與資源頁、OWASP AI Exchange（2026-10-25 PDF 快照），2026-10-26 讀取</li>
+</ul>
+<p class="lead">一位合規人員問你：「我們要通過 ISO 42001 稽核、又要符合歐盟 AI 法案。OWASP 的風險清單跟這些有什麼關係？」這個主題回答的就是這題。OWASP 做了兩件事：<strong>Crosswalk</strong> 把 OWASP 的風險條目一條條對映到 26 個外部框架；<strong>AI Exchange</strong> 則反向參與標準的制定。學完後，你能在「我有一個風險」與「我要滿足某個框架」之間找到路，並知道這份對照的證據強度。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>定位：</strong>說明 Crosswalk 是什麼、它的來源清單與版本，並辨認各處數字（25 與 26 個框架）的出入。<br><small>對應：<a href="01-crosswalk-position.html">第 1 章</a>、<a href="04-integration.html">第 4 章</a></small></li>
+  <li id="lo2"><strong>結構與用法：</strong>說明對照的單位、分層（Foundational／Hardening／Advanced）與範圍（Buy／Build／Both），並用它回答「這個風險對應哪些控制」。<br><small>對應：<a href="02-crosswalk-use.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>編號遷移：</strong>把 LLM Top 10 2025 的編號正確對到 2026，並解釋為什麼不能逐一取代。<br><small>對應：<a href="02-crosswalk-use.html">第 2 章</a></small></li>
+  <li id="lo4"><strong>標準關係：</strong>說明 AI Exchange 與 ISO/IEC 42001、27090、5338、prEN 18282、OpenCRE 的關係，以及它自己宣稱的範圍。<br><small>對應：<a href="03-standards.html">第 3 章</a></small></li>
+  <li id="lo5"><strong>證據強度：</strong>判斷一份對照在多大程度上可以當作合規證據，並知道它的限制。<br><small>對應：<a href="03-standards.html">第 3 章</a>、<a href="04-integration.html">第 4 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>建議先讀 <a href="../governance-checklist-and-coe/index.html">治理檢核表與卓越中心</a>：本主題的對照，是「組織要滿足的框架」與「OWASP 風險」之間的橋。</li>
+  <li>建議先讀 <a href="../../01-overview/genai-security-project/05-integration.html">GenAI Security Project 第 5 章</a>：LLM Top 10 2025 與 2026 的編號對照表在那裡已建立，本主題直接使用。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="01-crosswalk-position.html">第 1 章　Crosswalk 的全貌與定位</a></span><span class="p-state" data-file="01-crosswalk-position.html"></span><span class="p-desc">是什麼、來源清單、26 個框架、版本與數字的出入、授權。表 3 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="02-crosswalk-use.html">第 2 章　怎麼用 Crosswalk：對照單位與編號遷移</a></span><span class="p-state" data-file="02-crosswalk-use.html"></span><span class="p-desc">一條對照長什麼樣、分層與範圍、2025→2026 遷移為什麼不能逐一取代。情境 A。表 3 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-standards.html">第 3 章　AI Exchange 與各標準的關係</a></span><span class="p-state" data-file="03-standards.html"></span><span class="p-desc">ISO/IEC 42001、27090、5338、prEN 18282、OpenCRE；官方自述與本教材的核對；證據強度。表 3 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="04-integration.html">第 4 章　跨文件整合與收尾</a></span><span class="p-state" data-file="04-integration.html"></span><span class="p-desc">決策流程、對應其他文件、限制、全主題重點。情境 B。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（14 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO5，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">核對清單、版本與日期對照、數字出入、授權、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>Crosswalk 回答「<strong>哪個框架的哪個控制，對應到哪個 OWASP 風險</strong>」；它是整理出來的對照，不是認證，也不是法律意見。</li>
+  <li>LLM Top 10 的編號從 2025 到 2026 是<strong>重排不是順延</strong>：10 個條目有 8 個換了編號，彼此形成排列，絕對不能用「依序取代」。</li>
+  <li>AI Exchange 說它透過官方聯絡夥伴關係參與標準制定；這是<strong>它自己的說法</strong>，教材沒有向標準組織核對。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的類比、歸類或流程。</li>
+  <li>情境 A、B 是 <span class="tag fiction">虛構</span> 的公司與系統。</li>
+  <li>Crosswalk 的主要資料在 GitHub 儲存庫（README、MIGRATION、RATIONALE、stats.json）；互動網頁是動態載入，本教材沒有操作它。數字取自 2026-10-26 讀到的儲存庫內容。</li>
+  <li>本主題的標準名稱與編號（ISO/IEC 42001 等）都是引用 OWASP 文件的說法。<strong>教材沒有取得這些 ISO 標準的內文</strong>，不評論它們的具體條款內容。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；無法使用時，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：GenAI Security Project Crosswalk 儲存庫 — CC BY-SA 4.0（儲存庫 README 與 LICENSE.md；GitHub 偵測值為 NOASSERTION）；OWASP AI Exchange — CC0 1.0；genai.owasp.org 網站 — CC BY-SA 4.0。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

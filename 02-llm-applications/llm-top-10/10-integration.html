@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 10 章　跨文件整合與收尾｜LLM Top 10 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="LLM Top 10 2026 與 Agentic Top 10、資料安全文件 DSGAI、AISVS、MITRE ATLAS 等的官方對照；從風險到驗證的路徑；官方明載與作者整理的界線；全主題重點與下一步。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="02-llm-applications" data-topic="llm-top-10" data-page="10-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 10 章　跨文件整合與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO1、LO5</li>
+  <li>前置：第 1–9 章</li>
+</ul>
+<p class="lead">這份清單的優點是它跟別的文件接得很好：2026 版把原本散在各條目的「相關框架」合併成一份附錄 A，每個對照都釘住版本。這一章要回答的是：<strong>讀完某個條目之後，下一步該去哪份文件做什麼事</strong>，以及哪些對照是官方寫的、哪些是作者整理的。</p>
+
+<h2 id="in-appendix">10.1 官方附錄 A：十個條目對九個外部框架</h2>
+<p>官方 2026 版附錄 A 把十個條目對照到九個外部框架與分類，並釘住每個框架的版本；每格用 ● 表示主要對照（核心的防線或風險描述）、○ 表示輔助、— 表示沒有適用的對照。附錄說明它取代了原本每個條目內的「相關框架與分類」小節，且對照是在各框架的粗粒度層級（戰術、支柱／弱點、風險類別、控制領域）。</p>
+<div class="table-wrap"><table>
+<caption>表 10-1　附錄 A 納入的九個外部框架與官方釘住的版本</caption>
+<thead><tr><th scope="col">框架</th><th scope="col">釘住的版本（官方）</th><th scope="col">是什麼（一句話）</th><th scope="col">本教材</th></tr></thead>
+<tbody>
+<tr><th scope="row">OWASP Top 10 for Agentic Applications (ASI)</th><td>2026（宣布於 2025-12-09）</td><td>模型成為行動者時的十項風險</td><td>04 階段有主題</td></tr>
+<tr><th scope="row">OWASP GenAI Data Security (DSGAI)</th><td>2026 v1.0（2026-03-17）</td><td>資料層風險</td><td>07 階段有主題</td></tr>
+<tr><th scope="row">MITRE ATLAS</th><td>content v2026.06（format-version 6.0.0）</td><td>AI 系統的對手戰術與技術知識庫</td><td>不另設主題</td></tr>
+<tr><th scope="row">MITRE ATT&amp;CK</th><td>v19.1</td><td>通用的對手戰術與技術知識庫</td><td>不另設主題</td></tr>
+<tr><th scope="row">MITRE CWE</th><td>4.20</td><td>軟體與硬體弱點類型清單</td><td>不另設主題</td></tr>
+<tr><th scope="row">NIST AI 600-1（生成式 AI 輪廓）</th><td>v1.0（2024 年 7 月）</td><td>NIST AI RMF 針對生成式 AI 的輪廓</td><td>不另設主題</td></tr>
+<tr><th scope="row">NIST AI RMF (AI 100-1)</th><td>v1.0（2023）</td><td>AI 風險管理框架</td><td>不另設主題</td></tr>
+<tr><th scope="row">CSA AI Controls Matrix (AICM)</th><td>v1.1（2026-06-22）</td><td>雲端安全聯盟的 AI 控制矩陣</td><td>不另設主題</td></tr>
+<tr><th scope="row">OWASP AIVSS</th><td>v0.8</td><td>AI 弱點評分系統</td><td>06 階段有主題</td></tr>
+</tbody></table></div>
+<p>附錄 A 的覆蓋矩陣有一個值得記住的模式：十個條目對 ASI、ATLAS、CWE、NIST AI 600-1、CSA AICM 幾乎都是「主要」對照；對 NIST AI RMF 大多是「輔助」（○）；LLM02 對 AIVSS 沒有對照（—），LLM10 對 NIST AI RMF 沒有對照（—）。本教材不逐格解讀，因為每格的原因寫在各框架的對照表裡，需要時請讀附錄原文。「不另設主題」的框架，本教材沒有逐一讀它們的內容，只引用附錄 A 對它們的描述與版本。</p>
+
+<h2 id="in-asi">10.2 與 Agentic Top 10：基礎弱點與放大後的風險</h2>
+<p>回顧第 1 章：模型是元件時看 LLM Top 10；是行動者時兩份搭配。附錄 A 的 ASI 對照把這個分工落實到每一對條目，下表挑出幾個最有教學價值的（全部取自附錄 A「ASI」一節，官方）：</p>
+<div class="table-wrap"><table>
+<caption>表 10-2　LLM Top 10 條目與 Agentic Top 10 條目的官方對照（節錄；性質欄為本教材標示）</caption>
+<thead><tr><th scope="col">LLM 條目</th><th scope="col">ASI 條目</th><th scope="col">官方對照說明（摘要）</th><th scope="col">性質</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM01 提示詞注入</th><td>ASI01 Agent Goal Hijack、ASI02、ASI03、ASI05、ASI06、ASI08、ASI09</td><td>注入覆寫角色／能力限制並重導 agent 目標；驅動未授權的工具呼叫；agent 在使用者的高權限下行動；shell／檔案／雲端 API 存取使注入變成任意指令執行；記憶與 RAG 投毒污染未來每個工作階段；工具輸出回到上下文造成連鎖；注入繞過人工確認</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">LLM03 過度授權</th><td>ASI01、ASI02、ASI03、ASI05、ASI07、ASI08、ASI09</td><td>ASI02、ASI03、ASI08 是 Excessive Agency 在 agentic 系統中的「表現」；ASI01 是觸發機制；ASI07 是被攻陷的同伴 agent 作為觸發，且授權範圍要在鏈式呼叫中保留</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">LLM04 供應鏈</th><td>ASI04 Agentic Supply Chain Vulnerabilities</td><td>本條目自己的範圍說明把 agentic 專屬的供應鏈風險（MCP server、工具註冊中心）交給 ASI04，自己留下非 agentic 的模型、資料集與成品供應鏈</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">LLM09 向量與嵌入弱點</th><td>ASI04、ASI06</td><td>嵌入模型本身要審查（被植入後門的編碼器會破壞所有攝入內容的幾何）；不依賴嵌入幾何的 agent 記憶攻擊歸 ASI06</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">LLM07 錯誤資訊</th><td>ASI08、ASI09、ASI10</td><td>跨 agent 傳播的錯誤狀態；人與下游系統把流暢輸出當權威；agent 偽造任務完成或證據對應 ASI10 Rogue Agents</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">LLM06 無限制消耗</th><td>ASI02、ASI08</td><td>agent 與工具互動的迴圈與 MCP 扇出，使單一請求推動遞迴或大量工具呼叫，耗盡預算與可用性</td><td><span class="tag official">官方</span></td></tr>
+</tbody></table></div>
+<p>官方在附錄 A 還對 LLM08 與 ASI06／ASI07 特別加註：那是「指向」agentic 放大的指標，<strong>不是等價的風險</strong>。這個提醒同樣適用於整張表：對照表示「這兩個條目在這一點有關」，不表示可以互相取代。</p>
+
+<h2 id="in-flow">10.3 從風險走到驗證</h2>
+<p>前面的章節回答的是「有什麼風險、怎麼防」。最後一段是：<strong>怎麼知道自己防住了？</strong>官方 2026 版另附一份 AISVS 對照附錄，目的是讓讀完某個條目的團隊，直接走到具體可稽核的控制。AISVS 是 OWASP 的驗證標準，2026 版附錄對照的是 AISVS 1.0 的 12 個控制章節（C1 訓練資料完整性與可追溯性 … C12 監控、日誌與異常偵測）。附錄 A 的 AIVSS 一節則是另一條路——量化弱點的嚴重度。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="從風險到驗證的路徑。第一步：用 LLM Top 10 2026 認識十個風險，並用三層地圖與三個問題把事件對應到條目。第二步：模型成為行動者時，搭配 Agentic Top 10。第三步：資料面的風險，向 DSGAI 找更深的資料安全控制。第四步：需要把風險轉成可稽核的要求時，用官方 AISVS 對照附錄挑對應的 AISVS 1.0 控制章節，逐項驗證。第五步：需要量化嚴重度時，參考 AIVSS。第六步：要紅隊或測試時，把官方 LLM01 第 11 項的原則帶進去，用已知防禦細節的適應性攻擊者測試。全程引用都帶年份、版本與日期。">
+flowchart TD
+  A["1 用 LLM Top 10 2026 認識十個風險<br>三層地圖 + 三個問題，把事件對應到條目"] --> B{"模型是行動者嗎？"}
+  B -->|"是：自選工具、帶記憶、有下游後果"| C["2 搭配 Agentic Top 10 2026<br>基礎弱點仍在，再加放大後的風險"]
+  B -->|"否：模型是元件"| D
+  C --> D{"風險主要在資料面嗎？"}
+  D -->|"是"| E["3 向 DSGAI 找更深的資料安全控制"]
+  D -->|"否"| F
+  E --> F["4 轉成可稽核的要求<br>用官方 AISVS 對照附錄挑 AISVS 1.0 控制章節<br>逐項驗證"]
+  F --> G["5 需要量化嚴重度時參考 AIVSS<br>要紅隊演練時，用已知防禦細節的適應性攻擊者"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class A,B,C,D,E,F,G author
+</pre>
+<figcaption><strong>圖 10-1　從風險到驗證（作者整理，非官方）。</strong>流程中每一站的存在與用途都來自官方文件：ASI 與 DSGAI 的對照在附錄 A，AISVS 對照是另一份官方附錄，「適應性攻擊者」的原則來自 LLM01 第 11 項；<strong>把它們串成這個順序和分支，是作者整理</strong>。AIVSS v0.8 與 AISVS 1.0 是官方附錄釘住的版本；兩者本身在 06 階段才有專屬主題。</figcaption>
+</figure>
+<div class="callout unsure official">
+  <p class="callout-title">AISVS 版本的小提醒</p>
+  <p>LLM Top 10 的 AISVS 對照附錄釘住的是 AISVS <strong>1.0</strong>；而在 01 總覽主題中，AISVS 的 GitHub 最新穩定版是 1.01（owasp.org 專案頁仍寫 1.0）。這不是矛盾：對照附錄對應的是它撰寫當時的 1.0，而本教材在 AI Exchange 主題中依「取較新」採 1.01。引用時請寫清楚是哪一版。</p>
+</div>
+
+<h2 id="in-limits">10.4 官方明載與作者整理的界線</h2>
+<div class="table-wrap"><table>
+<caption>表 10-3　本主題中兩種性質的內容</caption>
+<thead><tr><th scope="col">官方明載</th><th scope="col">作者整理，非官方</th></tr></thead>
+<tbody>
+<tr><td>十個條目的名稱、編號、描述、範例、控制、情境（GitHub <code>2026/final</code> 與 PDF 一致）</td><td>三層地圖的「歸屬」之外的任何延伸解讀；把官方控制分成「降低成功率」與「限縮後果」兩類的歸屬</td></tr>
+<tr><td>方法論（3/4 與 1/4）、前言的名次變動、更名、「併入既有條目」的說法</td><td>表 8-1 中依名稱比對的對應（Insecure Output Handling → Improper Output Handling 等）</td></tr>
+<tr><td>附錄 A 對九個外部框架的對照與版本釘住</td><td>各章的流程圖與控制放置（圖 2-1、3-1、4-1、7-1、9-1、10-1），以及表 9-1 的優先序</td></tr>
+<tr><td>元件與行動者的邊界（章程與前言）</td><td>「LLM08 與 LLM09 合為一個原則」的整理（第 5 章）；「防禦層次由外而內」的排列（第 7 章）</td></tr>
+</tbody></table></div>
+
+<h2 id="in-key">10.5 全主題重點整理</h2>
+<div class="keypoints"><ul>
+  <li><strong>定位（LO1）：</strong>LLM Top 10 2026 是 Version 2026、2026-08-04 的社群共識認知清單（投票 3/4 + 事件資料 1/4）；管模型當元件的風險；模型成為行動者時搭配 Agentic Top 10；引用要帶年份、版本與日期，官網目錄頁可能仍是 2025 版。</li>
+  <li><strong>輸入與成品（LO2）：</strong>LLM01 沒有可靠的預防機制，防禦是架構式的；降低成功率的控制會在適應性攻擊下退化，限縮後果的控制才承重。LLM04 問成品是不是它宣稱的那個，LLM05 問學進去的東西有沒有被動手腳；簽署證明來源不證明安全。</li>
+  <li><strong>放大器（LO3）：</strong>LLM03 管模型能做什麼（功能、權限、自主三項成因）；LLM10 管輸出送到哪裡（零信任、依出口處理）；LLM08 假設隱藏上下文會被發現；LLM09 先授權再檢索。</li>
+  <li><strong>衝擊（LO4）：</strong>LLM02 看通道（答案只是其一），兩個結構性失敗是上游過度分享與持久化；LLM06 成本不對稱，要硬性花費上限與熔斷器；LLM07 是輸出被當成狀態，用宣告－驗證－行動。</li>
+  <li><strong>整合（LO5）：</strong>編號帶年份；官方明載與依名稱比對要分開；遇到事件用三個問題對應條目，優先補限縮後果的控制；從風險走到 ASI、DSGAI、AISVS。</li>
+</ul></div>
+
+<h2 id="in-check">10.6 自我檢核清單</h2>
+<ul class="checklist">
+  <li>我能說出 LLM Top 10 2026 的版本、日期與名次是怎麼排出來的。</li>
+  <li>我能解釋為什麼提示詞注入沒有根治方法，以及這代表防禦重點在哪裡。</li>
+  <li>我能用兩個不同的追問區分 LLM04 與 LLM05。</li>
+  <li>我能說出 Excessive Agency 的三個成因與 LLM10 的至少五種輸出出口。</li>
+  <li>我能解釋「先授權再檢索」與「隱藏上下文不是祕密」。</li>
+  <li>我能說出外洩的通道不只最終答案，並舉出硬性花費上限與警示的差別。</li>
+  <li>給我一個 2025 的編號，我能轉成 2026；我也能說出官方沒有說明去向的兩個舊條目。</li>
+  <li>給我一個事件，我能用三個問題把它對應到至少兩個條目並決定先補哪一項。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO1、LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="in-next">10.7 接下來讀什麼</h2>
+<ol>
+  <li><strong>先做這個主題的<a href="quiz.html">總測驗</a>（18 題）</strong>，檢查各學習目標的掌握度；答錯的題目會連回對應章節。</li>
+  <li>需要核對來源時，看<a href="references.html">參考資料與來源核對</a>：包含採用的版本與日期、與調查筆記不同之處、未能確認的項目。</li>
+  <li><strong>學習地圖上的下一步（依你想深入的方向挑）：</strong>
+    <ul>
+      <li>把 LLM01 走到可實作的防護：<a href="../../03-prompt-injection-rag-practice/prompt-injection/index.html">提示詞注入防護</a>；把 LLM09 走到 RAG 管線的實作控制：<a href="../../03-prompt-injection-rag-practice/rag-security/index.html">RAG 安全</a>。</li>
+      <li>模型成為行動者時：<a href="../../04-agentic-and-mcp/agentic-top-10-2026/index.html">Top 10 for Agentic Applications 2026</a>（本章表 10-2 的 ASI 條目），以及 <a href="../../04-agentic-and-mcp/mcp-security/index.html">MCP 安全</a>（LLM04 交給 ASI04 的 MCP server 供應鏈）。</li>
+      <li>要把風險轉成可驗證的需求或評分：<a href="../../06-assessment-and-verification/aisvs-and-llmsvs/index.html">AISVS 與 LLMSVS</a>、<a href="../../06-assessment-and-verification/aivss/index.html">AIVSS</a>（對應圖 10-1 的最後兩站）。</li>
+    </ul>
+  </li>
+</ol>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Top 10 for LLM Applications 2026（Version 2026，2026-08-04），Appendix A（Related Framework Mappings，含覆蓋矩陣、ASI 與 DSGAI 對照、Framework Sources &amp; Versions）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/Appendix_A_Related_Framework_Mappings.md">Appendix_A_Related_Framework_Mappings.md</a>；LLMZZ Appendix（Mapping the Top 10 to OWASP AISVS 1.0）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLMZZ_Appendix_AISVS_Mapping.md">LLMZZ_Appendix_AISVS_Mapping.md</a>；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications Charter（元件與行動者邊界）與各條目開頭的邊界說明：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/tree/main/2026/final">GitHub 2026/final</a>。</li>
+    <li>相鄰文件（僅用於說明版本與關係，內容未在本主題深入）：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">Agentic Top 10 資源頁</a>（2025-12-09）。附錄 A 的 MITRE、NIST、CSA 各框架本主題未直接閱讀，只引用附錄對它們的版本標示。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Top 10 for LLM Applications 2026（含附錄）與 GitHub 儲存庫 — CC BY-SA 4.0。附錄 A 中各外部框架（MITRE、NIST、CSA）各有自己的授權，本頁僅引用名稱與版本。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'l-ch10', topic: 'llm-top-10', mode: 'chapter',
+  questions: [
+    { id: 'l10q1', type: 'mc', lo: [5], refs: [{label: '10.3 圖 10-1', href: '10-integration.html#in-flow'}],
+      stem: '汐灣醫療（虛構）的團隊讀完 LLM Top 10 2026 之後，想把這些風險轉成採購與稽核時可以逐項檢查的要求。依 10.3 節，他們應該接到哪一份文件？',
+      options: [
+        { text: 'OWASP GenAI Data Security (DSGAI)：它會把每個條目轉成可稽核的要求。', why: 'DSGAI 是資料層風險的文件，圖 10-1 把它放在「風險主要在資料面」時，用來找更深的資料安全控制，不是用來把所有條目轉成稽核要求。' },
+        { text: '官方的 AISVS 對照附錄：從 AISVS 1.0 的 12 個控制章節挑出對應的章節，逐項驗證。', correct: true, why: '10.3 節與圖 10-1 的第 4 站：要把風險轉成可稽核的要求時，用官方 AISVS 對照附錄挑對應的控制章節。' },
+        { text: 'OWASP AIVSS：它把風險轉成可勾選的要求清單。', why: 'AIVSS 是量化弱點嚴重度的評分系統（圖 10-1 的第 5 站），回答的是多嚴重，不是要驗證什麼。' },
+        { text: '附錄 A 的 ASI 對照：它列出每個條目對應的稽核要求。', why: '附錄 A 的 ASI 對照處理的是 LLM Top 10 條目與 Agentic Top 10 條目的關係（表 10-2），不是逐項可稽核的要求。' }
+      ],
+      summary: '要稽核用 AISVS 對照附錄；要量化嚴重度看 AIVSS；資料層的深入控制找 DSGAI。' },
+    { id: 'l10q2', type: 'match', lo: [5], refs: [{label: '10.4 表 10-3', href: '10-integration.html#in-limits'}, {label: '10.2 表 10-2', href: '10-integration.html#in-asi'}],
+      stem: '第 10 章要求把「官方明載」和「作者整理，非官方」分開標示。把下列說法配對到它的性質。',
+      cats: [
+        { id: 'official', label: '官方明載' },
+        { id: 'author', label: '作者整理，非官方' }
+      ],
+      items: [
+        { text: '附錄 A 把十個條目對照到九個外部框架，並釘住每個框架的版本。', answer: 'official', why: '表 10-3：附錄 A 對九個外部框架的對照與版本釘住屬官方明載。' },
+        { text: '圖 10-1 中「先 ASI、再 DSGAI、再 AISVS」的順序與分支。', answer: 'author', why: '圖 10-1 的說明：每一站的存在與用途來自官方文件，但把它們串成這個順序和分支是作者整理。' },
+        { text: 'ASI02、ASI03、ASI08 是 Excessive Agency 在 agentic 系統中的「表現」。', answer: 'official', why: '表 10-2 的 LLM03 一列，標示為官方對照說明。' },
+        { text: '表 9-1 中「先補哪一項」的優先序。', answer: 'author', why: '表 10-3 與第 9 章都說明這是作者的優先序判斷，官方並未排序。' },
+        { text: '「LLM08 與 LLM09 合為一個原則」的整理。', answer: 'author', why: '表 10-3 把它列在作者整理這一欄。' }
+      ],
+      summary: '官方附錄的對照與版本釘住是官方明載；流程順序、優先序與合併原則是作者整理。' },
+    { id: 'l10q3', type: 'scn', lo: [5], refs: [{label: '10.2 表 10-2', href: '10-integration.html#in-asi'}, {label: '10.3 圖 10-1', href: '10-integration.html#in-flow'}],
+      stem: '依第 10 章，資安經理的結論站得住腳嗎？該怎麼修正？',
+      scenario: '星澄證券（虛構）的投資研究 agent 會自行選擇工具，並帶著長期記憶。資安經理整理對照表時寫道：「附錄 A 把 LLM01 對到 ASI01、ASI02、ASI03、ASI05、ASI06、ASI08、ASI09，所以只要通過 Agentic Top 10 的檢查，LLM01 就視為已處理，LLM Top 10 那份可以不看。」審閱者覺得這個推論有問題，要你指出原因。',
+      options: [
+        { text: '站得住腳：既然 LLM01 的對照涵蓋這麼多個 ASI 條目，Agentic Top 10 就取代了 LLM Top 10。', why: '附錄 A 的加註提醒：對照是「指向」，不是等價的風險；官方並沒有說 Agentic Top 10 取代 LLM Top 10。' },
+        { text: '部分站得住腳：Agentic Top 10 可以取代 LLM01，但 LLM Top 10 的其他九條仍要另外檢查。', why: '對照只表示兩個條目在某一點有關，不是等價的風險，所以 Agentic Top 10 的條目不能取代 LLM01；LLM01 的基礎弱點在 agent 情境下仍然存在。' },
+        { text: '結論相反：agent 也只是模型，所以只看 LLM Top 10 就夠，不需要 Agentic Top 10。', why: '前言與章程的邊界說：模型成為行動者時，兩份要搭配讀；只看 LLM Top 10 會漏掉放大後的風險。' },
+        { text: '站不住腳：對照只表示兩個條目在這一點有關，不表示可以互相取代。agent 是行動者，要兩份搭配讀：LLM01 的基礎弱點仍在，Agentic Top 10 再加上放大後的風險。', correct: true, why: '符合 10.2 節末段的提醒與圖 10-1 第 2 站「基礎弱點仍在，再加放大後的風險」。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 表 10-2 的 ASI 欄說明的是 LLM01 在 agent 情境下放大後會出現的樣子，例如重導目標、驅動未授權的工具呼叫、污染記憶與 RAG。(2) 官方對 LLM08 與 ASI06／ASI07 特別加註：那是指向 agentic 放大的指標，不是等價的風險；10.2 節指出這個提醒同樣適用於整張表。(3) 模型成為行動者時，兩份文件要搭配讀（第 1 章的邊界）：LLM Top 10 管基礎弱點，Agentic Top 10 管放大後的風險。</p><p><strong>結論：</strong>兩份都要查，不可用對照表取代其中一份。對應教材：<a href="10-integration.html#in-asi">10.2 節</a>、<a href="10-integration.html#in-flow">10.3 節</a>。</p>' },
+    { id: 'l10q4', type: 'mc', lo: [1], refs: [{label: '10.3 AISVS 版本的小提醒', href: '10-integration.html#in-flow'}],
+      stem: '凌波科技（虛構）的稽核報告寫：「依 LLM Top 10 2026 的 AISVS 對照附錄，對應 AISVS 最新版 1.01。」依 10.3 節的提醒，這句話該怎麼修正？',
+      options: [
+        { text: '改成「依 LLM Top 10 2026 的 AISVS 對照附錄，對應 AISVS 1.0 的 12 個控制章節」；若要另外提 AISVS 的最新穩定版 1.01，要分開寫明。', correct: true, why: '附錄對應的是它撰寫當時的 AISVS 1.0；引用時要寫清楚是哪一版，不要把兩個版本混成一句。' },
+        { text: '不用修正：1.0 與 1.01 是同一個版本，寫哪個都可以。', why: '教材把它們當成兩個版本（附錄釘住 1.0，GitHub 最新穩定版是 1.01），引用時需要寫清楚。' },
+        { text: '改成「兩個版本互相矛盾，所以這份附錄不可信」。', why: '10.3 節明說這不是矛盾：附錄對應的是撰寫當時的 1.0，後來才有 1.01。' },
+        { text: '一律照 owasp.org 專案頁的寫法，因為官方網站優先。', why: '專案頁仍寫 1.0 只是其中一個來源；重點不是挑哪個網站，而是寫清楚附錄對應的版本，以及自己採用的版本。' }
+      ],
+      summary: '附錄釘住的版本與最新版本可能不同：引用時寫清楚對應的是哪一版。' }
+  ]
+});
+</script>
+</body>
+</html>

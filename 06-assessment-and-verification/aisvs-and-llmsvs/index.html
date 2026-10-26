@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AISVS 與 LLMSVS｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP AISVS 與 LLMSVS 主題首頁：學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="aisvs-and-llmsvs" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>AISVS 與 LLMSVS</h1>
+<ul class="meta-row">
+  <li>06 評估與驗證｜主題 3</li>
+  <li>預估學習時間：約 80–90 分鐘（4 章閱讀約 32 分鐘；章末檢核與總測驗約 40–50 分鐘）</li>
+  <li>採用來源：GitHub OWASP/AISVS（1.01）與 OWASP/www-project-llm-verification-standard（v2.0），2026-10-26 讀取</li>
+</ul>
+<p class="lead">前面的主題告訴你有哪些風險、有哪些控制。這個主題問另一個問題：<strong>怎麼證明一個 AI 系統真的做到了？</strong>答案是驗證標準 (Verification Standard)：AISVS 與 LLMSVS 把安全要求寫成「可驗證的需求」，每條能用證據回答過或不過。學完後，你能為一個系統選目標層級、選標準、規劃證據，並判斷供應商的「認證」宣稱可不可信。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>驗證標準的角色與限制：</strong>區分驗證標準與 Top 10、測試指南、治理框架；說明「可驗證的需求」與建議的差別，以及驗證標準不是什麼。<br><small>對應：<a href="01-verification-standards.html">第 1 章</a></small></li>
+  <li id="lo2"><strong>AISVS：</strong>說明十二章的範圍、三個驗證層級、帶版本的引用格式，以及 1.0 → 1.01 → 1.02 的版本與版本標示不一致的處理。<br><small>對應：<a href="01-verification-standards.html">第 1 章</a>、<a href="02-aisvs.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>LLMSVS：</strong>說明八章的範圍、v2.0 與 v2.1 草稿的差異、層級與「不適用」的規則，以及 OWASP 對認證與審查的明文立場。<br><small>對應：<a href="03-llmsvs.html">第 3 章</a></small></li>
+  <li id="lo4"><strong>選用與蒐證：</strong>選目標層級與標準、把需求拆成驗證與證據、比較四份文件的分工，並判斷供應商的認證宣稱。<br><small>對應：<a href="04-evidence-and-integration.html">第 4 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>建議先讀 <a href="../../01-overview/genai-security-project/index.html">GenAI Security Project 架構</a> 與 <a href="../../01-overview/ai-exchange/index.html">OWASP AI Exchange</a>，至少各讀第 1 章。本主題會多次對照它們。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>（約 10 分鐘）。本主題用到的主要是縱深防禦與最小權限。</li>
+  <li>你不需要懂 ASVS；第 1 章會用開發者熟悉的類比說明。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="01-verification-standards.html">第 1 章　驗證標準是什麼</a></span><span class="p-state" data-file="01-verification-standards.html"></span><span class="p-desc">四類文件的分工、可驗證的需求、三個層級、引用格式。核心概念區塊。表 1 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="02-aisvs.html">第 2 章　AISVS：十二章與版本</a></span><span class="p-state" data-file="02-aisvs.html"></span><span class="p-desc">十二章的範圍與需求數、1.0 → 1.01 → 1.02、版本標示不一致。表 3 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-llmsvs.html">第 3 章　LLMSVS：V1–V8 與版本</a></span><span class="p-state" data-file="03-llmsvs.html"></span><span class="p-desc">八章 70 條、v2.0 與 v2.1 草稿、官方對認證與審查的立場。核心概念區塊。表 3 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="04-evidence-and-integration.html">第 4 章　把需求變成驗證證據與跨文件整合</a></span><span class="p-state" data-file="04-evidence-and-integration.html"></span><span class="p-desc">選層級、蒐證、四份文件比較、決策圖。情境 A、B。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（16 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO4，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">核對清單、版本與日期對照、授權、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>驗證標準回答「做到什麼才算過」，每條需求都能用證據回答是否達成；它不是治理框架，也不取代風險評估與 ASVS。</li>
+  <li><strong>版本與層級要寫明：</strong>AISVS 採 1.01（owasp.org 頁面仍標 1.0，官方認定未能確認）；LLMSVS 引用 v2.0，v2.1 是草稿。</li>
+  <li><strong>OWASP 不認證任何廠商、驗證者或軟體。</strong>看到「LLMSVS 認證」要追問版本、層級、範圍、評估者與證據。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的類比、計數、歸類或流程。</li>
+  <li>兩個情境（A、B）都是 <span class="tag fiction">虛構</span> 的公司與系統，不含可直接使用的攻擊手法。</li>
+  <li>本主題的來源以 <strong>GitHub 倉庫的 README 與標準文件</strong>為主。LLMSVS 的 owasp.org 專案頁讀取為 404；AISVS 的 owasp.org 與 GitHub 版本標示不一致。所有已知的不一致與未能確認項目，都集中列在 <a href="references.html">參考資料頁</a>。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；無法使用時，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>圖表以本地 Mermaid 繪製；若圖沒有顯示，每張圖下方都有文字說明。</li>
+  <li>本階段的相鄰主題：<a href="../ai-testing-guide/index.html">AI Testing Guide</a>、<a href="../genai-red-teaming/index.html">GenAI 紅隊演練</a>、<a href="../aivss/index.html">AIVSS</a>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：OWASP AISVS、OWASP LLMSVS、OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

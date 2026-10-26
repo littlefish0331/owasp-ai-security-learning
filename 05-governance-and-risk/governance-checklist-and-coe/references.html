@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜治理檢核表與卓越中心｜OWASP AI 資安學習教材</title>
+<meta name="description" content="治理檢核表與卓越中心主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、文件內部的不一致、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="governance-checklist-and-coe" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 4.1、4.2 節與第 8 節第 11 項）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以作者回到一手來源重新核對：下載兩份官方 PDF 並轉成文字，文字抽取遺失數字之處（日期、年份、ISO 編號）另轉成圖片逐頁看過。本頁列出採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM Applications Cybersecurity and Governance Checklist（英文）</th><td>v1.1；資源頁日期 2024-05-07；PDF 32 頁</td><td>資源頁標題與日期；PDF 修訂史 1.1＝2024-04-10；PDF 下載連結的時間戳記對應 2024-10-31（檔案更新，非發布日）</td><td>CC BY-SA 4.0（PDF 末頁）</td></tr>
+<tr><th scope="row">LLM and Generative AI Security Center of Excellence Guide</th><td>資源頁日期 2024-10-06；PDF 內頁 Version 1.0rc；PDF 32 頁</td><td>資源頁；PDF 每頁頁尾；修訂史 1.0rc＝2024-10-01</td><td>CC BY-SA 4.0（PDF 第 2 頁）；引用須含專案名稱與資產名稱</td></tr>
+<tr><th scope="row">AI Security Governance and Adoption Initiative</th><td>以 2026-10-26 Initiative 頁為準</td><td><a href="https://genai.owasp.org/initiatives/ai-security-governance-and-adoption/">genai.owasp.org/initiatives/ai-security-governance-and-adoption/</a></td><td>網站頁尾 CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>沿用專案已放置的副本</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">Checklist 的章節</th><td>「資源頁未列出檢核表章節，本筆記不推測其大綱」</td><td>讀了 PDF：檢核表主體有 <strong>13 個區塊</strong>，前面還有威脅分類、策略與部署類型</td><td>第 2、3 章據 PDF 整理</td></tr>
+<tr><th scope="row">CoE Guide 的版本</th><td>「2024-10-06；版本頁面未載」</td><td>資源頁確實未載版本；PDF 內頁每頁寫 <strong>Version: 1.0rc</strong>，檔案屬性標題寫 v1.0</td><td>採資源頁日期，版本寫「PDF 內頁標示 1.0rc」</td></tr>
+<tr><th scope="row">Checklist 與 CoE 的內容關係</th><td>（未提）</td><td>兩份 PDF 內文彼此沒有互相引用（以 COE、Center of Excellence、Checklist 搜尋皆無）</td><td>第 5 章的互補關係是作者整理，已標示</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">Checklist v1.1 的日期</th><td>資源頁 2024-05-07；PDF 修訂史 2024-04-10；介紹頁稱 2024 年 4 月</td><td>依「最新者」標 2024-05-07，並在第 1 章註明修訂史日期</td></tr>
+<tr><th scope="row">CoE Guide 的日期</th><td>資源頁 2024-10-06；修訂史 1.0rc＝2024-10-01</td><td>採較新的 2024-10-06</td></tr>
+<tr><th scope="row">CoE Guide 的版本</th><td>內頁與修訂史 1.0rc；檔案屬性標題 v1.0；資源頁未載</td><td><strong>未能確認</strong>是否已有正式 1.0；教材寫「PDF 內頁標示 1.0rc」，不稱 1.0</td></tr>
+<tr><th scope="row">部署類型數量</th><td>Checklist 內文「five model types」；圖 2.2 畫 Type 1–6</td><td><strong>未能確認</strong>哪個為準；教材以圖為準列六種並註明</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>Checklist 修訂史 0.9 的年份：</strong>寫 2023-02-15，但夾在 2023-12-06 與 2024-02-19 之間，疑似筆誤；未推測。</li>
+  <li><strong>Checklist 是否為「CISO Checklist」：</strong>沿用前一主題 U-D7；三個日期可互相解釋，官方未明說是同一份。</li>
+  <li><strong>CoE Guide 是否已有正式 1.0：</strong>見表 R-3。</li>
+  <li><strong>Threat Map 的「Threats From AI Models」：</strong>圖上有標籤，文字沒有以此命名展開。</li>
+  <li><strong>部署類型是五種還是六種：</strong>見表 R-3。</li>
+  <li><strong>CoE 角色表的重複描述：</strong>IT and Operations 的 Compliance and Protocols 與 Incident Response and Recovery 兩列說明相同；Human Resources 的 Training and Development 與 Organizational Culture and Change Management 兩列說明相同。看似複製貼上未改；教材只用能對上列名的描述。</li>
+  <li><strong>法規描述的現況：</strong>Checklist 的 Regulatory 一節（歐盟 AI 法案最早 2025 年適用、美國十州法案到 2023 年底、加拿大 AIDA 等）是 2024 年的描述；教材不查證也不提供現況。</li>
+  <li><strong>兩份文件是否有後繼或更新版：</strong>在官方站與 GitHub 組織中沒有找到；<code>GenAI-Top-10-Governance</code> 儲存庫的 API 回應 403、README 回應 404，內容未能讀取。</li>
+  <li><strong>CoE 角色表只讀了代表性責任：</strong>十一種角色的完整責任表（每種 5–6 列）教材只整理代表性項目，未逐條複誦。</li>
+</ol>
+
+<h2 id="ref-sources">5. 本主題引用的一手來源</h2>
+<ul>
+  <li>Governance Checklist 資源頁：<a href="https://genai.owasp.org/resource/llm-applications-cybersecurity-and-governance-checklist-english/">…/llm-applications-cybersecurity-and-governance-checklist-english/</a>；PDF 由資源頁的下載連結取得（需帶瀏覽器標頭）。</li>
+  <li>CoE Guide 資源頁：<a href="https://genai.owasp.org/resource/llm-and-generative-ai-security-center-of-excellence-guide/">…/llm-and-generative-ai-security-center-of-excellence-guide/</a>。</li>
+  <li>AI Security Governance and Adoption Initiative：<a href="https://genai.owasp.org/initiatives/ai-security-governance-and-adoption/">…/initiatives/ai-security-governance-and-adoption/</a>。</li>
+  <li>GenAI Security Project 介紹頁（CISO Checklist 說法，僅用於日期核對）：<a href="https://genai.owasp.org/introduction-genai-security-project/">…/introduction-genai-security-project/</a>。</li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 1 章圖 1-1 括號中的「要想清楚什麼／誰來做／怎麼排優先順序」一句話記憶，與「作者整理：兩份文件的時間點」一節。</li>
+  <li>第 2 章表 2-1「內文中對應的描述」一欄（把散在各節的說明配到五個標籤）；「禁用會催生影子 AI」的推論；「依部署類型調整檢核深度」。</li>
+  <li>第 3 章表 3-1 的四群分法；「給開發者的最短讀法」；3.3 節「以問題的主人分類」的使用方式。</li>
+  <li>第 4 章「KPI 的類型要自己分辨」，與情境 B 中新增的「上線前完成法務審閱的專案比例」指標。</li>
+  <li>第 5 章圖 5-1 的整個判斷流程，以及表 5-1 中三列標「作者整理」的對應（COMPASS、AI Exchange 的 Manage 類控制、AIMA）。</li>
+  <li>所有 Mermaid 圖為重新繪製的簡化版，不是官方原圖。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>Governance Checklist、CoE Guide、genai.owasp.org 網站內容：CC BY-SA 4.0。本教材以自己的話整理，短引用均標示來源；若你要再散布，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>CoE Guide 的署名要求：必須包含專案名稱與所參照資產名稱（文件列出的標準寫法為「OWASP Top 10 for LLMs - LLM AI Security Center of Excellence Guide」）；本教材在第 4 章頁尾標示。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：Governance Checklist、CoE Guide、genai.owasp.org 網站 — CC BY-SA 4.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

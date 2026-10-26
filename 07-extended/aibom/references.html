@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜AIBOM｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AIBOM 主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="aibom" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 4.6 節）</li>
+</ul>
+<p class="lead">這個主題的<strong>官方一手材料相對少</strong>：工具資源頁只有一小段文字，儲存庫 README 約 3.5KB，沒有版本號、沒有 CHANGELOG，也沒有欄位或評分公式的說明。所以教材的「為什麼」與「要記什麼」大量借用其他官方文件（事件應變指南、資料安全文件、ACS 規格）對物料清單的要求。本頁列出：採用的版本與日期、與筆記不同之處、衝突與取捨，以及未能確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">AIBOM Generator 資源頁</th><td><strong>2025-12-17</strong>；分類 Tools；<strong>無版本號</strong></td><td><a href="https://genai.owasp.org/resource/owasp-aibom-generator/">資源頁</a></td><td>網站頁尾 CC BY-SA 4.0（除非另有說明）</td></tr>
+<tr><th scope="row">AI SBOM Initiative 頁</th><td>無日期；列有領導者、每週例會、Charter、Blog 等連結</td><td><a href="https://genai.owasp.org/initiatives/ai-sbom-initiative/">Initiative 頁</a></td><td>網站頁尾 CC BY-SA 4.0</td></tr>
+<tr><th scope="row">官方部落格</th><td><strong>2025-12-18</strong>（Helen Oakley 與 Dmitry Raidman）</td><td><a href="https://genai.owasp.org/2025/12/18/evolving-ai-transparency-the-journey-of-the-aibom-generator-and-its-new-home-at-owasp/">部落格文章</a></td><td>網站頁尾 CC BY-SA 4.0</td></tr>
+<tr><th scope="row">GitHub 儲存庫 aibom-generator</th><td>201 個提交；最近提交 2026-10-17；<strong>README 無版本號、無 CHANGELOG</strong>；README 輸出 CycloneDX 1.6</td><td><a href="https://github.com/GenAI-Security-Project/aibom-generator">github.com/GenAI-Security-Project/aibom-generator</a></td><td><strong>Apache-2.0</strong>（LICENSE 檔與 README）</td></tr>
+<tr><th scope="row">事件應變指南、資料安全文件、ACS、AST10 白皮書（引用其對 BOM 的要求）</th><td>見各主題參考資料頁</td><td><a href="../data-security/references.html">資料安全</a>、<a href="../agent-control-standard/references.html">ACS</a>、<a href="../agentic-skills-top-10/references.html">AST10</a>；事件應變 Guide 1.0（2025-07-28）</td><td>各 PDF 封面或網站頁尾 CC BY-SA 4.0；ACS 規格 Apache-2.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0（沿用既有副本）</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正或補充）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">工具入口</th><td>「工具頁下載連結指向 Hugging Face Space；GitHub repo 為 aibom-generator」</td><td>資源頁（2025-12-17）的下載連結確實指向 Hugging Face Space。但 2025-12-18 的官方部落格與儲存庫 README 都指向 <code>owasp-genai-aibom.org</code>，部落格說「現在以 OWASP AIBOM Generator (owasp-genai-aibom.org) 的形式存在」</td><td>見 R-3：入口以 owasp-genai-aibom.org 為準</td></tr>
+<tr><th scope="row">輸出格式</th><td>「產出 CycloneDX 格式 AIBOM（JSON）」</td><td>README 更精確：<strong>CycloneDX 1.6</strong> JSON，相容於 SPDX AI Profile，使用官方 cyclonedx-python-lib 產生與驗證</td><td>教材採 README 的版本</td></tr>
+<tr><th scope="row">授權</th><td>（筆記未提）</td><td>儲存庫 <strong>Apache-2.0</strong>；網站內容 CC BY-SA 4.0</td><td>第 1 章分開標示</td></tr>
+<tr><th scope="row">cyclonedx-property-taxonomy</th><td>「另有 cyclonedx-property-taxonomy repo（官方 GitHub 列出，無說明）」</td><td>本次沒有再開啟該儲存庫；仍無說明</td><td>教材不引用</td></tr>
+<tr><th scope="row">版本</th><td>「工具頁 2025-12-17（版本未載）」</td><td>屬實，而且 README、儲存庫都沒有版本號；提交紀錄有 v0.2 分支合併痕跡，但沒有 release 標籤或版本檔可確認</td><td>教材標「版本未能確認」；README 範例的 <code>--version "1.0.0"</code> 是輸出清單元件版本的覆寫參數，不是工具版本</td></tr>
+<tr><th scope="row">範圍</th><td>「針對 Hugging Face 上的模型」</td><td>屬實，且官方多處重申：「從 Hugging Face 上的開源模型開始」</td><td>第 1 章 1.3 節</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">現行入口</th><td>資源頁（2025-12-17）：Hugging Face Space；部落格（2025-12-18）與 README：owasp-genai-aibom.org</td><td>依「以最新為準」採 owasp-genai-aibom.org，並註明資源頁連結較早。<strong>未開啟兩個網站比對內容</strong>，不知兩者是否一致、Space 是否仍更新（<strong>未能確認</strong>）</td></tr>
+<tr><th scope="row">CycloneDX 版本</th><td>AIBOM Generator：1.6；ACS AgBOM：CycloneDX 1.6、SPDX 3.0 或 SWID；資料安全 2026：ML-BOM（ECMA-424，v1.7）作為 DBOM 基礎格式</td><td>三者並列，不統一；<strong>互通性未能確認</strong>（第 3 章 3.1 節）</td></tr>
+<tr><th scope="row">DBOM 的層級</th><td>DSGAI04：Tier 2、範圍 Build；DSGAI10：Tier 1（Dataset Bill of Materials）；DSGAI21：延伸加入完整性證明</td><td>三處並列，不單選；它們是同一概念在不同條目的位置。另外資料安全文件中同一概念有 "Data Bill of Materials (DBOM)" 與 "Dataset Bill of Materials" 兩種寫法</td></tr>
+<tr><th scope="row">授權</th><td>儲存庫 Apache-2.0；網站 CC BY-SA 4.0</td><td>分開標示，各依其來源</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>工具版本：</strong>見 R-2。</li>
+  <li><strong>OWASP AIBOM Generation Handbook 是否已發布：</strong>2025-12-18 部落格說團隊「正在撰寫」；本教材在資源庫第 1–3 頁沒有看到它（資源庫共 8 頁，只查了前 3 頁）。</li>
+  <li><strong>完整度評分的算法與欄位清單：</strong>README 與資源頁只說有「欄位檢核表與完整度評分」，沒有寫公式。教材不編造。</li>
+  <li><strong>AI 推論補強的欄位是否被標示：</strong>CLI 有 <code>--inference</code> 與 <code>--summarize</code> 選項；README 沒說這類欄位是否有特別標示。本教材沒有實際執行比對。</li>
+  <li><strong>兩個入口網站的內容與更新狀況。</strong></li>
+  <li><strong>Initiative 頁部落格文末的「Initiative URL – tbd」殘留：</strong>代表頁面未收尾，不影響內容。</li>
+  <li><strong>AgBOM 與 AIBOM 的關係：</strong>官方頁面沒有說明（沿用 ACS 主題的未能確認）。</li>
+  <li><strong>CISA SBOM working groups 的 AI SBOM Tiger Team 用例：</strong>部落格提到，本教材沒有讀其原文。</li>
+  <li><strong>CycloneDX 與 SPDX 規格本身：</strong>只引用 OWASP 文件對它們的描述，沒有讀規格。</li>
+  <li><strong>領導者名單：</strong>Initiative 頁列有兩位；教材不列人名（避免名單不一致爭議），請見 Initiative 頁。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<ul>
+  <li>AIBOM Generator 資源頁：<a href="https://genai.owasp.org/resource/owasp-aibom-generator/">genai.owasp.org/resource/owasp-aibom-generator/</a></li>
+  <li>AI SBOM Initiative：<a href="https://genai.owasp.org/initiatives/ai-sbom-initiative/">genai.owasp.org/initiatives/ai-sbom-initiative/</a></li>
+  <li>官方部落格 2025-12-18：<a href="https://genai.owasp.org/2025/12/18/evolving-ai-transparency-the-journey-of-the-aibom-generator-and-its-new-home-at-owasp/">Evolving AI Transparency…</a></li>
+  <li>GitHub：<a href="https://github.com/GenAI-Security-Project/aibom-generator">GenAI-Security-Project/aibom-generator</a>（README、LICENSE、提交紀錄）</li>
+  <li>事件應變指南：<a href="https://genai.owasp.org/resource/genai-incident-response-guide-1-0/">genai.owasp.org/resource/genai-incident-response-guide-1-0/</a></li>
+  <li>資料安全 2026：<a href="https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/">genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/</a></li>
+  <li>Agent Control Standard：<a href="https://github.com/GenAI-Security-Project/agent-control-standard">GenAI-Security-Project/agent-control-standard</a>（docs/spec/conformance.md）</li>
+  <li>Agentic Skills Top 10 白皮書：<a href="https://owasp.github.io/www-project-agentic-skills-top-10/assets/publications/ast10-top10-whitepaper-2.pdf">ast10-top10-whitepaper-2.pdf</a></li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>表 2-1 的整理方式（把分散在不同文件的要求排成「AI 清單多回答的問題」）；圖 2-1 的「事後回到下一輪」循環；2.3 節「差異就是線索」（第 2 章）。</li>
+  <li>表 3-1 的並排比較；圖 3-1 的分流與彙整；3.3 節把 AgBOM 動態更新與 Agentic Skills Top 10 的更新漂移 (AST07)、供應鏈 (AST02) 相連；3.4 節把 AIBOM 與 ML06 概念相鄰的說法（第 3 章）。官方沒有寫這些對應。</li>
+  <li>「清單是前提，不是防線」的歸納：IR 指南用 prerequisite、資料安全用 foundational artifact 的字樣是官方的；把它歸納為「前提而非防線」並與簽署驗證分開，是依其把兩者列為獨立項目所做的解讀。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>AIBOM Generator 儲存庫：Apache-2.0。genai.owasp.org 網站內容（資源頁、Initiative 頁、部落格）：CC BY-SA 4.0（除非另有說明）。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>事件應變指南：PDF 內文未見授權文字，以網站頁尾為準。ACS 規格 Apache-2.0，說明文件 CC BY-SA 4.0。Agentic Skills Top 10：CC BY-SA 4.0（白皮書 PDF 內文未見授權文字）。資料安全 2026：CC BY-SA 4.0。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：AIBOM Generator 儲存庫 — Apache-2.0；genai.owasp.org 網站 — CC BY-SA 4.0；ACS 規格 — Apache-2.0、說明文件 — CC BY-SA 4.0；OWASP GenAI Data Security Risks and Mitigations 2026、Agentic Skills Top 10 — CC BY-SA 4.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

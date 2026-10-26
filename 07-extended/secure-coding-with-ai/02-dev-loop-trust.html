@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　開發迴圈的信任邊界｜AI 輔助寫程式與模型營運安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Secure Coding with AI 的威脅模型與前三節：開發迴圈裡五個不可信的來源、幻覺依賴與過期依賴為什麼要在不同時點檢查，以及間接提示詞注入在開發工作流程中的六條進入管道。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="secure-coding-with-ai" data-page="02-dev-loop-trust.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　開發迴圈的信任邊界</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position.html">第 1 章</a></li>
+</ul>
+<p class="lead">Secure Coding with AI 的開場很直接：2026 年的 AI 編碼工具已經不只是補完程式碼，而是會執行 shell 指令、安裝套件、改檔案、跑測試、連網、推分支；而且不少開發者開著自動接受，讓它帶著自己的完整權限做事。這一章先畫出文件的威脅模型，再讀前三節：助理給的套件名稱、助理給的版本，以及助理讀進來的文字。</p>
+
+<h2 id="dl-boundaries">2.1 威脅模型：五個不可信的來源</h2>
+<p>文件把開發迴圈拆成幾個信任邊界 (Trust Boundary)，並列出五類威脅來源。表 2-1 重寫其要點，並標出本主題在哪一章講。</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　開發迴圈的五類威脅來源（依文件的 Threat Actors 一節重寫）</caption>
+<thead><tr><th scope="col">來源</th><th scope="col">文件說會發生什麼</th><th scope="col">本主題</th></tr></thead>
+<tbody>
+<tr><th scope="row">倉庫內容 <br>(Repository Content)</th><td>議題內文、PR 說明與留言、README、相依套件的 changelog、錯誤訊息、抓回來的網頁、MCP 工具回應，助理讀到就等於讀到指示；任何能寫進其中一處的人，都能影響助理</td><td>本章</td></tr>
+<tr><th scope="row">MCP 伺服器</th><td>工具描述可被投毒、惡意工具可冒用正牌工具的名稱、憑證可經工具參數外洩、核准後的工具定義還能被更新（抽換 (Rug Pull)）</td><td>第 3 章</td></tr>
+<tr><th scope="row">規則檔 <br>(Rules Files)</th><td>悄悄影響之後每一次生成；可被惡意 PR 修改，也可被助理自己修改</td><td>第 3 章</td></tr>
+<tr><th scope="row">助理本身</th><td>開著自動接受時握有開發者的完整權限；被帶偏時，爆炸半徑 (Blast Radius) 等同開發機被入侵</td><td>第 3 章</td></tr>
+<tr><th scope="row">CI/CD 助理</th><td>審查機器人與 CI 助理依 PR 內容行動，同時能碰到組織機密；文件稱這是大規模的混淆代理人 (Confused Deputy)</td><td>第 3 章</td></tr>
+</tbody></table></div>
+<p>文件的圖還畫了一條邊界：程式碼與脈絡會送往模型供應商的 API（第 9 節，第 5 章速覽）。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="信任邊界示意：外部文字（議題、PR、README、changelog、錯誤訊息、網頁）、MCP 工具回應與規則檔都流進 AI 助理；開發者的權限與批准也交給 AI 助理；AI 助理的動作包含改檔案、跑指令、裝套件與推分支，作用在開發機與 CI 上的憑證、原始碼與管線。外部文字的來源是低權限的人，動作卻用開發者的高權限執行。">
+flowchart TB
+  EXT["外部文字<br>議題、PR、README<br>changelog、錯誤訊息、網頁"] --> AG["AI 助理<br>讀取後決定動作"]
+  TL["MCP 工具回應"] --> AG
+  RL["規則檔"] --> AG
+  DV["開發者<br>權限與批准"] --> AG
+  AG --> ACT["動作<br>改檔案、跑指令<br>裝套件、推分支"]
+  ACT --> AS["開發機與 CI<br>憑證、原始碼、管線"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class AG author
+</pre>
+<figcaption><strong>圖 2-1　開發迴圈裡的信任邊界（依文件的 ASCII 圖重新繪製）。</strong>各來源取自文件的威脅模型；把「助理」畫成唯一的匯流點並標為虛線，是<strong>作者整理，非官方</strong>。重點是：左邊的文字來自低權限的人，右邊的動作卻帶著開發者的高權限。</figcaption>
+</figure>
+
+<h2 id="dl-deps">2.2 第 1、2 節：助理給的套件名稱與版本，都不能直接信</h2>
+<p>前兩節都在處理「相依套件」，但出錯的地方不同：一個是<strong>名稱</strong>，一個是<strong>版本</strong>。</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　第 1 節與第 2 節的比較（內容依文件重寫）</caption>
+<thead><tr><th scope="col">比較點</th><th scope="col">第 1 節　幻覺依賴</th><th scope="col">第 2 節　過期依賴</th></tr></thead>
+<tbody>
+<tr><th scope="row">助理哪裡錯</th><td>建議公開登錄上不存在的套件名，或與真套件只差一點的名稱</td><td>建議真實存在、但已有已知漏洞的版本</td></tr>
+<tr><th scope="row">為什麼</th><td>名稱是模型生成的，不是查表得來</td><td>模型訓練在歷史程式碼上，可能不知道訓練截止日或工具的安全索引更新之後才公開的 CVE</td></tr>
+<tr><th scope="row">風險怎麼成形</th><td>攻擊者監看這些名稱，搶先註冊同名的惡意套件（文件稱為 AI 輔助的抄寫相近名稱 (Typosquatting)）</td><td>漏洞已公開，被掃描到的就是風險</td></tr>
+<tr><th scope="row">文件建議的檢查</th><td>安裝前確認套件確實存在，並看套件頁、下載量、維護者歷史與建立日期；對建立不到 30 天、下載量很低、只有單一維護者且沒有其他套件的保持警覺；用安裝前掛鉤或 CI 擋下低於最小年齡門檻的套件；維護組織內部的核准清單</td><td>每份 AI 產生的依賴清單，在合併前跑弱點審計工具；CI 遇到已知弱點就失敗，不分程式是人寫或 AI 寫；版本固定，更新走正常的依賴管理流程，不靠助理的建議；與 NVD、GitHub Advisory Database、OSV 交叉比對</td></tr>
+<tr><th scope="row">檢查的時點</th><td>安裝<strong>之前</strong>（名稱一旦被解析並安裝，惡意程式可能已執行）</td><td>合併<strong>之前</strong>與每次 CI</td></tr>
+</tbody></table></div>
+<p>最後一列的「時點」差別是作者整理，非官方：它說明為什麼兩個檢查要放在不同的位置，而不是用同一個閘門解決。</p>
+<p>這兩節在 LLM Top 10 2026 裡有對應的官方說法：<a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-supply">LLM04:2026 供應鏈 (Supply Chain)</a> 把「過時的套件」與「程式助理編出不存在的套件名稱、被攻擊者預先註冊」都列為風險，並稱後者為幻覺套件名稱搶註 (Slopsquatting)。Cheat Sheet 本身沒有使用這個詞，也沒有引用 LLM04；兩者的對應是<span class="tag author">作者整理，非官方</span>。</p>
+
+<h2 id="dl-vectors">2.3 第 3 節：六條讓文字變成指令的管道</h2>
+<p>第 3 節處理的是間接提示詞注入 (Indirect Prompt Injection) 在開發流程裡的樣子。文件列出六條管道，每一條都對應開發者平常會下的一句話：</p>
+<div class="table-wrap"><table>
+<caption>表 2-3　第 3 節的六條進入管道（依文件的 Attack Vectors 重寫）</caption>
+<thead><tr><th scope="col">管道</th><th scope="col">什麼時候進到助理</th><th scope="col">文件點出的後果</th></tr></thead>
+<tbody>
+<tr><th scope="row">議題內文、PR 說明</th><td>開發者請助理「修好某個議題」</td><td>助理讀到議題裡藏的指示並照做</td></tr>
+<tr><th scope="row">PR 留言、審查意見</th><td>開發者請助理「處理審查意見」</td><td>改不相干的檔案、削弱安全控制、外洩程式碼</td></tr>
+<tr><th scope="row">README 與文件</th><td>複製來的倉庫、相依套件、抓回來的文件</td><td>人眼看不見、助理卻解析得到的指示</td></tr>
+<tr><th scope="row">錯誤訊息與日誌</th><td>助理讀錯誤輸出來除錯</td><td>精心製作的錯誤訊息注入指示</td></tr>
+<tr><th scope="row">changelog 與發行說明</th><td>助理讀版本差異</td><td>被注入的內容影響助理判斷</td></tr>
+<tr><th scope="row">抓回來的網頁</th><td>開發者要助理參考某個頁面</td><td>頁面內容影響助理行為</td></tr>
+</tbody></table></div>
+
+<h2 id="dl-concept">2.4 核心概念：助理讀進來的文字，就是它的輸入</h2>
+<div class="concept">
+<h3 id="c-untrusted">開發迴圈裡的間接提示詞注入</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>文件的說法是：助理讀到的任何內容，都可能含有改變它行為的隱藏指示。這就是<a href="../../02-llm-applications/llm-top-10/02-prompt-injection.html#pi-what">LLM01:2026 提示詞注入 (Prompt Injection)</a> 的間接形式，只是發生地點換成你的開發迴圈。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>兩個原因疊在一起。第一，模型沒有強制區分指令與資料的機制（見 <a href="../../03-prompt-injection-rag-practice/prompt-injection/01-why-no-parameterized-query.html#pi-concept">提示詞注入防護第 1 章</a>）。第二，「修好這個議題」這類任務本身就要求助理去讀外部文字，而助理執行時用的是開發者的權限。文字來自低權限的人，動作卻由高權限執行。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>攻擊者不需要碰開發者的機器，只需要在助理「會去讀」的地方放文字：開一個議題、留一則 PR 意見、在文件或 changelog 裡放內容。之後開發者一句例行的請求，就把文字送進助理。文件列的後果是改動不相干的檔案、削弱安全控制、外洩程式碼。本教材不提供任何具體的注入文字。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>文件的五項建議：把所有倉庫內容當成不可信輸入；助理處理完外部內容後，檢查有沒有非預期的變更；用工具先清理或標記疑似注入的樣式；把助理的脈絡限縮到完成任務所需的最少檔案；處理過外部貢獻者或公開倉庫的內容後，稽核助理做了什麼。再補一個作者整理，非官方的檢查角度：看一次工作階段裡，助理是否<strong>同時</strong>具備三件事，即讀不可信內容、握有敏感存取、能改變狀態或對外連線（見 <a href="../../03-prompt-injection-rag-practice/prompt-injection/03-architectural-defense.html#c-ro2">Rule of Two</a>）。三件事同時成立時，上述「事後檢查」就是唯一的防線，所以第 3 章的沙箱要把其中一件拆掉。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「這是來自 GitHub 議題，所以是熟悉的環境、不用防。」文件明說不要因為內容出現在熟悉的位置就假設它安全。另一個誤解：「清理工具能解決。」清理或標記是降低成功率的一層，依 LLM Prompt Injection Prevention Cheat Sheet 的立場，這類篩選不是安全邊界（見<a href="../../03-prompt-injection-rag-practice/prompt-injection/02-fragile-layers.html#fl-stance">提示詞注入防護第 2 章</a>）；把它對應到本節是作者整理，非官方。</dd>
+</dl>
+</div>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>文件列五類威脅來源：倉庫內容、MCP 伺服器、規則檔、助理本身、CI/CD 助理；共同點是文字來自低權限的人，動作由高權限執行。</li>
+  <li>第 1 節管名稱（先確認存在、看年齡與維護者），第 2 節管版本（弱點審計與 CI 失敗）；兩者的檢查時點不同。</li>
+  <li>第 3 節的六條管道都對應開發者的一句日常請求；處理外部內容後要檢查助理的實際動作。</li>
+  <li>清理或標記注入樣式只是一層，不是邊界；要靠限縮助理同時握有的能力（第 3 章）。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能列出開發迴圈的五類威脅來源。</li>
+  <li>我能說明幻覺依賴與過期依賴的檢查為什麼放在不同時點。</li>
+  <li>我能說出第 3 節的六條管道，以及每條對應的日常請求。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-tools-sandbox-rules.html">第 3 章　工具、沙箱與規則檔</a>：把助理能碰到的東西收窄，並看規則檔為什麼是一種持久化的供應鏈問題。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series, <em>Secure Coding with AI Cheat Sheet</em>（Introduction、Threat Model and Trust Boundaries、Section 1–3）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_Coding_with_AI_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；2026-10-26 讀取；GitHub 首次提交 2026-05-05、最後修改 2026-10-04；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026（LLM01、LLM04 條目）：見 <a href="../../02-llm-applications/llm-top-10/index.html">LLM Top 10 2026 主題</a>；CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series — CC BY-SA 4.0；OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'sca-ch2', topic: 'secure-coding-with-ai', mode: 'chapter',
+  questions: [
+    { id: 's2q1', type: 'mc', lo: [2], refs: [{label: '2.2 表 2-2', href: '02-dev-loop-trust.html#dl-deps'}],
+      stem: '助理建議在專案裡加入一個套件，但開發者不確定它是否真的存在。依第 1 節，安裝前最該先做的是什麼？',
+      options: [
+        { text: '直接安裝，若不存在套件管理器會報錯，沒有風險。', why: '攻擊者可能已搶先註冊同名的惡意套件，安裝反而成功。' },
+        { text: '先到公開登錄確認套件存在，看套件頁、下載量、維護者歷史與建立日期；建立不到 30 天或只有單一維護者且沒有其他套件的要特別警覺。', correct: true, why: '符合表 2-2 第 1 節的建議。' },
+        { text: '改問助理「這個套件安全嗎」，若助理說安全就安裝。', why: '助理正是出錯的來源；它的保證不能取代對登錄的查證。' },
+        { text: '只要跑弱點審計工具即可，不必另外確認存在。', why: '弱點審計處理的是已知漏洞的版本（第 2 節）；剛註冊的惡意套件通常還不在漏洞資料庫裡。' }
+      ],
+      summary: '第 1 節：安裝前先確認存在，再看年齡、下載量與維護者。' },
+    { id: 's2q2', type: 'scn', lo: [2], refs: [{label: '2.2 表 2-2', href: '02-dev-loop-trust.html#dl-deps'}],
+      stem: '依第 1、2 節，這個團隊的流程缺了什麼？',
+      scenario: '玉山數位（虛構）的團隊請助理產生一份新服務的依賴清單，開發者看過套件名稱都「很像真的」，便直接合併。CI 只跑單元測試，沒有弱點審計。兩週後掃描工具發現清單裡有一個套件是訓練時還算新、現在已有已知 CVE 的版本。',
+      options: [
+        { text: '缺的是更多單元測試。', why: '單元測試驗證功能，不會發現相依套件的已知漏洞。' },
+        { text: '兩個關卡都缺：安裝前沒有確認每個名稱確實存在且可信（第 1 節）；合併前與 CI 沒有弱點審計，也沒有走正常的版本固定與更新流程（第 2 節）。', correct: true, why: '符合表 2-2：名稱與版本是兩種不同的錯，檢查位置不同。' },
+        { text: '缺的是請助理重新產生一次清單。', why: '再生成一次仍可能得到同樣性質的錯；問題是沒有獨立於助理的檢查。' },
+        { text: '只缺弱點審計；名稱「很像真的」就代表確實存在。', why: '近似名稱正是第 1 節提醒的風險之一。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 名稱「很像真的」不等於存在或可信；第 1 節要求安裝前查登錄。(2) 版本有已知 CVE 屬第 2 節：合併前跑弱點審計、CI 遇已知弱點即失敗、版本固定並走正常更新流程。(3) 兩者都獨立於助理，且不論程式是人寫或 AI 寫都一樣要過。</p><p><strong>結論：</strong>同時補上存在性查證與弱點審計閘門。對應教材：<a href="02-dev-loop-trust.html#dl-deps">2.2 節</a>。</p>' },
+    { id: 's2q3', type: 'match', lo: [2], refs: [{label: '2.3 表 2-3', href: '02-dev-loop-trust.html#dl-vectors'}],
+      stem: '把下列開發者的日常請求配對到最直接涉及的進入管道。',
+      cats: [
+        { id: 'issue', label: '議題內文、PR 說明' },
+        { id: 'review', label: 'PR 留言、審查意見' },
+        { id: 'trace', label: '錯誤訊息與日誌' },
+        { id: 'web', label: '抓回來的網頁' }
+      ],
+      items: [
+        { text: '「幫我修好 #123 號議題」', answer: 'issue', why: '文件的第一條管道：助理讀議題內文。' },
+        { text: '「把審查者的意見都處理掉」', answer: 'review', why: '文件的第二條管道：審查意見可能要求改不相干檔案或削弱安全控制。' },
+        { text: '助理跑測試失敗後，自己讀輸出來找原因', answer: 'trace', why: '文件的第四條管道：精心製作的錯誤訊息可注入指示。' },
+        { text: '「照這個頁面的做法實作」', answer: 'web', why: '文件的第六條管道：頁面內容影響助理；文件並反對讓助理無出口控制地瀏覽任意網址。' }
+      ],
+      summary: '每條管道都對應一句日常請求。' },
+    { id: 's2q4', type: 'mc', lo: [2], refs: [{label: '2.4 核心概念', href: '02-dev-loop-trust.html#dl-concept'}],
+      stem: '依本章的 Rule of Two 檢查角度（作者整理），下列哪一個設定讓助理最容易成為「事後檢查是唯一防線」？',
+      options: [
+        { text: '助理在沒有憑證、沒有網路出口的沙箱裡，唯讀處理外部議題。', why: '這個設定拿掉了「敏感存取」與「對外連線／改變狀態」，風險最低。' },
+        { text: '助理開著自動接受，用開發者的完整憑證，一邊處理公開倉庫的議題內文，一邊能執行指令與推分支。', correct: true, why: '同時具備讀不可信內容、握有敏感存取、能改變狀態或對外連線。' },
+        { text: '助理只讀自己團隊內部倉庫裡由同事寫的 README，不執行任何指令。', why: '仍要注意內容來源，但沒有能改變狀態的能力，風險較低。' },
+        { text: '助理離線產生一段不接觸任何檔案的範例程式。', why: '沒有讀不可信內容，也沒有敏感存取。' }
+      ],
+      summary: '讀不可信內容＋敏感存取＋能行動，三者同時成立時風險最高。' }
+  ]
+});
+</script>
+</body>
+</html>

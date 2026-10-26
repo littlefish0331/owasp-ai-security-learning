@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　協定、Agent 身分與供應鏈｜Agentic 安全與治理現況｜OWASP AI 資安學習教材</title>
+<meta name="description" content="報告對三類 agent 協定的治理觀點、非人類身分 (NHI) 與 Agent 身分的差異、AI SBOM 到執行期來源證明，以及可解釋性的限制。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="agentic-security-and-governance" data-page="04-protocols-identity.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　協定、Agent 身分與供應鏈</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="03-safety-security.html">第 3 章</a></li>
+</ul>
+<p class="lead">上一章結論是：權限面是兩種失效共同的根因。這一章看三條把「權限」變成可治理對象的線：協定（agent 怎麼被授權去呼叫東西）、身分（誰在行動）、供應鏈（行動的元件從哪來）。報告都用同一句話收尾：<strong>這些主要是架構與治理問題，不是單點的程式錯誤。</strong></p>
+
+<h2 id="pi-protocols">4.1 三類協定與它們的治理問題</h2>
+<p>報告把 agent 協定分成三類，說它們「已構成多數正式環境 agentic 系統的骨幹」，也說「協定治理沒有跟上採用」。下表整理各類的代表協定與報告標示的採用程度（截至 2026 年）：</p>
+<div class="table-wrap"><table>
+<caption>表 4-1　三類協定與治理觀點（報告 Protocol Landscape，改寫）</caption>
+<thead><tr><th scope="col">類別</th><th scope="col">做什麼</th><th scope="col">代表協定與報告標示的採用度</th><th scope="col">報告點出的風險</th></tr></thead>
+<tbody>
+<tr><th scope="row">Agent 到工具的呼叫</th><td>把推理系統接到確定性的工具、API 與資料來源</td><td>MCP（高採用）</td><td>不安全的伺服器實作可造成遠端程式碼執行；弱的脈絡與工具邊界造成資料暴露與權限濫用；工具描述與伺服器清單本身是「帶有政策效力的物件」</td></tr>
+<tr><th scope="row">Agent 之間的溝通</th><td>結構化訊息、委派、協商，常跨廠商與組織</td><td>A2A、ACP（低採用）</td><td>agent 偽冒、委派迴圈失控、橫向移動、信任傳遞失效；可能繼承權限卻沒有對應的當責</td></tr>
+<tr><th scope="row">Agent 與工具的發現</th><td>依宣告的能力動態找到工具與對等 agent</td><td>NANDA、ANS（低採用）</td><td>能力造假、登錄庫投毒、Sybil agent、流量導向；發現層把信任集中在登錄與路由服務</td></tr>
+</tbody></table></div>
+<p>報告列了跨類別的重複弱點：身分在複合與傳遞信任中被稀釋、能力暴露過多、跨廠商的稽核軌跡破碎、圍堵與撤銷機制弱、對自主委派的能見度有限，並說這些因「廠商與部署組織之間的共同責任模型破碎」而加劇。</p>
+<div class="callout official">
+  <p class="callout-title">報告給的「2026 年最低期望」</p>
+  <p>部署標準化 agent 協定的組織，至少要能證明：agent 與工具有可密碼學驗證的身分；對委派與自主有明確限制，含升級路徑與人類介入的觸發點；對共享脈絡與描述的驗證與清洗；最小權限的執行環境；協定伺服器與轉接器的供應鏈控制（來源、簽章、弱點管理）；稽核等級的協定層遙測；快速撤銷與圍堵。報告說：缺少這些基礎，採用協定的結果「一貫是風險放大的速度快過治理結構的反應」。</p>
+</div>
+
+<h2 id="pi-identity">4.2 NHI 與 Agent 身分：兩層，不是同義詞</h2>
+<div class="concept">
+<h3 id="c-identity">為什麼報告堅持把兩者分開</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd><strong>非人類身分 (Non-Human Identity, NHI)</strong> 是非人類實體的數位表示與認證：傳統上是靜態的服務帳號與 API 金鑰。<strong>Agent 身分</strong>是動態的密碼學框架，用來證明 agent 的身分並治理有獨立推理與跨邊界執行能力的自主 agent。報告說前者是「認證原語」，後者是「建立在它之上的治理框架」。</dd>
+  <dt data-n="2">為什麼會出問題</dt>
+  <dd>傳統 NHI 在認證當下回答一個問題：「這個實體可以進來嗎？」答案成立到有人輪替憑證為止，這對每次做同樣事的工作負載可行。對 agent 不行：agent 會推理、會委派給其他 agent、會在執行期發現新工具，問題變成「是誰委派了這個 agent、它現在想做什麼、還被允許嗎」。報告的一句話：<strong>NHI 告訴你憑證有效，卻無法告訴你持有它的推理實體是否該做它現在做的事。</strong></dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>報告列了弱身分策略的風險：身分偽冒（多個 agent 共用一個 NHI 會毀掉當責）、幽靈 agent（為任務啟動卻未下線、仍有有效身分的 agent，成為休眠後門）、信任傳遞失效（A 信任 B，B 委派給不受信任的 C）、第三方供應鏈（外部技能或外掛以呼叫流程的權限執行被污染的資料）、憑證蔓延、遺留 NHI 與人類代理身分（agent 共用服務帳號或人類身分而繼承不當權限）。報告也強調「憑證範圍就是爆炸半徑」：憑證範圍過大，不論起因是對抗性或自主，傷害都會發生。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>報告要求把身分視為密碼學斷言，而非一個簡單的憑證：<strong>身分證明</strong>（發 token 前驗證 agent 的程式碼完整性、模型權重與執行環境）、<strong>可驗證憑證</strong>（短效，而非長效 API 金鑰）、<strong>身分串接</strong>（讓 token 綁定發起的主體，防混淆代理人，使用 Token Exchange 保留脈絡）、<strong>動態存取</strong>（只給目前推理步驟需要的權限，即時授予與縮減）、<strong>agent 命名服務</strong>（登錄與發現非人類身分）、<strong>憑證蔓延管理</strong>。另外要求自動化的身分生命週期（短效、隨工作流結束而下線）與以程式碼定義的權限政策 (policy-as-code)。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「我們已有 NHI 治理（秘密管理、輪替），所以 agent 身分沒問題。」報告的立場是這不夠：輪替與憑證管理處理的是「憑證有效嗎」，沒處理「持有者現在該不該做這件事」。</dd>
+</dl>
+</div>
+<div class="table-wrap"><table>
+<caption>表 4-2　傳統 NHI 與 Agent 身分（報告表格，改寫）</caption>
+<thead><tr><th scope="col">面向</th><th scope="col">傳統 NHI（服務帳號）</th><th scope="col">Agent 身分</th></tr></thead>
+<tbody>
+<tr><th scope="row">本質</th><td>靜態憑證</td><td>動態的密碼學身分</td></tr>
+<tr><th scope="row">範圍</th><td>預先定義、粗粒度</td><td>依意圖、動態發現、細粒度</td></tr>
+<tr><th scope="row">壽命</th><td>長效</td><td>短暫／即時 (Just-in-Time)</td></tr>
+<tr><th scope="row">委派</th><td>基本的 OAuth 範圍</td><td>保留脈絡的委派鏈</td></tr>
+<tr><th scope="row">可稽核性</th><td>以 token 為單位</td><td>結構化、綁定意圖的聲明</td></tr>
+<tr><th scope="row">信任模型</th><td>基礎設施信任</td><td>密碼學證明加來源證明</td></tr>
+<tr><th scope="row">主要風險</th><td>權限過大的帳號</td><td>信任傳遞與動態誤用</td></tr>
+</tbody></table></div>
+<p>報告把弱身分風險對映到 OWASP 的 <strong>Non-Human Identities Top 10（2025 版）</strong>：例如幽靈 agent 對應 NHI1 不當下線與 NHI7 長效秘密；信任傳遞失效對應 NHI5 權限過大與 NHI9 NHI 重用。這些對應是報告自己寫的，NHI Top 10 本身不在本教材範圍。</p>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：「身分是新的邊界」和你熟悉的概念</p>
+  <p>如果你熟悉雲端 IAM，這一節的主軸是：<strong>從「在登入時檢查一次」變成「在每個動作時檢查」</strong>。類比是「長效的 API 金鑰」對「每次請求簽發的短效 token 加上政策引擎」。這個類比是作者的說明，報告沒有用這個說法，也沒有說要採某個特定產品。</p>
+</div>
+
+<h2 id="pi-supply">4.3 供應鏈：從「裝了什麼」到「能組合出什麼」</h2>
+<p>報告對 AI 物料清單 (AIBOM) 的論述有一個關鍵轉折。傳統 SBOM 記錄「裝了什麼元件」。但 agent 可以在執行期動態發現、挑選並呼叫外部能力，包含技能、工具、外掛、登錄庫、檢索來源與被委派的子 agent，因此<strong>有效的相依圖是在執行期才建起來的</strong>。報告的結論：供應鏈安全除了問「有什麼元件」，還要問<strong>「執行期能組合出什麼能力、是在誰的權限下執行」</strong>；來源證明要從靜態的元件清冊，延伸到簽章、完整性驗證與執行期證明。</p>
+<p>報告給領導層的五項要求，作者整理成表：</p>
+<div class="table-wrap"><table>
+<caption>表 4-3　給領導層的五項供應鏈要求（報告，改寫）</caption>
+<thead><tr><th scope="col">#</th><th scope="col">要求</th><th scope="col">要點</th></tr></thead>
+<tbody>
+<tr><th scope="row">1</th><td>所有軟體含 AI 基礎設施都制度化 SBOM</td><td>依 NTIA 最低元素，用 SPDX 或 CycloneDX；agent 系統不能繞過既有供應鏈治理</td></tr>
+<tr><th scope="row">2</th><td>落實 AIBOM</td><td>把透明度延伸到模型工件、可得的訓練來源與 AI 特有元件</td></tr>
+<tr><th scope="row">3</th><td>建立 AI 與 agentic 元件的正式清冊</td><td>模型、資料集、RAG、MCP 伺服器、agent 框架、連接器、工具生態、外部登錄庫；報告的原則：「只要能影響 agent 行為，就必須被盤點」</td></tr>
+<tr><th scope="row">4</th><td>把供應鏈治理擴大到執行期組合</td><td>納入工具登錄庫、外掛生態、被委派的 agent 與外部脈絡來源</td></tr>
+<tr><th scope="row">5</th><td>高影響流程要求決策層級的可追溯性</td><td>能重建哪些元件、工具與被委派的 agent 對結果有貢獻</td></tr>
+</tbody></table></div>
+<p>報告還有一章談<strong>可解釋性</strong>，結論偏務實：傳統的特徵歸因方法不適用於 agent，需要的是「軌跡層級的透明度」，也就是結構化的追蹤紀錄，包含簡明的人類可讀理由、連結的執行證據（工具輸入輸出、檢索來源、狀態變化）與診斷訊號。它提醒思維鏈 (chain-of-thought) 的「解釋」不保證忠實於實際決策，這與 ASI09（人機信任利用）有關：agent 可能用無法獨立驗證的解釋說服人類核准不安全的動作；也說現有的觀測、記錄與追蹤工具，經常是支撐解釋與稽核的實際機制。</p>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：數字與事故的原始來源</p>
+  <p>本章引用的 NHI 規模（例如「非人類身分數量為人類的 100 比 1 以上」「97% 的 NHI 權限過多」）與 GTG-1002、BodySnatcher 等事故，本教材都只轉述報告的描述，並未查證其引用的第三方報告。教材沒有把它們寫進本章主體或題目。</p>
+</div>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>三類協定：到工具（MCP）、agent 之間（A2A、ACP）、發現（NANDA、ANS）；各有偽冒、投毒、信任傳遞等風險，共同的弱點是身分稀釋與稽核破碎。</li>
+  <li>NHI 是認證原語；Agent 身分是建在其上的治理框架。NHI 說憑證有效，Agent 身分要說持有者此刻該不該這樣做。</li>
+  <li>防護方向：身分證明、短效可驗證憑證、身分串接、動態存取、命名服務、自動化生命週期、policy-as-code。</li>
+  <li>供應鏈從「裝了什麼」到「執行期能組合什麼、在誰的權限下」；高影響流程要決策層級的可追溯性。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出三類協定各自最主要的風險。</li>
+  <li>我能用一句話區分 NHI 與 Agent 身分。</li>
+  <li>我能說明為什麼靜態的 SBOM 對 agent 不夠。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p><a href="05-maturity-model.html">第 5 章　成熟度模型：採用層級 × 治理等級</a>：把前面的分類、威脅與控制整合成一張可操作的矩陣。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，State of Agentic AI Security and Governance 2.01（PDF，June 2026）：Protocol Landscape and Risks、Agent Identity vs Non-Human Identity (NHI)、AI SBOM and Supply Chain Provenance、Explainable AI and Agent Transparency；CC BY-SA 4.0；<a href="https://genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/">genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/</a>；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：State of Agentic AI Security and Governance 2.01 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ag-ch4', topic: 'agentic-security-and-governance', mode: 'chapter',
+  questions: [
+    { id: 'ag4q1', type: 'match', lo: [4], refs: [{label: '4.1 表 4-1', href: '04-protocols-identity.html#pi-protocols'}],
+      stem: '把下列風險配對到報告所說的協定類別。',
+      cats: [
+        { id: 'tool', label: 'Agent 到工具的呼叫（如 MCP）' },
+        { id: 'comm', label: 'Agent 之間的溝通（如 A2A）' },
+        { id: 'disc', label: 'Agent 與工具的發現（如 ANS）' }
+      ],
+      items: [
+        { text: '登錄庫投毒與能力造假', answer: 'disc', why: '發現層把信任集中在登錄與路由服務。' },
+        { text: '不安全的伺服器實作導致遠端程式碼執行', answer: 'tool', why: '報告點出 MCP 的伺服器實作風險。' },
+        { text: '信任傳遞失效與委派迴圈失控', answer: 'comm', why: 'agent 之間的溝通擴大組織的信任邊界。' }
+      ],
+      summary: '三類協定各有最典型的風險。' },
+    { id: 'ag4q2', type: 'mc', lo: [4], refs: [{label: '4.2 表 4-2', href: '04-protocols-identity.html#c-identity'}],
+      stem: '依報告，「NHI 與 Agent 身分」的關係最準確的描述是？',
+      options: [
+        { text: '兩者是同義詞，只是不同廠商的叫法。', why: '報告批評業界把兩者混用，並說這是多數身分計畫還沒為 agent 準備好的原因。' },
+        { text: 'NHI 是認證原語（憑證是否有效）；Agent 身分是建在其上的治理框架（持有者此刻是否該這樣做）。', correct: true, why: '這正是報告的區分。' },
+        { text: 'Agent 身分取代 NHI，不再需要服務帳號。', why: '報告說兩者必須一起演進，舊的 NHI 做法本身不足以治理自主推理者，但沒有說取代。' },
+        { text: 'NHI 只用於人類，Agent 身分只用於 AI。', why: 'NHI 就是非人類身分，不是人類身分。' }
+      ],
+      summary: 'NHI：憑證有效嗎？Agent 身分：持有者現在該做這件事嗎？' },
+    { id: 'ag4q3', type: 'mc', lo: [4], refs: [{label: '4.3 供應鏈', href: '04-protocols-identity.html#pi-supply'}],
+      stem: '為什麼報告說傳統的 SBOM 對 agentic 系統不夠？',
+      options: [
+        { text: '因為 SBOM 的格式過時了。', why: '報告仍要求使用 SPDX、CycloneDX 等格式並制度化 SBOM。' },
+        { text: '因為 agent 會在執行期動態發現並呼叫外部能力，有效相依圖在執行期才建立；SBOM 只記錄「裝了什麼」。', correct: true, why: '報告的核心轉折：從元件清冊到執行期組合與權限來源。' },
+        { text: '因為 agent 不使用任何軟體元件。', why: 'agent 依賴框架、函式庫與服務，仍有一般軟體的供應鏈。' },
+        { text: '因為 SBOM 只能用在開源軟體。', why: '報告沒有這樣的說法。' }
+      ],
+      summary: '供應鏈要擴大到執行期組合與授權來源。' },
+    { id: 'ag4q4', type: 'scn', lo: [4], refs: [{label: '4.2 Agent 身分', href: '04-protocols-identity.html#c-identity'}, {label: '4.2 表 4-2', href: '04-protocols-identity.html#c-identity'}],
+      stem: '依本章，這個設計最需要改進的是什麼？',
+      scenario: '白石科技（虛構）有 40 個內部 agent，全部共用同一個服務帳號與一把長效 API 金鑰，該帳號對內部知識庫與工單系統有讀寫權限。資安團隊自豪：「金鑰每 90 天輪替一次，符合 NHI 政策。」一次異常事件後，調查人員無法分辨是哪個 agent 做了那個寫入動作。',
+      options: [
+        { text: '不需要改進，輪替週期符合政策。', why: '輪替只回答「憑證是否有效」，不能回答「是哪個 agent、為什麼做」。' },
+        { text: '改為每個 agent 專屬身分、短效憑證、依任務動態縮減權限，並在稽核紀錄中綁定發起的主體與意圖；同時下線不再使用的 agent 身分。', correct: true, why: '對應 4.2：避免 NHI 重用、使用短效可驗證憑證、動態存取與自動化生命週期。' },
+        { text: '把輪替週期從 90 天縮短到 30 天即可。', why: '縮短週期不解決共用身分造成的當責與爆炸半徑問題。' },
+        { text: '改用人類管理員的帳號操作，這樣就有當責。', why: '報告列「遺留 NHI 與人類代理身分」為風險：agent 共用人類身分會繼承不當權限。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 40 個 agent 共用一個身分：報告列為「NHI 重用」，毀掉當責並放大入侵影響。(2) 長效 API 金鑰：對應「長效秘密」；報告要求短效、可驗證的憑證。(3) 權限範圍寬：憑證範圍就是爆炸半徑。(4) 事件後無法分辨是誰：缺少綁定主體與意圖的稽核。</p><p><strong>結論：</strong>專屬身分、短效憑證、動態存取、可稽核的身分串接，並管理 agent 生命週期。對應教材：<a href="04-protocols-identity.html#c-identity">4.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

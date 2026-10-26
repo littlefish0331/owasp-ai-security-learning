@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜Agent Control Standard｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Agent Control Standard 主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="agent-control-standard" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 3.3 節與第 8 節）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以本教材回到一手來源重新核對。ACS 的主要來源是 GitHub 儲存庫，而它還在快速更新（最近提交 2026-10-23），所以版本與細節以 2026-10-26 讀取的內容為準。本頁列出：採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。ACS 的內容在儲存庫快速更新，下列細節請以讀取日為準。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">資源頁</th><td>2026-09-01；分類 Tools；未標版本與成熟度；寫「Now part of the OWASP GenAI Security Project」</td><td><a href="https://genai.owasp.org/resource/agent-control-standard-acs/">genai.owasp.org/resource/agent-control-standard-acs/</a></td><td>網站頁尾 CC BY-SA 4.0（除非另有說明）</td></tr>
+<tr><th scope="row">規格版本</th><td><strong>v0.1.0</strong>；README：v0.2.0 目標 2027 年 3 月、v1.0 尚未訂日期</td><td>儲存庫 README、規格文字</td><td>規格與 JSON Schema：Apache-2.0</td></tr>
+<tr><th scope="row">儲存庫發行版本</th><td><code>version.txt</code> = <strong>0.1.4</strong>；CHANGELOG：0.1.4（2026-10-16）、0.1.3（2026-10-05）</td><td><a href="https://github.com/GenAI-Security-Project/agent-control-standard">github.com/GenAI-Security-Project/agent-control-standard</a></td><td>程式碼與 schema：Apache-2.0；docs 與 README：CC BY-SA 4.0（LICENSING.md）</td></tr>
+<tr><th scope="row">最近提交</th><td>2026-10-23（與 GitHub 組織 updated 日期一致）</td><td>commits 動態</td><td>—</td></tr>
+<tr><th scope="row">授權範圍表</th><td>LICENSING.md：<code>specification/**</code>、<code>.github/**</code>、<code>tools/**</code>、<code>tests/**</code>、程式碼範例 → Apache-2.0；<code>docs/**</code>、README 等 → CC BY-SA 4.0；參考實作內的 Microsoft 政策函式庫 → MIT</td><td>LICENSING.md</td><td>如左</td></tr>
+<tr><th scope="row">Instrument 規格／Hooks／Conformance</th><td>ACS v0.1.0；<code>docs/spec/instrument/specification.md</code>、<code>hooks.md</code>、<code>docs/spec/conformance.md</code></td><td>儲存庫 docs</td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0（沿用既有副本）</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正或補充）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">「2026-09-01 捐贈給專案」</th><td>筆記寫 2026-09-01 捐贈給專案</td><td>資源頁的日期是 2026-09-01，且寫「Now part of the OWASP GenAI Security Project」；本教材沒有找到「捐贈」一詞或捐贈日期的官方文字。CHANGELOG 顯示儲存庫早在 2026-06-05 就有 0.1.0</td><td>教材只寫「資源頁登錄日 2026-09-01」，不寫「捐贈」</td></tr>
+<tr><th scope="row">版本</th><td>規格 v0.1.0（GitHub README）</td><td>屬實，但另有儲存庫版本 0.1.4（<code>version.txt</code>、CHANGELOG 2026-10-16）。0.1.4 對 ACS-Trace 做了破壞性變更，規格版本仍是 v0.1.0</td><td>第 1 章 1.2 節列出三種標示；引用時建議指名發行版本</td></tr>
+<tr><th scope="row">「由獨立 Guardian 審查並決定」</th><td>allow／deny／modify／ask／defer</td><td>屬實。規格另說明：Guardian 內部分確定性層（Cedar／Rego）與 Agent 層（LLM，可選的委派）</td><td>第 2 章 2.1 節</td></tr>
+<tr><th scope="row">鉤子數量</th><td>19 個原生生命週期 hooks</td><td>屬實：hooks.md 列 19 個 <code>steps/*</code>，外加 <code>protocols/MCP/*</code>、2 個 <code>agbom/*</code>、<code>system/ping</code>，共 22 個方法。ACS-Core 只強制最低限度的鉤子</td><td>第 2 章 2.2 節</td></tr>
+<tr><th scope="row">授權</th><td>程式碼與 schema Apache 2.0，文件 CC BY-SA 4.0</td><td>大致屬實，但更精確：LICENSING.md 逐路徑列出；<code>specification/**</code>（含規格文字）是 Apache-2.0，不是 CC BY-SA</td><td>第 1 章 1.1 節與測驗題 q03 說明</td></tr>
+<tr><th scope="row">成熟度與缺口</th><td>README 自述 pre-1.0、早期、v0.1.0 下「自行宣稱的符合性無人驗證」</td><td>屬實。README 還列出參考實作的具體缺口：線路未認證（未實作 HMAC-SHA256，議題 #70）、預設放行（#32、#37）、只有 2 個鉤子被即時評估、不主張互通性、Trace 匯出不完整</td><td>第 3 章 3.4 節</td></tr>
+<tr><th scope="row">與 AOS 的關係</th><td>措辭相近，官方頁面未說明兩者關係，未能確認</td><td>本次沒有讀 AOS 儲存庫，ACS 儲存庫也沒有說明；仍未能確認</td><td>第 1 章 1.5 節如實寫「未能確認」</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">「版本」該寫哪個</th><td>資源頁：無版本（日期 2026-09-01）；規格：v0.1.0；儲存庫：0.1.4</td><td>三者都列，並說明各自的意思；<strong>不單選</strong>。依「以最新為準」，最新的儲存庫版本是 0.1.4（2026-10-16）</td></tr>
+<tr><th scope="row">ACS-Core 對 MODIFY 的要求</th><td>README 與早期敘述可能寫 MODIFY 為必須；CHANGELOG 0.1.3（2026-10-05）改為「應該支援」，conformance.md 現行寫法也是 SHOULD-support</td><td>採現行 conformance.md（較新）：四種必須（ALLOW、DENY、ASK、DEFER）、MODIFY 應該</td></tr>
+<tr><th scope="row"><code>system/ping</code></th><td>0.1.3 之前 MUST-implement；0.1.3 起 SHOULD，但缺省必須有已宣告的替代存活機制</td><td>教材未深入此細節（只提「存活探測」）；採 0.1.3 之後的寫法</td></tr>
+<tr><th scope="row">授權</th><td>資源頁／網站：CC BY-SA 4.0；儲存庫：依檔案分 Apache-2.0 與 CC BY-SA 4.0。CHANGELOG 0.1.1（2026-08-11）寫明這是<strong>重新授權</strong>的結果：到 v0.1.0 為止所有內容原是 MIT</td><td>教材引用規格文字時標 Apache-2.0，引用說明文件時標 CC BY-SA 4.0；頁尾兩者並列。<strong>早於 0.1.1 的檔案版本授權不同</strong>，教材讀的是 2026-10-26 的現行版本</td></tr>
+<tr><th scope="row">儲存庫歷史</th><td>CHANGELOG：0.1.0 於 2026-06-05（初版正典規格）；0.1.1 於 2026-08-11；0.1.2 於 2026-09-09；0.1.3 於 2026-10-05；0.1.4 於 2026-10-16</td><td>這是 CHANGELOG 的日期；它顯示規格在四個月內有五個版本，且 Trace 在 0.1.4 有破壞性變更</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>owasp.org 上的專案層級標示：</strong><code>project.owasp.yaml</code> 為 <code>level: 2</code>；本教材沒有取得 owasp.org 專案頁（專案清單動態載入），所以層級標籤（Incubator、Lab 等）<strong>未能確認</strong>。教材不寫層級。</li>
+  <li><strong>與 Agent Observability Standard (AOS) 的關係：</strong>官方頁面未說明（沿用調查筆記第 8 節第 15 項）。</li>
+  <li><strong>專案領導名單：</strong>GOVERNANCE.md 列 3 位 Project Lead；<code>project.owasp.yaml</code> 另列 2 位（檔案註解說明 nest-schema 限 5 人）。這與 AI Exchange 主題記錄過的名單不一致問題同型，教材<strong>不列名單</strong>，請讀者看 GOVERNANCE.md。</li>
+  <li><strong>能否對個別動作單獨設定失敗姿態：</strong>本教材讀到的規格說姿態在握手時協商，沒有說明能否分動作設定；第 3 章情境 B 與測驗題 q10 明確標「未能確認」。</li>
+  <li><strong>各鉤子的完整行為：</strong>本教材讀了 hooks.md 的總表與 conformance.md 的 ACS-Core 清單，沒有逐一讀 19 個鉤子的個別 schema 與稽核鏈語意。</li>
+  <li><strong>ACS-Trace、ACS-Inspect 等設定檔的細節：</strong>只讀到設定檔的名稱與關係，沒有逐頁讀 Trace 事件與 AgBOM 序列化的規格。</li>
+  <li><strong>AgBOM 與 OWASP AIBOM Generator 的關係：</strong>官方頁面沒有說明兩者是否為同一件事。</li>
+  <li><strong>README 中「Microsoft Agent Governance Toolkit」的互通性：</strong>README 明說不主張互通性測試；本教材沒有獨立查證 AGT 一側。</li>
+  <li><strong>議題編號（#70、#32、#37）的現況：</strong>本教材引用的是 README 寫的議題編號，沒有開啟議題頁確認其目前狀態。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<ul>
+  <li>資源頁：<a href="https://genai.owasp.org/resource/agent-control-standard-acs/">genai.owasp.org/resource/agent-control-standard-acs/</a></li>
+  <li>GitHub 儲存庫：<a href="https://github.com/GenAI-Security-Project/agent-control-standard">GenAI-Security-Project/agent-control-standard</a>（README、<code>version.txt</code>、CHANGELOG.md、LICENSING.md、GOVERNANCE.md、<code>project.owasp.yaml</code>）</li>
+  <li>規格文字：<code>docs/spec/instrument/specification.md</code>、<code>docs/spec/instrument/hooks.md</code>、<code>docs/spec/conformance.md</code></li>
+  <li>文件站：<a href="https://genai-security-project.github.io/agent-control-standard/docs/">genai-security-project.github.io/agent-control-standard/docs/</a>（README 指向；本次未逐頁讀）</li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>CI 合併閘門的類比（第 1 章導言與第 3 章 3.2 節）。</li>
+  <li>「規則負責一定要擋的，LLM 只處理灰色地帶」對 Guardian 兩層設計的理由解讀（第 2 章 2.1 節）；官方寫的是結構，沒有這樣明講理由。</li>
+  <li>表 2-1 的鉤子分類（官方的圖分七類，大致相同）；<code>toolCallResult</code> 是間接提示詞注入入口的觀察。</li>
+  <li>ACS 在 AI Exchange 語言裡接近「限制後果與偵測／回應」，以及與 <code class="ctl">OVERSIGHT</code>、<code class="ctl">LEAST MODEL PRIVILEGE</code> 的對應（第 1 章 1.4 節、第 3 章 3.7 節）；ACS 的技能鉤子與 Agentic Skills Top 10 的 AST03、AST09 的對應。官方沒有寫這些對應。</li>
+  <li>圖 2-1 的「稽核紀錄」一格、圖 3-1 的起點兩格。</li>
+  <li>第 3 章對「沉默代表沒有疑慮」假設的批評，以及兩個情境的因果推演。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>ACS 規格與 JSON Schema、程式碼與程式碼範例：Apache-2.0；說明文件（<code>docs/**</code>、README 等）：CC BY-SA 4.0；參考實作內附的 Microsoft 政策函式庫：MIT（LICENSING.md）。本教材以自己的話整理，短引用均標示來源。</li>
+  <li>genai.owasp.org 資源頁：CC BY-SA 4.0（網站頁尾，除非另有說明）。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：ACS 規格與程式碼 — Apache-2.0；ACS 說明文件與 genai.owasp.org 資源頁 — CC BY-SA 4.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

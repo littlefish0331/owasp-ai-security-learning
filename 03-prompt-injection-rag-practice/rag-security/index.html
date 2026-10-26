@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAG 安全｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="RAG 安全主題首頁：學習目標、前置知識、學習路徑與章節總覽。以 RAG Security Cheat Sheet 與 LLM09:2026 為主。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="rag-security" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>RAG 安全</h1>
+<ul class="meta-row">
+  <li>03 提示詞注入與 RAG 實作｜主題 2</li>
+  <li>預估學習時間：約 70–80 分鐘（4 章閱讀約 34 分鐘；章末檢核與總測驗約 25–30 分鐘；前置：AI Exchange 第 6 章約 9 分鐘）</li>
+  <li>採用來源：RAG Security Cheat Sheet（2026-10-04 最後修改）、<a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-vector">LLM09:2026</a>（Version 2026）</li>
+</ul>
+<p class="lead">這個主題把 OWASP 的 RAG Security Cheat Sheet 與 LLM Top 10 2026 的 LLM09:2026 讀在一起：前者告訴你 RAG 管線每一站該放哪些控制，後者說明向量與嵌入層為什麼需要自己的風險條目。學完後，你能對一條 RAG 管線說出「誰能寫入、誰能讀取、輸出到哪裡、失敗時怎麼辦」，並決定先做哪幾件事。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>管線與地圖：</strong>說明 RAG 管線各階段的信任邊界，用 Cheat Sheet 的 14 個 Section 與實作優先序決定先做什麼，並區分 LLM09:2026 與 <a href="../../02-llm-applications/llm-top-10/02-prompt-injection.html#pi-what">LLM01:2026</a>、<a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-poison">LLM05:2026</a>、<a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-supply">LLM04:2026</a>、ASI06:2026 的邊界。<br><small>對應：<a href="01-pipeline-and-map.html">第 1 章</a></small></li>
+  <li id="lo2"><strong>寫入端：</strong>辨認文件投毒、嵌入操弄與攝入供應鏈威脅，選擇完整性、來源與隔離控制，並說明為何雜湊相符不等於內容安全。<br><small>對應：<a href="02-write-side.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>讀取端：</strong>解釋存取控制繼承、檢索前與檢索後過濾、租戶隔離、快取與刪除連鎖，並說明為什麼只有嵌入外洩也不是安全豁免。<br><small>對應：<a href="03-read-side.html">第 3 章</a></small></li>
+  <li id="lo4"><strong>生成端與整合：</strong>套用輸出驗證、工具呼叫授權、失效即拒絕、可觀測性與 CI 測試，並把 Cheat Sheet 對應到 LLM09:2026、AISVS 與 AI Exchange 第 6 章。<br><small>對應：<a href="04-generate-and-integrate.html">第 4 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>熟悉 RAG 的運作（切塊、嵌入、向量檢索、提示詞組裝），不必再從頭解釋。</li>
+  <li>建議先讀 <a href="../../01-overview/ai-exchange/06-rag.html">AI Exchange 第 6 章　RAG 系統</a>：那一章講 RAG 的五階段、威脅清單與「上線前要問的問題」；本主題接著講 Cheat Sheet 的實作層級控制，不重複那些內容。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>。重點是信任邊界、最小權限、縱深防禦與失效安全。</li>
+  <li>想先弄懂提示詞注入，可讀 <a href="../prompt-injection/index.html">提示詞注入防護</a>（本階段的另一個主題）；先讀或後讀都可以。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="../../01-overview/ai-exchange/06-rag.html">AI Exchange 第 6 章　RAG 系統</a></span><span class="p-state"></span><span class="p-desc">建議前置：五階段、威脅清單、存取控制與檢索範圍。</span></li>
+  <li><span class="p-title"><a href="01-pipeline-and-map.html">第 1 章　RAG 管線與 Cheat Sheet 地圖</a></span><span class="p-state" data-file="01-pipeline-and-map.html"></span><span class="p-desc">RAG 重新分配風險、LLM09:2026 四句框架、14 個 Section 的優先序。表 2 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="02-write-side.html">第 2 章　寫入端：文件投毒、嵌入操弄與攝入供應鏈</a></span><span class="p-state" data-file="02-write-side.html"></span><span class="p-desc">完整性清單與雜湊相符的限制、連接器供應鏈。情境 C。表 2 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="03-read-side.html">第 3 章　讀取端：存取控制繼承與隔離</a></span><span class="p-state" data-file="03-read-side.html"></span><span class="p-desc">檢索前與檢索後過濾、租戶隔離、快取與刪除連鎖。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="04-generate-and-integrate.html">第 4 章　生成端、失效安全與整合</a></span><span class="p-state" data-file="04-generate-and-integrate.html"></span><span class="p-desc">輸出驗證、工具授權、失效即拒絕、CI 測試。情境 D。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（14 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO4，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">核對清單、版本與日期對照、授權、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>RAG <strong>不減少風險，而是把風險散布到整條管線</strong>。控制要沿著管線分段放：寫入端管誰能影響語料，讀取端管誰能取回什麼，生成端管內容如何變成輸出與動作。</li>
+  <li>雜湊相符只證明「與核准基準一致」，不證明內容安全；檢索前過濾比檢索後過濾安全；「只有嵌入外洩」不是低風險。</li>
+  <li>任何一站失敗時，系統要<strong>失效即拒絕</strong>：不要退回模型記憶、不要回傳過濾後的子集、不要用過期快取。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的歸類、類比或串接。</li>
+  <li>兩個情境（C、D）都是 <span class="tag fiction">虛構</span> 的公司與系統，只說明風險概念，不含可直接使用的攻擊內容。</li>
+  <li>Cheat Sheet 的 14 個 Section 在教材中寫成「Cheat Sheet Section N」，與教材章節編號區隔。</li>
+  <li>LLM09:2026 與 genai.owasp.org 條目頁（仍是 2025 版，向量與嵌入弱點為 LLM08:2025）的編號不同，本教材一律帶年份（換算見 <a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 2026 第 8 章</a>）。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage。如果瀏覽器停用了它，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：OWASP Cheat Sheet Series 與 OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；OWASP AI Exchange（owaspai.org）— CC0 1.0。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

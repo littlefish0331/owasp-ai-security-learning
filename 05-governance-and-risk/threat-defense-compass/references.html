@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜Threat Defense COMPASS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Threat Defense COMPASS 主題的來源核對清單：採用的版本與日期、與調查筆記的差異、三份資料之間的衝突與取捨、未能確認項目、授權。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="threat-defense-compass" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 4.3 節與第 8 節）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以作者回到一手來源重新核對：下載 RunBook PDF 並轉成文字（文字抽取遺失數字之處另行確認）、下載 COMPASS 試算表的匯出檔並讀取各分頁的文字。本頁列出採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">Threat Defense COMPASS 1.0（試算表）</th><td>1.0；資源頁 2025-09-10；19 個分頁</td><td>資源頁；試算表 About 分頁「V 1.0」；FAQ 標題 v.1</td><td>CC BY-SA 4.0（About 分頁）</td></tr>
+<tr><th scope="row">Threat Defense COMPASS RunBook</th><td>Version 1.0；資源頁 2025-09-10；PDF 封面 July 4, 2025；37 頁</td><td>資源頁；PDF 封面與頁尾；PDF 建立時間 2025-09-11</td><td>CC BY-SA 4.0（PDF 第 1 頁）</td></tr>
+<tr><th scope="row">COMPASS 培訓影片頁</th><td>2025-09-10；標示 Sandy Dunn（CISO 暨 COMPASS 負責人）</td><td><a href="https://genai.owasp.org/learning/introduction-owasp-genai-security-project-threat-defense-compass/">genai.owasp.org/learning/…</a></td><td>網站頁尾 CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>沿用專案已放置的副本</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">RunBook 的日期</th><td>「1.0，2025-09-10（RunBook 同日，版本取自檔名）」</td><td>資源頁 2025-09-10 屬實；但 RunBook <strong>PDF 封面寫 Version 1.0、July 4, 2025</strong>，版本不是只取自檔名</td><td>標 2025-09-10 並註明封面日期；「同日」不採用</td></tr>
+<tr><th scope="row">評估的三種情境</th><td>外部攻擊者、內部導入 Copilot／Gemini、計畫中的 GenAI／Agent 專案</td><td>屬實，且 RunBook 以 Profile 1、2a、2b、2c 與 Profile 3（模型提供者）細分</td><td>第 2 章表 2-1</td></tr>
+<tr><th scope="row">試算表需複製</th><td>「官方 COMPASS 範本連結為 Google Docs，需自行複製使用」</td><td>屬實；實際是 Google 試算表，About／0 分頁都說要「檔案 → 建立副本」</td><td>第 1 章</td></tr>
+<tr><th scope="row">試算表分頁數</th><td>（未提）</td><td>共 19 個分頁（含 0 起手、1 About、1 FAQ、2 到 6c 與 Notes）</td><td>第 1 章圖 1-1</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　三份資料之間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">發布日</th><td>資源頁 2025-09-10；RunBook 封面 2025-07-04</td><td>採較新的 2025-09-10；並列封面日期。<strong>未能確認</strong>差異原因</td></tr>
+<tr><th scope="row">風險等級名稱</th><td>試算表 About 分頁：20–25 Critical、15–19 High、10–14 Moderate、5–9 Low、1–4 Minimal；RunBook 範例二：16＝Critical、9＝Medium</td><td><strong>未能確認</strong>哪個較新；教材以試算表等級表為工作基準，並明說範例標籤不一致</td></tr>
+<tr><th scope="row">路線圖分頁編號</th><td>RunBook 稱 Tab 5（及 Step 7）；試算表 About 快速開始寫「Tab 9 Act」；導覽表與實際分頁名是 5</td><td>以實際分頁名「5 Act Strategy &amp; Roadmap」為準</td></tr>
+<tr><th scope="row">風險標籤的版本</th><td>試算表使用 LLM Top 10 2025 編號與「Agentic Top 15」欄（T 系列）；LLM Top 10 現行版為 2026</td><td>教材一律帶年份；不替使用者升級標籤</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>RunBook 封面日期與資源頁日期的差異原因：</strong>見表 R-3。</li>
+  <li><strong>風險等級對照：</strong>RunBook 範例二的 Critical (16)／Medium (9) 與試算表等級表不一致；哪個為準未能確認。</li>
+  <li><strong>試算表的公式與 CVSS 換算表：</strong>本教材讀的是匯出的儲存值，沒有檢查公式是否正確；RunBook 範例中的 CVSS 數字（9.1、8.6–9.8、5.0–6.9）只做轉述，不保證可通用。</li>
+  <li><strong>參考分頁 6、6a、6b、6c 的具體內容：</strong>只確認名稱與用途，沒有逐列讀完，教材不列任何條目。</li>
+  <li><strong>試算表中 T 系列 Agentic 編號的來源文件：</strong>欄位名稱為「OWASP Agentic Top 15」，值如 T8、T11；試算表沒有註明對照到哪份文件，作者推測是 Agentic AI – Threats and Mitigations，這是推測。</li>
+  <li><strong>RunBook 附錄 C（Microsoft LLM TTPs）與附錄 B：</strong>只讀了摘要，沒有逐條整理；教材未依賴它們的細節。</li>
+  <li><strong>RunBook 的 Profile 3（模型建置者）：</strong>官方明說範圍外，教材不處理。</li>
+  <li><strong>是否有 COMPASS 的後續版本：</strong>在官方站未見；「沒找到」不代表沒有。</li>
+</ol>
+
+<h2 id="ref-sources">5. 本主題引用的一手來源</h2>
+<ul>
+  <li>Threat Defense COMPASS 1.0 資源頁：<a href="https://genai.owasp.org/resource/owasp-genai-security-project-threat-defense-compass-1-0/">…/owasp-genai-security-project-threat-defense-compass-1-0/</a>（提供 Google 試算表範本連結）。</li>
+  <li>Threat Defense COMPASS RunBook 資源頁：<a href="https://genai.owasp.org/resource/owasp-genai-security-project-threat-defense-compass-runbook/">…/owasp-genai-security-project-threat-defense-compass-runbook/</a>；PDF 由資源頁的下載連結取得（需帶瀏覽器標頭）。</li>
+  <li>COMPASS 培訓影片頁：<a href="https://genai.owasp.org/learning/introduction-owasp-genai-security-project-threat-defense-compass/">…/learning/introduction-owasp-genai-security-project-threat-defense-compass/</a>。</li>
+  <li>AI Security Governance and Adoption Initiative：<a href="https://genai.owasp.org/initiatives/ai-security-governance-and-adoption/">…/initiatives/ai-security-governance-and-adoption/</a>。</li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 1 章「Checklist 偏全面性、COMPASS 偏優先序」的定位；圖 1-1 中參考分頁支援各階段的虛線。</li>
+  <li>第 2 章「附錄 A 的檢查項本質上是提問」的讀法；表 2-2 最右欄的整數乘積例子。</li>
+  <li>第 3 章範例二與 AI Exchange 的關聯（核准疲勞）；情境 A 的整個劇本。</li>
+  <li>第 4 章圖 4-1 的整合流程；表 4-1 中標示「作者整理」的列；T 系列編號來源的推測。</li>
+  <li>所有 Mermaid 圖為重新繪製的簡化版，不是官方原圖。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>COMPASS RunBook 與試算表：CC BY-SA 4.0。本教材以自己的話整理，短引用均標示來源；若你要再散布，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>genai.owasp.org 網站內容：CC BY-SA 4.0。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：COMPASS RunBook 與試算表、genai.owasp.org 網站 — CC BY-SA 4.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

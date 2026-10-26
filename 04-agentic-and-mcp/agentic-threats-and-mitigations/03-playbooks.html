@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　緩解策略：六個 Playbooks｜Agentic 威脅與緩解｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Agentic AI – Threats and Mitigations 的六個 Playbook：每個 Playbook 對應哪些威脅、預防反應偵測三步各做什麼，以及一個企業 Copilot 的虛構情境。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="agentic-threats-and-mitigations" data-page="03-playbooks.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　緩解策略：六個 Playbooks</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-threat-taxonomy.html">第 2 章</a>；<a href="../../primer-security-for-developers.html#p-pdr">預防／偵測／回應</a></li>
+</ul>
+<p class="lead">知道有哪些威脅之後，下一步是「怎麼擋」。文件把緩解策略整理成六個 Playbook，每個對應一組威脅，並在內部分成預防 (Proactive)、反應 (Reactive)、偵測 (Detective) 三步。本章教你怎麼選 Playbook，並用一個虛構的企業 Copilot 情境走一遍。</p>
+
+<h2 id="pb-map">3.1 六個 Playbook 與它們涵蓋的威脅</h2>
+<p>文件說這些 Playbook 與前章的 Navigator 對齊，每個都分「預防、反應、偵測」三種措施，而且<strong>刻意重疊</strong>：記憶完整性同時出現在 Playbook 2 與 5，權限管理出現在 Playbook 3 與 4，多 agent 的信任驗證出現在 Playbook 5 與 6。文件也提醒，這些只處理 AI 特有的風險，傳統的軟體安全、LLM 防護與存取控制仍要做，才算縱深防禦。</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　六個 Playbook 與涵蓋的威脅（依官方 Playbook and Threat Mapping Overview）</caption>
+<thead><tr><th scope="col">Playbook</th><th scope="col">涵蓋的威脅</th><th scope="col">目標（改寫）</th></tr></thead>
+<tbody>
+<tr><th scope="row">1 防止 agent 推理被操縱</th><td>T6 Intent Breaking &amp; Goal Manipulation；T8 Repudiation &amp; Untraceability；T7 Misaligned &amp; Deceptive Behaviors</td><td>防止攻擊者操縱意圖、透過欺騙行為繞過安全，並提升行動可追溯性</td></tr>
+<tr><th scope="row">2 防止記憶污染與知識損毀</th><td>T1 Memory Poisoning；T5 Cascading Hallucination</td><td>防止 agent 儲存、檢索或傳播被操縱的資料</td></tr>
+<tr><th scope="row">3 保護工具執行、跨供應鏈防止未授權動作</th><td>T2 Tool Misuse；T3 Privilege Compromise；T11 Unexpected RCE；T4 Resource Overload；T16 Insecure Inter-Agent Protocol Abuse；T17 Supply Chain Compromise</td><td>防止 agent 因被操縱而執行未授權指令、濫用工具或升權，含供應鏈</td></tr>
+<tr><th scope="row">4 強化認證、身分與權限控制</th><td>T3 Privilege Compromise；T9 Identity Spoofing &amp; Impersonation；T16</td><td>防止未授權升權、身分偽造與存取控制違反</td></tr>
+<tr><th scope="row">5 保護 HITL、防止決策疲勞被利用</th><td>T10 Overwhelming HITL；T15 Human Manipulation</td><td>防止攻擊者壓垮人類決策者或透過欺騙行為繞過安全</td></tr>
+<tr><th scope="row">6 保護多 agent 通訊與信任機制</th><td>T12 Agent Communication Poisoning；T14 Human Attacks on MAS；T13 Rogue Agents</td><td>防止攻擊者破壞多 agent 通訊、利用信任機制或操縱分散式決策</td></tr>
+</tbody></table></div>
+<p>你會發現威脅群與 Navigator 並非一一對應：Playbook 3 把 Navigator 問題 3 的六項全包（含 T16、T17），Playbook 4 另外拉進 T3 與 T16。這是文件自己的取捨，用的時候以「這個 Playbook 列了哪些威脅」為準。</p>
+
+<h2 id="pb-three">3.2 每個 Playbook 的三步結構</h2>
+<p>六個 Playbook 都長一樣：Step 1 預防、Step 2 反應、Step 3 偵測。下表挑出<strong>四個最具代表性</strong>的 Playbook，把每一步的重點措施並列（措辭為改寫；完整清單請看原文）。</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　Playbook 的三步結構（挑選四個；措施為官方列舉的改寫）</caption>
+<thead><tr><th scope="col">Playbook</th><th scope="col">Step 1　預防</th><th scope="col">Step 2　反應</th><th scope="col">Step 3　偵測</th></tr></thead>
+<tbody>
+<tr><th scope="row">2 記憶</th><td>記憶內容寫入前驗證；限制記憶只能來自可信來源；以 session 隔離記憶；依任務限制可檢索的記憶；依敏感度限制保留期限；要求記憶更新附來源；跨 session 的變更先經多 agent 或外部驗證</td><td>對記憶更新日誌做異常偵測；對可疑條目重新驗證；用機率式真偽檢查找出漂移；以快照回復到已驗證狀態；標記異常高的改寫頻率</td><td>檢查新知識是否與既有事實一致；限制低可信輸入的傳播；追蹤知識血緣；對知識更新做版本控制；持續分析記憶存取模式</td></tr>
+<tr><th scope="row">3 工具</th><td>嚴格的工具存取控制；工具的函式層級認證；在隔離的容器沙箱執行並於每次後重置；速率限制；依即時風險分數限制；即時 (JIT) 授權並用後即撤；對 agent card、提示範本與工具定義做數位簽章，搭配 SBOM</td><td>記錄所有工具互動；偵測繞過政策的指令串接；金融、醫療、管理類操作需使用者明確核准；提升權限的 AI 產生程式碼需人工驗證；標記異常的呼叫頻率</td><td>監控工作負載並自動暫停超標的處理程序；追蹤多 agent 累計資源；限制併發的修改請求；監控供應鏈相依；用模擬被污染的元件做紅隊</td></tr>
+<tr><th scope="row">4 身分</th><td>對 agent 做密碼學身分驗證；細緻的 RBAC 與 ABAC；高權限帳號用多因素；長時 session 持續重新認證；除非預先定義，禁止跨 agent 委派權限；AI 對 AI 互動用雙向認證；AI 產生的憑證短效</td><td>會自動到期的動態存取控制；用行為剖析找出角色指派異常；高風險的認證變更需雙 agent 或人工驗證；偵測角色繼承異常；對升權設時間上限</td><td>追蹤 agent 行為是否與身分一致；監控預期外的角色變更；比對認證嘗試與歷史存取；偵測遞迴或串接的工具執行；隔離產生可疑協定流量的 agent</td></tr>
+<tr><th scope="row">6 多 agent</th><td>所有 agent 間訊息要驗證與加密；agent 信任分數；高風險操作前做共識驗證；以任務分段防止跨 agent 升權；速率與配額；依功能角色限制 agent 之間的溝通並切分拓撲</td><td>即時偵測 rogue 行為；隔離被標記的 agent 及其通訊與記憶；撤銷可疑 agent 的權限；自動停用未授權處理程序；追蹤被封鎖後換身分重新加入的 agent</td><td>監控角色與任務指派的異常變更；記錄 agent 間通訊；偵測信任分數的下滑；追蹤被拒絕後被其他 agent 核准的動作；監控決策一致性</td></tr>
+</tbody></table></div>
+<p>留意文件在 Playbook 3 的一句重要註記：當工具透過 A2A、MCP 這類協定被呼叫時，這些呼叫可能<strong>繞過使用者介面、同意流程與人類監督</strong>，所以更要在這一層強制沙箱與權限隔離。</p>
+
+<h2 id="pb-flow">3.3 遇到某個情況，先翻哪個 Playbook</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="選 Playbook 的決策流程：先判斷主要症狀。目標被改變或行動無法追溯，走 Playbook 1；記憶或知識庫被污染，走 Playbook 2；工具被濫用、程式碼被執行、資源被耗盡或供應鏈被污染，走 Playbook 3；身分被冒用或權限被升級，走 Playbook 4；人類被壓垮或被 agent 誤導，走 Playbook 5；多 agent 之間訊息被污染或出現流氓 agent，走 Playbook 6。最後都要疊加傳統安全措施。">
+flowchart TD
+  S["你觀察到的主要症狀"] --> Q{"屬於哪一類"}
+  Q -->|"目標被改、行動難追溯"| P1["Playbook 1<br>推理被操縱"]
+  Q -->|"記憶或知識被污染"| P2["Playbook 2<br>記憶與知識"]
+  Q -->|"工具濫用、執行程式碼、<br>資源耗盡、供應鏈"| P3["Playbook 3<br>工具與供應鏈"]
+  Q -->|"身分被冒用、權限被升"| P4["Playbook 4<br>身分與權限"]
+  Q -->|"人被壓垮或被誤導"| P5["Playbook 5<br>HITL"]
+  Q -->|"agent 間訊息被污染、<br>出現流氓 agent"| P6["Playbook 6<br>多 agent"]
+  P1 --> B["再疊加傳統安全：<br>軟體安全、LLM 防護、存取控制"]
+  P2 --> B
+  P3 --> B
+  P4 --> B
+  P5 --> B
+  P6 --> B
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q author
+</pre>
+<figcaption><strong>圖 3-1　依症狀選 Playbook。</strong>症狀分類與「Playbook ← 症狀」的串接是<strong>作者整理，非官方</strong>；各 Playbook 涵蓋哪些威脅以表 3-1（官方）為準。同一個事件通常需要疊加多個 Playbook，官方也明說它們刻意重疊。</figcaption>
+</figure>
+
+<h2 id="pb-scenario">3.4 情境範例 A：企業 Copilot 被一封郵件帶偏</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：松野製造的 Copilot</h3>
+<p><span class="tag fiction">虛構</span> 松野製造是虛構的公司。IT 部門導入一個企業 Copilot：它能讀使用者的郵件、檔案與行事曆，查詢內部 CRM，也能代使用者建立行事曆邀請與草擬回信。為了讓使用者「不必重複說明」，Copilot 把偏好與常用資料存進長期記憶。這個架構與文件「Enterprise Co-Pilots」範例威脅模型同型；以下故事為虛構，細節停在概念層級。</p>
+<p class="arch"><strong>架構：</strong>外部郵件（不可信）→ Copilot → { 郵件／檔案／行事曆讀取、CRM 查詢與寫入、行事曆邀請、長期記憶 }。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>有人寄來一封看似普通的信，信中藏著給 Copilot 的指示。使用者請 Copilot「摘要今天的郵件」，Copilot 照指示改去搜尋敏感資料，並把資料夾帶在發出的行事曆邀請裡送到外部信箱；同時，它把一條「之後都這樣做」的偏好寫進長期記憶，往後每次使用都會重演。</li>
+  <li><strong>哪一環出問題：</strong>(a) 外部郵件的內容被當成指令（目標被改，T6）；(b) Copilot 用手上的工具做了被操縱的事（T2）；(c) 污染被寫進記憶而持續（T1）；(d) 操作寫入 CRM 時是以使用者的身分，歸因給使用者（T9）；(e) 沒有記錄就看不出發生過什麼（T8）。</li>
+  <li><strong>對應條目：</strong>T&amp;M 1.1：T6、T2、T1、T9、T8（文件的 Enterprise Co-Pilots 範例就列了這幾項及 T3、T7、T11、T15、T16、T17）。LLM Top 10 2026 的對應是 <a href="../../02-llm-applications/llm-top-10/02-prompt-injection.html#pi-what">LLM01:2026</a>（間接提示詞注入的入口）與 LLM03:2026 Excessive Agency（權限過寬）。</li>
+  <li><strong>該採什麼控制：</strong>
+    <ul>
+      <li>Playbook 3：行事曆邀請這類「會對外送資料」的工具加上收件人允許清單或使用者核准；以最小權限與 JIT 授權限制 Copilot 能做的寫入（<a href="../../primer-security-for-developers.html#p-lp">最小權限</a>）；</li>
+      <li>Playbook 2：寫入長期記憶前驗證並附來源，禁止外部郵件內容直接成為持久偏好；異常的記憶改寫要能回復；</li>
+      <li>Playbook 4：以使用者的最小授權執行，並把「代誰行動」記錄下來，避免寫入 CRM 時混淆代理人（第 1 章）；</li>
+      <li>Playbook 1：記錄 Copilot 的決策與工具呼叫，對「摘要任務卻去搜尋敏感資料」這類偏離做偵測。</li>
+    </ul>
+  </li>
+  <li><strong>學到什麼：</strong>一次事件同時點亮好幾組威脅，不是挑一個 Playbook 就好。最先該補的是<strong>限縮後果</strong>的控制（Playbook 3 的工具與權限）：就算入口被擋不住，資料也送不出去。</li>
+</ol>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>六個 Playbook 各對應一組威脅，每個分成預防、反應、偵測三步；文件寫「五個」但實際有六個。</li>
+  <li>Playbook 刻意重疊：記憶、權限、多 agent 信任各在兩個 Playbook 出現；選 Playbook 看它列了哪些威脅。</li>
+  <li>Playbook 3 特別提醒：經由 MCP、A2A 呼叫的工具可能繞過使用者介面與同意流程。</li>
+  <li>這些 Playbook 只處理 AI 特有風險，傳統安全與 LLM 防護仍須疊加以達縱深防禦。</li>
+  <li>實務上一個事件常需要多個 Playbook；最先補的是限縮後果的控制。</li>
+</ul></div>
+<ul class="checklist">
+  <li>給我一個症狀，我能指出該先翻哪個 Playbook，並說明為什麼還需要疊加其他的。</li>
+  <li>我能說出預防、反應、偵測三步各自的目的。</li>
+  <li>我知道文件在「五個 Playbook」與「六個 Playbook」之間的不一致，並以實際列出的六個為準。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-multi-agent-integration.html">第 4 章　多 Agent 威脅建模與整合收尾</a>：用 MAESTRO 七層把 T1–T17 放到系統架構上，並整理這個主題與其他 OWASP 文件的關係。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>Agentic AI – Threats and Mitigations</em>, Version 1.1, December 2025：<a href="https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/">資源頁</a>；2026-10-26 讀取；CC BY-SA 4.0。引用段落：Mitigation Strategies（Playbooks 1–6）、Example Threat Models（Enterprise Co-Pilots）。</li>
+    <li>OWASP Top 10 for LLM Applications 2026（Version 2026，2026-08-04）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">GitHub 2026/README.md</a>；僅用於情境中的 2026 版編號。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Agentic AI – Threats and Mitigations、Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'atm-ch3', topic: 'agentic-threats-and-mitigations', mode: 'chapter',
+  questions: [
+    { id: 'a3q1', type: 'mc', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-playbooks.html#pb-map'}],
+      stem: '你的團隊發現 agent 的長期知識庫裡出現一批來源不明、會改變決策方向的條目。依表 3-1，最先該翻哪個 Playbook？',
+      options: [
+        { text: 'Playbook 1（推理被操縱）。', why: 'Playbook 1 處理目標被改與可追溯性；此例的根因在儲存的知識被污染，雖然結果是決策被帶偏。' },
+        { text: 'Playbook 5（HITL）。', why: '與人類審查負荷無關。' },
+        { text: 'Playbook 4（身分與權限）。', why: '此例沒有身分被冒用或升權的描述。' },
+        { text: 'Playbook 2（記憶污染與知識損毀）。', correct: true, why: '涵蓋 T1 Memory Poisoning 與 T5；措施含寫入前驗證、附來源、版本控制與回復。' }
+      ],
+      summary: '根因在記憶或知識被污染 → Playbook 2。' },
+    { id: 'a3q2', type: 'match', lo: [3], refs: [{label: '3.2 表 3-2', href: '03-playbooks.html#pb-three'}],
+      stem: '把下列措施配對到 Playbook 的三步中最符合的一步（以記憶 Playbook 2 為例）。',
+      cats: [
+        { id: 'pro', label: 'Step 1　預防' },
+        { id: 'rea', label: 'Step 2　反應' },
+        { id: 'det', label: 'Step 3　偵測' }
+      ],
+      items: [
+        { text: '記憶更新要附來源，跨 session 的變更先經外部驗證才寫入', answer: 'pro', why: '寫入前的把關屬預防。' },
+        { text: '發現記憶異常後，以快照回復到已驗證的狀態', answer: 'rea', why: '發現問題之後的處置屬反應。' },
+        { text: '持續分析記憶存取模式，找出長期的漂移與異常', answer: 'det', why: '持續觀察、找出異常屬偵測。' }
+      ],
+      summary: '預防 = 事前把關；反應 = 事後處置；偵測 = 持續觀察。' },
+    { id: 'a3q3', type: 'mc', lo: [3], refs: [{label: '3.2 協定提醒', href: '03-playbooks.html#pb-three'}],
+      stem: '文件在 Playbook 3 特別提醒，透過 A2A、MCP 呼叫的工具要強制沙箱與權限隔離。最主要的原因是？',
+      options: [
+        { text: '這些協定的工具一定是惡意的。', why: '文件沒有這樣說；重點是呼叫路徑的特性。' },
+        { text: '經由協定呼叫的工具可能繞過使用者介面、同意流程與人類監督。', correct: true, why: '3.2 節引用的原文重點：缺少這些把關，風險就必須由隔離來承擔。' },
+        { text: '這些協定不支援加密。', why: '文件談的不是加密支援，而是呼叫缺少同意與監督。' },
+        { text: '因為沙箱會讓工具跑得比較快。', why: '沙箱的目的是隔離與限縮後果，與效能無關。' }
+      ],
+      summary: '協定呼叫可能繞過 UI 與同意流程，因此要靠隔離限縮後果。' },
+    { id: 'a3q4', type: 'scn', lo: [3], refs: [{label: '3.4 情境範例 A', href: '03-playbooks.html#pb-scenario'}, {label: '3.3 圖 3-1', href: '03-playbooks.html#pb-flow'}],
+      stem: '依本章，團隊預算只能先做一件事，最該先補什麼？理由是什麼？',
+      scenario: '海灣物流（虛構）的企業 Copilot 能讀郵件、查客戶資料，也能發出行事曆邀請。資安團隊盤點後發現三個缺口：(1) 沒有任何記憶寫入驗證；(2) 行事曆邀請可寄給任何外部地址，且不需使用者確認；(3) 工具呼叫沒有日誌。預算只夠先補一項。同事說：「先補日誌吧，至少出事能查。」',
+      options: [
+        { text: '先補日誌，因為能追查就能解決問題。', why: '日誌屬偵測，重要，但不能阻止資料送出；這個缺口排在後果限縮之後。' },
+        { text: '先補記憶寫入驗證，因為記憶污染最嚴重。', why: '文件並未給嚴重度排序；而且沒有送出管道時，記憶污染的後果有限。' },
+        { text: '先限制行事曆邀請的對外送出（允許清單或使用者核准），因為這最直接限縮「被騙之後能造成的後果」。', correct: true, why: '符合 3.4 節結論：最先補的是限縮後果的控制（Playbook 3 的工具與權限）；入口擋不住時，資料也送不出去。' },
+        { text: '三項同時做，不分先後。', why: '預算只夠做一項，需要排序；這個情境要練的就是排序。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 三個缺口分別屬預防（記憶驗證）、後果限縮（對外送出）、偵測（日誌）。(2) 攻擊者的目標是把資料送出去；只要對外送出被限制，即使 Copilot 被誘導，也拿不走資料。(3) 日誌與記憶驗證仍然重要，但屬於下一批；文件也強調 Playbook 刻意重疊，要逐步疊加。</p><p><strong>結論：</strong>先補工具對外送出的限制。這個排序是依「最先限縮後果」的作者判斷，不是官方優先順序。對應教材：<a href="03-playbooks.html#pb-scenario">3.4 節</a>、<a href="03-playbooks.html#pb-flow">3.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

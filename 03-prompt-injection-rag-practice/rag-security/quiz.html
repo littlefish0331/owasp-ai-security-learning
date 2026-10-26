@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜RAG 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="RAG 安全主題總測驗：14 題，涵蓋四個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="rag-security" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：RAG 安全</h1>
+<ul class="meta-row">
+  <li>14 題（選擇題 5、情境判斷題 5、配對題 4）</li>
+  <li>預估時間：約 20 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO4</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–4 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>管線與地圖：</strong>說明 RAG 管線各階段的信任邊界，用 Cheat Sheet 的 14 個 Section 與實作優先序決定先做什麼，並區分 LLM09:2026 與相鄰條目的邊界。</li>
+  <li><strong>寫入端：</strong>辨認文件投毒、嵌入操弄與攝入供應鏈威脅，選擇完整性、來源與隔離控制，並說明為何雜湊相符不等於內容安全。</li>
+  <li><strong>讀取端：</strong>解釋存取控制繼承、檢索前與檢索後過濾、租戶隔離、快取與刪除連鎖，並說明為什麼只有嵌入外洩也不是安全豁免。</li>
+  <li><strong>生成端與整合：</strong>套用輸出驗證、工具呼叫授權、失效即拒絕、可觀測性與 CI 測試，並把 Cheat Sheet 對應到 LLM09:2026、AISVS 與 AI Exchange。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：OWASP Cheat Sheet Series 與 OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-pipeline-and-map.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-write-side.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-read-side.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-generate-and-integrate.html', a, '第 4 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 管線與地圖 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('map-concept', '1.1')],
+    stem: 'LLM09:2026 用一句話歸納向量與嵌入層的失敗方式：「投毒讓系統答錯、反推讓它洩漏、干擾讓它沉默、存取控制失效讓它不分對象」。下列哪個事件屬於「讓它沉默」？',
+    options: [
+      { text: '攻擊者放入一份幾乎沒有惡意指令的文件，使助理對特定問題一律回答「查無資料」或拒絕作答。', correct: true, why: '這是檢索干擾 (retrieval jamming)：放入被設計成會被取回、並讓模型拒答的內容，是對檢索層的可用性攻擊。' },
+      { text: '助理引用了員工無權閱讀的人事文件。', why: '這是存取控制失效 —「讓它不分對象」。' },
+      { text: '攻擊者從外洩的向量庫備份還原出原文。', why: '這是嵌入反推 —「讓它洩漏」。' },
+      { text: '一份被刻意改寫的政策文件使助理給出錯誤條款。', why: '這是投毒 —「讓系統答錯」。' }
+    ],
+    summary: '四句框架：答錯（投毒）、洩漏（反推）、沉默（干擾）、不分對象（存取控制失效）。' },
+
+  { id: 'q02', type: 'match', lo: [1], refs: [C1('map-llm09', '1.3 表 1-2')],
+    stem: '依表 1-2，把下列事件配對到最該優先查閱的條目。',
+    cats: [
+      { id: 'llm01', label: 'LLM01:2026 Prompt Injection' },
+      { id: 'llm04', label: 'LLM04:2026 Supply Chain' },
+      { id: 'llm05', label: 'LLM05:2026 Data and Model Poisoning' },
+      { id: 'llm09', label: 'LLM09:2026 Vector and Embedding Weaknesses' },
+      { id: 'asi06', label: 'ASI06:2026 Memory and Context Poisoning' }
+    ],
+    items: [
+      { text: '被取回的文件中夾帶給模型的指令，使助理改變行為', answer: 'llm01', why: '經由檢索內容的間接提示詞注入，官方劃給 LLM01:2026。' },
+      { text: '向量庫使用的某個函式庫在處理序列化資料時存在缺陷', answer: 'llm04', why: '向量庫函式庫的序列化缺陷，官方劃給 LLM04:2026。' },
+      { text: '嵌入模型本身在訓練階段被植入後門', answer: 'llm05', why: '嵌入模型的訓練期投毒，官方劃給 LLM05:2026。' },
+      { text: '多租戶共用索引，租戶可從結果差異推測其他租戶的資料存在', answer: 'llm09', why: '依賴相似度搜尋與嵌入空間，屬 LLM09:2026 的跨租戶洩漏。' },
+      { text: 'agent 的長期記憶被寫入惡意內容，取回機制並不依賴嵌入相似度', answer: 'asi06', why: '不依賴嵌入幾何的 agent 記憶攻擊，官方劃給 ASI06:2026。' }
+    ],
+    summary: '先問：弱點在文字裡的指令、套件、模型訓練、嵌入空間，還是 agent 記憶？' },
+
+  { id: 'q03', type: 'scn', lo: [1], refs: [C1('map-table', '1.2 表 1-1')],
+    stem: '依教材，這個團隊在第一個衝刺（sprint）最合理的選擇是哪一個？',
+    scenario: '岳松科技（虛構）的 RAG 助理三週後上線，團隊只有兩人。他們在待辦清單上有：(a) 嵌入分布監控與跨模型驗證、(b) 來源允許清單與簽章過的完整性基準、(c) 檢索時依提問者權限過濾、(d) 全管線記錄與失效即拒絕、(e) 差分隱私式的噪聲、(f) 快取隔離與來源歸屬簽章。團隊想知道上線前至少要完成哪些。',
+    options: [
+      { text: '全部都做，否則不能上線。', why: 'Cheat Sheet 明說不需要一次全部實作，並提供優先序來聚焦最高影響的控制。' },
+      { text: '先做 (b)(c)(d)；(f) 排進第二階段；(a)(e) 保留給高安全或受管制環境。', correct: true, why: '(b)(c)(d) 是 Cheat Sheet 列為「立即」的基礎控制；(f) 屬「接著」；(a)(e) 屬「進階」。' },
+      { text: '先做 (a)(e)，因為這兩項最能偵測進階攻擊。', why: '它們是「進階」層級；邊界類基礎控制還沒做就先做進階，順序顛倒。' },
+      { text: '只做 (f)，因為快取是最常出事的地方。', why: '沒有依據；「立即」層級的控制涵蓋來源、權限、記錄與失效預設，缺了這些，快取隔離也無從依靠。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) Cheat Sheet 把控制分成立即（基礎）、接著（合規與稽核）、進階三層。(2) 來源與完整性基準、逐區塊存取控制、全管線可觀測性與失效即拒絕都在「立即」。(3) 快取隔離與來源歸屬簽章在「接著」；嵌入分布監控、跨模型驗證與嵌入隱私控制在「進階」。(4) 兩人團隊的資源有限，先補邊界。</p><p><strong>結論：</strong>先完成 (b)(c)(d)，再依時程補 (f)，(a)(e) 視風險再補。對應教材：<a href="01-pipeline-and-map.html#map-table">1.2 節</a>。</p>' },
+
+  /* ================= LO2 寫入端 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C2('ws-hash', '2.2 表 2-2')],
+    stem: '某團隊對每份核准文件計算 SHA-256，檢索前比對，相符才使用。依 Cheat Sheet，這個機制能證明下列哪一件事？',
+    options: [
+      { text: '文件的內容不含提示詞注入。', why: '官方明說摘要相符不證明內容安全或沒有提示詞注入。' },
+      { text: '攝入的文件來源可信。', why: '來源是否可信要靠來源允許清單與核准流程，摘要檢查與此無關。' },
+      { text: '文件與核准當時的基準一致（前提是基準本身可信、與文件庫分開保管並簽章）。', correct: true, why: '摘要相符只建立與核准基準的一致性；基準的可信度要靠簽章與分開保管。' },
+      { text: '向量庫中的嵌入沒有被操弄。', why: '嵌入是否被操弄要靠分布監控、漂移偵測與跨模型比對，與文件摘要無關。' }
+    ],
+    summary: '雜湊相符 = 與核准基準一致；內容安全與來源可信要靠別的控制。' },
+
+  { id: 'q05', type: 'scn', lo: [2], refs: [C2('ws-supply', '2.4'), C2('ws-scenario', '2.5 情境 C')],
+    stem: '依教材，這個團隊最需要先修正的設計是？',
+    scenario: '瀚宇通運（虛構）的 RAG 助理由一個第三方連接器，每天從一個外包商共用的雲端硬碟自動同步文件，連接器使用整個雲端硬碟的管理員憑證，同步完直接嵌入並可被檢索。某天有人發現一份作業流程文件被外包帳號編輯過，助理已引用了新內容多日。',
+    options: [
+      { text: '在每次回答前，用輸出過濾器掃描關鍵字。', why: '輸出過濾是額外一層，不能取代寫入端的缺口；被改動的內容不一定含固定關鍵字。' },
+      { text: '調高相似度門檻，讓被改動的文件較難被取回。', why: '門檻是相關性調整，與來源是否可信無關。' },
+      { text: '連接器改為只讀特定資料夾；同步後先進暫存區，掃描並審核後才可檢索；對核准文件建立簽章過的基準；建立來源允許清單。', correct: true, why: '根因是連接器權限過大、自動同步無審核、沒有基準可偵測改動（Section 1、13）。' },
+      { text: '換成更大的語言模型，期待它辨識哪份文件是假的。', why: '模型不是來源驗證機制；被取回的內容對模型來說就是可用的資料。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 錯誤內容從來源進入語料，屬寫入端問題。(2) 連接器使用管理員權限、自動同步、沒有暫存審核，是 Cheat Sheet Section 13 明列的「不要做」。(3) 沒有簽章基準，無法偵測文件何時被改。(4) 輸出端的措施只能補強，不能取代。</p><p><strong>結論：</strong>修寫入端：最小權限連接器、暫存審核、簽章基準、來源允許清單。對應教材：<a href="02-write-side.html#ws-supply">2.4 節</a>。</p>' },
+
+  { id: 'q06', type: 'match', lo: [2], refs: [C2('ws-doc', '2.1 表 2-1'), C2('ws-embed', '2.3')],
+    stem: '把下列控制配對到它主要防的威脅。',
+    cats: [
+      { id: 'tamper', label: '核准後文件被替換或修改' },
+      { id: 'hidden', label: '不可見字元與已知隱藏指示' },
+      { id: 'embed', label: '嵌入被刻意擺到目標查詢附近' },
+      { id: 'conn', label: '被入侵的連接器或自動同步' }
+    ],
+    items: [
+      { text: '簽章保護的完整性清單，檢索前先驗證清單再驗證文件', answer: 'tamper', why: '清單與簽章用來偵測核准之後的改動。' },
+      { text: '攝入時掃描零寬空格等不可見字元', answer: 'hidden', why: '內容掃描針對人眼看不到、模型卻會處理的內容。' },
+      { text: '監控嵌入分布，並用多個嵌入模型交叉比對', answer: 'embed', why: '嵌入分布異常與跨模型差異是嵌入操弄的徵兆（官方列為進階）。' },
+      { text: '連接器只給必要資料夾的讀取權限，並固定攝入函式庫與嵌入模型的版本', answer: 'conn', why: '把連接器當供應鏈：最小權限與固定版本。' }
+    ],
+    summary: '一種控制防一種入口，不要把所有威脅混成一件。' },
+
+  /* ================= LO3 讀取端 ================= */
+  { id: 'q07', type: 'mc', lo: [3], refs: [C3('rs-pre-post', '3.2 表 3-1')],
+    stem: '為什麼 Cheat Sheet 與 LLM09:2026 都建議在索引查詢內做範圍限制（檢索前過濾），而不是只在取回後過濾？',
+    options: [
+      { text: '因為檢索後過濾會讓向量資料庫更慢。', why: '兩份文件的理由是資訊洩漏，不是效能。' },
+      { text: '因為搜尋已經在受限內容上運行，其相似度分數、結果數量與耗時的差異可能被觀察到。', correct: true, why: '這是兩份文件對檢索後過濾的共同警告。' },
+      { text: '因為檢索前過濾可以完全取代存取控制中繼資料。', why: '中繼資料仍然需要，兩者互補。' },
+      { text: '因為檢索後過濾在法律上不被允許。', why: '沒有這樣的官方說法；問題是安全性，不是合法性。' }
+    ],
+    summary: '受限內容不要進入搜尋範圍，否則旁路資訊仍會洩漏。' },
+
+  { id: 'q08', type: 'scn', lo: [3], refs: [C3('rs-official-scn', '3.4'), C3('rs-leaks', '3.3 表 3-2')],
+    stem: '依教材，這份事件報告的結論哪裡有問題？',
+    scenario: '青禾醫療（虛構）發現一份 RAG 向量資料庫的備份因儲存設定錯誤被外部讀取。原始病歷文件另外加密、沒有外洩。事件單上寫：「只有嵌入外洩、不含原文，嚴重度低，不需評估通報。」',
+    options: [
+      { text: '沒有問題，嵌入只是數字，無法還原。', why: '官方指出嵌入可被反推重建原文，所以這個分類不成立。' },
+      { text: '問題只在備份沒有壓縮。', why: '壓縮與機密性無關。' },
+      { text: '備份應與來源同敏感等級；嵌入可被反推，事件應視同來源資料外洩，並重新評估通報義務。', correct: true, why: 'LLM09:2026 的官方情境 #3：「只有嵌入」不是安全豁免。' },
+      { text: '問題是應該把嵌入維度縮小，讓它無法被還原。', why: '維度與事件的分級無關；官方做法是把備份當作與來源同敏感等級。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 外洩的是向量資料庫備份，內含嵌入。(2) LLM09:2026 指出嵌入可被反推重建原文，因此備份要與來源同一敏感等級。(3) 官方情境 #3 說明「只有嵌入」的低嚴重度分類被推翻。</p><p><strong>結論：</strong>把事件視為病歷資料外洩評估，並重新判定通報義務。對應教材：<a href="03-read-side.html#rs-official-scn">3.4 節</a>。</p>' },
+
+  { id: 'q09', type: 'match', lo: [3], refs: [C3('rs-leaks', '3.3 表 3-2')],
+    stem: '把下列讀取端的問題配對到最直接的控制。',
+    cats: [
+      { id: 'ns', label: '獨立命名空間或索引，並在索引查詢內強制範圍' },
+      { id: 'noscore', label: '不回傳相似度分數，並限制查詢頻率' },
+      { id: 'cache', label: '快取依使用者與權限分範圍，來源改動時使其失效' },
+      { id: 'cascade', label: '連鎖刪除與孤兒區塊稽核' }
+    ],
+    items: [
+      { text: '租戶 A 的探測查詢，能從結果差異推測租戶 B 的資料存在', answer: 'ns', why: '跨租戶推論要用獨立命名空間與索引內的範圍強制。' },
+      { text: '有人系統性地變換查詢字詞，描繪語料的內容分布', answer: 'noscore', why: '查詢枚舉與相似度分數的旁路：不回傳分數並限制頻率。' },
+      { text: '使用者 A 收到本來為使用者 B 的範圍產生的快取答案', answer: 'cache', why: '快取沒有依使用者與權限分範圍。' },
+      { text: '來源文件已刪除，助理仍能回答其內容', answer: 'cascade', why: '刪除沒有連鎖到區塊、嵌入與快取回應。' }
+    ],
+    summary: '一種洩漏路徑對應一種控制。' },
+
+  /* ================= LO4 生成端與整合 ================= */
+  { id: 'q10', type: 'mc', lo: [4], refs: [C4('gi-tools-fail', '4.2')],
+    stem: '依 Cheat Sheet 的失效即拒絕原則，存取控制檢查本身發生錯誤時，系統應該怎麼做？',
+    options: [
+      { text: '回傳過濾後的子集，並盡量少回傳。', why: '官方說：什麼都不要回傳，因為失敗可能是系統錯誤，不是乾淨的結果。' },
+      { text: '退回使用快取的上一次結果。', why: '快取不是失敗時的後備；可能是過期或已受污染的內容。' },
+      { text: '改由模型自行判斷使用者是否有權限。', why: '官方明列不要依賴語言模型執行存取控制。' },
+      { text: '什麼都不回傳，並記為資安事件、對重複失敗警示。', correct: true, why: '失效即拒絕：失敗本身是資安事件，不是效能問題。' }
+    ],
+    summary: '權限檢查失敗，結果就是「無」，不是「少一點」。' },
+
+  { id: 'q11', type: 'scn', lo: [4], refs: [C4('gi-tools-fail', '4.2'), C4('gi-scenario', '4.4 情境 D')],
+    stem: '依教材，這個設計哪裡出了問題，最該先補上什麼？',
+    scenario: '東瀚旅行社（虛構）的 RAG 客服助理能查行程規定，也能呼叫「改期並退費」工具。工具實作為：模型送來合法格式的參數就執行，團隊認為「檢索已經確認過這位使用者有權限」。後來有一則取回的內容，使模型替沒有資格的客戶辦理了退費。',
+    options: [
+      { text: '在 system prompt 加強「僅對有資格者退費」。', why: '仍是把授權交給模型的指令；模型產生文字，不執行政策。' },
+      { text: '工具層獨立檢查呼叫者的權限與參數，不依賴模型的決定；高風險動作要確認，並加上工具允許清單與熔斷器。', correct: true, why: '官方：「檢索被授權」不等於「後續的工具呼叫也被授權」。' },
+      { text: '縮短取回區塊的字數，避免內容太長。', why: '區塊大小是上下文視窗的控制，不是工具授權。' },
+      { text: '讓模型把同一個工具呼叫送出兩次，若結果一致才執行。', why: '兩次都來自同一個不可信的判斷來源。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 錯誤發生在工具層把模型的決定視為授權。(2) Cheat Sheet Section 10：工具層授權檢查獨立於模型的決定；不要假設檢索被授權就代表工具呼叫被授權。(3) 高風險動作（退費）需要使用者確認，允許清單與熔斷器限縮後果。</p><p><strong>結論：</strong>在執行層補獨立授權、確認、允許清單與熔斷器。對應教材：<a href="04-generate-and-integrate.html#gi-tools-fail">4.2 節</a>。</p>' },
+
+  { id: 'q12', type: 'scn', lo: [4], refs: [C4('gi-context', '4.1'), C4('gi-integrate', '4.5')],
+    stem: '依本教材，對這位同事的說法最準確的回應是？',
+    scenario: '同事在設計文件寫道：「我們在提示詞中用分隔符號標出檢索內容並告訴模型『只當資料』，另外掃描區塊中的指令樣式，所以提示詞注入的風險已經解決，不需要在工具層與輸出端另做控制。」',
+    options: [
+      { text: '同意，Cheat Sheet Section 3 就是這樣建議的。', why: 'Section 3 的是降低機率的措施；它不是授權邊界，且 Section 9、10 另外要求輸出驗證與工具授權。' },
+      { text: '不同意，因為分隔符號完全沒有用。', why: '分隔符號有降低機率的價值，只是不能單獨依賴。' },
+      { text: '部分同意：分隔符號與掃描能降低機率，但真正的邊界在存取控制、輸出驗證與工具授權這類模型之外的執行層控制（作者整理的讀法）。', correct: true, why: '兩份 Cheat Sheet 並不衝突：Section 3 降低機率，Section 4/9/10 提供邊界。' },
+      { text: '部分同意，但應再補一個更長的系統提示，要求模型絕不照做指令。', why: '更長的提示仍屬提示措辭，不是強制邊界。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) RAG Cheat Sheet Section 3 建議分隔符號、掃描與區塊上限。(2) 同系列的 Prompt Injection Cheat Sheet（2026-10 修訂）指出文字標籤與篩選不是強制邊界。(3) 兩者可以並存的讀法：Section 3 降低機率，真正的邊界在 Section 4（存取控制）、9（輸出驗證）、10（工具授權）。這個讀法是作者整理，不是官方明文。</p><p><strong>結論：</strong>保留分隔符號與掃描，但不能單獨依賴。對應教材：<a href="04-generate-and-integrate.html#gi-context">4.1 節</a>。</p>' },
+
+  { id: 'q13', type: 'mc', lo: [4], refs: [C4('gi-integrate', '4.5')],
+    stem: '關於本主題的文件與 AISVS、AI Exchange 的關係，下列哪個說法有官方依據？',
+    options: [
+      { text: 'LLM Top 10 2026 的附錄把 LLM09:2026 對應到 AISVS 的 C5 與 C8 為主要防線，並聲明這是方向性指引。', correct: true, why: '附錄明載；它同時聲明對應是章節粒度的指引，不是合規對照。' },
+      { text: 'AI Exchange 的 RAG 章節明確列出與 LLM09:2026 的逐條對照。', why: '教材記錄這一點未能確認，不宣稱有或沒有。' },
+      { text: 'AISVS 規定每個 RAG 系統都必須通過八項 CI 測試。', why: '八項最低 CI 測試來自 RAG Cheat Sheet，不是 AISVS 的規定。' },
+      { text: 'RAG Cheat Sheet 取代了 AISVS C8。', why: 'Cheat Sheet 說明 AISVS C8 在驗證標準層級處理 RAG，Cheat Sheet 提供實作做法，兩者互補。' }
+    ],
+    summary: '附錄的對應是方向性指引；AI Exchange 是否對照到 LLM09:2026 未能確認。' },
+
+  { id: 'q14', type: 'match', lo: [4], refs: [C4('gi-observe', '4.3 表 4-2')],
+    stem: '依表 4-2，把下列 CI 測試問題配對到它檢查的管線區段。',
+    cats: [
+      { id: 'write', label: '寫入端／檢索' },
+      { id: 'read', label: '讀取端' },
+      { id: 'gen', label: '生成端／下游' }
+    ],
+    items: [
+      { text: '已知被投毒的文件會不會被取回？', answer: 'write', why: '檢查來源與完整性控制是否擋得住投毒文件。' },
+      { text: '租戶 A 的查詢是否取回了租戶 B 的區塊？', answer: 'read', why: '檢查租戶隔離與範圍強制。' },
+      { text: '使用者 A 是否收到屬於使用者 B 範圍的快取回應？', answer: 'read', why: '檢查快取的範圍隔離。' },
+      { text: 'RAG 的輸出是否觸發了使用者無權使用的工具？', answer: 'gen', why: '檢查工具層授權。' }
+    ],
+    summary: '八項測試涵蓋前三章的主要邊界，可當驗收清單（作者整理）。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'rag-security', mode: 'final',
+    los: [
+      { n: 1, text: '管線與地圖：說明 RAG 管線各階段的信任邊界，用 14 個 Section 與優先序決定先做什麼，並區分 LLM09:2026 與相鄰條目。' },
+      { n: 2, text: '寫入端：辨認文件投毒、嵌入操弄與攝入供應鏈威脅，選擇控制，並說明雜湊相符不等於內容安全。' },
+      { n: 3, text: '讀取端：解釋存取控制繼承、檢索前後過濾、租戶隔離、快取與刪除連鎖，以及為何只有嵌入外洩不是安全豁免。' },
+      { n: 4, text: '生成端與整合：套用輸出驗證、工具授權、失效即拒絕與 CI 測試，並對應到 LLM09:2026、AISVS 與 AI Exchange。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

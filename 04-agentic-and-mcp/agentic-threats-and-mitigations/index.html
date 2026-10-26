@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentic 威脅與緩解｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Agentic AI – Threats and Mitigations 與 Multi-Agentic System Threat Modeling Guide 主題首頁：學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="agentic-threats-and-mitigations" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>Agentic 威脅與緩解</h1>
+<ul class="meta-row">
+  <li>04 Agentic 與 MCP｜主題 1</li>
+  <li>預估學習時間：約 60–70 分鐘（4 章閱讀約 34 分鐘；章末檢核與總測驗約 25–30 分鐘）</li>
+  <li>採用來源：Agentic AI – Threats and Mitigations Version 1.1（December 2025）、Multi-Agentic system Threat Modeling Guide Version 1.0（April 2025）；2026-10-26 讀取</li>
+</ul>
+<p class="lead">Agent 與一般 LLM 應用的差別，在於它會記住事情、會用工具、會自己決定下一步，還可能跟別的 agent 合作。這個主題讀的是 OWASP 給這一整類風險的「地基」：一份 17 項的威脅分類、六個對應的緩解 Playbook，以及一份教你用 MAESTRO 七層對多 agent 系統做威脅建模的指南。後面三個主題都會回頭引用它。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>定位：</strong>說明 Agentic AI – Threats and Mitigations 的採用版本、範圍，以及 agent 比一般 LLM 應用多出的風險來源。<br><small>對應：<a href="01-position.html">第 1 章</a></small></li>
+  <li id="lo2"><strong>威脅分類：</strong>用 Navigator 的六個問題，為一個 agent 系統找出該優先檢視的威脅群，並說明它們如何延伸 LLM Top 10 的風險。<br><small>對應：<a href="02-threat-taxonomy.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>緩解策略：</strong>依症狀選出 Playbook，區分預防、反應、偵測三類措施，並在預算有限時排出先後。<br><small>對應：<a href="03-playbooks.html">第 3 章</a></small></li>
+  <li id="lo4"><strong>多 Agent 威脅建模：</strong>用 MAESTRO 七層把威脅放到架構上，並知道分層與攻擊種類的差別。<br><small>對應：<a href="04-multi-agent-integration.html">第 4 章</a></small></li>
+  <li id="lo5"><strong>整合：</strong>正確處理 T 編號與 LLM Top 10 編號的年份、版本與出處，並說出這個主題與其他 OWASP 文件的關係。<br><small>對應：<a href="02-threat-taxonomy.html">第 2 章</a>、<a href="04-multi-agent-integration.html">第 4 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>建議先讀 <a href="../../01-overview/ai-exchange/05-agentic-genai.html">AI Exchange 第 5 章（GenAI 與 Agentic AI）</a>，了解 agent 為何把風險從「錯誤的答案」變成「錯誤的行動」；以及 <a href="../../01-overview/genai-security-project/03-initiatives.html">GenAI Security Project 第 3 章</a>，知道這些文件是哪個 Initiative 的產出。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>（約 10 分鐘）。本主題用到攻擊面、信任邊界、最小權限、威脅建模與預防／偵測／回應。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="01-position.html">第 1 章　定位與參考架構</a></span><span class="p-state" data-file="01-position.html"></span><span class="p-desc">版本與範圍、agent 多出的風險來源、參考架構、混淆代理人與非人類身分。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="02-threat-taxonomy.html">第 2 章　威脅分類與 Navigator</a></span><span class="p-state" data-file="02-threat-taxonomy.html"></span><span class="p-desc">T1–T17 依六個問題分組、與 LLM Top 10 的關係、2025／2026 編號陷阱。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-playbooks.html">第 3 章　緩解策略：六個 Playbooks</a></span><span class="p-state" data-file="03-playbooks.html"></span><span class="p-desc">每個 Playbook 涵蓋的威脅與預防／反應／偵測三步；情境 A 企業 Copilot。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="04-multi-agent-integration.html">第 4 章　多 Agent 威脅建模與整合收尾</a></span><span class="p-state" data-file="04-multi-agent-integration.html"></span><span class="p-desc">MAESTRO 七層、指南新增威脅與編號衝突、跨文件整合。表 3 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（14 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO5，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">版本與日期對照、與調查筆記的差異、文件內部不一致、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>採用的是 <strong>Version 1.1（December 2025）</strong>，不是調查筆記寫的 v1.0；它引用的 LLM Top 10 編號是 <strong>2025 版</strong>。</li>
+  <li><strong>T1–T17 是識別碼，不是優先順序。</strong>用 Navigator 的六個問題反查，再用六個 Playbook 對策；一個事件常需疊加多個 Playbook。</li>
+  <li><strong>編號會撞號：</strong>多 Agent 威脅建模指南的 T16 以上編號與 T&amp;M 1.1 不同，引用時要寫名稱與出處。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的類比、歸類或流程。</li>
+  <li>情境 A 是 <span class="tag fiction">虛構</span> 的公司與系統，不含可直接使用的攻擊手法。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；無法使用時，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>圖表以本地 Mermaid 繪製；若圖沒有顯示，每張圖下方都有文字說明。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：Agentic AI – Threats and Mitigations、Multi-Agentic system Threat Modeling Guide、Agentic Threats Navigator、Top 10 for Agentic Applications 2026 — CC BY-SA 4.0。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　21 個資料風險地圖｜資料安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="DSGAI01–DSGAI21 依官方的六個群組整理：直接暴露、管線完整性、治理基礎、GenAI 獨有攻擊面、營運基礎設施、模型作為資料產物；並辨析容易混淆的條目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="data-security" data-page="03-dsgai-map.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　21 個資料風險地圖</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-data-surfaces.html">第 2 章</a></li>
+</ul>
+<p class="lead">21 個條目一口氣讀完很難記，但官方在 GenAI Data Risks 一節已經替你分好組：它說這些條目「<strong>依資料在 GenAI 系統中流動的順序</strong>」排列。這一章照官方的六個群組走一遍，每組挑出代表條目，最後處理最容易混淆的幾組。</p>
+
+<h2 id="map-groups">3.1 官方的六個群組</h2>
+<div class="table-wrap"><table>
+<caption>表 3-1　DSGAI01–DSGAI21 與官方群組（群組與順序依官方 GenAI Data Risks 一節；「一句話」欄為作者依各條目的 How the attack unfolds 改寫）</caption>
+<thead><tr><th scope="col">官方群組</th><th scope="col">條目</th><th scope="col">一句話（作者改寫）</th></tr></thead>
+<tbody>
+<tr><th scope="row" rowspan="3">① 直接暴露</th><td>DSGAI01 Sensitive Data Leakage <br>(敏感資料外洩)</td><td>模型或 RAG 回傳逐字或近似逐字的敏感內容；衍生物在來源刪除後仍可被取出</td></tr>
+<tr><td>DSGAI02 Agent Identity &amp; Credential Exposure <br>(Agent 身分與憑證暴露)</td><td>非人類身分 (NHI) 氾濫；Agent 繼承操作者的完整 OAuth token 並往下傳</td></tr>
+<tr><td>DSGAI03 Shadow AI &amp; Unsanctioned Data Flows <br>(影子 AI 與未核准的資料流)</td><td>員工把資料貼進未經審查的 AI 工具或外掛；廠商可能留存或用來訓練</td></tr>
+<tr><th scope="row" rowspan="3">② 管線完整性</th><td>DSGAI04 Data, Model &amp; Artifact Poisoning <br>(資料、模型與產物投毒)</td><td>訓練語料、模型產物與管線被竄改；載入時就執行的模型產物</td></tr>
+<tr><td>DSGAI05 Data Integrity &amp; Validation Failures <br>(資料完整性與驗證失敗)</td><td>匯入邊界的驗證不足：結構合法但語意惡意，或利用匯入機制本身</td></tr>
+<tr><td>DSGAI06 Tool, Plugin &amp; Agent Data Exchange Risks <br>(工具、外掛與 Agent 的資料交換風險)</td><td>每次工具呼叫或 Agent 交接都是外洩邊界，常把整段上下文一併送出</td></tr>
+<tr><th scope="row" rowspan="2">③ 治理基礎</th><td>DSGAI07 Data Governance, Lifecycle &amp; Classification <br>(資料治理、生命週期與分類)</td><td>治理失誤會向前傳播，嵌入到比來源更長壽的衍生物裡</td></tr>
+<tr><td>DSGAI08 Non-Compliance &amp; Regulatory Violations <br>(不合規與違反法規)</td><td>刪除請求只刪了原始資料；嵌入、備份、微調模型仍在</td></tr>
+<tr><th scope="row" rowspan="5">④ GenAI 獨有攻擊面</th><td>DSGAI09 Multimodal Capture &amp; Cross-Channel Leakage <br>(多模態擷取與跨通道外洩)</td><td>截圖、掃描、語音等經 OCR 或轉錄後，文字與影像一樣敏感，卻常漏掉</td></tr>
+<tr><td>DSGAI10 Synthetic Data, Anonymization &amp; Transformation Pitfalls <br>(合成資料、匿名化與轉換的陷阱)</td><td>以為去識別化或合成資料就有隱私保證；準識別欄位仍可重識別</td></tr>
+<tr><td>DSGAI11 Cross-Context &amp; Multi-User Conversation Bleed <br>(跨上下文與多使用者對話滲漏)</td><td>共用的記憶、快取或索引讓一位使用者的內容出現在另一位的上下文</td></tr>
+<tr><td>DSGAI12 Unsafe Natural-Language Data Gateways <br>(不安全的自然語言資料閘道，LLM 到 SQL／Graph)</td><td>讓 LLM 對寬 schema 直接產生並執行查詢；閘道實際上是強大的服務帳號</td></tr>
+<tr><td>DSGAI13 Vector Store Platform Data Security <br>(向量庫平台資料安全)</td><td>未加密的嵌入與寬鬆的向量 API；快照匯入等平台缺陷可升級為資料竊取</td></tr>
+<tr><th scope="row" rowspan="4">⑤ 營運基礎設施</th><td>DSGAI14 Excessive Telemetry &amp; Monitoring Leakage <br>(過度遙測與監控外洩)</td><td>除錯日誌把完整 prompt、工具輸出與憑證集中存放</td></tr>
+<tr><td>DSGAI15 Over-Broad Context Windows &amp; Prompt Over-Sharing <br>(過寬的上下文與提示詞過度分享)</td><td>為了「改善答案」把整份用戶檔案塞進每次請求</td></tr>
+<tr><td>DSGAI16 Endpoint &amp; Browser Assistant Overreach <br>(端點與瀏覽器助理越權)</td><td>權限過大的瀏覽器擴充或 IDE 助理，被誘騙把本機資料送出</td></tr>
+<tr><td>DSGAI17 Data Availability &amp; Resilience Failures <br>(資料可用性與韌性失敗)</td><td>RAG 的失效模式不是 503，而是安靜的錯誤資訊與復活已刪除的資料</td></tr>
+<tr><th scope="row" rowspan="4">⑥ 模型作為資料產物</th><td>DSGAI18 Inference &amp; Data Reconstruction <br>(推論與資料重建)</td><td>成員推論、模型反推、嵌入反推</td></tr>
+<tr><td>DSGAI19 Human-in-the-Loop &amp; Labeler Overexposure <br>(人在迴路與標註者過度暴露)</td><td>標註者拿到原始 prompt、完成內容與內部文件</td></tr>
+<tr><td>DSGAI20 Model Exfiltration &amp; IP Replication <br>(模型外洩與智財複製)</td><td>用合法 API 大量探測，蒸餾出替身模型</td></tr>
+<tr><td>DSGAI21 Disinformation &amp; Integrity Attacks via Data Poisoning <br>(經資料投毒的假資訊與完整性攻擊)</td><td>把假資訊餵進 AI 信任的來源（語料、向量庫、工具輸出、即時資料）</td></tr>
+</tbody></table></div>
+<p>官方對群組③的說法值得單獨強調：DSGAI07 與 DSGAI08 被視為<strong>「所有其他控制的前提條件」，而不是獨立的風險</strong>。換句話說，沒有分類、保留與血緣，其他控制（例如刪除、舉證、投毒溯源）都做不起來。</p>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="官方六個群組沿資料流動排列：直接暴露（DSGAI01–03）、管線完整性（04–06）、治理基礎（07–08，是其他控制的前提）、GenAI 獨有攻擊面（09–13）、營運基礎設施（14–17）、模型作為資料產物（18–21）。">
+flowchart LR
+  G1["① 直接暴露<br>DSGAI01–03"] --> G2["② 管線完整性<br>DSGAI04–06"] --> G3["③ 治理基礎<br>DSGAI07–08<br>其他控制的前提"] --> G4["④ GenAI 獨有攻擊面<br>DSGAI09–13"] --> G5["⑤ 營運基礎設施<br>DSGAI14–17"] --> G6["⑥ 模型作為資料產物<br>DSGAI18–21"]
+  G3 -. "支撐" .-> G1
+  G3 -. "支撐" .-> G2
+  G3 -. "支撐" .-> G4
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class G3 author
+</pre>
+<figcaption><strong>圖 3-1　DSGAI 條目的六個群組。</strong>群組、順序與各群組的條目範圍是官方說明（GenAI Data Risks 一節）；從治理基礎往前三組的虛線「支撐」箭頭，是依官方「作為所有其他控制的前提條件」一句<strong>作者整理，非官方畫法</strong>。</figcaption>
+</figure>
+
+<h2 id="map-confuse">3.2 容易混淆的條目</h2>
+<p>下列幾組名稱相近，但官方切分的角度不同。判斷的竅門是問：「<strong>資料出問題的環節是什麼？</strong>」</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　容易混淆的條目（辨析為作者整理，非官方）</caption>
+<thead><tr><th scope="col">條目</th><th scope="col">出問題的環節</th><th scope="col">與誰容易混淆</th></tr></thead>
+<tbody>
+<tr><th scope="row">DSGAI01 敏感資料外洩</th><td>輸出端：模型、RAG 或日誌把敏感字串吐出來</td><td>與 DSGAI15（過度分享）：DSGAI01 看「吐出來」，DSGAI15 看「一開始就送太多」</td></tr>
+<tr><th scope="row">DSGAI15 過寬的上下文</th><td>輸入端：每次請求都附上不必要的資料給外部供應商</td><td>與 DSGAI06：DSGAI06 看「交給工具或其他 Agent」，DSGAI15 看「交給 LLM 供應商」</td></tr>
+<tr><th scope="row">DSGAI04 資料／模型／產物投毒</th><td>訓練期與管線：語料與產物被竄改，載入時執行</td><td>與 DSGAI21：DSGAI21 看「執行期經由受信來源灌入假資訊」</td></tr>
+<tr><th scope="row">DSGAI13 向量庫平台</th><td>平台層：向量庫自己的 API、加密與匯入缺陷</td><td>與 DSGAI11：DSGAI11 看「租戶範圍沒設好」，DSGAI13 偏平台缺陷與加密</td></tr>
+<tr><th scope="row">DSGAI18 推論與重建</th><td>只對模型或向量庫提問、推論訓練資料</td><td>與 DSGAI20：DSGAI20 要的是「複製整個模型的能力」，不是某筆資料</td></tr>
+<tr><th scope="row">DSGAI07 治理與 DSGAI08 合規</th><td>前提條件：分類、血緣、保留；合規義務</td><td>與 DSGAI01：刪除請求後衍生物仍在，三條都會碰到</td></tr>
+</tbody></table></div>
+<p>最後一列是這份文件的一個核心觀察：<strong>同一個事故常橫跨好幾個條目</strong>。例如「刪除請求後，客戶資料仍從 RAG 被答出來」，同時是 DSGAI01（外洩）、DSGAI07（衍生物沒被治理）與 DSGAI08（違反抹除義務）。這是第 4 章情境 A 的主軸。</p>
+
+<h2 id="map-concept">3.3 核心概念：衍生物比來源活得久</h2>
+<div class="concept">
+<h3 id="c-derived">資料「刪除」是什麼意思</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>官方在 DSGAI01、DSGAI07、DSGAI08 反覆出現同一個現象：使用者要求刪除，組織刪了 CRM 與資料湖裡的原始紀錄，但那筆資料<strong>早已被衍生成嵌入、被備份、被用於微調</strong>。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>衍生物在管線中被複製到別處（向量庫、快取、備份、模型權重），而刪除流程只認得來源。官方在 DSGAI07 寫得更尖銳：一個重新索引工作甚至可能<strong>把已刪除的資料從舊備份還原回向量庫</strong>。把資料編進模型權重後，要「忘記」它是難的（官方稱為 machine unlearning 的挑戰）。</dd>
+  <dt data-n="3">對安全與合規的含意（概念層級）</dt>
+  <dd>刪除請求的「完成」不等於實際移除；若無法證明衍生物也被處理，就會同時產生外洩風險與違反資料主體權利的合規風險。官方因此把 DSGAI07、DSGAI08 放在群組③：它們是其他控制的前提。</dd>
+  <dt data-n="4">怎麼防（官方列於 DSGAI07、DSGAI08）</dt>
+  <dd>以 DSGAI07 為例，官方 Tier 1：分類標籤的傳遞 (Classification propagation)、管線入口掃描、自動化保留期限；Tier 2：抹除驗證測試、Agent 上下文的 TTL、帶來源／授權／負責人標籤的資料目錄；Tier 3：資料到模型的血緣登記冊、為資料主體請求準備的衍生物清單。DSGAI08 的 Tier 3 另有「unlearning 就緒架構」，DSGAI01 的 Tier 3 另有「可驗證的抹除／unlearning」。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「刪了來源資料就等於刪除。」官方情境明確指出相反：來源刪除後，嵌入仍會在 RAG 中重新出現。另一個誤解是：「把資料編進模型是匿名的。」DSGAI10 與 DSGAI18 都指出模型可能記住並被取回罕見的紀錄。</dd>
+</dl>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>21 個條目依資料流動順序分六組：直接暴露、管線完整性、治理基礎、GenAI 獨有攻擊面、營運基礎設施、模型作為資料產物。</li>
+  <li>DSGAI07、DSGAI08 被視為其他控制的前提條件，不是獨立風險。</li>
+  <li>名稱相近的條目靠「出問題的環節」區分：輸出端（01）、輸入端（15）、交給工具（06）、平台層（13）、只提問（18）、複製能力（20）。</li>
+  <li>衍生物（嵌入、備份、微調權重）比來源活得久；刪除不等於移除。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出六個群組各有哪些條目。</li>
+  <li>我能用「出問題的環節」區分 DSGAI01 與 DSGAI15、DSGAI18 與 DSGAI20。</li>
+  <li>我能說明為什麼刪除請求完成不等於資料已移除。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-tiers-and-scenarios.html">第 4 章　三層控制與情境</a>：官方每個條目都分三層成熟度與 Buy／Build；用兩個虛構情境練習怎麼選。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Data Security Risks and Mitigations 2026（GenAI Data Risks 一節的六個群組；DSGAI01–DSGAI21 各條目的 How the attack unfolds、Illustrative scenario）：<a href="https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/">genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/</a>；Version 1.0，March 2026；2026-10-26 讀取；CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP GenAI Data Security Risks and Mitigations 2026 — CC BY-SA 4.0（PDF 封面）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'd-ch3', topic: 'data-security', mode: 'chapter',
+  questions: [
+    { id: 'd3q1', type: 'match', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-dsgai-map.html#map-groups'}],
+      stem: '把下列條目配對到官方的群組。',
+      cats: [
+        { id: 'g1', label: '直接暴露' },
+        { id: 'g2', label: '管線完整性' },
+        { id: 'g3', label: '治理基礎' },
+        { id: 'g5', label: '營運基礎設施' }
+      ],
+      items: [
+        { text: 'DSGAI03 Shadow AI &amp; Unsanctioned Data Flows', answer: 'g1', why: '群組①直接暴露：DSGAI01–03。' },
+        { text: 'DSGAI05 Data Integrity &amp; Validation Failures', answer: 'g2', why: '群組②管線完整性：DSGAI04–06。' },
+        { text: 'DSGAI08 Non-Compliance &amp; Regulatory Violations', answer: 'g3', why: '群組③治理基礎：DSGAI07–08。' },
+        { text: 'DSGAI14 Excessive Telemetry &amp; Monitoring Leakage', answer: 'g5', why: '群組⑤營運基礎設施：DSGAI14–17。' }
+      ],
+      summary: '官方六個群組依資料流動排序。' },
+    { id: 'd3q2', type: 'mc', lo: [3], refs: [{label: '3.1 官方對群組③的說法', href: '03-dsgai-map.html#map-groups'}],
+      stem: '官方如何看待 DSGAI07（資料治理）與 DSGAI08（不合規）？',
+      options: [
+        { text: '它們是最嚴重的兩個風險，所以排最前面。', why: '它們排在群組③，官方說的是前提條件，不是嚴重度。' },
+        { text: '它們被視為所有其他控制的前提條件，而不是獨立的風險。', correct: true, why: '符合 3.1 節官方說法。' },
+        { text: '它們已被合併進 DSGAI01，不需要另外處理。', why: '官方保留兩個獨立條目；只是在說明上把它們定位為前提。' },
+        { text: '它們只適用於有法務部門的大型企業。', why: '官方沒有這樣的限定。' }
+      ],
+      summary: '治理與合規是其他控制的前提條件。' },
+    { id: 'd3q3', type: 'scn', lo: [3], refs: [{label: '3.2 表 3-2', href: '03-dsgai-map.html#map-confuse'}],
+      stem: '依本章，下面兩個事件應分別歸為哪個條目？',
+      scenario: '北辰醫院（虛構）的客服助理出了兩件事。事件甲：每個請求都附上完整病歷摘要給外部 LLM 供應商，儘管使用者只問了「掛號時間」。事件乙：有人用大量系統化的提問，從助理的回覆逐步拼回某位病患的紀錄。',
+      options: [
+        { text: '甲是 DSGAI15（過寬的上下文與提示詞過度分享），乙是 DSGAI01（敏感資料外洩），也可能涉及 DSGAI18。', correct: true, why: '甲是輸入端一開始就送太多；乙是輸出端逐步被取出。' },
+        { text: '甲和乙都是 DSGAI20（模型外洩）。', why: 'DSGAI20 談的是複製整個模型的能力，不是個別資料。' },
+        { text: '甲是 DSGAI13（向量庫平台），乙是 DSGAI07（治理）。', why: '情境沒有提到向量庫平台缺陷，也不是在談治理前提。' },
+        { text: '甲和乙都是 DSGAI03（影子 AI）。', why: '情境中的助理是公司自己部署的，不是未核准的工具。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 甲的問題是「每次都附上不必要的完整資料給外部供應商」，是 DSGAI15 描述的過寬上下文。(2) 乙是透過系統化提問從輸出逐步重建紀錄，符合 DSGAI01（輸出端外洩），並接近 DSGAI18（推論與重建）。</p><p><strong>結論：</strong>甲 DSGAI15、乙 DSGAI01／18。對應教材：<a href="03-dsgai-map.html#map-confuse">3.2 節</a>。</p>' },
+    { id: 'd3q4', type: 'mc', lo: [3], refs: [{label: '3.3 衍生物比來源活得久', href: '03-dsgai-map.html#map-concept'}],
+      stem: '某客戶依資料主體權利要求刪除，團隊回報「CRM 與資料湖都已刪除，完成」。依本章，最需要追問的是什麼？',
+      options: [
+        { text: '什麼都不用追問，原始資料刪了就是刪了。', why: '官方情境明確指出：來源刪除後，嵌入仍會在 RAG 中出現。' },
+        { text: '這筆資料是否已被衍生成嵌入、被備份、或被用於微調；這些衍生物是否也被處理，且能否證明。', correct: true, why: '符合 3.3 節與 DSGAI07、DSGAI08。' },
+        { text: '客戶是否真的需要被刪除。', why: '資料主體權利的義務不是這裡要質疑的對象。' },
+        { text: '改用更大的模型，就不會記住個別客戶。', why: '官方沒有這樣的說法；DSGAI10 與 DSGAI18 反而指出模型可能記住罕見紀錄。' }
+      ],
+      summary: '刪除要涵蓋衍生物：嵌入、備份、微調權重。' }
+  ]
+});
+</script>
+</body>
+</html>

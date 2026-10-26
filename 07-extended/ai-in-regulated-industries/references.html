@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜受管制領域的 AI 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="受管制領域的 AI 安全主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="ai-in-regulated-industries" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 6.3 節與第 8 節）</li>
+</ul>
+<p class="lead">這個主題只有兩份來源，都是 OWASP Cheat Sheet Series 的領域專用速查表，都<strong>沒有版本號與日期</strong>。研究筆記對這兩份只確認了標題存在、沒有讀內容，所以本次是從頭補讀。本頁列出：採用的版本與日期（讀取日加 GitHub 提交日）、與筆記的差異、衝突與取捨、授權，以及未能確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。Cheat Sheet 隨時會改，舊版只出現在本頁與第 3、4 章對修訂的說明。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">AI-Powered Advertising Systems Security Cheat Sheet</th><td><strong>無版本號</strong>；GitHub 首次提交 <strong>2026-09-14</strong>（a933240，PR #2380），最近修改 <strong>2026-10-04</strong>（d4bad24，PR #2628）；共 5 筆提交。本機讀到的檔案與儲存庫 2026-10-26 的最新版一致</td><td><a href="https://cheatsheetseries.owasp.org/cheatsheets/AI-Powered_Advertising_Systems_Security_Cheat_Sheet.html">官方網頁</a>（確認標題與五節標題）；<code>git log</code> 與 <code>git show</code>（OWASP/CheatSheetSeries 的 blobless clone）</td><td>CC BY-SA 4.0（站台頁尾）</td></tr>
+<tr><th scope="row">AML and Sanctions Compliance for AI Agent Payments Cheat Sheet（儲存庫檔名 AML_Sanctions_AI_Agent_Payments_Cheat_Sheet.md）</th><td><strong>無版本號</strong>；GitHub 首次提交 <strong>2026-06-03</strong>（095b35c，PR #2210），最近修改 <strong>2026-10-18</strong>（1c3144a，PR #2799）；共 9 筆提交。本機讀到的檔案與儲存庫 2026-10-26 的最新版一致</td><td><a href="https://cheatsheetseries.owasp.org/cheatsheets/AML_Sanctions_AI_Agent_Payments_Cheat_Sheet.html">官方網頁</a>（確認 12 節標題）；<code>git log</code>、<code>git show</code></td><td>CC BY-SA 4.0（站台頁尾）</td></tr>
+<tr><th scope="row">OWASP/CheatSheetSeries 儲存庫的授權檔</th><td>LICENSE.md 為 CC BY-SA 4.0（SPDX CC-BY-SA-4.0）；README 的授權徽章連到 CC BY-SA 4.0</td><td>儲存庫根目錄 LICENSE.md 與 README.md</td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0（沿用既有副本）</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正或補充）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">內容</th><td>兩份「本次僅確認標題存在於索引，未讀內容」</td><td>筆記未讀內容，本次補讀全文：廣告文件五節（每節附威脅／證據／執行期訊號表）；AML 文件導言、法規脈絡、關鍵原則與 12 節</td><td>第 2 章（廣告）、第 3–4 章（AML）</td></tr>
+<tr><th scope="row">日期與版本</th><td>「皆無日期或版本標示」</td><td>屬實：頁面沒有版本號。用 GitHub 提交紀錄補充首次與最近修改日，並確認多次修訂</td><td>標「讀取日 2026-10-26」加提交日；不當作版本</td></tr>
+<tr><th scope="row">AML 文件的修訂</th><td>（未提）</td><td>AML 文件的 Section 5（失效即拒絕）與 Section 11（法規對照）在 2026-10-04 前後被改寫得更保守（見第 3、4 章）</td><td>採現行最新版；首次提交的說法只出現在說明修訂的地方</td></tr>
+<tr><th scope="row">授權</th><td>（未提）</td><td>站台頁尾與儲存庫 LICENSE.md／README 皆為 CC BY-SA 4.0</td><td>各頁頁尾標示</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM Top 10 的年份</th><td>廣告文件引用的編號全是 2025 版（LLM01:2025、LLM02:2025、LLM06:2025、LLM07:2025、LLM10:2025），並連到 2025 版頁面</td><td>依文件原文寫、標年份；需要換算時連到<a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 第 8 章</a>，不自行推測換算</td></tr>
+<tr><th scope="row">AML 文件 Section 5 的措辭</th><td>首次提交（2026-06-03）：系統必須拒絕交易；現行（2026-10-04 修訂起）：未完成視為未解決，服務失敗不等於確認命中</td><td>採現行版本（較新）</td></tr>
+<tr><th scope="row">AML 文件 Section 11 對照表</th><td>首次提交的對照寫成「KYC／KYB 歸屬、FATF 建議 10」「對受制裁當事人的封鎖義務」「對照當前名單篩查的義務」；現行版本改成較保守的措辭</td><td>採現行版本；首次提交的版本只用來說明修訂方向</td></tr>
+<tr><th scope="row">廣告文件的事件視窗</th><td>首次提交寫「24 至 72 小時為通行做法」；現行版本改為依觀察到的判決延遲與夥伴對帳條款訂定，不規定通用的延遲</td><td>採現行版本，教材不寫具體時數</td></tr>
+<tr><th scope="row">文件內的連結</th><td>兩份文件的部分連結是相對路徑（例如 RAG_Security_Cheat_Sheet.md）</td><td>教材改連到本教材對應的主題，不連原始檔</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>文件所引用的法規、政府指引與標準的條文與現況：</strong>個資與隱私、兒童保護、歐盟 AI 法案、美國反洗錢與制裁、FATF 建議等。教材只轉述文件說了什麼，不查證、不補充，也不是法律意見（沿用登記簿 U-GC7、U-AG4 的處理方式）。</li>
+  <li><strong>文件所引用的第三方研究與標準：</strong>模型萃取、視覺越獄、潛伏型後門、檢索操弄、NIST 對乾淨標籤後門的描述、RFC 9421／9530／9525／8785、C2PA、MRC 標準等。皆為文件的引用，教材未逐一查證。</li>
+  <li><strong>兩份文件是否有未被本教材發現的、位於官方網頁而不在儲存庫檔案的內容：</strong>本機檔案與儲存庫最新版逐位元相同；網頁只核對了標題與授權，未逐字比對正文。</li>
+  <li><strong>L0 到 L4 各信任等級的定義：</strong>AML 文件只用「例如 L0 到 L4」，沒有定義各級。</li>
+  <li><strong>MCPS Internet-Draft 的現況：</strong>文件稱它是個人提交的進行中工作，不是已採納的 MCP 標準；教材沒有讀該草案。</li>
+  <li><strong>兩份文件與 ACS、IR 指南、資料安全文件之間是否有意互補：</strong>文件之間沒有互相引用；教材的銜接標「作者整理，非官方」。</li>
+  <li><strong>OWASP AI Agent Security、Secure AI Model Ops 等被兩份文件指向的速查表：</strong>本主題不展開；是否存在、內容為何，以各自主題為準。</li>
+  <li><strong>Cheat Sheet 的後續修訂：</strong>兩份文件在數月內分別有 5 筆與 9 筆提交，2026-10-26 之後可能再改。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<ul>
+  <li>AI-Powered Advertising Systems Security Cheat Sheet：<a href="https://cheatsheetseries.owasp.org/cheatsheets/AI-Powered_Advertising_Systems_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org/cheatsheets/AI-Powered_Advertising_Systems_Security_Cheat_Sheet.html</a></li>
+  <li>AML and Sanctions Compliance for AI Agent Payments Cheat Sheet：<a href="https://cheatsheetseries.owasp.org/cheatsheets/AML_Sanctions_AI_Agent_Payments_Cheat_Sheet.html">cheatsheetseries.owasp.org/cheatsheets/AML_Sanctions_AI_Agent_Payments_Cheat_Sheet.html</a></li>
+  <li>OWASP Cheat Sheet Series 儲存庫（原始 Markdown、提交紀錄、LICENSE.md、README.md）：<a href="https://github.com/OWASP/CheatSheetSeries">github.com/OWASP/CheatSheetSeries</a></li>
+  <li>本教材的相關主題：<a href="../../03-prompt-injection-rag-practice/rag-security/references.html">RAG 安全</a>、<a href="../../03-prompt-injection-rag-practice/prompt-injection/references.html">提示詞注入防護</a>、<a href="../../04-agentic-and-mcp/mcp-security/references.html">MCP 安全</a>、<a href="../agent-control-standard/references.html">Agent Control Standard</a>、<a href="../incident-response-and-deepfake/references.html">事件應變與 Deepfake</a>。</li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 1 章：「領域專用速查表」的分工說法（文件沒有解釋為何要做領域專用版）；表 1-2 右欄的本教材對應；圖 1-1 的「通用控制加領域情境」框架。</li>
+  <li>第 2 章：表 2-1「誰碰得到」欄；表 2-2 之後把「縱深、提高成本、真正邊界」放進七層防線框架的讀法。</li>
+  <li>第 3 章：表 3-1「沒有證明什麼」欄與表 3-2 左欄的整理；「失效即拒絕」與失效安全、ACS 預設放行的關係；圖 3-1 把所有路徑接到稽核軌跡的畫法。</li>
+  <li>第 4 章：表 4-1 整理成對照表的方式；圖 4-1 的終點「不依賴、不放行」。</li>
+  <li>第 5 章：三個共同模式的歸納與表 5-1、表 5-2 的對應；五步驟翻譯流程（圖 5-1）；情境 B 的練習。官方沒有寫這些。</li>
+  <li>暫譯：領域專用速查表、參與者來源標籤、雙 LLM 結構性交接（沿用既有「雙 LLM 模式」）、女巫攻擊、規範化、簽署收據、名單新鮮度、信任分級。所有 Mermaid 圖皆為依官方文字重新繪製的簡化版，不是官方原圖。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>兩份速查表：CC BY-SA 4.0（Cheat Sheet Series 站台頁尾；儲存庫 LICENSE.md 與 README）。本教材以自己的話整理，短引用均標示來源，不貼文件中的程式碼區塊；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+  <li>法規相關內容為文件陳述的轉述，<strong>不是法律意見</strong>；要知道自己的義務，請找合格法務。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：OWASP Cheat Sheet Series 的 AI-Powered Advertising Systems Security Cheat Sheet 與 AML and Sanctions Compliance for AI Agent Payments Cheat Sheet — CC BY-SA 4.0（站台頁尾與儲存庫 LICENSE.md）；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。法規相關內容為文件陳述的轉述，不是法律意見。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

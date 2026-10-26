@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　目標、工具與身分（ASI01–ASI03）｜Top 10 for Agentic Applications 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="ASI01 Agent Goal Hijack、ASI02 Tool Misuse and Exploitation、ASI03 Identity and Privilege Abuse 三個最常一起出現的條目：各自是什麼、如何區分、怎麼防。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="agentic-top-10-2026" data-page="02-goal-tools-identity.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　目標、工具與身分（ASI01–ASI03）</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position.html">第 1 章</a></li>
+</ul>
+<p class="lead">十項裡，ASI01、ASI02、ASI03 最常在同一個事件裡一起出現，也最容易被搞混：agent 的目標被改了、工具被用歪了、權限被借走了，這三件事看起來都像「agent 做了不該做的事」。文件為每一條都寫了「跟鄰居有什麼不同」，本章就用這條線把它們分開。</p>
+
+<h2 id="g-diff">2.1 三個條目怎麼區分</h2>
+<p>文件反覆強調的區分原則是：<strong>看「出問題的是哪一個環節」</strong>。目標被改變是 ASI01；目標正常、但工具被用成非預期方式是 ASI02；問題在身分與授權的結構本身，是 ASI03。</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　ASI01–ASI03 的區分（依各條 Description 改寫；對照 T 編號與 LLM 條目為官方，LLM 編號為 2025 版）</caption>
+<thead><tr><th scope="col">條目</th><th scope="col">出問題的環節</th><th scope="col">文件明寫的邊界</th><th scope="col">對應 T&amp;M／LLM（2025 版）</th></tr></thead>
+<tbody>
+<tr><th scope="row">ASI01 Agent Goal Hijack</th><td>目標、任務選擇、決策路徑被改變</td><td>與 ASI06（記憶污染）及 ASI10（rogue agent）不同：攻擊者<strong>直接</strong>改了目標或指令，不論互動式或預先埋入文件；ASI06 是持久污染儲存的脈絡；ASI10 是無人操控下自行偏離</td><td>T6 Goal Manipulation、T7 Misaligned &amp; Deceptive；LLM01:2025（單次回應被改）與 LLM06:2025</td></tr>
+<tr><th scope="row">ASI02 Tool Misuse and Exploitation</th><td>agent 在被授予的權限內，以不安全或非預期的方式用合法工具</td><td>若涉及提權或憑證繼承，歸 ASI03；若產生任意或被注入的程式碼執行，歸 ASI05；工具定義經由 MCP 而來，與 ASI04 自然重疊</td><td>T2；T4 與 T16 是放大因素；LLM06:2025</td></tr>
+<tr><th scope="row">ASI03 Identity and Privilege Abuse</th><td>委派鏈、角色繼承、快取憑證等動態信任被利用，導致提權</td><td>與 ASI02 不同：ASI02 是主體濫用<em>自己已被授予</em>的工具；ASI03 是身分與授權的結構性錯配（agent 沒有自己的受治理身分，落在「歸因缺口」）</td><td>T3（官方稱一對一）；LLM06:2025 的 agentic 演進，常借助 LLM01:2025；影響可超越 LLM02:2025</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">要小心的筆誤</p>
+  <p>PDF 的 ASI10 一處把「Goal Hijack (ASI01)」與「Supply Chain tampering (ASI04)」寫成 <code>AS01</code>、<code>AS04</code>。正確的編號是 <code>ASI01</code>、<code>ASI04</code>。另外，ASI02 的攻擊情境第 4 點標題在 PDF 文字層呈現亂碼（內容是把安全的內部 CRM 工具與外部郵件工具串接以外洩客戶名單），本教材只引用其內容。</p>
+</div>
+
+<h2 id="g-concepts">2.2 三條各自的核心概念</h2>
+<div class="concept">
+<h3 id="c-asi01">ASI01：目標被劫持——因為 agent 分不清「指令」與「內容」</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>攻擊者透過提示詞、被竄改的工具輸出、惡意的產出物、偽造的 agent 間訊息或被污染的外部資料，改變 agent 的目標、任務選擇或決策路徑。文件特別區分：LLM01:2025 關心「改變單次模型回應」，ASI01 關心「被改的輸入重導了目標、規劃與多步行為」。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>agent 依賴「無型別的自然語言輸入」和鬆散治理的編排邏輯，無法可靠分辨合法指令與攻擊者可控的內容。這和 <a href="../../primer-security-for-developers.html#p-risk">前置觀念</a> 提到的提示詞注入同源，只是後果從錯誤的答案變成錯誤的行動。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>常見路徑：埋在網頁或 RAG 文件裡的隱藏指示；從公司外寄來的郵件或行事曆邀請，劫持 agent 的內部通訊能力，以受信任的身分發訊息；甚至排程的提示詞每天微調目標權重，讓規劃偏向低摩擦的核准而仍符合政策。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>文件列了九項，重點是：所有自然語言輸入一律視為不可信，經過與 LLM01 同等的篩選；對工具套用最小權限，高衝擊或「改變目標」的動作需要人核准；鎖定系統提示詞並納入組態管理；執行前驗證使用者意圖與 agent 意圖；對連接的資料來源做清理；持續記錄並建立目標狀態的基準線，偏離時告警；定期紅隊演練目標覆寫。文件另提到「意圖膠囊 (intent capsule)」這個新興模式，把宣告的目標、限制與脈絡綁在簽章的封包裡。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「ASI01 就是提示詞注入。」ASI01 把提示詞注入視為<strong>手段之一</strong>；它的核心是「目標被改」這個結果，手法還包括被竄改的工具輸出與偽造的 agent 訊息。</dd>
+</dl>
+</div>
+
+<div class="concept">
+<h3 id="c-asi02">ASI02：工具被濫用——權限都合規，用法卻不安全</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>agent 在被授予的權限內，把合法工具用在不安全或非預期的方式，例如刪掉重要資料、過度呼叫昂貴的 API、外洩資訊。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>agent 怎麼選工具、怎麼用，受記憶、動態工具選擇與委派影響；工具可能權限過大（郵件摘要工具竟能刪信、寄信）、範圍過寬（只需要一種記錄卻能取全部）、把不可信的模型輸出直接送給 shell，或在迴圈中反覆呼叫昂貴 API。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>文件的情境：竄改工具介面（描述、結構、中繼資料）讓 agent 依假的能力呼叫；把安全的內部工具與外部寄信工具串接，外洩客戶名單；名稱相近的工具搶先被解析，也就是抄寫相近名稱的攻擊 (typosquatting)；被「核准自動執行」的低風險工具（如 ping）被反覆觸發而經由 DNS 外洩資料；以及每個指令都由受信任的程式在有效憑證下執行，使端點偵測看不到惡意程式。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>八項，重點：以「每個工具一份最小權限設定檔」限制範圍、速率與外送允許清單，並寫成 IAM 或授權政策而不是慣例；每次呼叫都驗證，高衝擊或破壞性動作要人確認並顯示預演差異；在隔離沙箱中執行並控制對外連線；執行前用政策執行點檢查意圖與參數，把模型與規劃器輸出視為不可信；設定用量上限；用即時、短效的存取；使用完整限定的工具名稱與版本固定；保存不可竄改的工具呼叫日誌並偵測工具串接的異常。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「工具都有權限檢查，所以沒事。」ASI02 的前提正是 agent <em>在授權範圍內</em>用歪了工具；單一工具的檢查看不到「讀資料庫後接著外送」這種序列。</dd>
+</dl>
+</div>
+
+<div class="concept">
+<h3 id="c-asi03">ASI03：身分與權限被濫用——結構上的錯配</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>利用 agent 世界裡動態的信任與委派，沿著委派鏈、角色繼承、控制流與 agent 脈絡（含快取憑證與對話歷史）升權。這裡的「身分」同時指 agent 被定義的角色，以及代表它的任何驗證資料（API 金鑰、OAuth 權杖、被委派的使用者 session）。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>文件指出根因是「以使用者為中心的身分系統」與「agent 的設計」之間的結構錯配：agent 若沒有自己被治理的身分，就落在歸因缺口，無法落實真正的最小權限。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>文件列了七種：未縮權的權限繼承（高權限管理者把全部存取脈絡丟給窄任務的 worker）、記憶中殘留權限、跨 agent 信任（混淆代理人）、檢查時與使用時不一致 (TOCTOU)（流程開始時驗過，過程中權限已被調降卻仍繼續）、合成身分注入（偽稱「Admin Helper」）、身分共享等。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>重點：任務範圍、有時效的權限（短效、窄範圍權杖，每個 agent 有自己的身分）；隔離身分與脈絡，在任務間清除狀態；每個特權動作由集中式政策引擎重新驗證；高權限或不可逆動作需人核准；把 OAuth 權杖綁到簽章的意圖；評估正式的 agentic 身分管理平台；偵測委派中間接取得的權限；偵測跨 agent 的異常升權。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「換成短效權杖就解決了。」短效權杖是重點措施之一，但文件的根因在「agent 沒有自己的受治理身分」；沒有身分與歸因，權杖再短也無法落實最小權限。</dd>
+</dl>
+</div>
+
+<h2 id="g-flow">2.3 一件事故，怎麼判斷歸哪一條</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="判斷歸屬的決策流程：先問是否有人改變了 agent 的目標，是則 ASI01；否則問 agent 是否在已授予的權限內不安全地使用合法工具，是則 ASI02；否則問是否涉及委派、繼承或憑證造成的提權，是則 ASI03；若產生了被注入的程式碼執行則 ASI05，若是第三方工具本身有問題則 ASI04。">
+flowchart TD
+  S["agent 做了不該做的事"] --> Q1{"目標或指令被改變？"}
+  Q1 -->|"是"| A1["ASI01<br>Goal Hijack"]
+  Q1 -->|"否"| Q2{"在已授予的權限內，<br>不安全地使用合法工具？"}
+  Q2 -->|"是"| A2["ASI02<br>Tool Misuse"]
+  Q2 -->|"否"| Q3{"涉及委派、繼承或憑證<br>造成提權？"}
+  Q3 -->|"是"| A3["ASI03<br>Identity and Privilege Abuse"]
+  Q3 -->|"否"| Q4{"其他：<br>執行被注入的程式碼，<br>或第三方元件本身被竄改？"}
+  Q4 -->|"是"| A4["ASI05 或 ASI04<br>下一章"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q1,Q2,Q3,Q4 author
+</pre>
+<figcaption><strong>圖 2-1　事故歸屬的判斷順序。</strong>順序與問句是<strong>作者整理，非官方</strong>，依據是文件對各條「與鄰居不同」的說明（ASI02 說提權歸 ASI03、程式碼執行歸 ASI05；ASI01 說與 ASI06、ASI10 不同）。實際事故常同時符合多條，文件也在附錄 D 的事件追蹤表中把同一事件對到多個 ASI。</figcaption>
+</figure>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>ASI01 看「目標是否被改」，ASI02 看「權限內是否被用歪」，ASI03 看「身分與授權的結構錯配」。</li>
+  <li>三者共通的防線：最小權限、短效且窄範圍的存取、高衝擊動作需人核准、完整日誌與偏離偵測。</li>
+  <li>提示詞注入是 ASI01 的手段之一，不是 ASI01 本身；單一工具的權限檢查擋不住工具串接。</li>
+  <li>事故常同時符合多條；歸屬問的是「最主要出問題的環節」。</li>
+  <li>文件中的 LLM 編號是 2025 版；PDF 內有 <code>AS01</code> 這類筆誤。</li>
+</ul></div>
+<ul class="checklist">
+  <li>給我一段事件描述，我能指出它最主要歸 ASI01、ASI02 還是 ASI03，並說明理由。</li>
+  <li>我能解釋為什麼「權限都合規」也可能是 ASI02。</li>
+  <li>我能說出 ASI03 的根因與短效權杖的限制。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-supply-code-memory.html">第 3 章　供應鏈、程式碼與記憶（ASI04–ASI06）</a>：從「agent 怎麼用東西」走到「agent 用的東西本身被動過手腳」，並用一個虛構情境把攻擊鏈串起來。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>OWASP Top 10 for Agentic Applications for 2026</em>, Version 2026, December 2025：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a>；2026-10-26 讀取；CC BY-SA 4.0。引用段落：ASI01、ASI02、ASI03 各條的 Description、常見弱點、攻擊情境與預防與緩解；ASI10 描述（筆誤）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Top 10 for Agentic Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'asi-ch2', topic: 'agentic-top-10-2026', mode: 'chapter',
+  questions: [
+    { id: 's2q1', type: 'mc', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-goal-tools-identity.html#g-diff'}, {label: '2.3 圖 2-1', href: '02-goal-tools-identity.html#g-flow'}],
+      stem: '一個郵件摘要 agent 被賦予「讀信、寄信、刪信」三種權限。有人寄來一封信，使 agent 把客戶名單寄給外部。agent 的目標沒有被改，只是它用寄信工具做了不該做的事；整個過程都在它已被授予的權限內。最主要歸屬哪一條？',
+      options: [
+        { text: 'ASI01，因為攻擊者影響了 agent 的行為。', why: 'ASI01 的前提是目標或指令被改變；題目特別說目標沒變。' },
+        { text: 'ASI03，因為權限過大就是身分與權限濫用。', why: 'ASI03 是委派、繼承、憑證造成的提權；題目是在已授予權限內用歪工具。' },
+        { text: 'ASI02：在已授予的權限內，不安全地使用合法工具。', correct: true, why: '文件對 ASI02 的定義正是如此；緩解也從縮小每個工具的權限範圍開始。' },
+        { text: 'ASI05，因為涉及外送動作。', why: 'ASI05 是產生並執行被注入的程式碼，題目沒有程式碼執行。' }
+      ],
+      summary: '權限內用歪工具 → ASI02。' },
+    { id: 's2q2', type: 'mc', lo: [2], refs: [{label: '2.2 ASI01 常見誤解', href: '02-goal-tools-identity.html#c-asi01'}],
+      stem: '同事說：「ASI01 就是提示詞注入，把 LLM01 的防護做好就沒事了。」依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，兩者是同一件事。', why: '文件明確區分：LLM01 關心單次回應被改；ASI01 關心目標、規劃與多步行為被重導。' },
+        { text: '不完整：提示詞注入是手段之一，ASI01 還包括被竄改的工具輸出、偽造的 agent 訊息等；防線還要有最小權限與高衝擊動作的人核准。', correct: true, why: '2.2 節：LLM01 防護是起點，但 ASI01 的緩解包含權限、核准與目標偏離偵測。' },
+        { text: '錯誤，ASI01 與提示詞注入完全無關。', why: '提示詞注入是 ASI01 最常見的手段之一。' },
+        { text: '只需要把系統提示詞寫得更嚴格。', why: '文件建議的是鎖定提示詞並納入組態管理，並與其他防線並用；不是只靠措辭。' }
+      ],
+      summary: '提示詞注入是 ASI01 的手段，不是全部。' },
+    { id: 's2q3', type: 'match', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-goal-tools-identity.html#g-diff'}],
+      stem: '把事件描述配對到最主要歸屬的條目。',
+      cats: [
+        { id: 'a01', label: 'ASI01 Agent Goal Hijack' },
+        { id: 'a02', label: 'ASI02 Tool Misuse and Exploitation' },
+        { id: 'a03', label: 'ASI03 Identity and Privilege Abuse' }
+      ],
+      items: [
+        { text: '被埋入文件的隱藏指示，讓 agent 改為去外洩資料，而不是完成原本的任務', answer: 'a01', why: '目標被改變。' },
+        { text: '任務型 agent 把全部存取脈絡交給窄任務的 worker，worker 因而取得過多權限', answer: 'a03', why: '未縮權的權限繼承，屬委派鏈提權。' },
+        { text: '被核准自動執行的低風險工具被反覆觸發，作為外洩資料的管道', answer: 'a02', why: '在已授予的權限內不安全地使用合法工具。' },
+        { text: '流程開始時驗過授權，之後使用者額度被調降，流程仍用舊權杖完成交易', answer: 'a03', why: '檢查時與使用時不一致 (TOCTOU)，屬授權漂移。' }
+      ],
+      summary: '依「出問題的環節」歸屬。' },
+    { id: 's2q4', type: 'scn', lo: [2], refs: [{label: '2.2 ASI03', href: '02-goal-tools-identity.html#c-asi03'}, {label: '2.1 表 2-1', href: '02-goal-tools-identity.html#g-diff'}],
+      stem: '依本章，團隊對根因的判斷哪裡不夠？該優先補什麼？',
+      scenario: '白鷺證券（虛構）的交易助理 agent 在每次對話開頭取得使用者的 OAuth 權杖，之後用同一個權杖呼叫多個內部系統，權杖效期為 8 小時。使用者中午被調離某部門、權限降低，但助理仍用早上取得的權杖，替他完成了下午一筆跨部門的資料匯出。團隊的結論是：「把權杖效期縮成 1 小時就好。」',
+      options: [
+        { text: '判斷足夠：縮短效期就能解決全部問題。', why: '縮短效期有幫助，但無法解決每個特權動作缺少重新驗證的問題。' },
+        { text: '不夠：這是 ASI03 的授權漂移 (TOCTOU) 與「agent 無自己受治理身分」的結構問題；應對每個特權動作用集中式政策引擎重新驗證，並讓權杖綁定任務與意圖，效期縮短只是其一。', correct: true, why: '符合 2.2 節 ASI03 的緩解：任務範圍與時效、每個動作重新授權、權杖綁定簽章意圖。' },
+        { text: '應該改成 ASI01：因為目標被改變了。', why: '題目中目標沒有被改變；問題在授權隨時間漂移。' },
+        { text: '應該禁止 agent 使用任何權杖。', why: '這會使 agent 無法運作，也不是文件的建議；文件建議的是縮小並綁定。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 授權在流程開始時驗證，使用時權限已被調降，這是文件列舉的 TOCTOU／工作流授權漂移。(2) 文件的根因是 agent 沒有被治理的身分，權限無法隨時間與主體變化被強制。(3) 文件的緩解是：任務範圍、有時效的權杖；每個特權動作由集中式政策引擎重新驗證；權杖綁簽章意圖。</p><p><strong>結論：</strong>效期縮短只是其中一項；要補的是「每次特權動作重新驗證」。對應教材：<a href="02-goal-tools-identity.html#c-asi03">2.2 節 ASI03</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　三個練習專案的定位與安全使用｜動手練習｜OWASP AI 資安學習教材</title>
+<meta name="description" content="PromptMe、PwnzzAI、FinBot CTF 三個練習專案的並排比較、2025 版與 2026 版 LLM Top 10 的編號換算，以及安全執行刻意有漏洞的應用的原則。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="hands-on-labs" data-page="01-three-labs.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　三個練習專案的定位與安全使用</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO1、LO2、LO3</li>
+  <li>前置：<a href="../../primer-security-for-developers.html#p-surface">信任邊界 (Trust Boundary)</a>；建議先讀同階段的<a href="../prompt-injection/index.html">提示詞注入防護</a>與 <a href="../rag-security/index.html">RAG 安全</a></li>
+</ul>
+<p class="lead">讀完條目與 Cheat Sheet，下一步常是「親手看一次」。OWASP 的 AI 資源裡有三個專案專為此設計。這一章把它們並排：各是什麼、授權、版本、用哪一版 Top 10 的編號；再談一個比「選哪個」更重要的問題：怎麼安全地執行一個故意有洞的程式。</p>
+
+<h2 id="lab-what">1.1 什麼是刻意有漏洞的應用</h2>
+<p>刻意有漏洞的應用 (Intentionally Vulnerable Application) 是為了教學，故意放入可被利用弱點的程式。在 LLM 領域，它們常以奪旗賽 (Capture The Flag, CTF) 的形式出現：給你一個目標，達成就得到旗標。三個專案的自述 <span class="tag official">官方</span>（這裡的「官方」指專案自己的說明）：PromptMe 是含 10 個受 LLM Top 10 啟發的實作挑戰；PwnzzAI 是以 pizza shop 為情境的 Flask 應用，每項弱點附示範、利用情境與加固替代方案 (Hardened Alternative)；FinBot CTF 被官方資源頁稱為「Juice Shop for Agentic AI」，屬於 GenAI Security Project 的 Agentic Security Initiative。</p>
+<div class="callout unsure">
+  <p class="callout-title">未能確認：本教材沒有執行過這三個專案</p>
+  <p>本教材只讀了 README、專案頁與官方說明，<strong>沒有安裝或執行</strong>，所以不評價挑戰的品質與難度。後面講的是怎麼選、怎麼安全地用、怎麼接回防禦，不是操作教學。</p>
+</div>
+
+<h2 id="lab-compare">1.2 三個專案並排</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　三個練習專案的比較（2026-10-26 讀取；專案自述與 GitHub 資料；「需要留意」列為作者整理）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">PromptMe</th><th scope="col">PwnzzAI</th><th scope="col">FinBot CTF</th></tr></thead>
+<tbody>
+<tr><th scope="row">來源</th><td><a href="https://github.com/OWASP/www-project-promptme">OWASP/www-project-promptme</a></td><td><a href="https://github.com/OWASP/PwnzzAI">OWASP/PwnzzAI</a></td><td>程式碼：<a href="https://github.com/GenAI-Security-Project/finbot-ctf">GenAI-Security-Project/finbot-ctf</a>；另有資源頁（2025-08-12）與部落格（2026-04-14）</td></tr>
+<tr><th scope="row">授權</th><td>Apache-2.0</td><td>GPL-3.0</td><td>README 寫 Apache 2.0；GitHub 偵測值為 NOASSERTION（未能確認）</td></tr>
+<tr><th scope="row">版本與日期</th><td>release v1.0.0（2025-08-21）；最後推送 2026-09-10</td><td>無 release；建立 2026-04-20；最後推送 2026-10-16</td><td>無 release；建立 2025-09-29；最後推送 2026-06-09</td></tr>
+<tr><th scope="row">挑戰焦點</th><td>10 個 CTF 風格挑戰，各有目標、選用提示與旗標</td><td>同一個應用內的多項弱點，每項含示範、利用情境、加固替代方案</td><td>多 agent 廠商管理平台；五類挑戰：Recon、Policy Bypass、Data Exfiltration、Destructive、Remote Code Execution；事件偵測，沒有靜態旗標</td></tr>
+<tr><th scope="row">執行需求<br>（細節見各 README）</th><td>Python 與 Ollama（本機開源模型）；README 稱不需 API 金鑰；目前支援 macOS 與 Linux</td><td>Docker 或原始碼；本機 Ollama，或自備雲端模型金鑰</td><td>Python 或 Docker Compose；需要 Redis 與 LLM 金鑰（OpenAI 或 Ollama）</td></tr>
+<tr><th scope="row">對照的 Top 10</th><td>挑戰資料夾以 LLM Top 10 <strong>2025 版</strong>編號命名</td><td>明寫 <strong>2025 版</strong>，另加 2023/24 版的 Model Theft</td><td>README 寫 LLM Top 10 (2025) 與 Agentic Top 10（未標年份）</td></tr>
+<tr><th scope="row">需要留意<br><span class="tag author">作者整理，非官方</span></th><td>專案自述有 <code>solutions</code> 資料夾（本教材未讀）；README 警告含不安全的程式碼與套件</td><td>README 警告僅供教育；使用雲端模型時會動用你的金鑰</td><td>資源頁的「目前聚焦 Goal Manipulation」已被較新來源取代；線上版網址未驗證</td></tr>
+</tbody></table></div>
+<p>FinBot 有兩處來源：2025-08-12 的資源頁與 2026-04-14 的部落格／目前 repo。依「衝突時以最新為準」的規則，本教材採後者描述的範圍，舊敘述與取捨記在<a href="references.html#ref-conflict">參考資料頁</a>。</p>
+
+<h2 id="lab-versions">1.3 編號陷阱：練習用 2025 版，本教材其他處用 2026 版</h2>
+<p>三個專案對照的都是 LLM Top 10 的 <strong>2025 版</strong>，本教材其他處採 2026 版（Version 2026，發布日採較新的 2026-08-04）。2026 版重新排序：十項中<strong>只有 LLM01 與 LLM02 的編號沒變</strong>。官方網站的各條目頁目前仍顯示 2025 版內容。所以在專案頁或練習筆記看到「LLM05」時，第一件事是問：哪一年的？（2023、2025、2026 三版的完整換算見 <a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 2026 第 8 章</a>。）</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　練習專案使用的 2025 版編號，對應到 2026 版（條目名稱與編號取自官方清單；對應關係為作者整理）</caption>
+<thead><tr><th scope="col">練習專案使用的名稱（2025 版）</th><th scope="col">2026 版對應</th><th scope="col">變動</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM01:2025 Prompt Injection</th><td><a href="../../02-llm-applications/llm-top-10/02-prompt-injection.html#pi-what">LLM01:2026</a> Prompt Injection</td><td>編號不變</td></tr>
+<tr><th scope="row">LLM02:2025 Sensitive Information Disclosure</th><td><a href="../../02-llm-applications/llm-top-10/06-disclosure.html#dc-what">LLM02:2026</a> Sensitive Information Disclosure</td><td>編號不變</td></tr>
+<tr><th scope="row">LLM03:2025 Supply Chain</th><td><a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-supply">LLM04:2026</a> Supply Chain</td><td>編號改變</td></tr>
+<tr><th scope="row">LLM04:2025 Data and Model Poisoning</th><td><a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-poison">LLM05:2026</a> Data and Model Poisoning</td><td>編號改變</td></tr>
+<tr><th scope="row">LLM05:2025 Improper Output Handling</th><td><a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-output">LLM10:2026</a> Improper Output Handling</td><td>編號改變（官方：從第 5 降到第 10）</td></tr>
+<tr><th scope="row">LLM06:2025 Excessive Agency</th><td><a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a> Excessive Agency</td><td>編號改變（官方：升至第 3）</td></tr>
+<tr><th scope="row">LLM07:2025 System Prompt Leakage</th><td><a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-hidden">LLM08:2026</a> Hidden Context Exposure</td><td>更名並擴大範圍（官方明載）</td></tr>
+<tr><th scope="row">LLM08:2025 Vector and Embedding Weaknesses</th><td><a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-vector">LLM09:2026</a> Vector and Embedding Weaknesses</td><td>編號改變</td></tr>
+<tr><th scope="row">LLM09:2025 Misinformation</th><td><a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-misinfo">LLM07:2026</a> Misinformation</td><td>編號改變</td></tr>
+<tr><th scope="row">LLM10:2025 Unbounded Consumption</th><td><a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-consume">LLM06:2026</a> Unbounded Consumption</td><td>編號改變（官方：上升四名）</td></tr>
+<tr><th scope="row">Model Theft（PwnzzAI 第 11 項，屬 2023/24 版 LLM10）</th><td>2026 版沒有獨立條目</td><td>去向官方未明述（未能確認）</td></tr>
+</tbody></table></div>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：這是依名稱比對的結果</p>
+  <p>官方 2026 版只明載了少數變動（更名為 Hidden Context Exposure，以及 Excessive Agency、Unbounded Consumption、Improper Output Handling 的順位調整），沒有逐項對照表。上表其餘列是作者依條目名稱比對得出。引用時請寫成<strong>帶年份的完整形式</strong>，例如 LLM03:2026 Excessive Agency。</p>
+</div>
+
+<h2 id="lab-choose">1.4 想練什麼，選哪個</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="選擇練習專案的決策流程：先決定要練什麼。想練 LLM Top 10 基本款並使用本機開源模型選 PromptMe；想看弱點、利用情境與加固替代方案的對照選 PwnzzAI；想練多 agent、工具與 MCP 的 agentic 風險選 FinBot CTF。三者執行前都要先準備隔離環境、專用金鑰與虛構資料；若無法準備隔離環境，就先不執行，改讀專案頁與本教材的防禦章節。">
+flowchart TD
+  START["先決定：你要練什麼？"] --> A{"學習重點"}
+  A -->|"LLM Top 10 基本款，用本機開源模型"| PM["PromptMe<br>10 個 CTF 風格挑戰"]
+  A -->|"弱點、利用情境、加固替代方案的對照"| PW["PwnzzAI<br>pizza shop 的 Flask 應用"]
+  A -->|"多 agent、工具與 MCP 的 agentic 風險"| FB["FinBot CTF<br>多 agent 廠商管理平台"]
+  A -->|"無法準備隔離環境"| RD["先不執行<br>讀專案頁，回到防禦章節"]
+  PM --> SAFE["執行前：隔離環境、專用金鑰、虛構資料（見 1.5）"]
+  PW --> SAFE
+  FB --> SAFE
+</pre>
+<figcaption><strong>圖 1-1　選擇練習專案的決策流程（作者整理，非官方）。</strong>分流條件取自表 1-1 各專案的自述焦點；「無法準備隔離環境就先不執行」是作者的建議。三條路都通向同一道關卡：先準備環境，再動手。</figcaption>
+</figure>
+
+<h2 id="lab-safe">1.5 核心概念：安全地執行刻意有漏洞的應用</h2>
+<div class="concept">
+<h3 id="c-safe">這個應用本身就是不可信的</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>專案為了教學，故意在程式裡留下可被利用的弱點，而且是會真的呼叫模型、有時還帶資料庫或工具的完整應用。三個專案都自己警告了這一點 <span class="tag official">官方</span>：PromptMe 說它使用不安全的程式碼與套件，強烈建議在虛擬或沙箱 (Sandbox) 環境中執行；PwnzzAI 標示僅供教育、請勿用於正式環境。</dd>
+  <dt data-n="2">為什麼要特別處理</dt>
+  <dd>弱點是你預期的，但<strong>弱點的後果不會因為是練習而縮小</strong>。應用若連到網路、持有可計費的金鑰、或放了真實資料，後果就是真的。換成前置觀念的說法：這個應用本身位在你的信任邊界之外，不該拿到任何你不想失去的東西。<span class="tag author">作者整理，非官方</span></dd>
+  <dt data-n="3">沒做到會怎樣（概念層級）</dt>
+  <dd>四種後果：<strong>暴露</strong>（有洞的服務被不相干的人使用）；<strong>金鑰</strong>（金鑰放在應用讀得到的地方，應用被攻破就外洩）；<strong>費用</strong>（計費金鑰沒有上限，LLM06:2026 Unbounded Consumption 談的就是這種成本不對稱）；<strong>資料</strong>（真實資料送進有洞的應用，或送給雲端模型）。</dd>
+  <dt data-n="4">怎麼做 <span class="tag author">作者整理，非官方</span></dt>
+  <dd>
+    <ul>
+      <li>在虛擬機或容器網路內執行，不接公司內網；只綁本機位址，不對外開放連接埠。</li>
+      <li>專為練習申請金鑰，設定用量與費用上限，用完撤銷；不要使用正式金鑰。</li>
+      <li>只用虛構的資料，不匯入真實客戶或員工資料。</li>
+      <li>練習結束就銷毀環境。</li>
+      <li>攻擊技巧只用在你自己架設的練習環境；對任何其他系統測試，都需要事先取得授權。</li>
+    </ul>
+  </dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「這是 OWASP 的專案，所以裝在哪裡都安全。」專案的出處不會改變它「刻意有洞」的事實；OWASP 專案頁與 README 本身就在警告這一點。</dd>
+</dl>
+</div>
+
+<div class="scenario">
+<h3 id="scn-e">情境 E（虛構）：青禾金融的共用測試機</h3>
+<p><span class="tag fiction">虛構</span> 青禾金融是虛構的公司。同事把 FinBot CTF 用 Docker Compose 部署在一台可從網際網路連到的測試主機上，在設定檔放入團隊共用的正式 LLM 金鑰，並開放連接埠，方便大家在家一起練習。</p>
+<p class="arch"><strong>架構：</strong>網際網路 → 測試主機（開放連接埠）→ 刻意有漏洞的 FinBot → 設定檔內的正式金鑰 → 計費的模型服務。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>數天後，金鑰的用量帳單遠高於預期，主機上也出現來源不明的連線紀錄。（概念層級，不描述利用手法。）</li>
+  <li><strong>哪一環出問題：</strong>(1) 暴露：預期會被攻破的應用放在可上網的位置；(2) 金鑰：正式金鑰放在這個應用的設定裡；(3) 費用：金鑰沒有用量上限。三者疊加。</li>
+  <li><strong>對應條目：</strong>費用面向對應 LLM06:2026 Unbounded Consumption；其餘是通用資安原則（最小權限 (Least Privilege)、信任邊界）。<span class="tag author">作者整理，非官方</span></li>
+  <li><strong>該採什麼控制：</strong>移到隔離網段或本機虛擬機且不對外；撤銷已放進設定檔的正式金鑰，改用專為練習申請、有上限的金鑰；多人同玩就各自在自己的隔離環境執行。</li>
+</ol>
+</div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>三個專案：PromptMe（本機 Ollama、10 個挑戰）、PwnzzAI（每項弱點附加固替代方案）、FinBot CTF（多 agent 平台、五類挑戰）。授權各不相同。</li>
+  <li>三者都對照 LLM Top 10 <strong>2025 版</strong>；換成 2026 版時，十項中只有 LLM01 與 LLM02 的編號不變。引用一律帶年份。</li>
+  <li>刻意有漏洞的應用本身不可信：隔離環境、專用且有上限的金鑰、虛構資料、不對外開放。</li>
+  <li>FinBot 的舊資源頁與較新的部落格、README 範圍不同，教材採較新者。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出三個專案各自的焦點與授權，並為一個學習目標挑出合適的專案。</li>
+  <li>我能把練習裡的 2025 版編號換算成 2026 版，並寫成帶年份的形式。</li>
+  <li>我能列出執行刻意有漏洞的應用之前的準備事項。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO1、LO2、LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-learning-loop.html">第 2 章　把練習接回防禦：學習迴圈與收尾</a>：把練習的觀察接回風險條目與防禦控制，並了解練習能教什麼、不能教什麼。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP PromptMe：GitHub README、<code>project.owasp.yaml</code> 與 release v1.0.0（2025-08-21）— <a href="https://github.com/OWASP/www-project-promptme">github.com/OWASP/www-project-promptme</a>；2026-10-26 讀取；Apache-2.0。</li>
+    <li>OWASP PwnzzAI：GitHub README — <a href="https://github.com/OWASP/PwnzzAI">github.com/OWASP/PwnzzAI</a>；2026-10-26 讀取；GPL-3.0；無 release。</li>
+    <li>FinBot CTF：官方資源頁（2025-08-12）<a href="https://genai.owasp.org/resource/finbot-agentic-ai-capture-the-flag-ctf-application/">genai.owasp.org/resource/finbot-agentic-ai-capture-the-flag-ctf-application/</a>；官方部落格「FinBot CTF Is Live」（2026-04-14）<a href="https://genai.owasp.org/2026/04/14/finbot-ctf-is-live-a-hands-on-companion-to-the-owasp-genai-security-project/">genai.owasp.org/2026/04/14/…</a>；程式碼 <a href="https://github.com/GenAI-Security-Project/finbot-ctf">github.com/GenAI-Security-Project/finbot-ctf</a>（README Apache 2.0）。</li>
+    <li>OWASP Top 10 for LLM Applications 2026：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/tree/main/2026/final">GenAI-LLM-Top10 2026/final</a>（Version 2026；發布日採 2026-08-04）；2025 版清單：<a href="https://genai.owasp.org/llm-top-10/">genai.owasp.org/llm-top-10/</a>（Version 2025，2024-11-18）。CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：genai.owasp.org 資源頁與 OWASP Top 10 for LLM Applications — CC BY-SA 4.0；PromptMe — Apache-2.0；PwnzzAI — GPL-3.0；FinBot CTF — README 寫 Apache 2.0（GitHub 偵測值為 NOASSERTION）。本教材只引用專案名稱與描述，未複製其程式碼或解法。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch1', topic: 'hands-on-labs', mode: 'chapter',
+  questions: [
+    { id: 'c1q1', type: 'mc', lo: [1], refs: [{label: '1.2 表 1-1', href: '01-three-labs.html#lab-compare'}],
+      stem: 'FinBot CTF 的官方資源頁（2025-08-12）寫「目前聚焦 Goal Manipulation」，但 2026-04-14 的官方部落格與目前 repo 的 README 描述了更廣的挑戰類別。依「版本或日期衝突時以最新為準」的規則，教材怎麼處理？',
+      options: [
+        { text: '採資源頁，因為它是 genai.owasp.org 上的官方頁面。', why: '規則看的是日期，不是頁面的「官方感」；資源頁較舊，其敘述已被較新的來源取代。' },
+        { text: '兩者取交集，只寫雙方都提到的範圍。', why: '規則是採最新者，不是取交集；取交集會把較新來源明載的範圍也刪掉。' },
+        { text: '採較新的部落格與 README 描述的範圍，並在參考資料頁記錄資源頁的舊敘述與衝突。', correct: true, why: '符合規則：以較新者為準，舊敘述只出現在衝突與取捨的說明裡。' },
+        { text: '不引用 FinBot，因為兩處來源互相矛盾。', why: '用日期就能解決這個矛盾，不需要放棄引用；放棄反而讓讀者少了一個練習選項。' }
+      ],
+      summary: '來源互相衝突時，比對日期、採最新者，並把取捨寫出來。' },
+    { id: 'c1q2', type: 'match', lo: [3], refs: [{label: '1.3 表 1-2', href: '01-three-labs.html#lab-versions'}],
+      stem: 'PromptMe 的挑戰資料夾以 2025 版編號命名。把下列資料夾名稱配對到對應的 2026 版條目。',
+      cats: [
+        { id: 'a01', label: 'LLM01:2026' },
+        { id: 'a03', label: 'LLM03:2026' },
+        { id: 'a06', label: 'LLM06:2026' },
+        { id: 'a09', label: 'LLM09:2026' }
+      ],
+      items: [
+        { text: 'LLM01_Prompt_Injection', answer: 'a01', why: 'Prompt Injection 在兩個版本都是 LLM01。' },
+        { text: 'LLM06_Excessive_Agency', answer: 'a03', why: 'Excessive Agency 在 2025 版是 LLM06，2026 版升至 LLM03。' },
+        { text: 'LLM10_Unbounded_Consumption', answer: 'a06', why: 'Unbounded Consumption 在 2025 版是 LLM10，2026 版是 LLM06。' },
+        { text: 'LLM08_Vector_and_Embedding_Weaknesses', answer: 'a09', why: 'Vector and Embedding Weaknesses 在 2025 版是 LLM08，2026 版是 LLM09。' }
+      ],
+      summary: '只有 LLM01 與 LLM02 的編號沒變；其餘要查表 1-2。' },
+    { id: 'c1q3', type: 'mc', lo: [2], refs: [{label: '1.5 安全地執行', href: '01-three-labs.html#lab-safe'}],
+      stem: 'PromptMe 的 README 對執行環境的建議，最接近下列哪一項？',
+      options: [
+        { text: '它是 OWASP 專案，可以直接安裝在日常使用的工作機上。', why: '專案本身就警告含有不安全的程式碼與套件；出處不等於安全。' },
+        { text: '在虛擬或沙箱環境中執行，且它示範的做法不可用在正式系統。', correct: true, why: '這是 README 的建議與警告，對應 1.5 節的第 1 點。' },
+        { text: '只要不連網，就可以放真實資料來測試。', why: '「不連網」不是 README 的建議；而且練習用的資料應該是虛構的，真實資料不該進入有洞的應用。' },
+        { text: '只要使用雲端 LLM 服務，本機就不會有風險。', why: 'PromptMe 的設計是用本機 Ollama 搭配開源模型；而且雲端服務並不能讓有洞的應用變安全。' }
+      ],
+      summary: '刻意有洞的應用要在隔離環境中執行。' },
+    { id: 'c1q4', type: 'scn', lo: [2], refs: [{label: '情境 E', href: '01-three-labs.html#scn-e'}, {label: '1.5 安全地執行', href: '01-three-labs.html#lab-safe'}],
+      stem: '依情境 E，最該先補上的控制是哪一項？',
+      scenario: '水岸科技（虛構）的工程師把一個刻意有漏洞的 agent 練習平台部署在雲端主機上，開放公開連接埠，並在設定檔放入公司正式的 LLM 金鑰，讓全組可以遠端一起練習。一週後金鑰用量暴增，金鑰也被供應商停用。',
+      options: [
+        { text: '把環境改放隔離網段且不對外，並改用專為練習申請、有用量上限的金鑰。', correct: true, why: '問題是「暴露」「金鑰」「費用」三者疊加；隔離與專用金鑰同時處理這三項。' },
+        { text: '在 agent 的 system prompt 加一句「不得洩漏金鑰」。', why: '應用本身是刻意有洞的；把保護金鑰的責任交給提示詞，等於沒有保護。' },
+        { text: '改用更新的模型，期待它更能抵抗操縱。', why: '模型的新舊無法取代環境隔離與金鑰管理，而且這個應用的弱點是刻意放進去的。' },
+        { text: '在平台前面加一道關鍵字過濾，擋掉可疑的請求。', why: '關鍵字過濾不是邊界；金鑰與主機仍然暴露在不該暴露的位置。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 這個應用是刻意有漏洞的，所以預期會被攻破，不該拿到任何你不想失去的東西。(2) 事件由三個條件疊加：公開暴露、正式金鑰放在應用讀得到的地方、沒有用量上限。(3) 控制要放在環境與金鑰這一層，而不是應用內部的文字規則。</p><p><strong>結論：</strong>隔離且不對外，加上專用、有上限的金鑰，並撤銷已外洩的金鑰。對應教材：<a href="01-three-labs.html#lab-safe">1.5 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

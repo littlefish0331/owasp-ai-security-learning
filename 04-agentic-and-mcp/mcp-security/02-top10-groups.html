@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　MCP Top 10 十項分組｜MCP 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="MCP Top 10 的十項風險依「憑證與權限」「工具與脈絡」「治理與可見性」三組整理，並對照 Agentic Top 10 與 LLM Top 10 2026；本頁因來源授權不明而保守標為 NC，僅引用名稱、編號與簡短描述。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="mcp-security" data-page="02-top10-groups.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　MCP Top 10 十項分組</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-map-and-status.html">第 1 章</a></li>
+  <li><span class="tag nc">NC</span> 本頁涉及的 MCP Top 10 授權文字自相矛盾，保守視為非商業</li>
+</ul>
+<div class="callout nc">
+  <p class="callout-title">授權提醒（本頁特別標註）</p>
+  <p>OWASP MCP Top 10 的授權文字前後矛盾（見<a href="01-map-and-status.html#m-evo">第 1 章表 1-2</a>）：<code>LICENSE.md</code> 寫 CC BY-SA 4.0，README 與 <code>index.md</code> 寫 CC BY-NC-SA 4.0。本頁依 NC 處理：<strong>只引用條目的編號、名稱與極簡的描述，其餘說明是作者用自己的話整理的，不是官方內文</strong>；若你要再散布或商業使用，請先自行確認授權。</p>
+</div>
+<p class="lead">MCP Top 10 有十個條目。直接背十個名字沒有用，因為它們的層級不一樣：有的是「憑證怎麼管」，有的是「工具本身被動手腳」，有的是「組織看不見」。本章把它們分成三組，讓你能用「出問題的地方」而不是「編號」去記，並接回前兩個主題：每一項在 Agentic Top 10 與 LLM Top 10 2026 裡對應什麼。</p>
+
+<h2 id="g-list">2.1 十項清單（採 GitHub index.md 的名稱）</h2>
+<div class="table-wrap"><table>
+<caption>表 2-1　OWASP MCP Top 10 十項與分組（名稱與編號為官方；分組為作者整理）</caption>
+<thead><tr><th scope="col">編號</th><th scope="col">名稱</th><th scope="col">分組（作者整理）</th><th scope="col">一句話（作者的概述，非官方內文）</th></tr></thead>
+<tbody>
+<tr><th scope="row">MCP01:2025</th><td>Token Mismanagement &amp; Secret Exposure</td><td>A 憑證與權限</td><td>權杖與機密被硬寫、長壽或殘留在脈絡與日誌裡</td></tr>
+<tr><th scope="row">MCP02:2025</th><td>Privilege Escalation via Scope Creep</td><td>A 憑證與權限</td><td>原本窄的權限隨時間悄悄擴大</td></tr>
+<tr><th scope="row">MCP07:2025</th><td>Insufficient Authentication &amp; Authorization</td><td>A 憑證與權限</td><td>伺服器、工具、agent 沒有確實驗證身分與存取控制</td></tr>
+<tr><th scope="row">MCP03:2025</th><td>Tool Poisoning</td><td>B 工具與脈絡</td><td>工具的描述或結構定義被動手腳，使模型誤用</td></tr>
+<tr><th scope="row">MCP05:2025</th><td>Command Injection &amp; Execution</td><td>B 工具與脈絡</td><td>agent 用不可信的輸入組出系統指令或程式碼並執行</td></tr>
+<tr><th scope="row">MCP06:2025</th><td>Intent Flow Subversion（舊名：Prompt Injection via Contextual Payloads）</td><td>B 工具與脈絡</td><td>檢索到的脈絡夾帶隱藏指示，把 agent 從使用者的目標帶走</td></tr>
+<tr><th scope="row">MCP10:2025</th><td>Context Injection &amp; Over-Sharing</td><td>B 工具與脈絡</td><td>共享或持久的脈絡讓資訊在使用者、agent 之間外流</td></tr>
+<tr><th scope="row">MCP04:2025</th><td>Software Supply Chain Attacks &amp; Dependency Tampering</td><td>C 治理與可見性</td><td>SDK、連接器、外掛等相依元件被竄改</td></tr>
+<tr><th scope="row">MCP08:2025</th><td>Lack of Audit and Telemetry</td><td>C 治理與可見性</td><td>缺少日誌與遙測，無法調查與應變</td></tr>
+<tr><th scope="row">MCP09:2025</th><td>Shadow MCP Servers</td><td>C 治理與可見性</td><td>未經核准、不受監管的 MCP 伺服器</td></tr>
+</tbody></table></div>
+<p>本教材是依「出問題的地方」分組：<strong>A</strong> 問題在<em>誰能做什麼</em>（身分、權限、機密）；<strong>B</strong> 問題在<em>模型看到什麼、做什麼</em>（工具定義、輸入、脈絡）；<strong>C</strong> 問題在<em>組織看不看得見、管不管得到</em>（供應鏈、稽核、影子部署）。官方沒有給這個分組，<span class="tag author">作者整理，非官方</span>。順序是依分組重排，與官方編號順序不同。</p>
+
+<h2 id="g-map">2.2 對照 Agentic Top 10 與 LLM Top 10 2026</h2>
+<p>MCP Top 10 沒有官方的跨文件對照表。下表是作者依<strong>名稱與內容語意</strong>做的對照，<strong>整張都是作者整理，非官方</strong>；只有在 MCP Top 10 的 Recommended Controls 與 Agentic Top 10 的內文裡明確出現的連結，才在最右欄標示。</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　MCP Top 10 與相鄰文件的語意對照（<strong>作者整理，非官方</strong>）</caption>
+<thead><tr><th scope="col">MCP 條目</th><th scope="col">最接近的 Agentic Top 10</th><th scope="col">最接近的 LLM Top 10 2026</th><th scope="col">官方明文的連結</th></tr></thead>
+<tbody>
+<tr><th scope="row">MCP01 權杖與機密</th><td>ASI03 Identity and Privilege Abuse</td><td><a href="../../02-llm-applications/llm-top-10/06-disclosure.html#dc-what">LLM02:2026</a> Sensitive Information Disclosure</td><td>—</td></tr>
+<tr><th scope="row">MCP02 範圍膨脹</th><td>ASI03、ASI02</td><td><a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a> Excessive Agency<td>—</td></tr>
+<tr><th scope="row">MCP03 工具投毒</th><td>ASI02（工具介面被竄改歸 ASI02）、ASI04</td><td><a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-supply">LLM04:2026</a> Supply Chain（若來源是第三方）</td><td>Agentic Top 10 的 ASI02 情境 1 與 ASI04 寫到 MCP 工具描述／中繼資料</td></tr>
+<tr><th scope="row">MCP04 供應鏈</th><td>ASI04 Agentic Supply Chain Vulnerabilities</td><td>LLM04:2026 Supply Chain</td><td>ASI04 明列 MCP／A2A 與登錄</td></tr>
+<tr><th scope="row">MCP05 指令注入與執行</th><td>ASI05 Unexpected Code Execution</td><td><a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-output">LLM10:2026</a> Improper Output Handling</td><td>—</td></tr>
+<tr><th scope="row">MCP06 意圖流顛覆</th><td>ASI01 Agent Goal Hijack</td><td><a href="../../02-llm-applications/llm-top-10/02-prompt-injection.html#pi-what">LLM01:2026</a> Prompt Injection</td><td>—</td></tr>
+<tr><th scope="row">MCP07 驗證授權不足</th><td>ASI03、ASI07</td><td>LLM03:2026</td><td>—</td></tr>
+<tr><th scope="row">MCP08 稽核與遙測</th><td>（ASI08、ASI10 的緩解皆含日誌）</td><td>—</td><td>—</td></tr>
+<tr><th scope="row">MCP09 影子伺服器</th><td>ASI04（未核准的外部元件）</td><td>—</td><td>—</td></tr>
+<tr><th scope="row">MCP10 脈絡過度分享</th><td>ASI06 Memory &amp; Context Poisoning（污染面）；ASI07（通訊面）</td><td>LLM02:2026；<a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-hidden">LLM08:2026</a> Hidden Context Exposure</td><td>—</td></tr>
+</tbody></table></div>
+<p>本教材只在這張表裡放了「語意上最接近」的對照，沒有逐項核對 MCP 條目內文與對方條目的細節；因此請把它當作<strong>找資料的起點</strong>，而不是官方對映。</p>
+
+<h2 id="g-concept">2.3 核心概念：Tool Poisoning 與 Rug Pull</h2>
+<div class="concept">
+<h3 id="c-poison">工具投毒 (Tool Poisoning) 與抽換 (Rug Pull)</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>Tool Poisoning：工具的描述、參數結構或回傳值被埋入針對模型的指示。Rug Pull：工具先以合法面貌通過審查，之後被悄悄換成惡意版本。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>MCP 工具的描述是<strong>寫給模型讀的自然語言</strong>，模型把它當作可信的操作說明；而 MCP 的工具定義可以動態載入、缺乏嚴格版本控制，所以審查通過的版本和實際執行的版本可能不同。第 1 章說過：所有伺服器的工具描述都在同一個脈絡裡。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>官方 MCP03 條目還補充了一件事：投毒不只在<em>描述文字</em>，也可以在<em>結構定義 (schema)</em>：讓一個聽起來無害的操作對映到破壞性動作，且因為「合約本身是惡意的」，表面驗證與稽核紀錄看起來都合法。另一種是「工具遮蔽 (Tool Shadowing)」：一個伺服器的描述去影響模型如何使用<em>另一個</em>可信伺服器的工具。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>安裝前：完整檢視（不只看摘要）工具描述與結構；用靜態指標先篩（官方 MCP03 條目列了幾類指標，例如針對模型下命令的語句、提到敏感路徑、動詞加外部目的地的外送模式、隱藏或零寬字元、藏在註解裡的指示）。運行時：<strong>以密碼學雜湊固定完整的工具定義</strong>（Cheat Sheet 特別強調要雜湊完整定義，包含輸入結構、輸出結構與註記，因為一個被翻轉的唯讀提示就能改變用戶端的核准行為），定義一變就要求重新審查；給每個工具簽章的 manifest；伺服器之間隔離。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「雜湊固定了描述，就沒有 Rug Pull 了。」Cheat Sheet 明說：雜湊只偵測<em>中繼資料</em>的變更，偵測不到定義不變、但伺服器程式碼在背後行為改變的情況；工具註記也只是提示，不是強制。</dd>
+</dl>
+</div>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>MCP Top 10 十項可依出問題的地方分三組：A 憑證與權限（MCP01、02、07）、B 工具與脈絡（MCP03、05、06、10）、C 治理與可見性（MCP04、08、09）。這個分組是作者整理。</li>
+  <li>MCP 與 Agentic Top 10、LLM Top 10 沒有官方對照表；表 2-2 是作者依語意整理的找資料起點。</li>
+  <li>Tool Poisoning 不只在描述，也在結構定義；Rug Pull 靠定義抽換；雜湊要涵蓋完整定義，但仍偵測不到程式碼行為的變化。</li>
+  <li>授權文字自相矛盾，本頁保守標 NC，只引用名稱、編號與極簡描述。</li>
+</ul></div>
+<ul class="checklist">
+  <li>給我一個 MCP 事件，我能指出它最主要歸 A、B、C 哪一組，並找到最接近的條目。</li>
+  <li>我能解釋為什麼要雜湊「完整」的工具定義，以及這個做法的限制。</li>
+  <li>我知道表 2-2 是作者整理，不是官方對照。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-server-developer.html">第 3 章　伺服器開發者視角</a>：如果你要自己寫 MCP 伺服器，官方給的八類控制與「最低標準」檢查表，加上情境 A。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP MCP Top 10：<a href="https://owasp.org/www-project-mcp-top-10/">owasp.org 專案頁</a>、<a href="https://github.com/OWASP/www-project-mcp-top-10">GitHub 倉庫</a>（<code>index.md</code>、<code>2025/MCP03-…md</code> 的偵測指標與預防控制；2026-10-26 讀取）。<span class="tag nc">NC</span> 授權文字自相矛盾，保守視為非商業；僅引用名稱、編號與極簡描述。</li>
+    <li>OWASP Cheat Sheet Series, <em>MCP Security Cheat Sheet</em>：<a href="https://cheatsheetseries.owasp.org/cheatsheets/MCP_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；2026-10-26 讀取；最近修改 2026-10-16。引用：Key Risks、第 2 項工具描述與結構完整性。</li>
+    <li>OWASP Top 10 for Agentic Applications for 2026：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a>；ASI02、ASI04 關於 MCP 的描述；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">GitHub 2026/README.md</a>；僅用於 2026 版編號。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：MCP Security Cheat Sheet — Cheat Sheet Series 網站標示；Top 10 for Agentic Applications 2026、Top 10 for LLM Applications 2026 — CC BY-SA 4.0。<span class="tag nc">NC</span> OWASP MCP Top 10 的授權文字自相矛盾（LICENSE.md 為 CC BY-SA 4.0；README 與 index.md 為 CC BY-NC-SA 4.0），本頁保守視為非商業授權，僅引用名稱、編號與簡短描述。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'mcp-ch2', topic: 'mcp-security', mode: 'chapter',
+  questions: [
+    { id: 'm2q1', type: 'match', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-top10-groups.html#g-list'}],
+      stem: '把 MCP Top 10 的條目配對到本章（作者整理）的分組。',
+      cats: [
+        { id: 'a', label: 'A 憑證與權限' },
+        { id: 'b', label: 'B 工具與脈絡' },
+        { id: 'c', label: 'C 治理與可見性' }
+      ],
+      items: [
+        { text: 'MCP02 Privilege Escalation via Scope Creep', answer: 'a', why: '問題在權限隨時間擴大。' },
+        { text: 'MCP03 Tool Poisoning', answer: 'b', why: '問題在模型看到的工具定義。' },
+        { text: 'MCP09 Shadow MCP Servers', answer: 'c', why: '問題在組織管不到的伺服器。' },
+        { text: 'MCP10 Context Injection &amp; Over-Sharing', answer: 'b', why: '問題在脈絡的共享與外流。' }
+      ],
+      summary: '依「出問題的地方」分組。' },
+    { id: 'm2q2', type: 'mc', lo: [2], refs: [{label: '2.2 表 2-2', href: '02-top10-groups.html#g-map'}],
+      stem: '同事要在內部規範寫「MCP06 對應 ASI01，這是 OWASP 官方的對照」。依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，OWASP 提供了完整的對照表。', why: 'MCP Top 10 沒有官方跨文件對照表。' },
+        { text: '不準確：官方沒有 MCP 對 ASI 的對照表；這是依語意的作者整理，只能當找資料的起點，並要標明來源。', correct: true, why: '2.2 節。' },
+        { text: '錯誤，MCP06 與 ASI01 完全無關。', why: '語意上接近，只是不是官方對映。' },
+        { text: '應該改成對應 LLM06。', why: '2026 版 LLM06 是 Unbounded Consumption，更不是對照。' }
+      ],
+      summary: '沒有官方對照表，別寫成官方。' },
+    { id: 'm2q3', type: 'mc', lo: [2], refs: [{label: '2.3 核心概念', href: '02-top10-groups.html#c-poison'}],
+      stem: '依 Cheat Sheet，為什麼要雜湊「完整的」工具定義，而不只是描述文字？',
+      options: [
+        { text: '因為雜湊描述太慢。', why: '與效能無關。' },
+        { text: '因為只改輸入結構、輸出結構或註記（如被翻轉的唯讀提示），也能改變用戶端的核准行為，描述文字卻看不出變化。', correct: true, why: '2.3 節引用 Cheat Sheet 的說法。' },
+        { text: '因為雜湊完整定義就能保證伺服器程式碼沒被改。', why: 'Cheat Sheet 明說雜湊只偵測中繼資料變更，偵測不到程式碼行為。' },
+        { text: '因為官方規定一定要用 SHA-256。', why: '文件沒有指定雜湊演算法。' }
+      ],
+      summary: '雜湊要涵蓋完整定義，但仍有限制。' },
+    { id: 'm2q4', type: 'scn', lo: [2], refs: [{label: '2.3 核心概念', href: '02-top10-groups.html#c-poison'}],
+      stem: '依本章，團隊的處置漏掉了什麼？',
+      scenario: '朝日科技（虛構）導入了一個第三方 MCP 伺服器。審查時，資安團隊只看了每個工具的「描述」欄，確認沒有可疑文字，並把描述的雜湊存檔。一個月後，該伺服器的某個工具在「輸入結構」中新增了一個可選參數，並把註記從唯讀改為非唯讀；描述完全沒變。用戶端因註記改變而不再提示核准。',
+      options: [
+        { text: '沒漏掉什麼，描述沒變就是沒被動手腳。', why: '結構與註記也是注入面與行為面。' },
+        { text: '只雜湊了描述：應雜湊並固定完整的工具定義（含輸入結構、輸出結構與註記），定義變動就要求重新審查；同時要知道雜湊偵測不到程式碼行為的變化。', correct: true, why: '2.3 節。' },
+        { text: '應該完全不使用第三方 MCP 伺服器。', why: '文件的做法是控管，而不是一律禁止。' },
+        { text: '只要增加日誌即可。', why: '日誌屬偵測，無法在變動當下阻止用戶端停止提示。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 描述沒變，但結構與註記變了，用戶端的核准行為跟著改變。(2) Cheat Sheet 要求把完整定義（含 <code>inputSchema</code>、<code>outputSchema</code>、<code>annotations</code>）一起固定。(3) 即使如此，程式碼行為的改變仍偵測不到，所以還要沙箱與最小權限。</p><p><strong>結論：</strong>改為完整定義的雜湊固定加重新審查流程。對應教材：<a href="02-top10-groups.html#c-poison">2.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

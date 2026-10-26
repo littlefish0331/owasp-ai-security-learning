@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜RAG 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="RAG 安全主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="rag-security" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 2.1 節、第 6.3 節與第 8 節）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以本教材回到一手來源重新核對。本頁列出：每個項目採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。舊版資訊只出現在版本演進與本頁。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">RAG Security Cheat Sheet</th><td>頁面無版本與日期；以 GitHub 歷史為準：2026-05-06 建立（#2131），最後修改 2026-10-04（#2542 完整性基準、#2543 日誌敏感內容）；讀取時共 4 個 commit</td><td><a href="https://cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html">網頁</a>；<a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/RAG_Security_Cheat_Sheet.md">GitHub 原始檔</a>（網頁與原始檔的關鍵段落一致）</td><td>CC BY-SA 4.0（Cheat Sheet Series 站台頁尾）</td></tr>
+<tr><th scope="row">LLM09:2026 Vector and Embedding Weaknesses</th><td>Version 2026；發布日採 2026-08-04（沿用 U-C8）；該檔最新 commit 2026-07-16</td><td><a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM09_VectorAndEmbeddingWeaknesses.md">GenAI-LLM-Top10 2026/final</a></td><td>CC BY-SA 4.0（GenAI-LLM-Top10 README 標示）</td></tr>
+<tr><th scope="row">LLM Top 10 2026 附錄：AISVS 對應</th><td>Top 10 2026 對 AISVS 1.0；章節粒度的方向性指引</td><td><a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLMZZ_Appendix_AISVS_Mapping.md">LLMZZ_Appendix_AISVS_Mapping.md</a></td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">AISVS C8（記憶、嵌入與向量資料庫安全）</th><td>最新穩定版 <strong>1.01</strong>（AISVS README 載明；1.02 為開發中）。教材引用 C8 的名稱與範圍，不逐項引用要求</td><td><a href="https://github.com/OWASP/AISVS/tree/main/1.01/en">AISVS 1.01</a>；<a href="https://github.com/OWASP/AISVS/blob/main/1.0/en/0x10-C08-Memory-Embeddings-and-Vector-Database.md">1.0 的 C8</a>（Cheat Sheet 的連結指向此處）</td><td>AISVS 儲存庫另有授權標示；本教材只引用名稱與範圍</td></tr>
+<tr><th scope="row">LLM Prompt Injection Prevention Cheat Sheet（僅用於第 4 章的對照）</th><td>頁面無版本與日期；GitHub 歷史：2025-05-26 建立，最後修改 2026-10-22</td><td><a href="https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html">網頁</a></td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">AI Exchange：RAG systems overview</th><td>2026-10-25 內容快照（沿用 AI Exchange 主題）</td><td><a href="https://owaspai.org/go/ragoverview">owaspai.org/go/ragoverview</a></td><td>CC0 1.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>沿用專案已放置的副本</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">RAG Security Cheat Sheet 的版本與日期</th><td>「各頁無日期或版本標示」</td><td>屬實；但 GitHub 歷史可查：2026-05-06 建立，2026-10-04 最後修改，共 4 個 commit</td><td>採用 GitHub 歷史日期，並註明頁面本身無版本與日期</td></tr>
+<tr><th scope="row">筆記對此 Cheat Sheet 的描述</th><td>「14 節：Document Poisoning、Embedding Manipulation、Context Window Attacks、Access Control Inheritance 等」</td><td>屬實，14 個 Section 另含 Implementation Priority；2026-10-04 的兩項修訂（完整性基準要簽章並與文件庫分開保管；日誌預設不記錄原始內容）筆記未提</td><td>第 2 章與第 4 章採用修訂後的內容</td></tr>
+<tr><th scope="row">AISVS 版本</th><td>筆記第 8 節第 6 項：owasp.org 寫 1.0，GitHub 寫 1.01、1.02 開發中</td><td>GitHub README 現況：最新穩定版 1.01，1.02 為唯一開發中版本。<strong>1.0 與 1.01 的 C8 內容幾乎相同：僅 8.2.3 措辭加強（原「agent 與工具輸出不要自動寫入可信記憶」，1.01 改為「從 agent 執行可達的任何元件，未經來源驗證都不能寫入」），以及參考連結由 2025 版條目更新為 2026 版條目（LLM08:2025 → LLM09:2026 等）</strong></td><td>採較新的 1.01（沿用 U-C9 的處理）；教材引用 C8 只講名稱與範圍，並註明 Cheat Sheet 與 Top 10 附錄的連結指向 1.0</td></tr>
+<tr><th scope="row">向量與嵌入弱點的條目編號</th><td>筆記：2026 版為 LLM09:2026；2025 版為 LLM08:2025</td><td>屬實。genai.owasp.org 的條目頁仍是 2025 版（LLM08:2025）。AISVS 1.0 的 C8 參考 LLM08:2025；1.01 已更新為 LLM09:2026</td><td>全站一律帶年份（沿用 L-02）</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM Top 10 2026 發布日</th><td>資源頁 2026-08-03；GitHub、PDF 封面 2026-08-04（U-C8）</td><td>採較新的 08-04（沿用 AI Exchange 主題）</td></tr>
+<tr><th scope="row">AISVS 1.0 vs 1.01</th><td>Cheat Sheet 的 References 與 Top 10 2026 附錄指向 1.0；AISVS README 稱 1.01 為最新穩定版</td><td>採 1.01；本教材只引用 C8 的名稱與範圍，兩個版本在此一致</td></tr>
+<tr><th scope="row">Cheat Sheet 與 AI Exchange 的涵蓋關係</th><td>Cheat Sheet 開頭寫「沒有任何現有 OWASP 指引全面涵蓋這個攻擊面」；AI Exchange 已有 RAG systems overview</td><td>不視為矛盾，也不下結論；第 1 章以「作者整理」標示作者的讀法（兩份寫作時間與焦點不同，互補）</td></tr>
+<tr><th scope="row">Cheat Sheet 第 3 節與 Prompt Injection Cheat Sheet 的措辭</th><td>RAG Cheat Sheet Section 3 建議分隔符號與掃描；Prompt Injection Cheat Sheet（2026-10 修訂）強調文字標籤與篩選不是強制邊界</td><td>不視為官方衝突；第 4 章以「作者整理」標示可並存的讀法：分隔符號降低機率，邊界在執行層控制</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>LLM09:2026 轉述的研究數字與 CVE：</strong>嵌入反推的重建比例、少量投毒文件的成功率、語意快取投毒的研究、兩個 CVE（向量資料庫與 RAG 引擎）等，皆為 OWASP 文件的轉述。本教材沒有回到原論文或 CVE 資料庫核對，只在需要時註明「依 OWASP 文件轉述」，不自行引用其他統計。（U-RAG1）</li>
+  <li><strong>AI Exchange 是否把 RAG／向量風險對照到 LLM09:2026：</strong>沿用 U-C7：在 AI Exchange 全文快照中沒有找到，但「沒找到」不等於「沒有」。本教材不宣稱有或沒有。（U-RAG2）</li>
+  <li><strong>RAG Security Cheat Sheet 的 Section 3 預設值（3–5 個區塊、2,000–4,000 token）的依據：</strong>Cheat Sheet 自稱是「合理預設」，沒有給出來源或測試方法。本教材寫成「Cheat Sheet 建議的預設」，不當成標準。（U-RAG3）</li>
+  <li><strong>Cheat Sheet 的優先層級（立即／接著／進階）是否有排序依據：</strong>文件沒有說明分層的準則。本教材只照錄，不推論其理由。（U-RAG4）</li>
+  <li><strong>Cheat Sheet 後續修訂：</strong>讀取時最後 commit 為 2026-10-04；之後是否再有修訂，教材發布後無法保證。因頁面本身無版本號，引用時請附讀取日。（U-RAG5）</li>
+  <li><strong>genai.owasp.org 的 LLM09:2026 條目頁：</strong>網站目前顯示 2025 版（LLM08:2025），尚未提供 2026 版條目頁；2026 版內容只能從 GitHub 原始檔讀取。（沿用調查筆記第 8 節第 3 項）</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<h3>OWASP Cheat Sheet Series</h3>
+<ul>
+  <li>RAG Security Cheat Sheet：<a href="https://cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html">網頁</a>；<a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/RAG_Security_Cheat_Sheet.md">GitHub 原始檔</a></li>
+  <li>LLM Prompt Injection Prevention Cheat Sheet：<a href="https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html">網頁</a></li>
+  <li>Logging Cheat Sheet（RAG Cheat Sheet 指向其資料排除與保護指引）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html">網頁</a></li>
+</ul>
+<h3>OWASP Top 10 for LLM Applications 2026（GitHub）</h3>
+<ul>
+  <li><a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM09_VectorAndEmbeddingWeaknesses.md">LLM09:2026 Vector and Embedding Weaknesses</a>；<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLMZZ_Appendix_AISVS_Mapping.md">AISVS 對應附錄</a></li>
+</ul>
+<h3>AISVS 與 AI Exchange</h3>
+<ul>
+  <li>AISVS：<a href="https://github.com/OWASP/AISVS/tree/main/1.01/en">1.01</a>；<a href="https://github.com/OWASP/AISVS/blob/main/1.0/en/0x10-C08-Memory-Embeddings-and-Vector-Database.md">1.0 的 C8</a></li>
+  <li>OWASP AI Exchange：<a href="https://owaspai.org/go/ragoverview">RAG systems overview</a></li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 1 章表 1-1 的「管線位置」與「三端」欄，及「立即層級以邊界類控制為主」的觀察；圖 1-1 的七環節與三端分組。</li>
+  <li>第 1 章表 1-2 最後一欄「怎麼讀」；「Cheat Sheet 與 AI Exchange 的涵蓋關係」的解讀；「LLM09:2026、Cheat Sheet、AISVS 是風險、做法、驗證」的三層對應。</li>
+  <li>第 2 章表 2-1 的「對應 LLM09:2026」欄；表 2-2 的對照編排；圖 2-1 攝入管線檢查點的串接；情境 C 末段「不需要精巧技巧」的觀察。</li>
+  <li>第 3 章表 3-1 的對照編排與「與架構式防禦是同一種思路」的類比；表 3-2 的編排；圖 3-1 的檢查順序。</li>
+  <li>第 4 章「分隔符號只是降低機率，邊界在別處」的讀法；表 4-1 中「錯誤的退回做法」欄；圖 4-1 的流程串接；表 4-2 的「對應環節」欄與「驗收清單」的說法；4.5 節中 Section 9 與 LLM10:2026、Section 10 與 LLM03:2026 的相鄰關係。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>OWASP Cheat Sheet Series 與 OWASP Top 10 for LLM Applications 2026：CC BY-SA 4.0。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>OWASP AI Exchange：CC0 1.0。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：OWASP Cheat Sheet Series、OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

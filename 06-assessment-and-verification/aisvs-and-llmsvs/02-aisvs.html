@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　AISVS：十二章與版本｜AISVS 與 LLMSVS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AISVS 1.01 的十二個章節各在驗證什麼、每章的需求數與層級分佈，以及 1.0 到 1.01 到 1.02 的版本演進與 owasp.org 與 GitHub 版本標示不一致的處理。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="aisvs-and-llmsvs" data-page="02-aisvs.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　AISVS：十二章與版本</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-verification-standards.html">第 1 章</a></li>
+</ul>
+<p class="lead">AISVS (Artificial Intelligence Security Verification Standard) 是仿照 ASVS 的 AI 系統安全驗證標準。本章看三件事：它的十二章各在驗證什麼；每一章的需求集中在哪個層級；以及版本怎麼演進，包括你一定會遇到的「owasp.org 說 1.0、GitHub 說 1.01」的不一致。</p>
+
+<h2 id="av-onepage">2.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 2-1　AISVS 一頁式全貌（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">是什麼</th><td>社群驅動的「可測試安全需求」目錄，適用於啟用 AI 的系統，涵蓋從資料收集、模型訓練到部署、監控與除役的整個生命週期。</td></tr>
+<tr><th scope="row">誰發布、給誰用</th><td>OWASP 專案，owasp.org 頁面標示 Incubator Project、分類 Standards；創辦人 Jim Manico，現任負責人另有 Otto Sulin、Rico Komenda、Russ Memisyazici（GitHub README）。給開發者、架構師、資安工程師與稽核人員。</td></tr>
+<tr><th scope="row">採用版本</th><td><strong>1.01</strong>（GitHub README：最新穩定版；1.02 是唯一的開發中版本）。owasp.org 專案頁仍寫 1.0 為最新穩定版（見 2.4 節）。</td></tr>
+<tr><th scope="row">授權</th><td>CC BY-SA 4.0。</td></tr>
+<tr><th scope="row">相容與對照</th><td>owasp.org 頁面列出的對照標準：OWASP ASVS、LLM Top 10、Agentic Top 10、NIST AI RMF、ISO/IEC 42001、歐盟 AI 法案。</td></tr>
+</tbody></table></div>
+
+<h2 id="av-chapters">2.2 十二章各在驗證什麼</h2>
+<p>下表的「在驗證什麼」是作者依各章的官方控制目標與小節標題，用自己的話整理；「需求數」與「層級分佈」是作者數 1.01 各章的需求表得到的（核對日 2026-10-26，總和 213 條，與 1.01 發布說明的「213 active chapter requirements」一致）。</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　AISVS 1.01 的十二章（需求數與層級分佈為作者逐章計數；「在驗證什麼」為作者整理）</caption>
+<thead><tr><th scope="col">章</th><th scope="col">章名</th><th scope="col">在驗證什麼 <span class="tag author">作者整理，非官方</span></th><th scope="col">需求數</th><th scope="col">L1／L2／L3</th></tr></thead>
+<tbody>
+<tr><th scope="row">C1</th><td>訓練資料完整性與可追溯 <br>(Training Data Integrity &amp; Traceability)</td><td>訓練資料的來源、標註與品質是否可追溯、未被竄改</td><td>13</td><td>2／9／2</td></tr>
+<tr><th scope="row">C2</th><td>輸入驗證 <br>(Input Validation)</td><td>進入模型的輸入是否被當成不可信，並擋在第一線（提示詞注入、內容篩選）</td><td>12</td><td>7／3／2</td></tr>
+<tr><th scope="row">C3</th><td>模型生命週期與變更控制 <br>(Model Lifecycle Management &amp; Change Control)</td><td>模型的變更是否受授權、驗證，且能受控部署與回滾</td><td>15</td><td>3／8／4</td></tr>
+<tr><th scope="row">C4</th><td>基礎設施、設定與部署安全 <br>(Infrastructure, Configuration &amp; Deployment Security)</td><td>AI 專屬基礎設施是否被加固，防模型竊取、資料外洩與跨租戶污染</td><td>14</td><td>3／2／9</td></tr>
+<tr><th scope="row">C5</th><td>AI 元件與使用者的存取控制與身分 <br>(Access Control &amp; Identity)</td><td>檢索與推論流程是否套用「使用者」的授權，而非只靠服務帳號權限</td><td>11</td><td>0／6／5</td></tr>
+<tr><th scope="row">C6</th><td>模型的供應鏈安全 <br>(Supply Chain Security for Models)</td><td>第三方模型、框架、資料集是否被驗證完整性與留有物料清單</td><td>7</td><td>3／4／0</td></tr>
+<tr><th scope="row">C7</th><td>模型行為、輸出控制與安全保證 <br>(Model Behavior, Output Control &amp; Safety Assurance)</td><td>模型輸出在到達使用者或下游系統前，是否被約束、驗證與監控</td><td>14</td><td>5／6／3</td></tr>
+<tr><th scope="row">C8</th><td>記憶、嵌入與向量資料庫安全 <br>(Memory, Embeddings &amp; Vector Database Security)</td><td>RAG 的向量庫與記憶的存取控制、嵌入清理與過期撤銷</td><td>11</td><td>2／6／3</td></tr>
+<tr><th scope="row">C9</th><td>編排與 Agentic 安全 <br>(Orchestration &amp; Agentic Security)</td><td>自主與多代理系統是否只做被授權、被限定範圍的動作</td><td>37</td><td>6／22／9</td></tr>
+<tr><th scope="row">C10</th><td>模型上下文協定 (MCP) 安全 <br>(Model Context Protocol Security)</td><td>MCP 工具與資源整合的發現、驗證授權、傳輸與使用</td><td>39（另有 1 列已移除的占位）</td><td>15／22／2</td></tr>
+<tr><th scope="row">C11</th><td>對抗式穩健性 <br>(Adversarial Robustness)</td><td>面對規避、推論、竊取與投毒時，系統是否仍可靠且抗濫用</td><td>19</td><td>6／8／5</td></tr>
+<tr><th scope="row">C12</th><td>監控、日誌與異常偵測 <br>(Monitoring, Logging &amp; Anomaly Detection)</td><td>是否看得見模型與其他 AI 元件看到、做了、回傳了什麼，以偵測與分流威脅</td><td>21</td><td>5／14／2</td></tr>
+</tbody></table></div>
+<p>兩個值得注意的現象（都是從上表算出的<strong>觀察</strong>，不是官方陳述）：C9 與 C10 合計 76 條，占 213 條的三分之一以上，反映代理式與 MCP 的新風險；而 C4 的 14 條中有 9 條在層級 3，C5 則完全沒有層級 1 的需求。意思是：<strong>各章的需求不是平均分佈</strong>，你選的目標層級會讓各章要做的量差很多。全部 213 條中，標為層級 1 的有 57 條、層級 2 有 110 條、層級 3 有 46 條（同為作者計數）。</p>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：層級是否累積</p>
+  <p>AISVS README 說每條需求被指派層級 1、2 或 3，並說「多數正式系統至少應以層級 2 為目標」，但<strong>沒有明說</strong>以層級 2 為目標時是否也要做完所有層級 1 的需求。ASVS 的層級是累積的，若比照辦理，以層級 2 為目標約需處理 57 + 110 = 167 條；這是<span class="tag author">作者整理，非官方</span>的推算，本教材無法確認 AISVS 是否採相同解讀。評估前請向專案確認，或在報告中明寫你採用的解讀。</p>
+</div>
+
+<h3 id="av-example">看幾條真實的需求長什麼樣</h3>
+<p>下列為 AISVS 1.01 的原文意旨（短引用，標識別碼與層級）：</p>
+<ul>
+  <li><code>v1.01-C2.1.6</code>（層級 2）：系統要強制指令層級，讓系統與開發者訊息高於使用者指令與其他不可信輸入，且不可信內容不能靠檢索、工具處理或跨回合的保存而取得更高的指令優先權。</li>
+  <li><code>v1.01-C9.5.3</code>（層級 2）：所有存取控制決定都由應用邏輯或政策引擎執行，<strong>絕不由 AI 模型本身</strong>執行。</li>
+  <li><code>v1.01-C5.2.2</code>（層級 2）：檢索管線在每個檢索與組裝階段都套用<strong>終端使用者</strong>的授權脈絡，而不是只依賴服務帳號的權限。</li>
+</ul>
+<p>這三條有個共同點：它們都把「判斷權」放在模型之外。這呼應前面主題反覆出現的原則（授權要在後端強制，不寫在提示詞裡）。每條都有一個可以構造的測試：給一段想提升優先權的內容、讓模型輸出一個授權決定、用低權限使用者去問高權限文件。</p>
+
+<h2 id="av-versions">2.3 版本演進：1.0、1.01、1.02</h2>
+<div class="table-wrap"><table>
+<caption>表 2-3　AISVS 的版本（來源：GitHub README、RELEASE.md、v1.0／v1.01 發布說明；核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">版本</th><th scope="col">狀態</th><th scope="col">需求數</th><th scope="col">主要變化（官方發布說明）</th></tr></thead>
+<tbody>
+<tr><th scope="row">1.0</th><td>第一個穩定版，資料夾已鎖定</td><td>191 條／12 章；附錄 C（AI 輔助安全編碼）68 條</td><td>三個驗證層級，與 ASVS 層級對齊；建議引用時帶版本</td></tr>
+<tr><th scope="row">1.01</th><td><strong>最新穩定版</strong>，資料夾已鎖定</td><td>213 條現行章節需求（相對 1.0：新增 23、移除 1）；附錄 C 69 條</td><td>擴充 C10（MCP）並參照 MCP 規格 2026-07-28 版；強化代理授權與執行；強化輸入／輸出／記憶；新增對抗式評估與萃取防禦；新增 AI 編碼代理的憑證控制；LLM Top 10 參照更新為 2026</td></tr>
+<tr><th scope="row">1.02</th><td><strong>唯一的開發中版本</strong>（<code>1.02-dev</code>）</td><td>尚未發布</td><td>可新增章節、小節與需求，但保留既有需求的編號與組織；是否納入某提案不保證</td></tr>
+<tr><th scope="row">2.0</th><td>延後 (deferred)，<code>2.0-dev</code> 已移除</td><td>—</td><td>重組既有內容才需要大版本</td></tr>
+</tbody></table></div>
+<p>版本規則見 RELEASE.md：採兩段式 <code>v&lt;MAJOR&gt;.&lt;MINOR&gt;</code>。小版本可以新增、退休或實質修改需求（含層級調整），但<strong>不得</strong>移動或重新編號既有需求、不得重用已退休的識別碼；大版本才可以重組。這解釋了為什麼 1.01 移除 <code>C10.2.6</code> 時，識別碼仍保留成「Requirement removed.」的占位，也解釋了為什麼<strong>文字與層級仍可能在小版本之間改變</strong>，評估必須明寫版本。</p>
+<p>從 1.0 轉到 1.01 做評估時，官方還特別列出幾項要重新評估的修改，例如：<code>C10.2.7</code> 不再是「一律禁止轉傳收到的存取權杖」，而是「只接受明確發給自己的權杖，且不轉傳發給其他服務的權杖」，並且和 <code>C10.3.3</code> 一起從層級 2 移到層級 1；<code>C9.2.1</code> 不再僅因動作「高影響」就要求人工核准，特權或不可逆動作仍要求。</p>
+
+<h2 id="av-conflict">2.4 版本標示不一致：owasp.org 與 GitHub</h2>
+<div class="callout official unsure">
+  <p class="callout-title">衝突與取捨</p>
+  <p>owasp.org 專案頁（2026-10-26 讀取）寫「AISVS 1.0 is the latest stable release」，並說 1.01 正在 <code>1.01-dev</code> 開發。GitHub README（同日讀取）寫「最新穩定版是 AISVS 1.01」，1.02 才是開發中。GitHub 的最近提交在 2026-10-24。依本專案「版本衝突以最新為準」的規則，教材採 <strong>1.01</strong>，並判斷 owasp.org 頁面落後；但「哪一個是 OWASP 官方認定」無法確認。</p>
+  <p>另一個細節：GitHub Releases 上 v1.0 與 v1.01 都建立於 2026-10-16（相隔兩秒）。發布說明自己寫明這是「追溯記錄 (retrospectively records) 原始發布 commit」，所以<strong>兩版原本的發布日期未能確認</strong>。</p>
+</div>
+<figure class="diagram">
+<pre class="mermaid" data-alt="版本時間線：1.0 為第一個穩定版，191 條需求，資料夾鎖定；1.01 為目前最新穩定版，213 條現行需求，資料夾鎖定；1.02-dev 是唯一開發中的版本；2.0 延後。owasp.org 專案頁仍標示 1.0 為最新穩定版，與 GitHub 不一致。">
+flowchart LR
+  A["1.0<br>191 條・12 章<br>已鎖定"] --> B["1.01<br>213 條現行需求<br>最新穩定版（採用）<br>已鎖定"]
+  B --> C["1.02-dev<br>唯一開發中版本"]
+  C -.->|"延後"| D["2.0<br>deferred"]
+  W["owasp.org 專案頁<br>仍寫 1.0 為最新"] -.->|"標示落後（未能確認官方認定）"| B
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class W author
+</pre>
+<figcaption><strong>圖 2-1　AISVS 版本演進。</strong>1.0、1.01、1.02-dev、2.0 的狀態來自 GitHub README 與 RELEASE.md（官方）；owasp.org 標示與 GitHub 的落差，以及「判斷 owasp.org 落後」是<strong>作者整理，非官方</strong>。</figcaption>
+</figure>
+
+<h2 id="av-wiki">2.5 研究維基與附錄：需求之外的東西</h2>
+<p>AISVS 在需求之外附了兩樣對評估很有用的資料。第一是<strong>研究維基 (Research Wiki)</strong>：對每條需求，另有三欄說明——它防禦的威脅 (Threat Mitigated)、驗證做法 (Verification Approach，包含具體的稽核步驟、工具與要蒐集的證據)，以及缺口與備註 (Gaps &amp; Notes，包含工具成熟度、未解研究問題與實作注意事項)。官方寫 1.01 的維基涵蓋 1.01 的每條需求。第二是三份附錄：詞彙表 (A)、AI 安全控制清單 (B)，以及 AI 輔助安全編碼 (C，1.01 共 69 條）。附錄 C 另有自己的編號（如 <code>AC.3.7</code>），不屬於十二章的 213 條。</p>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>AISVS 1.01：12 章、213 條現行需求（相對 1.0 新增 23、移除 1）；附錄 C 另有 69 條。</li>
+  <li>各章需求數與層級分佈差異很大：C9、C10 合計 76 條；C4 偏層級 3；C5 沒有層級 1。</li>
+  <li>版本演進 1.0 → 1.01 → 1.02-dev；2.0 延後；小版本可改文字與層級，但不重新編號。</li>
+  <li>owasp.org 與 GitHub 的版本標示不一致；教材採較新的 1.01，但哪個是官方認定未能確認。</li>
+  <li>Research Wiki 提供每條需求的威脅、驗證做法與缺口。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出 AISVS 十二章中至少六章的主題。</li>
+  <li>我知道 1.0 與 1.01 的需求數，並能解釋為什麼評估報告要寫版本。</li>
+  <li>我能說明 owasp.org 與 GitHub 對最新穩定版的說法為何不同，以及教材如何取捨。</li>
+  <li>我知道 Research Wiki 的三欄各是什麼。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-llmsvs.html">第 3 章　LLMSVS：V1–V8 與版本</a>：另一份驗證標準，專注在 LLM 應用，且有不同的結構、層級用語和版本狀態。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AISVS GitHub README（Latest Stable Version、Current Development、Verification Levels、Requirement Chapters、Appendices、Research Wiki、Versioning）：<a href="https://github.com/OWASP/AISVS">github.com/OWASP/AISVS</a>；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>AISVS Release Policy：<a href="https://github.com/OWASP/AISVS/blob/main/RELEASE.md">RELEASE.md</a>。</li>
+    <li>AISVS GitHub Releases：<a href="https://github.com/OWASP/AISVS/releases/tag/v1.0">v1.0</a>、<a href="https://github.com/OWASP/AISVS/releases/tag/v1.01">v1.01</a>（發布說明；兩版 Release 皆建立於 2026-10-16，說明自述為追溯記錄）。</li>
+    <li>AISVS 1.01 各章：<a href="https://github.com/OWASP/AISVS/tree/main/1.01/en">1.01/en</a>（C1–C12，作者逐章計數需求數與層級）；引用的 <code>v1.01-C2.1.6</code>、<code>v1.01-C5.2.2</code>、<code>v1.01-C9.5.3</code>。</li>
+    <li>OWASP AISVS 專案頁：<a href="https://owasp.org/www-project-artificial-intelligence-security-verification-standard-aisvs-docs/">owasp.org/www-project-artificial-intelligence-security-verification-standard-aisvs-docs/</a>（頁面標示 Incubator 與 Standards、1.0、並列出相容標準）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AISVS（GitHub 儲存庫與 README）— CC BY-SA 4.0。本頁對各章需求數與層級的計數為作者整理。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'v-ch2', topic: 'aisvs-and-llmsvs', mode: 'chapter',
+  questions: [
+    { id: 'v2q1', type: 'mc', lo: [2], refs: [{label: '2.4 版本標示不一致', href: '02-aisvs.html#av-conflict'}],
+      stem: '你在 owasp.org 專案頁看到「AISVS 1.0 is the latest stable release」，在 GitHub README 看到「最新穩定版是 1.01」。依本章，報告應該怎麼寫？',
+      options: [
+        { text: '採 owasp.org，因為它是官方網站，GitHub 只是原始碼。', why: '教材的規則是版本衝突以較新者為準；GitHub 的最近提交是 2026-10-24，且 README 寫 1.01 為最新穩定版。' },
+        { text: '兩個都寫「1.0／1.01」，讓讀者自己判斷。', why: '報告必須指明具體版本，才能讓需求識別碼與層級有明確意義。' },
+        { text: '採較新的 1.01、寫明版本，並在備註說明 owasp.org 標示不一致、哪個是官方認定未能確認。', correct: true, why: '符合 2.4 節的取捨與誠實標示。' },
+        { text: '完全不寫版本，反正內容差不多。', why: '1.01 有新增、移除與層級調整，評估必須寫版本。' }
+      ],
+      summary: '衝突以較新為準，並誠實標示未能確認的部分。' },
+    { id: 'v2q2', type: 'mc', lo: [2], refs: [{label: '2.3 版本演進', href: '02-aisvs.html#av-versions'}],
+      stem: '一位審查者說：「1.01 把 C10.2.6 移除了，所以後面的 C10.2.7 現在變成 C10.2.6。」依本章，這個說法的問題是什麼？',
+      options: [
+        { text: '說法正確，小版本可以重新編號。', why: 'RELEASE.md 規定小版本不得移動或重新編號既有需求。' },
+        { text: 'C10.2.7 會被移除，因為它前面有空缺。', why: '被移除的只有 C10.2.6；C10.2.7 仍存在。' },
+        { text: '識別碼可以被重用，所以編號不重要。', why: '已退休的識別碼不可重用。' },
+        { text: '不對：小版本不得重新編號，被移除的 C10.2.6 保留為「Requirement removed.」的占位，C10.2.7 仍是 C10.2.7。', correct: true, why: '對應 2.3 節的版本規則。' }
+      ],
+      summary: '小版本不重新編號；移除的識別碼保留占位。' },
+    { id: 'v2q3', type: 'scn', lo: [2], refs: [{label: '2.2 表 2-2', href: '02-aisvs.html#av-chapters'}, {label: '2.2 看幾條真實的需求', href: '02-aisvs.html#av-example'}],
+      stem: '依本章，團隊該去 AISVS 的哪一章找對應的需求？',
+      scenario: '松濤零售（虛構）的客服助理會先檢索內部知識庫再回答。稽核員提出兩個疑慮：(1) 低權限的客服人員只要換個問法，就可能問出只有主管能看的文件；(2) 助理最後決定「這位使用者可不可以退款」，而這個決定是直接由模型輸出文字決定的。',
+      options: [
+        { text: '疑慮 (1) 對應 C1，疑慮 (2) 對應 C6。', why: 'C1 是訓練資料的完整性與可追溯，C6 是模型供應鏈，兩者都與這兩個疑慮無關。' },
+        { text: '兩個都屬於 C2 輸入驗證，把輸入過濾得更嚴就能解決。', why: '輸入驗證處理進入模型的輸入；這兩個疑慮的問題在「授權判斷放在哪裡」，過濾輸入無法替代。' },
+        { text: '疑慮 (1) 對應 C5（例如 v1.01-C5.2.2：檢索套用終端使用者的授權）；疑慮 (2) 對應 C9（例如 v1.01-C9.5.3：存取控制決定絕不由 AI 模型本身做出）。', correct: true, why: '兩條需求都把授權判斷放在模型之外。' },
+        { text: '兩個都屬於 C12 監控，記錄下來就算符合。', why: '監控偵測問題，不等於需求要求的「在檢索與授權時就強制執行」。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 低權限者問出高權限文件，是檢索流程沒有套用「終端使用者」的授權，對應 <code>v1.01-C5.2.2</code>（層級 2）。(2) 授權決定由模型輸出文字決定，違反 <code>v1.01-C9.5.3</code>（層級 2）：存取控制決定必須由應用邏輯或政策引擎執行。(3) 兩條共同點是把判斷權放在模型之外。</p><p><strong>結論：</strong>在 C5 與 C9 找需求並蒐證。對應教材：<a href="02-aisvs.html#av-example">2.2 節</a>。</p>' },
+    { id: 'v2q4', type: 'match', lo: [2], refs: [{label: '2.3 表 2-3', href: '02-aisvs.html#av-versions'}],
+      stem: '把下列描述配對到 AISVS 的版本狀態。',
+      cats: [
+        { id: 'v10', label: '1.0' },
+        { id: 'v101', label: '1.01' },
+        { id: 'v102', label: '1.02-dev' },
+        { id: 'v20', label: '2.0' }
+      ],
+      items: [
+        { text: '唯一的開發中版本，可新增章節與需求但保留既有編號', answer: 'v102', why: 'README 與 RELEASE.md：1.02 是唯一 active development。' },
+        { text: '本教材採用的最新穩定版，213 條現行章節需求', answer: 'v101', why: '1.01 發布說明：213 active chapter requirements。' },
+        { text: '第一個穩定版，191 條需求；owasp.org 專案頁仍標它為最新', answer: 'v10', why: '1.0 發布說明 191 條；owasp.org 頁面的標示落後。' },
+        { text: '延後，其開發資料夾已被移除', answer: 'v20', why: 'README：Version 2.0 is deferred，2.0-dev 已移除。' }
+      ],
+      summary: '1.0 → 1.01（最新穩定）→ 1.02-dev（開發中）；2.0 延後。' }
+  ]
+});
+</script>
+</body>
+</html>

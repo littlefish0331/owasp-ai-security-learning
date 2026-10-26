@@ -1,0 +1,19 @@
+# 換行：所有文字檔以 LF 存入版本庫，避免 Windows 與其他環境之間出現整檔換行差異。
+* text=auto eol=lf
+
+# 文字檔（明確列出，避免被誤判）
+*.html text eol=lf
+*.css  text eol=lf
+*.js   text eol=lf
+*.py   text eol=lf
+*.md   text eol=lf
+*.json text eol=lf
+*.txt  text eol=lf
+
+# Mermaid 是壓縮後的單行大檔：不要做換行轉換，也不要在 diff 顯示內容
+assets/vendor/mermaid.min.js -text -diff
+
+# 圖片等二進位檔
+*.png binary
+*.jpg binary
+*.jpeg binary

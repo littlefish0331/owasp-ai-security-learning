@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌與定位｜AI 輔助寫程式與模型營運安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Secure Coding with AI 與 Secure AI/ML Model Ops 兩份 Cheat Sheet 的一頁式全貌：讀者與迴圈的差異、版本與授權的標示方式、文件自己指向的相鄰文件，以及速查表與風險清單的差別。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="secure-coding-with-ai" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌與定位</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="index.html">主題首頁</a></li>
+</ul>
+<p class="lead">OWASP Cheat Sheet Series 有兩份速查表 (Cheat Sheet) 剛好各守一端：一份寫給「用 AI 寫程式的開發者」，守的是開發迴圈 (Development Loop)；一份寫給「把模型營運上線的 MLOps／DevOps」，守的是模型從訓練到執行期的生命週期。這一章先說明兩份各是什麼、版本怎麼標示、怎麼避免誤用，再說明為什麼本教材把它們放在同一個主題。</p>
+
+<h2 id="po-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　兩份速查表一頁式全貌（2026-10-26 讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">Secure Coding with AI</th><th scope="col">Secure AI/ML Model Ops</th></tr></thead>
+<tbody>
+<tr><th scope="row">形式</th><td>OWASP Cheat Sheet Series 的單頁文件；沒有版本號與發布日</td><td>同左</td></tr>
+<tr><th scope="row">寫給誰</th><td>用 AI 輔助或 agentic 工具寫程式的開發者；自述只談「傳統開發流程沒有的威脅」，不重述一般安全編碼</td><td>MLOps、DevOps 與資安團隊；涵蓋傳統 ML 與 LLM，從開發到上線的模型生命週期</td></tr>
+<tr><th scope="row">結構</th><td>簡介、威脅模型與信任邊界、14 個編號節（每節有 Do／Don't）、OWASP Top 10 對照表、參考資料</td><td>簡介、12 項常見安全問題、8 個案例類型、9 個編號建議節、參考資料</td></tr>
+<tr><th scope="row">GitHub 首次提交</th><td>2026-05-05</td><td>2025-08-08</td></tr>
+<tr><th scope="row">GitHub 最後修改</th><td>2026-10-04（共 4 個提交）</td><td>2026-10-04（共 7 個提交）</td></tr>
+<tr><th scope="row">授權</th><td colspan="2">網站頁尾與儲存庫 LICENSE 皆為 CC BY-SA 4.0（不是 CC BY-NC-SA 這類非商業授權）</td></tr>
+</tbody></table></div>
+<p>2026-10-26 讀取時，官方 GitHub 主分支上的兩個原始檔與本教材讀到的內容一致（作者以逐字比對確認）；官方網頁則只核對了標題結構與頁尾授權。兩份都沒有版本號，所以本教材一律用「讀取日＋首次提交日／最後修改日」標示，引用時也請照這樣寫。</p>
+
+<h2 id="po-scope">1.2 兩種讀者、兩個迴圈</h2>
+<p>兩份文件的讀者都叫「開發團隊」，關心的卻是不同的東西。表 1-2 把兩者並排；欄位內容取自兩份文件，並排方式是<span class="tag author">作者整理，非官方</span>。</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　開發迴圈與營運面的差異（並排方式為作者整理，非官方）</caption>
+<thead><tr><th scope="col">比較點</th><th scope="col">開發迴圈 <br>(Secure Coding with AI)</th><th scope="col">營運面 <br>(Secure AI/ML Model Ops)</th></tr></thead>
+<tbody>
+<tr><th scope="row">你在做什麼</th><td>寫程式；AI 助理在你的機器上讀檔、跑指令、裝套件、推分支</td><td>讓模型被訓練、存放、包成 API、部署、監控</td></tr>
+<tr><th scope="row">信任邊界 (Trust Boundary) 在哪</th><td>助理讀進來的文字、連接的工具、能碰到的檔案與憑證</td><td>訓練資料、模型成品、推論請求、共用的運算資源</td></tr>
+<tr><th scope="row">典型的壞事</th><td>助理被一段文字帶偏，用你的完整權限做事</td><td>成品被換掉、API 被濫用或燒錢、租戶之間互相看到</td></tr>
+<tr><th scope="row">控制放在哪</th><td>沙箱、審查、CI 檢查、規則檔管控</td><td>簽署與存取控制、限額、隔離、監控、回滾</td></tr>
+</tbody></table></div>
+<figure class="diagram">
+<pre class="mermaid" data-alt="兩份速查表各守一端：開發迴圈由開發者與 AI 助理組成，產出程式碼與設定；程式碼與設定進一步成為模型與服務成品；成品進入營運面，包含推論、部署與執行期；營運面的事件與回饋回到開發迴圈。Secure Coding with AI 守開發迴圈那一端，Secure AI/ML Model Ops 守營運面那一端。">
+flowchart TB
+  A["開發迴圈<br>開發者與 AI 助理"] --> B["程式碼與設定<br>服務、管線、規則檔"]
+  B --> C["模型與服務成品"]
+  C --> D["營運面<br>推論、部署、執行期"]
+  D -. "事件與回饋" .-> A
+  SC["Secure Coding with AI"] -.-> A
+  MO["Secure AI/ML Model Ops"] -.-> D
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class B,C author
+</pre>
+<figcaption><strong>圖 1-1　兩份速查表各守一端。</strong>兩份文件的讀者與範圍是官方內容；中間「程式碼與設定、成品」兩個銜接節點與「回饋」箭頭是<strong>作者整理，非官方</strong>（虛線框）。兩份文件都沒有互相引用。</figcaption>
+</figure>
+
+<h2 id="po-relation">1.3 文件自己指向哪裡</h2>
+<p>只有文件明寫的指向，本教材才標為官方：</p>
+<ul>
+  <li><strong>Secure Coding with AI：</strong>一般安全編碼請見 Secure Coding Practices Quick Reference Guide；編碼工具以外的 agent 安全請見 AI Agent Security Cheat Sheet（本主題不展開）；另指向 LLM Prompt Injection Prevention Cheat Sheet、MCP Security Cheat Sheet（含其第 8 節的多伺服器隔離）、Software Supply Chain Security Cheat Sheet 與 Logging Cheat Sheet 的資料排除。參考資料列 NIST SP 800-218、OpenSSF 的 Concise Guide 與 AISVS。</li>
+  <li><strong>Secure AI/ML Model Ops：</strong>提示詞層面的防禦請見 LLM Prompt Injection Prevention Cheat Sheet；參考資料列 NIST SP 800-218A、NIST AI 100-2 E2025 與 AISVS。</li>
+  <li><strong>沒有的東西：</strong>兩份都沒有寫 LLM Top 10、ML Top 10 或 MCP Top 10 的條目編號。與這些清單的對應，本教材一律標「作者整理，非官方」，集中在<a href="05-integration.html#mp-map">第 5 章</a>。</li>
+</ul>
+
+<h2 id="po-concept">1.4 核心概念：速查表是「做什麼」的清單，不是「有什麼風險」的清單</h2>
+<div class="concept">
+<h3 id="c-cs">控制清單與風險清單</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>Cheat Sheet Series 的形式是「針對一個主題給可以照做的建議」。Secure Coding with AI 每一節都有 Do 與 Don't；Model Ops 每一節都是以動詞開頭的建議。它們回答「該怎麼做」；LLM Top 10、ML Top 10 這類清單回答「有哪些風險、各叫什麼」。</dd>
+  <dt data-n="2">為什麼會搞混</dt>
+  <dd>Secure Coding with AI 的結尾附了一張 OWASP Top 10 對照表，把各節掛到 A01、A03 到 A10 等類別（沒有 A02），容易讓人以為它是「Top 10 的 AI 版」。但文件沒有標這張表的年份。<span class="tag author">作者整理，非官方</span> 表中的名稱（例如 A06 Vulnerable and Outdated Components、A10 Server-Side Request Forgery）與 OWASP Top 10 2021 版相符，2025 版的名稱不同（例如 A03 是 Software Supply Chain Failures）。</dd>
+  <dt data-n="3">對引用的含意</dt>
+  <dd>這兩份文件沒有條目編號，節號就是唯一的定位，而節號會變：Model Ops 在 2026-05-15 插入「Runtime &amp; Hardware Isolation」後，原本的第 6–8 節順延為第 7–9 節（第 4 章會再看）。所以引用要寫成「Secure AI/ML Model Ops Cheat Sheet，讀取日 2026-10-26，第 6 節」，不要只寫節號。</dd>
+  <dt data-n="4">怎麼用</dt>
+  <dd>需要知道「這是哪一類風險、該引用哪個編號」時，用風險清單；需要知道「第一步做什麼、哪些事不要做」時，用速查表。要宣稱「符合」某個要求時，速查表不夠，因為它沒有可驗證的需求編號與層級，那是 AISVS 這類驗證標準的工作（見<a href="../../06-assessment-and-verification/aisvs-and-llmsvs/02-aisvs.html#av-onepage">AISVS 與 LLMSVS 第 2 章</a>）。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「文件附了 Top 10 對照表，所以照著做就等於符合 Top 10。」對照表只是索引，不是符合性的宣稱，而且年份未標。另一個誤解：「Cheat Sheet 就是標準。」它是實務建議，隨時會改；這兩份在 2026-10-04 都還有修訂。</dd>
+</dl>
+</div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>Secure Coding with AI 守開發迴圈（讀者是用 AI 寫程式的開發者）；Secure AI/ML Model Ops 守模型生命週期的營運面（讀者是 MLOps／DevOps）。</li>
+  <li>兩份都沒有版本號；標示方式是讀取日 2026-10-26 加 GitHub 首次提交日與最後修改日；授權為 CC BY-SA 4.0。</li>
+  <li>兩份是控制清單，不是風險分類；Secure Coding with AI 的 Top 10 對照表未標年份，名稱與 2021 版相符。</li>
+  <li>節號會變（Model Ops 在 2026-05-15 插入一節）；引用時帶讀取日。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出兩份速查表各自的讀者與守的迴圈。</li>
+  <li>我知道怎麼標示這兩份文件的版本與日期。</li>
+  <li>我能說明為什麼 Top 10 對照表不等於符合 Top 10。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-dev-loop-trust.html">第 2 章　開發迴圈的信任邊界</a>：從 Secure Coding with AI 的威脅模型與前三節開始。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series, <em>Secure Coding with AI Cheat Sheet</em>：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_Coding_with_AI_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；2026-10-26 讀取；GitHub 首次提交 2026-05-05、最後修改 2026-10-04；CC BY-SA 4.0。</li>
+    <li>OWASP Cheat Sheet Series, <em>Secure AI/ML Model Ops Cheat Sheet</em>：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_AI_Model_Ops_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；2026-10-26 讀取；GitHub 首次提交 2025-08-08、最後修改 2026-10-04；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 2021 與 2025 的類別名稱：<a href="https://top10.owasp.org/2021">top10.owasp.org/2021</a>、<a href="https://top10.owasp.org/2025">top10.owasp.org/2025</a>；2026-10-26 讀取，僅用於核對名稱。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series — CC BY-SA 4.0（網站頁尾與儲存庫 LICENSE）。OWASP Top 10 頁面僅用於核對類別名稱。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'sca-ch1', topic: 'secure-coding-with-ai', mode: 'chapter',
+  questions: [
+    { id: 's1q1', type: 'mc', lo: [1], refs: [{label: '1.1 一頁式全貌', href: '01-position.html#po-onepage'}, {label: '1.4 對引用的含意', href: '01-position.html#po-concept'}],
+      stem: '要在內部規範裡引用 Secure AI/ML Model Ops Cheat Sheet。依本章，哪一種寫法最恰當？',
+      options: [
+        { text: '「Secure AI/ML Model Ops Cheat Sheet v1.0」，因為所有 OWASP 文件都有版本號。', why: '這兩份速查表都沒有版本號，寫 v1.0 沒有依據。' },
+        { text: '「Secure AI/ML Model Ops Cheat Sheet，讀取日 2026-10-26，GitHub 首次提交 2025-08-08、最後修改 2026-10-04」，並寫明引用的節名。', correct: true, why: '符合 1.1 節與 1.4 節：沒有版本號時用讀取日加提交日，節號會變，所以要帶讀取日。' },
+        { text: '只寫「OWASP 模型營運指南第 6 節」，節號永遠不變。', why: 'Model Ops 在 2026-05-15 插入一節，原第 6–8 節順延，節號會變。' },
+        { text: '寫「CC BY-SA 4.0 版」，因為授權版本就是文件版本。', why: '授權版本與文件內容的版本是兩回事。' }
+      ],
+      summary: '無版本號：讀取日＋提交日；節號會變，引用要帶日期。' },
+    { id: 's1q2', type: 'scn', lo: [1], refs: [{label: '1.4 核心概念', href: '01-position.html#po-concept'}],
+      stem: '依本章，這份簡報的說法有什麼問題？',
+      scenario: '松濤軟體（虛構）的簡報寫：「我們已依 Secure Coding with AI Cheat Sheet 做完所有 Do 項目，文件結尾附有 OWASP Top 10 對照表，所以我們符合 OWASP Top 10 2025。」審查者發現：對照表沒有標年份、表中沒有 A02，而且 A06 的名稱是 Vulnerable and Outdated Components。',
+      options: [
+        { text: '沒有問題，對照表就是符合性的證明。', why: '對照表只是索引，不是符合性宣稱。' },
+        { text: '只有「做完所有 Do」說得過去，「符合 Top 10 2025」不行：對照表未標年份，名稱與 2021 版相符而不是 2025 版，且速查表沒有可驗證的需求編號，不能拿來宣稱符合。', correct: true, why: '符合 1.4 節：年份未標、名稱與 2021 版相符、速查表不是驗證標準。' },
+        { text: '問題只是缺 A02，補上就能宣稱符合。', why: '缺 A02 只是現象之一；補上類別不會讓索引變成符合性證明。' },
+        { text: '問題在於 Cheat Sheet 不能引用任何 Top 10。', why: '文件本身附了對照表；問題在於把索引當成符合性宣稱。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 速查表是控制清單，沒有條目編號與層級，不能當驗證標準。(2) 對照表沒有標年份；名稱 A06 Vulnerable and Outdated Components 與 2021 版相符，2025 版的 A03 才是 Software Supply Chain Failures。(3) 所以「做完 Do 項目」可以如實說，但「符合 Top 10 2025」沒有依據。</p><p><strong>結論：</strong>改寫成「已依速查表實作其 Do 項目」，並另外說明要符合性宣稱應使用驗證標準。對應教材：<a href="01-position.html#po-concept">1.4 節</a>。</p>' },
+    { id: 's1q3', type: 'match', lo: [1], refs: [{label: '1.2 表 1-2', href: '01-position.html#po-scope'}],
+      stem: '把下列情況配對到最先該查的文件。',
+      cats: [
+        { id: 'sc', label: 'Secure Coding with AI' },
+        { id: 'mo', label: 'Secure AI/ML Model Ops' },
+        { id: 'risk', label: '風險清單（LLM Top 10、ML Top 10）' }
+      ],
+      items: [
+        { text: '開發者開啟自動接受模式，讓助理在自己的機器上安裝套件、改檔案', answer: 'sc', why: '開發迴圈：助理以開發者權限執行，屬 Secure Coding with AI。' },
+        { text: '合作夥伴的呼叫量暴增，模型 API 的帳單失控', answer: 'mo', why: '營運面：推論 API 的限額與熔斷屬 Model Ops 的第 4 節。' },
+        { text: '想知道一類風險叫什麼名稱、該引用哪個條目編號', answer: 'risk', why: '風險清單回答「有哪些風險、各叫什麼」；速查表沒有條目編號。' }
+      ],
+      summary: '開發迴圈查 Secure Coding；營運面查 Model Ops；要編號查風險清單。' }
+  ]
+});
+</script>
+</body>
+</html>

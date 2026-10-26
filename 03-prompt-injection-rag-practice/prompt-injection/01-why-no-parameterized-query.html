@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　為什麼沒有參數化查詢｜提示詞注入防護｜OWASP AI 資安學習教材</title>
+<meta name="description" content="LLM01:2026 如何定義提示詞注入、為什麼沒有等價於參數化查詢的根治法、用投遞面／傳播行為／編碼三個軸拆解攻擊，以及低權限管道借用高權限憑證的結構。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="prompt-injection" data-page="01-why-no-parameterized-query.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　為什麼沒有參數化查詢：LLM01:2026 與攻擊面</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../../primer-security-for-developers.html#sqli-vs-pi">SQL Injection 與 Prompt Injection 的對照</a>；<a href="../../primer-security-for-developers.html#p-surface">攻擊面與信任邊界</a></li>
+</ul>
+<p class="lead">你知道 SQL Injection 靠參數化查詢 (Parameterized Query) 解掉了。這一章回答一個問題：LLM 為什麼沒有等價物？答案不是某個還沒補上的修補，而是模型讀輸入的方式。弄懂這一點，後面三章「為什麼防線要這樣疊」才說得通。</p>
+
+<h2 id="pi-def">1.1 LLM01:2026 說的是什麼</h2>
+<p>官方對提示詞注入 (Prompt Injection) 的定義很寬：任何輸入，包括使用者直接輸入、取回的內容、工具輸出、圖片／音訊／影片、中間推理，或持久記憶，只要讓模型的行為偏離開發者的本意，就算。輸入不必是人看得懂的，不必直接來自使用者，也不必在畫面上看得到。<span class="tag official">官方</span></p>
+<p>根本原因只有一句：LLM 在架構上不區分「指令」與「資料」，兩者都是同一條 token 串流，所以沒有乾淨等價於參數化查詢的做法（官方引用英國 NCSC 2025 的說法）。<span class="tag official">官方</span> 官方接著點出三個讓情況更糟的部署特性：</p>
+<ul>
+  <li><strong>上下文池化 (Context-Window Pooling)：</strong>system prompt、使用者輸入、取回文件、工具輸出、對話歷史與記憶被當成同一串 token，沒有被強制執行的信任邊界 (Trust Boundary)。</li>
+  <li><strong>記憶持久化：</strong>寫進長期記憶、RAG 語料、向量資料庫或託管記憶服務的注入，會污染之後每一個讀取它的 session。</li>
+  <li><strong>agentic 執行：</strong>模型輸出驅動工具呼叫時，爆炸半徑 (Blast Radius) 從聊天畫面延伸到工具能碰到的一切；工具輸出又回到上下文，可能形成鏈式或自我複製的效果。</li>
+</ul>
+<p>官方也畫了邊界：<a href="../../02-llm-applications/llm-top-10/06-disclosure.html#dc-what">LLM02:2026</a> 處理「模型從輸出洩漏了什麼」，<a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a> Excessive Agency 處理「模型輸出抵達特權動作的後果」，<a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-output">LLM10:2026</a> Improper Output Handling 處理「輸出送進下游前的清理與驗證」。LLM01:2026 只管<strong>輸入邊界本身</strong>。</p>
+<div class="callout unsure">
+  <p class="callout-title">未能確認：兩個「LLM01」版本並存</p>
+  <p>本主題採 LLM01:2026（GitHub 原始檔，Version 2026；發布日沿用 AI Exchange 主題的取捨，採 2026-08-04）。但 <code>genai.owasp.org/llmrisk/llm01-prompt-injection/</code> 網頁目前仍顯示 <strong>LLM01:2025</strong>，而 Cheat Sheet 引用的正是這個網址。兩者的細節本教材沒有逐項比對，所以後面引用緩解項時，都以 2026 版編號為準。</p>
+</div>
+
+<h2 id="pi-axes">1.2 官方的拆解工具：三個軸</h2>
+<p>官方建議：在挑緩解措施前，先把一個情境沿三個軸拆開，這是有用的威脅建模 (Threat Modeling) 步驟。<span class="tag official">官方</span></p>
+<div class="table-wrap"><table>
+<caption>表 1-1　提示詞注入的三個軸（類別名稱取自 LLM01:2026，用語為改寫）</caption>
+<thead><tr><th scope="col">軸</th><th scope="col">問什麼</th><th scope="col">官方列出的類別</th></tr></thead>
+<tbody>
+<tr><th scope="row">投遞面 <br>(Delivery Surface)</th><td>它怎麼到達模型？</td><td>直接輸入；取回的內容；工具輸出；工具連線通道；持久記憶</td></tr>
+<tr><th scope="row">傳播行為 <br>(Propagation Behavior)</th><td>它如何跨時間與邊界擴散？</td><td>單次；多步驟攻擊鏈；經記憶或 RAG 跨 session；跨 agent 自我複製</td></tr>
+<tr><th scope="row">編碼 <br>(Encoding)</th><td>惡意指示用什麼形式表示？</td><td>純文字；Base64 等混淆；不可見 Unicode；多模態或隱寫；低資源語言</td></tr>
+</tbody></table></div>
+<p>官方每個攻擊情境後面都附一行「Anatomy」，就是這三軸的填答。例如情境 2：使用者請助理摘要一個網頁，頁面藏有指示，模型因此插入一張圖片，網址會把整段私人對話送給攻擊者。填答是：(a) 取回的網頁內容（間接），(b) 單次、搭配圖片網址外洩，(c) 藏在頁面原始碼中的純文字。使用者只看到渲染出來的圖，從沒看到指示。</p>
+
+<h2 id="pi-cheat">1.3 Cheat Sheet 的 13 種攻擊，放進三軸裡看</h2>
+<p>OWASP Cheat Sheet Series 的 LLM Prompt Injection Prevention Cheat Sheet 列了 13 種「常見攻擊類型」。要小心的是：它們不是 13 個互斥的桶子。有的描述怎麼到達，有的描述怎麼表示，有的是攻擊者想要的結果，有的是搜尋手法。下表是作者把它們放回三軸的嘗試。<span class="tag author">作者整理，非官方</span></p>
+<div class="table-wrap"><table>
+<caption>表 1-2　Cheat Sheet 的 13 種攻擊類型 ↔ 三軸（<span class="tag author">作者整理，非官方</span>；類型名稱取自 Cheat Sheet）</caption>
+<thead><tr><th scope="col">Cheat Sheet 的類型</th><th scope="col">主要落在</th><th scope="col">說明</th></tr></thead>
+<tbody>
+<tr><th scope="row">直接注入</th><td>投遞面：直接輸入</td><td>使用者自己送來的指示</td></tr>
+<tr><th scope="row">遠端／間接注入</th><td>投遞面：取回內容、工具輸出</td><td>藏在程式碼註解、issue、網頁、郵件等外部內容</td></tr>
+<tr><th scope="row">編碼與混淆</th><td>編碼</td><td>用編碼或不可見字元躲過偵測</td></tr>
+<tr><th scope="row">字母順序擾動 <br>(Typoglycemia)</th><td>編碼</td><td>拼字擾動但模型仍讀得懂，目的是躲關鍵字過濾</td></tr>
+<tr><th scope="row">多模態注入</th><td>編碼（兼投遞面）</td><td>指示藏在圖片、文件中介資料或隱藏圖層</td></tr>
+<tr><th scope="row">多輪與持續性攻擊</th><td>傳播行為</td><td>跨輪、跨 session，靠記憶或延遲觸發</td></tr>
+<tr><th scope="row">RAG 投毒</th><td>投遞面：取回內容；傳播行為：跨 session</td><td>污染知識庫，之後每次被檢索到都生效</td></tr>
+<tr><th scope="row">agent 專屬攻擊</th><td>投遞面：工具輸出、記憶</td><td>偽造推理或觀察步驟、操縱工具參數、污染工作記憶</td></tr>
+<tr><th scope="row">Best-of-N 越獄 <br>(Jailbreaking)</th><td>不在三軸上</td><td>是搜尋策略：大量產生變體直到有一個通過。影響的是怎麼評估防禦（第 4 章）</td></tr>
+<tr><th scope="row">越獄 <br>(Jailbreak)</th><td>目標，不在三軸上</td><td>目的是突破安全限制；常以直接輸入送達</td></tr>
+<tr><th scope="row">系統提示萃取</th><td>目標，不在三軸上</td><td>要取得內部指示；官方 2026 版另有 <a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-hidden">LLM08:2026</a> Hidden Context Exposure</td></tr>
+<tr><th scope="row">資料外洩</th><td>目標，不在三軸上</td><td>要取得機敏資訊或對話歷史</td></tr>
+<tr><th scope="row">HTML 與 Markdown 注入</th><td>外洩通道，不在三軸上</td><td>靠渲染輸出送出資料或連結；下游處理屬 LLM10:2026</td></tr>
+</tbody></table></div>
+<p>這張表想說的是：同一次攻擊通常同時落在好幾格，例如「藏在 RAG 文件中、用不可見字元編碼、目的是外洩資料」。所以防禦要對著<strong>軸</strong>想，而不是背<strong>攻擊名稱</strong>。如果你的防線只認得名稱，新的變體一出現就失效。</p>
+
+<h2 id="pi-concept">1.4 核心概念：低權限管道，高權限執行</h2>
+<div class="concept">
+<h3 id="c-borrowed">借用權限的間接注入</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>攻擊者不攻擊你的後端，而是把文字放在你的 LLM 會讀的地方，例如公開表單、客戶工單、社群 pull request、套件說明。等開發者的 agent 以較高的憑證讀到那段文字，<strong>執行特權動作的是 agent，不是攻擊者</strong>（官方語意）。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>上下文池化讓「讀到的內容」與「該聽誰的」混在一起，加上 agent 的憑證通常高於能寫入那個管道的人。官方把投遞面依信任程度分三類：<strong>不受信</strong>（公開網頁、陌生寄件者的郵件、搜尋結果）、<strong>半受信</strong>（公開 issue 標題、套件說明、第三方 API 回應：你選擇取回，但不是你寫的）、<strong>受信</strong>（自己的 repo、資料庫、內部文件、郵件，但開發者可能不知道有人經由某個不相干的上游管道放進了內容）。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>官方的常見風險範例 3 與情境 9 描述的結構：攻擊者經低權限管道放入文字 → 等開發者連著 MCP 的 agent 在高權限下讀取 → agent 代為執行攻擊者辦不到的事。第 3 章會看官方引用的三個公開案例。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>這種內容看起來就是正常的工單或 issue，輸入端很難保證攔得住。所以重點移到「模型能做什麼」：憑證與狀態變更的能力留在應用程式碼，而不是交給模型，並對每個操作給最小權限 (Least Privilege)（第 3 章）。外部內容走結構上獨立、標示來源的通道，可降低成功率，但不是保證（第 2 章）。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「只要擋住使用者輸入就好」或「資料來自自家系統就可信」。官方的說法是：只盯著聊天畫面的防禦會完全漏掉這條路，而且連受信的表面，也可能被不相干的上游管道放進內容。「來自自家系統」不等於「由自家人撰寫」，要看的是誰能寫進那個管道。這個結構與混淆代理人 (Confused Deputy) 同源：握有權限的一方被不握權限的一方借用了。</dd>
+</dl>
+</div>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="攻擊鏈：只有低權限的攻擊者在開發者信任的低權限管道放入文字；開發者的 agent 以高權限憑證讀到；模型提出動作；到工具邊界時，若只靠模型判斷就以高權限執行，若由應用程式碼授權並套用最小權限與人工確認則動作被拒絕或縮小範圍。">
+flowchart LR
+  ATK["攻擊者<br>只有低權限"] -->|"1 放入文字"| CH["低權限管道<br>公開表單、工單、issue、套件說明"]
+  CH -->|"2 被讀取"| AG["開發者的 agent<br>持有高權限憑證"]
+  AG -->|"3 模型提出動作"| TB{"工具邊界：<br>誰決定能不能做？"}
+  TB -->|"只靠模型判斷"| BAD["以高權限執行<br>外洩、寫入、刪除"]
+  TB -->|"應用程式碼授權、最小權限、人工確認"| OK["動作被拒絕<br>或縮小範圍"]
+  classDef bad stroke-dasharray: 6 4,stroke-width:3px
+  class BAD bad
+</pre>
+<figcaption><strong>圖 1-1　低權限管道、高權限執行。</strong>左側三步是攻擊者能控制的部分，全部發生在你的輸入防線之前或之外；真正決定後果的是第 3 步之後的工具邊界 (Tool Boundary)。圖形依 LLM01:2026 的常見範例 3 與情境 9 重新繪製，不是官方原圖。<span class="tag author">作者整理，非官方</span></figcaption>
+</figure>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>LLM01:2026：任何輸入只要改變模型行為就算；LLM 不區分指令與資料，所以沒有等價於參數化查詢的根治法。</li>
+  <li>三個部署特性讓情況更糟：上下文池化、記憶持久化、agentic 執行。</li>
+  <li>用投遞面、傳播行為、編碼三個軸拆解情境；Cheat Sheet 的 13 種攻擊不是互斥類別，有些是目標或手法，不在三軸上。</li>
+  <li>低權限管道、高權限執行：問題不在「輸入看起來危不危險」，而在「讀到它的 agent 握有多少權限」。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能用一句話解釋為什麼參數化查詢在 LLM 上沒有等價物。</li>
+  <li>我能把一個案例沿三軸拆開，並指出它的投遞面屬於不受信、半受信還是受信。</li>
+  <li>我知道 LLM01:2026、LLM02:2026、LLM03:2026、LLM10:2026 各管哪一段。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-fragile-layers.html">第 2 章　會被繞過的防線</a>：看輸入篩選 (Input Screening)、結構化提示 (Structured Prompt)、輸出驗證與護欄模型 (Guardrail Model) 各自能做什麼、漏掉什麼，以及 Cheat Sheet 近期怎麼為它們加上限定語。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Top 10 for LLM Applications 2026，LLM01:2026 Prompt Injection（Description、Types、Common Examples、Scenarios #2 與 #9）；Version 2026，採發布日 2026-08-04；<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM01_PromptInjection.md">GitHub 原始檔</a>；CC BY-SA 4.0。</li>
+    <li>OWASP Cheat Sheet Series，LLM Prompt Injection Prevention Cheat Sheet（Common Attack Types）；頁面無版本與日期，GitHub 最新提交 2026-10-22；<a href="https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；CC BY-SA 4.0。</li>
+    <li>對照：<a href="https://genai.owasp.org/llmrisk/llm01-prompt-injection/">genai.owasp.org 的 LLM01 頁面</a>（目前為 LLM01:2025 內容）；本站 <a href="../../primer-security-for-developers.html#sqli-vs-pi">資安前置觀念 §8</a>。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series — CC BY-SA 4.0；OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch1', topic: 'prompt-injection', mode: 'chapter',
+  questions: [
+    { id: 'c1q1', type: 'mc', lo: [1], refs: [{label: '1.1 LLM01:2026 說的是什麼', href: '01-why-no-parameterized-query.html#pi-def'}],
+      stem: '官方說提示詞注入「沒有等價於參數化查詢的做法」。下列哪一項最接近它給的原因？',
+      options: [
+        { text: '目前的過濾器還不夠成熟，等偵測模型進步之後就能補上。', why: '官方的結論是防禦是架構性的而非攔截式的，原因出在模型的運作方式，不是過濾器的成熟度。' },
+        { text: 'LLM 在架構上不區分指令與資料，兩者都是同一條 token 串流。', correct: true, why: '參數化查詢靠介面層保證「值」不會變成「語法」；LLM 沒有這道介面，system prompt 與取回內容都在同一串 token 裡。' },
+        { text: '因為提示詞都是自然語言，而自然語言無法被加密。', why: '問題與加密無關；加密保護的是傳輸與儲存，不會改變模型如何解讀它讀到的文字。' },
+        { text: '因為只有使用者能寫提示詞，所以無法在伺服器端限制。', why: '官方強調輸入不必來自使用者：取回內容、工具輸出、記憶、圖片都可能成為輸入。' }
+      ],
+      summary: '沒有根治法的原因是「指令與資料不分」，所以後面的防禦要靠架構，而不是攔截。' },
+    { id: 'c1q2', type: 'mc', lo: [1], refs: [{label: '1.4 低權限管道，高權限執行', href: '01-why-no-parameterized-query.html#pi-concept'}],
+      stem: '工程師說：「我們的 agent 只讀公司內部的客戶工單系統，內容都來自自家系統，所以不用考慮間接注入。」依 LLM01:2026，這個想法的問題是什麼？',
+      options: [
+        { text: '內部系統一定沒有加密，所以內容可能被竊聽。', why: '問題不在傳輸安全，而在誰能把文字放進 agent 會讀的地方。' },
+        { text: '工單系統的資料量太大，模型無法完整讀取。', why: '這是容量問題，與注入無關。' },
+        { text: '只有不受信的公開網頁才需要考慮注入，所以他其實是對的。', why: '官方把投遞面分為不受信、半受信、受信三類，並明說受信的表面也可能被放進內容。' },
+        { text: '工單可由客戶經低權限管道（如公開表單）寫入，攻擊者不必入侵後端，只要把文字放在 agent 會讀的地方。', correct: true, why: '官方描述的結構：攻擊者經低權限管道放入文字，等 agent 以較高憑證讀到；受信表面也可能被不相干的上游管道放入內容。' }
+      ],
+      summary: '「來自自家系統」不等於「由自家人撰寫」；要看誰能寫進那個管道。' },
+    { id: 'c1q3', type: 'match', lo: [1], refs: [{label: '1.2 三個軸', href: '01-why-no-parameterized-query.html#pi-axes'}],
+      stem: '依 LLM01:2026 的三個軸，下列描述主要在回答哪一個軸的問題？',
+      cats: [
+        { id: 'surface', label: '投遞面' },
+        { id: 'prop', label: '傳播行為' },
+        { id: 'enc', label: '編碼' }
+      ],
+      items: [
+        { text: '攻擊文字被放進客戶工單，由開發者的 agent 讀取', answer: 'surface', why: '回答的是「它怎麼到達模型」：經由取回的內容或工具輸出。' },
+        { text: '同一段指示被改寫成 Base64 之類的形式，好躲過關鍵字過濾', answer: 'enc', why: '回答的是「用什麼形式表示」：編碼與混淆。' },
+        { text: '一份被污染的 RAG 文件，會影響之後每一位查到它的使用者與每一次 session', answer: 'prop', why: '回答的是「如何跨時間與邊界擴散」：經記憶或 RAG 跨 session。' },
+        { text: '指示以人眼看不到的 Unicode 字元夾帶在正常文字之中', answer: 'enc', why: '不可見 Unicode 是編碼軸上的類別。' },
+        { text: '工具的回傳結果中含有給模型的指示', answer: 'surface', why: '工具輸出是投遞面上的一類。' }
+      ],
+      summary: '三軸各問一件事：怎麼到達、怎麼擴散、怎麼表示。' },
+    { id: 'c1q4', type: 'scn', lo: [1], refs: [{label: '1.2 三個軸', href: '01-why-no-parameterized-query.html#pi-axes'}, {label: '1.3 13 種攻擊 ↔ 三軸', href: '01-why-no-parameterized-query.html#pi-cheat'}],
+      stem: '依三軸拆解，下列哪一組填答最合理？',
+      scenario: '雲帆物流（虛構）有一個郵件助理，會替員工摘要收件匣。某封外部來信的正文裡，用不可見的 Unicode 字元夾帶了一段給助理的指示；助理在摘要時讀到並照做。這封信只在被摘要的那一次發揮作用。',
+      options: [
+        { text: '投遞面：取回的內容（外部郵件）；傳播行為：單次；編碼：不可見 Unicode。', correct: true, why: '指示經由助理讀取的郵件到達（取回內容），只在被摘要時生效（單次），用不可見字元表示（編碼）。' },
+        { text: '投遞面：直接輸入；傳播行為：跨 session；編碼：純文字。', why: '指示不是使用者直接輸入的，也沒有寫入記憶或語料，編碼也不是純文字。' },
+        { text: '投遞面：持久記憶；傳播行為：自我複製；編碼：多模態。', why: '題目沒有寫入記憶，也沒有跨 agent 複製，且內容是文字而非影像或音訊。' },
+        { text: '這個案例不在三軸上，因為不可見字元屬於「目標」而不是編碼。', why: '不可見 Unicode 正是編碼軸上官方列出的類別；「目標」指的是攻擊者想達成的結果，如外洩或越獄。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 投遞面：外部郵件是助理主動讀取的內容，屬取回內容，且是不受信的表面。(2) 傳播行為：題目說只在被摘要那次生效，沒有寫入記憶或語料，因此是單次。(3) 編碼：不可見字元是官方列出的編碼類別。</p><p><strong>結論：</strong>填答為「取回內容／單次／不可見 Unicode」。這種拆法的價值在於：它同時告訴你輸入端要處理不可見字元，而且就算處理了，仍要限制助理讀完信之後能做什麼。對應教材：<a href="01-why-no-parameterized-query.html#pi-axes">1.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

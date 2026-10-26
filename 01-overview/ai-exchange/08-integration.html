@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 8 章　跨文件整合與收尾｜OWASP AI Exchange｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AI Exchange 的概念如何對應到 LLM Top 10 2026、Agentic Top 10 2026、ML Top 10、MITRE ATLAS 與 NIST；從症狀到文件與控制的查找流程；全主題重點與下一步。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="01-overview" data-topic="ai-exchange" data-page="08-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 8 章　跨文件整合與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO1、LO5</li>
+  <li>前置：第 1–7 章</li>
+</ul>
+<p class="lead">AI Exchange 是「入口與全貌」，其他 OWASP 文件各自深入一塊。這一章把你學到的概念接到那些文件上。<strong>只寫官方有寫的對應</strong>，其餘一律標示「作者整理，非官方」。</p>
+
+<h2 id="x-table">8.1 概念對照表</h2>
+<p>下表的「官方對照」來自 AI Exchange 各威脅頁的參考區塊（它透過 OpenCRE 列出對應的外部條目），以及 LLM Top 10 2026 和 Agentic Top 10 2026 自己寫的交叉引用。標示 <span class="tag author">作者整理，非官方</span> 的格子，是作者自己把概念放在一起，官方沒有明說。</p>
+<div class="table-wrap"><table>
+<caption>表 8-1　AI Exchange 概念與其他文件的對照</caption>
+<thead><tr><th scope="col">AI Exchange 概念</th><th scope="col">LLM Top 10 2026</th><th scope="col">Agentic Top 10 2026</th><th scope="col">其他框架編號</th><th scope="col">性質</th></tr></thead>
+<tbody>
+<tr><th scope="row">直接提示詞注入</th><td>LLM01:2026 Prompt Injection</td><td>—</td><td>MITRE ATLAS AML.T0051.000；NIST AI 100-2 §3.3</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">間接提示詞注入</th><td>LLM01:2026</td><td>ASI01 Agent Goal Hijack 的常見成因（其範例含經由 RAG 文件的間接注入）</td><td>MITRE ATLAS AML.T0051.001；NIST AI 100-2 §3.4</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">資料投毒</th><td>LLM05:2026 Data and Model Poisoning</td><td>—</td><td>ML02:2023 Data Poisoning Attack；MITRE ATLAS AML.T0020；NIST AI 100-2 §2.3.2</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">規避</th><td>無對應條目</td><td>—</td><td>ML01:2023 Input Manipulation Attack；MITRE ATLAS AML.T0015；NIST AI 100-2 §2.2</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">模型外洩（輸入輸出收割）</th><td>無對應條目</td><td>—</td><td>ML05:2023 Model Theft；MITRE ATLAS AML.T0024.002；NIST AI 100-2 §2.4.3</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">供應鏈（<code class="ctl">SUPPLY CHAIN MANAGE</code>）</th><td>LLM04:2026 Supply Chain</td><td>ASI04 Agentic Supply Chain Vulnerabilities（LLM04 指向它處理 MCP server 等 agentic 供應鏈問題）</td><td>MITRE ATLAS AML.M0014、AML.M0023；NIST AI 100-2 §3.2</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">輸出含傳統注入</th><td>LLM10:2026 Improper Output Handling</td><td>—</td><td>MITRE ATLAS AML.T0051</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">在輸出中揭露敏感資料</th><td>LLM02:2026 Sensitive Information Disclosure</td><td>—</td><td>—</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">過度授權／最小模型權限</th><td>LLM03:2026 Excessive Agency</td><td>在 agentic 系統中可表現為 ASI02 Tool Misuse and Exploitation、ASI03 Identity and Privilege Abuse、ASI08 Cascading Failures</td><td>—</td><td><span class="tag official">官方</span>（LLM03 條目明載）</td></tr>
+<tr><th scope="row">目標劫持 (Goal Hijacking)</th><td>AI Exchange 視為「影響」，向量仍是 LLM01 提示詞注入 (Prompt Injection)</td><td>ASI01 Agent Goal Hijack（官方說明它涵蓋比 LLM01 更廣的 agentic 影響：重導目標、規劃與多步驟行為）</td><td>—</td><td><span class="tag official">官方</span>（兩邊各自的說法）；「兩者互補」的結論是作者整理</td></tr>
+<tr><th scope="row">隱藏的 system prompt</th><td>LLM08:2026 Hidden Context Exposure（AI Exchange 說明 2026 版由它涵蓋，範圍超出 system prompt）</td><td>—</td><td>—</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">增補資料、記憶、向量資料庫</th><td>LLM09:2026 Vector and Embedding Weaknesses</td><td>ASI06 Memory &amp; Context Poisoning（LLM09 說明不依賴嵌入幾何的 agent 記憶攻擊歸 ASI06）</td><td>—</td><td>LLM09 與 ASI06 的分工是 <span class="tag official">官方</span>；<strong>AI Exchange 本身未對照 LLM09</strong>，把它接到「增補資料 (augmentation data)」是 <span class="tag author">作者整理，非官方</span></td></tr>
+<tr><th scope="row">致命三要素 ↔ Agentic Rule of Two</th><td>LLM01 的緩解 #8 引用 Rule of Two（Meta AI, 2025）</td><td>—</td><td>—</td><td>Rule of Two 在兩份官方文件都有；「與致命三要素 (Lethal Trifecta) 結構相同」是 <span class="tag author">作者整理，非官方</span></td></tr>
+<tr><th scope="row">逐條驗證技術需求</th><td colspan="3">AISVS：官方說明 AI Exchange 建議用它來評估或稽核 AI 應用；其專案頁列出對照 ASVS、LLM Top 10、Agentic Top 10、NIST AI RMF、ISO/IEC 42001 等</td><td><span class="tag official">官方</span></td></tr>
+</tbody></table></div>
+
+<div class="callout official">
+  <p class="callout-title">看這張表要記住的三件事</p>
+  <ul>
+    <li>LLM Top 10 與 AI Exchange 不是一對一：Top 10 沒有「規避」與「模型外洩」，AI Exchange 沒有針對 LLM09 的對照。</li>
+    <li>AI Exchange 的參考區塊同時引用了 ML Top 10 的 2023 編號。ML Top 10 是 2023 edition、Version 0.3 的草稿，引用時要註明。</li>
+    <li>LLM Top 10 前言與 Agentic Top 10 都說明邊界：模型只是元件時看 LLM Top 10；一旦成為行動者，兩份要搭配讀。</li>
+  </ul>
+</div>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="官方跨文件引用示意圖：AI Exchange 的提示詞注入、資料投毒、供應鏈、輸出注入、敏感資料揭露對應到 LLM Top 10 2026 的 LLM01、LLM05、LLM04、LLM10、LLM02；LLM03 在 agentic 系統表現為 ASI02、ASI03、ASI08；LLM04 指向 ASI04；LLM09 與 ASI06 分工。">
+flowchart LR
+  subgraph AX["AI Exchange 威脅"]
+    A1["提示詞注入"]
+    A2["資料投毒"]
+    A3["供應鏈"]
+    A4["輸出含傳統注入"]
+    A5["輸出中揭露敏感資料"]
+    A6["過度授權／最小模型權限"]
+  end
+  subgraph LL["LLM Top 10 2026"]
+    L1["LLM01 Prompt Injection"]
+    L5["LLM05 Data and Model Poisoning"]
+    L4["LLM04 Supply Chain"]
+    L10["LLM10 Improper Output Handling"]
+    L2["LLM02 Sensitive Information Disclosure"]
+    L3["LLM03 Excessive Agency"]
+    L9["LLM09 Vector and Embedding Weaknesses"]
+  end
+  subgraph AG["Agentic Top 10 2026"]
+    S2["ASI02 Tool Misuse"]
+    S3["ASI03 Identity and Privilege Abuse"]
+    S8["ASI08 Cascading Failures"]
+    S4["ASI04 Agentic Supply Chain"]
+    S6["ASI06 Memory &amp; Context Poisoning"]
+  end
+  A1 --> L1
+  A2 --> L5
+  A3 --> L4
+  A4 --> L10
+  A5 --> L2
+  A6 --> L3
+  L3 --> S2
+  L3 --> S3
+  L3 --> S8
+  L4 --> S4
+  L9 -. "分工" .- S6
+</pre>
+<figcaption><strong>圖 8-1　官方明載的跨文件引用。</strong>實線是官方文件自己寫的對照（AI Exchange 的 GenAI 九項特性表與 OpenCRE 參考區，以及 LLM03、LLM04 條目的說明）；虛線是 LLM09 條目說明的分工。圖中沒有畫作者整理的對應。</figcaption>
+</figure>
+
+<h2 id="x-flow">8.2 從症狀到文件與控制</h2>
+<p>實務上你不是先有條目，而是先有一個症狀。下圖把常見症狀接到威脅、文件與第一個該看的控制。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="從症狀查文件與控制的流程：頁面被注入或指令被執行，對應輸出含傳統注入、LLM10、編碼模型輸出；外部文件改變行為，對應間接提示詞注入、LLM01、輸入隔離與最小權限；agent 做了不該做的事，對應過度授權、LLM03 與 ASI02、ASI03、ASI08、最小模型權限與監督；回答含無權限內容，對應揭露、LLM02、檢索層權限過濾；訓練資料被改，對應資料投毒、LLM05、開發環境安全與資料品質控制；成本暴增或服務被打爆，對應資源耗盡、LLM06、速率限制與資源限制。">
+flowchart LR
+  P1["模型輸出在網頁上被當成程式執行"] --> T1["輸出含傳統注入"] --> D1["LLM10:2026"] --> C1["ENCODE MODEL OUTPUT"]
+  P2["外部文件或郵件改變了模型行為"] --> T2["間接提示詞注入"] --> D2["LLM01:2026"] --> C2["INPUT SEGREGATION + LEAST MODEL PRIVILEGE"]
+  P3["agent 做了任務之外的事"] --> T3["過度授權"] --> D3["LLM03:2026；ASI02 / ASI03 / ASI08"] --> C3["LEAST MODEL PRIVILEGE + OVERSIGHT"]
+  P4["回答裡出現使用者無權看的內容"] --> T4["輸出中揭露／檢索越權"] --> D4["LLM02:2026"] --> C4["檢索階段以提問者權限過濾"]
+  P5["模型行為在某次訓練後出現異常"] --> T5["資料投毒"] --> D5["LLM05:2026"] --> C5["DEV SECURITY + DATA QUALITY CONTROL"]
+  P6["費用暴增或服務被打爆"] --> T6["AI 資源耗盡"] --> D6["LLM06:2026"] --> C6["RATE LIMIT + LIMIT RESOURCES"]
+</pre>
+<figcaption><strong>圖 8-2　從症狀查文件與控制。</strong>「威脅 → 條目」是表 8-1 的官方對照；「控制」欄來自 AI Exchange 週期表與各控制頁；「症狀」這一欄以及整張圖的串接方式是作者整理，非官方。檢索階段的權限過濾在官方是以輸入資料外洩與 RAG 說明的形式出現，並沒有一個同名的控制。</figcaption>
+</figure>
+
+<h2 id="x-version">8.3 版本演進：AI Exchange 如何跟進 LLM Top 10</h2>
+<p>因為 AI Exchange 沒有版本號，最能看出它「活著」的地方，是它對其他文件的引用方式。2026-10-25 的快照裡有兩個可觀察的痕跡：</p>
+<ul>
+  <li>GenAI 九項特性表的表頭寫「OWASP for LLM TOP 10 (2026)」，條目都用 2026 版的編號；在提示詞注入說明裡，它也註記：2025 版的 System Prompt Leakage，在 2026 版由 OWASP for LLM 08 Hidden Context Exposure 涵蓋，範圍擴大到任何隱藏的營運上下文。本教材搜尋快照全文，沒有找到 2025 版的編號寫法（形如 LLM07:2025）。三個版本的編號換算見 <a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 2026 第 8 章</a>。</li>
+  <li>引用寫法並不統一：部分威脅頁的參考區塊寫「OWASP Top10 for LLM: sec. LLM01:2026」（帶年份），其他地方寫「OWASP for LLM 01」（不帶年份，但所在的表頭或上下文標明 2026）。</li>
+</ul>
+<p>這代表兩件事：一是引用編號時務必帶年份（LLM01:<strong>2026</strong>）；二是當 AI Exchange 與 LLM Top 10 的說法不一致時（如第 1 章提到的「刻意不完整」那句），以較新、較具體的條目原文為準，並標明你採用的版本與日期。</p>
+
+<h2 id="ch8-key">8.4 全主題重點整理</h2>
+<div class="keypoints"><ul>
+  <li><strong>定位（LO1）：</strong>AI Exchange 是涵蓋所有 AI 的持續更新知識庫，沒有版本號，用快照日期引用；要全貌與威脅建模 (Threat Modeling) 先讀它，要快速認識 LLM 風險讀 LLM Top 10，要逐條驗證用 AISVS。</li>
+  <li><strong>威脅（LO2）：</strong>開發期、輸入、執行期的其他威脅三類；六種影響對應 CIA；模型行為本身是需要保護完整性的資產；威脅常是多步驟攻擊鏈 (Attack Chain)。</li>
+  <li><strong>控制（LO3）：</strong>Manage、Have resilient models、Watch、Limit 四大類；用週期表由威脅反查；預防型與偵測／回應型搭配；提示詞注入用七層疊加並假設前兩層會被突破；授權在後端強制。</li>
+  <li><strong>風險分析（LO4）：</strong>G.U.A.R.D. → 威脅建模縮小清單 → 評估 → 降低／轉移／避免／接受 → 責任歸屬；「理論上適用」不等於「必須處理」。</li>
+  <li><strong>GenAI、Agentic、RAG（LO5）：</strong>只有少數風險是 GenAI 特有；agent 讓風險從錯誤答案變成錯誤行動；致命三要素與 Rule of Two 檢查「Data、Access、Send」；RAG 多了檢索這條看不見的輸入通道，以及檢索範圍與原始權限脫節的問題。</li>
+</ul></div>
+
+<h2 id="ch8-check">8.5 自我檢核清單</h2>
+<ul class="checklist">
+  <li>我能用兩句話向同事說明 AI Exchange 是什麼，以及什麼時候該先讀它。</li>
+  <li>給我一個攻擊，我能說出它屬於哪一類威脅、傷害了哪個資產的哪個性質。</li>
+  <li>給我一個威脅，我能用週期表找到它的控制，並說明哪些是預防型、哪些是偵測型。</li>
+  <li>我能對一個 LLM 系統走一遍威脅建模，列出該處理與可以接受的風險，並說明理由。</li>
+  <li>我能檢查一個 agent 的致命三要素，並提出拆除哪一項的方案。</li>
+  <li>我能在引用 OWASP 條目時帶上年份與快照日期，而且知道哪些對應是官方的、哪些是整理的。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO1、LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch8-next">8.6 接下來讀什麼</h2>
+<ol>
+  <li><strong>先做這個主題的 <a href="quiz.html">總測驗</a>（16 題）</strong>，再查看各學習目標的掌握度；答錯的題目會連回對應章節。</li>
+  <li>需要核對來源與版本時，看 <a href="references.html">參考資料與來源核對</a>。</li>
+  <li><strong>學習地圖上的下一個主題：</strong>
+    同在 01 總覽的<a href="../genai-security-project/index.html">GenAI Security Project 架構</a>，接著是 02 的<a href="../../02-llm-applications/llm-top-10/index.html">Top 10 for LLM Applications 2026</a>。需要對照官方文件時，可以閱讀：
+    <a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/tree/main/2026/final">LLM Top 10 2026 原始碼</a>、
+    <a href="https://owaspai.org/go/about/">AI Exchange 總覽頁的深入章節（威脅與控制）</a>。</li>
+  <li>想動手：官方 AI Exchange 在學習路徑中推薦用駭客練習專案 PwnzzAI 來扮演攻擊者（見其「How to use this Document」第 12 步）。PwnzzAI 是 03 階段<a href="../../03-prompt-injection-rag-practice/hands-on-labs/index.html">動手練習</a>主題介紹的三個練習專案之一，建議先讀完該階段的提示詞注入防護與 RAG 安全，再動手。</li>
+</ol>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Exchange：各威脅頁的「References / OpenCRE」區塊（Direct／Indirect prompt injection、Data poisoning、Evasion、Model exfiltration、AI supply chain management、Output contains conventional injection）；GenAI 九項特性表；2.2.1 Direct prompt injection（Example 6）；How to use this Document；2026-10-25 快照；CC0 1.0。入口：<a href="https://owaspai.org/go/about/">owaspai.org/go/about/</a>。</li>
+    <li>OWASP Top 10 for LLM Applications 2026：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM03_ExcessiveAgency.md">LLM03</a>（ASI02／ASI03／ASI08）、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM04_SupplyChain.md">LLM04</a>（ASI04）、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM09_VectorAndEmbeddingWeaknesses.md">LLM09</a>（ASI06）、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM01_PromptInjection.md">LLM01</a>（Rule of Two）、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM00_Preface.md">Preface</a>（邊界）；Version 2026；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for Agentic Applications 2026：PDF（Version 2026，December 2025）中 ASI01 的說明與條目名稱；<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a>；CC BY-SA 4.0。</li>
+    <li>OWASP AISVS：<a href="https://github.com/OWASP/AISVS">GitHub</a>（1.01）、<a href="https://owasp.org/www-project-artificial-intelligence-security-verification-standard-aisvs-docs/">owasp.org 專案頁</a>；CC BY-SA 4.0。</li>
+    <li>OWASP Machine Learning Security Top 10：<a href="https://owasp.github.io/www-project-machine-learning-security-top-10/index.html">專案頁</a>（2023 edition、Version 0.3 Draft）；CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AI Exchange（owaspai.org）— CC0 1.0；OWASP Top 10 for LLM Applications 2026、Top 10 for Agentic Applications 2026、AISVS、Machine Learning Security Top 10 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。MITRE ATLAS 與 NIST AI 100-2 的編號僅為轉述 AI Exchange 的參考區塊，本教材未直接引用這兩份文件的內容。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch8', topic: 'ai-exchange', mode: 'chapter',
+  questions: [
+    { id: 'c8q1', type: 'mc', lo: [1], refs: [{label: '8.1 表 8-1', href: '08-integration.html#x-table'}, {label: '8.2 圖 8-2', href: '08-integration.html#x-flow'}],
+      stem: '遠見保險（虛構）的團隊整理自家分類模型的威脅清單，其中一項是「攻擊者以大量查詢收割輸入輸出，複製模型的行為」。他們想把它對應到 LLM Top 10 2026 的某個條目。依表 8-1，下列哪個處理最恰當？',
+      options: [
+        { text: '對應 LLM02:2026 Sensitive Information Disclosure，因為被複製的模型行為也算敏感資訊。', why: '表 8-1 中 LLM02:2026 對應的是「在輸出中揭露敏感資料」這項威脅；模型外洩（輸入輸出收割）是另一列，官方對照沒有把它放在 LLM02。' },
+        { text: '對應 LLM05:2026 Data and Model Poisoning，因為兩者都和模型本身有關。', why: '表 8-1 把資料投毒與模型外洩分成兩列，各有各的官方對照；LLM05:2026 對應的是資料投毒。' },
+        { text: '表 8-1 在 LLM Top 10 2026 欄寫「無對應條目」；引用時改用 AI Exchange 參考區塊列出的其他編號，例如 ML05:2023 Model Theft、MITRE ATLAS AML.T0024.002、NIST AI 100-2 §2.4.3，並註明 ML Top 10 是 2023 edition、Version 0.3 的草稿。', correct: true, why: '這就是表 8-1 的官方對照。LLM Top 10 與 AI Exchange 不是一對一，把它硬塞進某個 Top 10 條目，會讓讀者以為官方有這個對應。' },
+        { text: '對應 LLM06:2026，因為大量查詢會推高費用。', why: 'LLM06:2026 在本章對應的是「費用暴增或服務被打爆」這類資源耗盡（圖 8-2）。模型外洩這個威脅本身，表 8-1 的 LLM Top 10 欄寫的是「無對應條目」。' }
+      ],
+      summary: '規避與模型外洩在 LLM Top 10 2026 沒有對應條目；要引用其他框架的編號，並註明版本。' },
+    { id: 'c8q2', type: 'match', lo: [1], refs: [{label: '8.1 表 8-1', href: '08-integration.html#x-table'}, {label: '8.2 圖 8-2', href: '08-integration.html#x-flow'}],
+      stem: '第 8 章一再區分「官方有寫」和「作者整理，非官方」。把下列說法配對到它的性質。',
+      cats: [
+        { id: 'official', label: '官方有寫' },
+        { id: 'author', label: '作者整理，非官方' }
+      ],
+      items: [
+        { text: '間接提示詞注入對應 LLM01:2026，以及 MITRE ATLAS AML.T0051.001。', answer: 'official', why: '這是表 8-1 的官方對照，來自 AI Exchange 威脅頁的參考區塊與 LLM Top 10 2026。' },
+        { text: '致命三要素與 Agentic Rule of Two 的結構相同。', answer: 'author', why: 'Rule of Two 本身在兩份官方文件都有，但「結構相同」是作者把概念放在一起的結論，表 8-1 標為作者整理。' },
+        { text: '不依賴嵌入幾何的 agent 記憶攻擊歸 ASI06，不歸 LLM09。', answer: 'official', why: 'LLM09 與 ASI06 的分工是 LLM09 條目自己的說明，表 8-1 標為官方。' },
+        { text: '把 LLM09 接到 AI Exchange 的「增補資料 (augmentation data)」。', answer: 'author', why: 'AI Exchange 本身沒有對照 LLM09，這個連接是作者整理。' },
+        { text: '圖 8-2 從「症狀」開始、一路串到控制的整條查找路徑。', answer: 'author', why: '「威脅 → 條目」與控制欄各有官方依據，但症狀欄與整張圖的串接方式是作者整理（見圖 8-2 的說明）。' }
+      ],
+      summary: '官方有寫的對照和作者把概念接在一起的整理要分開標示，引用時才不會把整理說成官方。' },
+    { id: 'c8q3', type: 'scn', lo: [1], refs: [{label: '8.3 版本演進', href: '08-integration.html#x-version'}, {label: '8.1 表 8-1', href: '08-integration.html#x-table'}],
+      stem: '依第 8 章，這份簡報的引用該怎麼修正？',
+      scenario: '松岩電子（虛構）的資安簡報寫道：「依 AI Exchange，隱藏的 system prompt 洩漏屬於 LLM07:2025 System Prompt Leakage。AI Exchange 沒有版本號，所以這個對照永遠有效；若它與 LLM Top 10 的說法不同，一律以 AI Exchange 為準。」審閱者覺得有地方不對勁，要你指出該怎麼改。',
+      options: [
+        { text: '改為 LLM08:2026 Hidden Context Exposure（2025 版的 System Prompt Leakage 在 2026 版由它涵蓋，範圍擴大到任何隱藏的營運上下文）；引用時帶年份與快照日期；兩份說法不一致時，以較新、較具體的條目原文為準，並標明採用的版本與日期。', correct: true, why: '符合 8.3 節：AI Exchange 的提示詞注入說明註記了這個更名與範圍擴大；沒有版本號的意思是要用快照日期引用，不是內容永遠有效。' },
+        { text: 'LLM07:2025 沒有問題，只要把「永遠有效」改成「截至簡報日期有效」。', why: '日期要寫沒錯，但編號本身也要換：AI Exchange 引用的是 2026 版，2025 版的 System Prompt Leakage 在 2026 版由 LLM08 涵蓋。' },
+        { text: '改為 LLM07:2026，因為只是年份不同。', why: '8.3 節指出的是 2026 版由 LLM08 Hidden Context Exposure 涵蓋；兩版的編號不能只改年份，換算要看 LLM Top 10 2026 第 8 章的編號換算。' },
+        { text: '維持原句，但把「一律以 AI Exchange 為準」改成「一律以 LLM Top 10 為準」。', why: '8.3 節的原則不是固定偏向某一份文件，而是以較新、較具體的條目原文為準，並標明採用的版本與日期；固定偏向任何一邊，日後仍會出錯。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) AI Exchange 沒有版本號，所以要用快照日期引用，而不是說對照「永遠有效」（8.3 節）。(2) 它的 GenAI 九項特性表用的是 2026 版編號，並在提示詞注入說明註記：2025 版的 System Prompt Leakage，在 2026 版由 LLM08 Hidden Context Exposure 涵蓋。(3) 兩份文件說法不一致時，以較新、較具體的條目原文為準，並標明版本與日期。</p><p><strong>結論：</strong>改引 LLM08:2026，帶上年份與快照日期，並刪去「一律以 AI Exchange 為準」。對應教材：<a href="08-integration.html#x-version">8.3 節</a>、<a href="08-integration.html#x-table">表 8-1</a>；三版編號的換算見 <a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 2026 第 8 章</a>。</p>' },
+    { id: 'c8q4', type: 'scn', lo: [1, 5], refs: [{label: '8.2 從症狀到文件與控制', href: '08-integration.html#x-flow'}, {label: '8.1 表 8-1', href: '08-integration.html#x-table'}],
+      stem: '依第 8 章的對照與查找流程，團隊該查哪些文件、先補哪一類控制？',
+      scenario: '山嵐物流（虛構）的排班 agent 能自行選擇呼叫排班工具，並定期讀取供應商寄來的郵件。某天，一封供應商郵件中的文字改變了 agent 的行為，它在沒有人要求的情況下取消了數張排班單。事後檢查，agent 的每個動作都在它被授予的工具權限之內，只是授權範圍很寬。主管問：「該查哪份文件？第一個要補的是什麼控制？」',
+      options: [
+        { text: '只查 LLM Top 10 的 LLM01，補上輸入端的處理即可，因為起因是郵件內容。', why: '模型已經是行動者，LLM Top 10 與 Agentic Top 10 要搭配讀（8.1 節的提醒）；而且圖 8-2 對「做了任務之外的事」給的第一個控制是最小模型權限加監督，不是只處理輸入端。' },
+        { text: '改查 LLM04 與 ASI04 的供應鏈，因為郵件來自外部供應商。', why: '表 8-1 中 LLM04 與 ASI04 處理的是供應鏈問題（例如 MCP server 等 agentic 供應鏈）；這起事件是外部郵件的內容改變了行為，並不是取得了被動過手腳的元件。' },
+        { text: '先對整個系統做 AISVS 逐條驗證，結果出來後再決定要不要補控制。', why: 'AISVS 是用來評估或稽核 AI 應用的驗證標準（表 8-1 最後一列），不是從症狀找威脅與控制的起點；這個情境要先走圖 8-2 的查找路徑，找出該查的條目與該補的控制。' },
+        { text: '兩條線都要查：郵件改變行為對應間接提示詞注入（LLM01:2026，也是 ASI01 Agent Goal Hijack 的常見成因）；做了任務之外的事對應過度授權（LLM03:2026，在 agentic 系統中可表現為 ASI02、ASI03、ASI08）。第一個要補的是 <code class="ctl">LEAST MODEL PRIVILEGE</code>，並搭配 <code class="ctl">INPUT SEGREGATION</code> 與 <code class="ctl">OVERSIGHT</code>。', correct: true, why: '圖 8-2 的兩條路徑（外部郵件改變行為、agent 做了任務之外的事）在最小模型權限交會；表 8-1 則提供兩份文件的官方對照。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 外部郵件的內容改變了 agent 的行為，對應圖 8-2 的間接提示詞注入一列：LLM01:2026，控制是 <code class="ctl">INPUT SEGREGATION</code> 加 <code class="ctl">LEAST MODEL PRIVILEGE</code>。(2) agent 做了任務之外的事，對應過度授權一列：LLM03:2026，在 agentic 系統中可表現為 ASI02、ASI03、ASI08，控制是 <code class="ctl">LEAST MODEL PRIVILEGE</code> 加 <code class="ctl">OVERSIGHT</code>。(3) 模型是行動者，所以兩份文件要搭配讀。(4) 兩條路徑在 <code class="ctl">LEAST MODEL PRIVILEGE</code> 交會，所以先限縮 agent 能做的事。</p><p><strong>結論：</strong>LLM Top 10 與 Agentic Top 10 一起查，先補最小模型權限。注意圖 8-2 的「症狀」欄與串接方式是作者整理，非官方。對應教材：<a href="08-integration.html#x-flow">8.2 節</a>、<a href="08-integration.html#x-table">表 8-1</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

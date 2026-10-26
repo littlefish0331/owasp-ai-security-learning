@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　四層 32 項測試地圖｜AI Testing Guide｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AI Testing Guide 把測試分成 Application、Model、Infrastructure、Data 四層共 32 項；每項測試的領域與 Threat Source 欄、與 LLM Top 10 年份的對應陷阱，以及怎麼從威脅模型挑出該跑的測試。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="ai-testing-guide" data-page="02-test-map.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　四層 32 項測試地圖</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 10 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2、LO3</li>
+  <li>前置：<a href="01-position.html">第 1 章</a></li>
+</ul>
+<p class="lead">第 1 章說方法是「威脅 → 測試」。這一章把官方框架表攤開：32 項帶編號的測試分成四層，每項標了它屬於哪個領域、威脅來自哪份文件。你會學到怎麼讀這張地圖、怎麼從威脅模型挑出要跑的測試，以及一個很容易踩到的陷阱：表裡引用的是 <strong>LLM Top 10 2025</strong>，不是 2026。</p>
+
+<h2 id="tm-layers">2.1 四層結構與一項測試的格式</h2>
+<p>官方框架章說：每個測試案例歸在四個「支柱」之一，也就是第 1 章分解出的四個元件。</p>
+<ul>
+  <li><strong>應用測試 (AI Application Testing)，14 項（AITG-APP-01 至 14）：</strong>使用者與外部資料互動時的行為，如提示詞注入、資料外洩、不安全輸出、agent 行為限制、偏見與幻覺。</li>
+  <li><strong>模型測試 (AI Model Testing)，7 項（AITG-MOD-01 至 07）：</strong>模型本身的性質，不論部署在哪：規避、投毒、隱私推論、穩健性、目標對齊。</li>
+  <li><strong>基礎設施測試 (AI Infrastructure Testing)，6 項（AITG-INF-01 至 06）：</strong>供應鏈、資源管理、外掛邊界、微調環境、開發期的模型竊取。</li>
+  <li><strong>資料測試 (AI Data Testing)，5 項（AITG-DAT-01 至 05）：</strong>暴露、執行期外洩、多樣性與涵蓋、有害內容、最小化與同意。</li>
+</ul>
+<p>14 + 7 + 6 + 5 = 32 項。每項測試有各自的頁面，小節結構大致一致：<strong>摘要、測試目標、如何測試與範例輸入、預期輸出、真實案例、修補建議、建議工具、參考資料</strong>。本教材逐頁檢查過（2026-10-26）：32 頁都有摘要、測試目標、預期輸出、修補與工具；「真實案例」只有 7 頁有。本教材只講測試的目的與結構，不抄範例輸入。</p>
+
+<h2 id="tm-list">2.2 32 項測試一覽</h2>
+<p>下兩張表依官方框架章的表整理。「領域」與「Threat Source」兩欄照官方原文；名稱的中文是暫譯。</p>
+
+<h3 id="tm-app">應用層：14 項</h3>
+<div class="table-wrap"><table>
+<caption>表 2-1　AI Application Testing（AITG-APP-01 至 14）</caption>
+<thead><tr><th scope="col">編號</th><th scope="col">測試 <br>(Test)</th><th scope="col">領域</th><th scope="col">Threat Source</th></tr></thead>
+<tbody>
+<tr><td>APP-01</td><td>提示詞注入 <br>(Prompt Injection)</td><td>Security</td><td>OWASP Top 10 LLM 2025</td></tr>
+<tr><td>APP-02</td><td>間接提示詞注入 <br>(Indirect Prompt Injection)</td><td>Security</td><td>OWASP Top 10 LLM 2025</td></tr>
+<tr><td>APP-03</td><td>敏感資料外洩 <br>(Sensitive Data Leak)</td><td>Security, Privacy</td><td>OWASP Top 10 LLM 2025</td></tr>
+<tr><td>APP-04</td><td>輸入洩漏 <br>(Input Leakage)</td><td>Security, Privacy</td><td>OWASP Top 10 LLM 2025</td></tr>
+<tr><td>APP-05</td><td>不安全輸出 <br>(Unsafe Outputs)</td><td>Security, RAI</td><td>OWASP Top 10 LLM 2025</td></tr>
+<tr><td>APP-06</td><td>Agent 行為限制 <br>(Agentic Behavior Limits)</td><td>Security, RAI</td><td>OWASP Top 10 LLM 2025</td></tr>
+<tr><td>APP-07</td><td>提示詞揭露 <br>(Prompt Disclosure)</td><td>Security, Privacy</td><td>OWASP Top 10 LLM 2025</td></tr>
+<tr><td>APP-08</td><td>嵌入操弄 <br>(Embedding Manipulation)</td><td>Security</td><td>OWASP Top 10 LLM 2025</td></tr>
+<tr><td>APP-09</td><td>模型萃取 <br>(Model Extraction)</td><td>Security</td><td>OWASP AI Exchange</td></tr>
+<tr><td>APP-10</td><td>有害內容偏見 <br>(Harmful Content Bias)</td><td>RAI</td><td>OWASP Top 10 LLM 2025</td></tr>
+<tr><td>APP-11</td><td>幻覺 <br>(Hallucinations)</td><td>RAI</td><td>Responsible AI</td></tr>
+<tr><td>APP-12</td><td>有毒輸出 <br>(Toxic Output)</td><td>RAI</td><td>Responsible AI</td></tr>
+<tr><td>APP-13</td><td>過度依賴 AI <br>(Over-Reliance on AI)</td><td>RAI</td><td>Responsible AI</td></tr>
+<tr><td>APP-14</td><td>可解釋性與可詮釋性 <br>(Explainability and Interpretability)</td><td>RAI</td><td>Responsible AI</td></tr>
+</tbody></table></div>
+
+<h3 id="tm-rest">模型層、基礎設施層、資料層：18 項</h3>
+<div class="table-wrap"><table>
+<caption>表 2-2　AI Model（MOD）、Infrastructure（INF）、Data（DAT）測試</caption>
+<thead><tr><th scope="col">編號</th><th scope="col">測試 <br>(Test)</th><th scope="col">領域</th><th scope="col">Threat Source</th></tr></thead>
+<tbody>
+<tr><td>MOD-01</td><td>規避攻擊 <br>(Evasion Attacks)</td><td>Security</td><td>OWASP AI Exchange</td></tr>
+<tr><td>MOD-02</td><td>執行期模型投毒 <br>(Runtime Model Poisoning)</td><td>Security</td><td>OWASP Top 10 LLM 2025</td></tr>
+<tr><td>MOD-03</td><td>被投毒的訓練集 <br>(Poisoned Training Sets)</td><td>Security</td><td>OWASP Top 10 LLM 2025</td></tr>
+<tr><td>MOD-04</td><td>成員推論 <br>(Membership Inference)</td><td>Privacy</td><td>OWASP AI Exchange</td></tr>
+<tr><td>MOD-05</td><td>反推攻擊 <br>(Inversion Attacks)</td><td>Privacy</td><td>OWASP AI Exchange</td></tr>
+<tr><td>MOD-06</td><td>對新資料的穩健性 <br>(Robustness to New Data)</td><td>RAI</td><td>Responsible AI</td></tr>
+<tr><td>MOD-07</td><td>目標對齊 <br>(Goal Alignment)</td><td>RAI</td><td>Responsible AI</td></tr>
+<tr><td>INF-01</td><td>供應鏈竄改 <br>(Supply Chain Tampering)</td><td>Security</td><td>OWASP Top 10 LLM 2025</td></tr>
+<tr><td>INF-02</td><td>資源耗盡 <br>(Resource Exhaustion)</td><td>Security</td><td>OWASP Top 10 LLM 2025</td></tr>
+<tr><td>INF-03</td><td>外掛邊界違反 <br>(Plugin Boundary Violations)</td><td>RAI</td><td>Responsible AI</td></tr>
+<tr><td>INF-04</td><td>能力濫用 <br>(Capability Misuse)</td><td>RAI</td><td>Responsible AI</td></tr>
+<tr><td>INF-05</td><td>微調投毒 <br>(Fine-tuning Poisoning)</td><td>Security</td><td>OWASP Top 10 LLM 2025</td></tr>
+<tr><td>INF-06</td><td>開發期模型竊取 <br>(Dev-Time Model Theft)</td><td>Security, Privacy</td><td>OWASP AI Exchange</td></tr>
+<tr><td>DAT-01</td><td>訓練資料暴露 <br>(Training Data Exposure)</td><td>Privacy</td><td>OWASP AI Exchange</td></tr>
+<tr><td>DAT-02</td><td>執行期外洩 <br>(Runtime Exfiltration)</td><td>Security, Privacy</td><td>OWASP AI Exchange</td></tr>
+<tr><td>DAT-03</td><td>資料集多樣性與涵蓋 <br>(Dataset Diversity &amp; Coverage)</td><td>RAI</td><td>Responsible AI</td></tr>
+<tr><td>DAT-04</td><td>資料中的有害內容 <br>(Harmful Content in Data)</td><td>RAI</td><td>Responsible AI</td></tr>
+<tr><td>DAT-05</td><td>資料最小化與同意 <br>(Data Minimization &amp; Consent)</td><td>Privacy, RAI</td><td>Responsible AI</td></tr>
+</tbody></table></div>
+<div class="callout author">
+  <p class="callout-title">讀表時值得注意的三件事 <span class="tag author">作者整理，非官方</span></p>
+  <ul>
+    <li><strong>Threat Source 的統計</strong>（作者依官方表數的）：OWASP Top 10 LLM 2025 共 14 項、Responsible AI 共 11 項、OWASP AI Exchange 共 7 項；不到一半的測試直接來自 LLM Top 10。</li>
+    <li><strong>名稱像資安、領域卻標 RAI：</strong>INF-03（外掛邊界違反）與 INF-04（能力濫用）在官方表中領域與 Threat Source 都是 Responsible AI，引用時照官方表寫，不要憑名稱猜。</li>
+    <li><strong>名稱的小差異：</strong>APP-10 在框架表是「Harmful Content Bias」，目錄頁與實際頁面標題是「Content Bias」；框架表給 APP-10 的連結檔名在 2026-10-26 回傳 404。DAT-04 的目錄頁也少了 Content 一字。本教材照框架表，細節見<a href="references.html#ref-conflict">參考資料頁</a>。</li>
+  </ul>
+</div>
+
+<h2 id="tm-year">2.3 年份陷阱：Threat Source 指的是 LLM Top 10 2025</h2>
+<p>框架表的 Threat Source 欄寫的是「OWASP Top 10 LLM <strong>2025</strong>」，測試頁的參考資料也引用 2025 版編號（例如 APP-01 寫 LLM01:2025）。但 LLM Top 10 在 2026 年改版，<strong><a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">很多編號變了</a></strong>。若你的風險登記冊用 2026 版標籤，直接拿測試頁的編號去比對就會對錯條目：引用編號必須帶年份。</p>
+<div class="table-wrap"><table>
+<caption>表 2-3　測試頁引用的 2025 編號與對應的 2026 編號（2026 編號取自 GenAI Red Teaming Manual 引用的 LLM Top 10 2026 清單；對應關係為作者整理）</caption>
+<thead><tr><th scope="col">風險概念</th><th scope="col">測試頁怎麼寫</th><th scope="col">LLM Top 10 2025</th><th scope="col">LLM Top 10 2026</th></tr></thead>
+<tbody>
+<tr><th scope="row">提示詞注入 <br>(Prompt Injection)</th><td>APP-01、APP-02：LLM01:2025</td><td>LLM01:2025</td><td><a href="../../02-llm-applications/llm-top-10/02-prompt-injection.html#pi-what">LLM01:2026</a>（編號未變）</td></tr>
+<tr><th scope="row">敏感資訊外洩 <br>(Sensitive Information Disclosure)</th><td>APP-03、APP-04：LLM02:2025</td><td>LLM02:2025</td><td><a href="../../02-llm-applications/llm-top-10/06-disclosure.html#dc-what">LLM02:2026</a>（編號未變）</td></tr>
+<tr><th scope="row">資料與模型投毒 <br>(Data and Model Poisoning)</th><td>APP-08、INF-05：LLM04:2025</td><td>LLM04:2025</td><td><a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-poison">LLM05:2026</a></td></tr>
+<tr><th scope="row">過度授權 <br>(Excessive Agency)</th><td>APP-06：寫 LLM06，沒標年份</td><td>LLM06:2025</td><td><a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a></td></tr>
+<tr><th scope="row">不當輸出處理 <br>(Improper Output Handling)</th><td>APP-05：LLM05:2025</td><td>LLM05:2025</td><td><a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-output">LLM10:2026</a></td></tr>
+<tr><th scope="row">系統提示詞洩漏 <br>(System Prompt Leakage)</th><td>APP-07：LLM07:2025</td><td>LLM07:2025</td><td><a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-hidden">LLM08:2026</a> Hidden Context Exposure（官方說是更名並擴大範圍，見<a href="../../01-overview/genai-security-project/05-integration.html#int-evolution">GenAI 專案第 5 章表 5-2</a>）</td></tr>
+<tr><th scope="row">向量與嵌入弱點 <br>(Vector and Embedding Weaknesses)</th><td>APP-08：LLM08:2025</td><td>LLM08:2025</td><td><a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-vector">LLM09:2026</a></td></tr>
+</tbody></table></div>
+<p>三個實用結論：(1) <strong>編號有時沒變、有時變了</strong>，不能靠「大概一樣」；(2) 測試頁有的寫了年份、有的（如 APP-06）沒寫，要自己確認它對應哪一版；(3) 最穩的做法是<strong>用名稱比對，並把年份寫進登記冊</strong>。</p>
+
+<h2 id="tm-pick">2.4 怎麼從威脅模型挑出要跑的測試</h2>
+<p>官方是威脅驅動：不是 32 項全跑。官方沒有提供「系統特徵 → 測試清單」的對照表，下圖是作者把「威脅 → 元件 → 測試」的邏輯畫成決策流程。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="挑選測試的決策流程：從威脅模型中的一個威脅出發，先判斷它發生在哪個元件。使用者互動、輸出與 agent 行為屬應用層，選 AITG-APP；模型本身的行為與隱私屬模型層，選 AITG-MOD；供應鏈、資源與外掛屬基礎設施層，選 AITG-INF；資料集與資料外洩屬資料層，選 AITG-DAT。接著判斷測試者能不能碰到所需的存取，能就排入測試計畫，不能就標示不適用或超出控制並記錄理由。最後用領域欄檢查安全、隱私、負責任 AI 是否都有涵蓋。">
+flowchart TD
+  T["威脅模型中的一個威脅"] --> Q1{"發生在哪個元件？"}
+  Q1 -->|"使用者互動、輸出、agent 行為"| A["應用層：AITG-APP"]
+  Q1 -->|"模型本身的行為與隱私"| M["模型層：AITG-MOD"]
+  Q1 -->|"供應鏈、資源、外掛、微調環境"| I["基礎設施層：AITG-INF"]
+  Q1 -->|"資料集、資料外洩、同意"| D["資料層：AITG-DAT"]
+  A --> Q2{"測試者能取得所需的存取嗎？<br>黑箱／灰箱／白箱"}
+  M --> Q2
+  I --> Q2
+  D --> Q2
+  Q2 -->|"能"| P["排入測試計畫"]
+  Q2 -->|"不能"| N["標示不適用或超出控制<br>並記錄理由"]
+  P --> C["用領域欄檢查：<br>Security、Privacy、RAI 都有涵蓋嗎？"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class T,Q1,Q2,P,N,C author
+</pre>
+<figcaption><strong>圖 2-1　從威脅模型挑測試的決策流程。</strong>四層的名稱與 AITG 編號來自官方；其餘的決策節點（存取能不能取得、不適用要記錄理由、最後用領域欄檢查涵蓋）是<span class="tag author">作者整理，非官方</span>，虛線框表示作者整理。「黑箱／灰箱／白箱」的意義在第 3 章。</figcaption>
+</figure>
+
+<h2 id="tm-scenario">2.5 情境範例 A：上線前一週，從 32 項挑出該跑的</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：澄川電信的內部 RAG 客服助理</h3>
+<p><span class="tag fiction">虛構</span> 澄川電信是虛構的公司。客服人員在內部介面向助理提問；系統從向量資料庫檢索產品手冊、資費公告與歷史客服工單（工單內容包含客戶自己填寫的文字），把檢索結果連同問題送到<strong>第三方託管的 LLM API</strong>。助理有兩個工具：「查詢帳單」（唯讀，以該客服人員的身分呼叫後端 API）與「建立退款申請」（送出後由主管審核）。資安窗口宜華要在上線前一週挑出測試。</p>
+<ol class="steps">
+  <li><strong>分解成四個元件。</strong>應用層：內部介面、助理邏輯、兩個工具、檢索來源。模型層：第三方 API，團隊碰不到權重與訓練資料。基礎設施層：向量庫、呼叫量與費用。資料層：手冊、工單（含個資）、帳單。</li>
+  <li><strong>從威脅挑出測試</strong>（<span class="tag author">作者整理，非官方</span>）。工單文字是外人寫的卻會被檢索進提示 → 間接提示詞注入 (APP-02)、嵌入操弄 (APP-08)。助理能建立退款申請 → Agent 行為限制 (APP-06)、外掛邊界違反 (INF-03)；APP-06 提醒授權檢查要放在工具後端、在 agent 的控制之外。助理可能帶出別人的帳單 → 敏感資料外洩 (APP-03)、執行期外洩 (DAT-02)。客服可能照念錯誤的資費答案 → 幻覺 (APP-11)、過度依賴 AI (APP-13)。每次呼叫都計費 → 資源耗盡 (INF-02)。工單含個資 → 資料最小化與同意 (DAT-05)。</li>
+  <li><strong>標示不適用。</strong>被投毒的訓練集 (MOD-03)、微調投毒 (INF-05)、開發期模型竊取 (INF-06) 需要接觸訓練資料或微調環境，澄川電信只是使用方。計畫表上寫「不適用：模型由供應商託管」，不寫「通過」，並註明由採購與供應商管理處理（作者整理）。</li>
+  <li><strong>處理年份。</strong>登記冊用 LLM Top 10 2026 標籤；LLM03:2026 Excessive Agency 要對到 APP-06，而 APP-06 頁面引用的是 LLM06（2025 版編號）。宜華用名稱連結並註明年份，不直接抄編號。</li>
+</ol>
+<p><strong>這個情境的提醒：</strong>每個選擇都是「威脅 → 元件 → 測試」推出來的，沒有一步是「32 項全跑」；碰不到的要明確記錄，而不是悄悄略過。</p>
+</div>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>四層共 32 項：Application 14、Model 7、Infrastructure 6、Data 5；編號格式 AITG-APP／MOD／INF／DAT-nn。</li>
+  <li>每項測試有領域（Security、Privacy、RAI）與 Threat Source（LLM Top 10 2025、AI Exchange、Responsible AI）兩欄；INF-03、INF-04 名稱像資安，官方表標的是 RAI。</li>
+  <li>Threat Source 指的是 LLM Top 10 <strong>2025</strong>；2026 版很多編號已變，要用名稱比對並寫上年份。</li>
+  <li>挑測試：威脅 → 元件 → 測試；碰不到的標「不適用」並記錄理由（作者整理）。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出四層各有幾項測試，以及 AITG 編號怎麼讀。</li>
+  <li>我能解釋為什麼不能直接拿測試頁的 LLM 編號去比對 2026 版登記冊。</li>
+  <li>給我一個系統描述，我能列出威脅、對到元件，並挑出相關測試與不適用的測試。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2、LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-using-the-guide.html">第 3 章　限制、黑灰白箱與跨文件整合</a>：知道有哪些測試之後，看實際測 AI 系統時會遇到的限制，以及測試如何和紅隊、驗證標準、評分接力。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Testing Guide，GitHub main（最近提交 2026-06-01）：<a href="https://github.com/OWASP/www-project-ai-testing-guide/blob/main/Document/content/3.0_OWASP_AI_Testing_Guide_Framework.md">3.0 Framework</a>（32 項表）、3.1–3.4 各類別頁、32 個測試頁（2026-10-26 讀取）；授權依儲存庫 LICENSE.md 為 CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026 清單（編號與名稱）：引自 GenAI Red Teaming Manual Version 1.0（2026-10-20）第 3.3 節；與 2025 版對照另見 <a href="../../01-overview/genai-security-project/05-integration.html#int-evolution">GenAI 專案第 5 章</a>。</li>
+    <li>OWASP AISVS 1.01 發布說明（提及參考已更新為 LLM Top 10 2026）：<a href="https://github.com/OWASP/AISVS/releases/tag/v1.01">github.com/OWASP/AISVS/releases/tag/v1.01</a>。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AI Testing Guide — CC BY-SA 4.0（依儲存庫 LICENSE.md；GitHub 偵測值為 NOASSERTION）；GenAI Red Teaming Manual、OWASP AISVS、OWASP Top 10 for LLM Applications — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'tg-ch2', topic: 'ai-testing-guide', mode: 'chapter',
+  questions: [
+    { id: 'tg2q1', type: 'mc', lo: [2], refs: [{label: '2.2 表 2-1', href: '02-test-map.html#tm-app'}],
+      stem: '測試團隊要檢查模型會不會編造不存在的事實（幻覺）。依官方框架表，這項測試屬於哪一層、哪個領域？',
+      options: [
+        { text: '基礎設施層，領域 RAI', why: '基礎設施層確實有兩項標 RAI（INF-03、INF-04），但幻覺不在那裡；它是 AITG-APP-11。' },
+        { text: '應用層（AITG-APP-11），領域 RAI', correct: true, why: '表 2-1：APP-11 Hallucinations，領域 RAI，Threat Source 為 Responsible AI。' },
+        { text: '模型層，領域 Security', why: '模型層的 MOD-06、MOD-07 屬 RAI，其餘多為安全或隱私；幻覺在應用層測試。' },
+        { text: '資料層，領域 Privacy', why: '資料層談的是資料暴露、外洩、多樣性等；幻覺不是資料測試的主題。' }
+      ],
+      summary: '幻覺 = AITG-APP-11，應用層，RAI。' },
+    { id: 'tg2q2', type: 'match', lo: [2], refs: [{label: '2.2 表 2-1、2-2', href: '02-test-map.html#tm-list'}],
+      stem: '把下列測試配對到它所屬的層。',
+      cats: [
+        { id: 'app', label: '應用層 (APP)' },
+        { id: 'mod', label: '模型層 (MOD)' },
+        { id: 'inf', label: '基礎設施層 (INF)' },
+        { id: 'dat', label: '資料層 (DAT)' }
+      ],
+      items: [
+        { text: '規避攻擊 (Evasion Attacks)', answer: 'mod', why: 'AITG-MOD-01。' },
+        { text: '資源耗盡 (Resource Exhaustion)', answer: 'inf', why: 'AITG-INF-02。' },
+        { text: '訓練資料暴露 (Training Data Exposure)', answer: 'dat', why: 'AITG-DAT-01。' },
+        { text: '間接提示詞注入 (Indirect Prompt Injection)', answer: 'app', why: 'AITG-APP-02。' },
+        { text: '微調投毒 (Fine-tuning Poisoning)', answer: 'inf', why: 'AITG-INF-05，在基礎設施層（保護微調環境），不是模型層。' },
+        { text: '成員推論 (Membership Inference)', answer: 'mod', why: 'AITG-MOD-04，領域 Privacy。' }
+      ],
+      summary: '依測試編號前綴判斷層；微調投毒在 INF，不在 MOD。' },
+    { id: 'tg2q3', type: 'mc', lo: [3], refs: [{label: '2.3 年份陷阱', href: '02-test-map.html#tm-year'}],
+      stem: '你的風險登記冊使用 LLM Top 10 2026 的標籤。官方測試表的 Threat Source 欄寫「OWASP Top 10 LLM 2025」。要把登記冊裡的條目對到測試時，最穩的做法是？',
+      options: [
+        { text: '直接用測試頁上的 LLM 編號，因為 2025 與 2026 的編號本來就一樣。', why: '不一樣。例如 Excessive Agency 在 2025 版是 LLM06、2026 版是 LLM03。' },
+        { text: '把所有 LLM 編號都加 1，換成 2026 的編號。', why: '沒有這種規律：提示詞注入編號沒變，投毒是 04 變 05，過度授權是 06 變 03。' },
+        { text: '先忽略 Threat Source，只看領域欄。', why: '領域欄有用，但它不能取代風險條目的對照。' },
+        { text: '用風險名稱比對，並在登記冊註明年份，不直接沿用測試頁的編號。', correct: true, why: '符合 2.3 節的結論：用名稱比對、寫上年份。' }
+      ],
+      summary: '編號隨年份變；用名稱比對並標年份。' },
+    { id: 'tg2q4', type: 'scn', lo: [3], refs: [{label: '2.5 情境 A', href: '02-test-map.html#tm-scenario'}, {label: '2.4 圖 2-1', href: '02-test-map.html#tm-pick'}],
+      stem: '依本章，這份測試計畫哪裡不妥？',
+      scenario: '北辰物流（虛構）使用第三方託管的 LLM 做客服助理。測試計畫寫道：「依官方表共 32 項測試，全部列入。其中被投毒的訓練集 (MOD-03) 與開發期模型竊取 (INF-06)，因為我們測不到問題，所以標為『通過』。」',
+      options: [
+        { text: '沒有問題，測不到問題就是通過。', why: '「測不到」可能是因為碰不到模型與訓練環境，而不是沒有問題；這會製造虛假的安心。' },
+        { text: '全部列入、不看威脅就無法聚焦；而且碰不到的測試應標「不適用或超出控制」並記錄理由，不應標成通過。', correct: true, why: '對應 2.4 節的決策流程與 2.5 節步驟 3。' },
+        { text: '唯一的問題是 32 項太少。', why: '官方方法是威脅驅動，不是追求數量。' },
+        { text: '應該把 Threat Source 為 AI Exchange 的測試全部刪除。', why: 'Threat Source 只是這項測試的威脅來源，並不表示可以略過。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 官方方法是威脅驅動，先對應威脅與元件，再挑測試（圖 2-1）。(2) 北辰是模型使用方，MOD-03、INF-06 需要接觸訓練資料或開發環境，他們碰不到。(3) 碰不到就沒有「通過」可言，應標示不適用或超出控制並記錄理由（作者整理）。</p><p><strong>結論：</strong>先依威脅挑測試，把碰不到的標成不適用並寫理由。對應教材：<a href="02-test-map.html#tm-pick">2.4 節</a>、<a href="02-test-map.html#tm-scenario">2.5 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　RAG 管線與 Cheat Sheet 地圖｜RAG 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="RAG 重新分配風險而不是減少風險：用 RAG Security Cheat Sheet 的 14 個 Section 與實作優先序，搭配 LLM09:2026 的四句框架，決定先做什麼。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="rag-security" data-page="01-pipeline-and-map.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　RAG 管線與 Cheat Sheet 地圖</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../../01-overview/ai-exchange/06-rag.html#rag-stages">AI Exchange 第 6 章（RAG 的五個階段）</a>；<a href="../../primer-security-for-developers.html#p-surface">信任邊界 (Trust Boundary)</a></li>
+</ul>
+<p class="lead">你已經知道 RAG 怎麼運作，也在 AI Exchange 第 6 章看過它「多出了哪些攻擊面」。這一章換一個角度：OWASP 的 RAG Security Cheat Sheet 把防禦拆成 14 個 Section，還附了實作優先序。要回答的問題是：<strong>這 14 件事彼此是什麼關係？資源有限時先做哪幾件？LLM Top 10 2026 的 LLM09:2026 又管到哪裡為止？</strong></p>
+
+<div class="callout official">
+  <p class="callout-title">這個主題用到的兩份主要文件</p>
+  <ul>
+    <li><strong>RAG Security Cheat Sheet</strong>（OWASP Cheat Sheet Series，開發者導向的實作指引）。頁面沒有版本與日期；以 GitHub 歷史為準，2026-05-06 建立，2026-10-04 為本教材讀取時的最後修改。<span class="tag official">官方</span></li>
+    <li><strong>LLM09:2026 Vector and Embedding Weaknesses</strong>（OWASP Top 10 for LLM Applications 2026，Version 2026，發布日採 2026-08-04）。注意 genai.owasp.org 的條目頁目前仍是 2025 版，該版的向量與嵌入弱點是 LLM08:2025，編號不同。<span class="tag official">官方</span></li>
+  </ul>
+  <p>兩份的版本與日期細節在<a href="references.html">參考資料頁</a>。</p>
+</div>
+
+<h2 id="map-concept">1.1 核心概念：RAG 不減少風險，而是重新分配風險</h2>
+<div class="concept">
+<h3 id="c-redistribute">風險重新分配</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>RAG Security Cheat Sheet 開宗明義地說，RAG 把模型的回答建立在檢索到的文件上，能減少幻覺、帶入領域知識，但它<strong>不是降低風險，而是把風險散布到整條資料管線</strong>：從攝入 (Ingestion)、嵌入生成、儲存、檢索、生成，到輸出與下游整合，每一站都有新的攻擊面。<span class="tag official">官方</span></dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>聊天機器人的輸入只有使用者的問題；RAG 另外多了一條由「語料與索引」決定的輸入。語料裡的每份文件、每個區塊 (Chunk) 的嵌入、向量資料庫 (Vector Database) 的索引，都成為攻擊者可以影響、而使用者與維運者不容易看見的資產。這在 AI Exchange 第 6 章稱為「第二個、幾乎看不見的輸入通道」。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>LLM09:2026 用四句話歸納向量與嵌入層的失敗方式：<strong>投毒讓系統答錯、反推讓它洩漏、干擾讓它沉默、存取控制失效讓它不分對象</strong>。其中「干擾」指檢索干擾 (Retrieval Jamming)：放入一份專為特定查詢被取回、並讓模型拒答或宣稱沒有資料的「阻擋文件」，文件本身不帶任何惡意指令，是對檢索層的可用性攻擊。這四句話的共通點是：許多攻擊在檢索的內容完全沒有惡意指令時也會成功，因為它們利用的是嵌入空間的幾何與相似度搜尋的機制，而不是模型遵循指令的行為。<span class="tag official">官方</span></dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>沒有單一控制。Cheat Sheet 的做法是沿著管線，在每個階段各放一組控制，並要求任何一站失效時都不要退回不安全狀態（見 Section 14）。LLM09:2026 的緩解則依六類組織：權限與存取控制、資料驗證與來源驗證、依信任層級分隔資料、異常偵測、儲存生命週期、監控與事件應變。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「文件本身是乾淨的，所以向量庫也安全。」LLM09:2026 與 Cheat Sheet 都不同意：嵌入可以被操弄到靠近目標查詢，也可以被反推回原文，所以向量庫要與來源文件適用同等級的存取控制與保護。</dd>
+</dl>
+</div>
+
+<h2 id="map-table">1.2 14 個 Section 的地圖與實作優先序</h2>
+<p>Cheat Sheet 一開始就把控制分成三個優先層級：<strong>立即實作（基礎）</strong>、<strong>接著實作（合規與稽核）</strong>、<strong>進階（高安全與受管制環境）</strong>。下表把 14 個 Section 與優先層級對在一起；「管線位置」與「寫入端／讀取端／生成端」的歸類，是作者為了幫你記憶加上的分組。</p>
+<div class="table-wrap"><table>
+<caption>表 1-1　RAG Security Cheat Sheet 的 14 個 Section（優先層級取自 Cheat Sheet；「管線位置」與「三端」欄為作者整理，非官方）</caption>
+<thead><tr><th scope="col">Cheat Sheet Section</th><th scope="col">管線位置</th><th scope="col">三端 <br>（作者整理）</th><th scope="col">Cheat Sheet 的優先層級</th></tr></thead>
+<tbody>
+<tr><th scope="row">1 文件投毒 <br>(Document Poisoning)</th><td>攝入</td><td>寫入端</td><td>立即（文件來源與完整性基準）</td></tr>
+<tr><th scope="row">2 嵌入操弄 <br>(Embedding Manipulation)，含嵌入隱私</th><td>嵌入</td><td>寫入端</td><td>進階（嵌入分布監控與跨模型驗證、嵌入隱私控制與差分隱私）</td></tr>
+<tr><th scope="row">13 攝入的供應鏈風險</th><td>攝入</td><td>寫入端</td><td>接著</td></tr>
+<tr><th scope="row">7 索引完整性</th><td>儲存</td><td>寫入端</td><td>接著</td></tr>
+<tr><th scope="row">4 存取控制繼承 <br>（含資料刪除與保留）</th><td>儲存、檢索</td><td>讀取端</td><td>立即（資料刪除部分列在「接著」）</td></tr>
+<tr><th scope="row">6 區塊隔離 <br>(Chunk Isolation)</th><td>儲存、檢索</td><td>讀取端</td><td>立即（租戶與分類隔離）</td></tr>
+<tr><th scope="row">8 經由檢索的查詢注入</th><td>檢索</td><td>讀取端</td><td>立即（查詢正規化與濫用偵測）</td></tr>
+<tr><th scope="row">11 快取風險</th><td>檢索、輸出</td><td>讀取端</td><td>接著</td></tr>
+<tr><th scope="row">3 上下文視窗攻擊</th><td>生成</td><td>生成端</td><td>立即（分隔符號與區塊數量上限）</td></tr>
+<tr><th scope="row">5 來源歸屬與出處</th><td>輸出</td><td>生成端</td><td>接著</td></tr>
+<tr><th scope="row">9 輸出驗證與強制執行</th><td>輸出</td><td>生成端</td><td>立即</td></tr>
+<tr><th scope="row">10 工具呼叫與 agent 安全</th><td>下游 agent</td><td>生成端</td><td>接著</td></tr>
+<tr><th scope="row">12 監控與事件應變</th><td>全管線</td><td>橫跨</td><td>立即（全管線可觀測性）</td></tr>
+<tr><th scope="row">14 失效即拒絕 <br>(Fail-Closed Design)</th><td>全管線</td><td>橫跨</td><td>立即</td></tr>
+</tbody></table></div>
+<p>表中列的順序是作者依「三端」重排的，不是 Cheat Sheet 的編號順序。看這張表可以得到兩個觀察：</p>
+<ul>
+  <li><strong>「立即」層級幾乎都是邊界類控制</strong>：誰能寫進來（見 Section 1）、誰能讀出去（見 Section 4、6）、輸出出去前驗證（見 Section 9）、出事時看得到（見 Section 12）、失效時不退回不安全狀態（見 Section 14）。<span class="tag author">作者整理，非官方</span></li>
+  <li><strong>需要較多專業的偵測類控制被放在「進階」</strong>：嵌入分布監控、跨模型驗證與差分隱私式的噪聲，只建議高安全或受管制環境採用。</li>
+</ul>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="RAG 管線七個環節：攝入、嵌入、儲存、檢索、生成、輸出、下游 agent。前三者歸為寫入端，檢索歸為讀取端，生成與其後的輸出與下游 agent 歸為生成端；監控與失效即拒絕橫跨整條管線。">
+flowchart LR
+  subgraph W["寫入端：誰能影響語料與索引"]
+    ING["1 攝入"] --> EMB["2 嵌入"] --> STO["3 儲存"]
+  end
+  subgraph R["讀取端：誰能取回什麼"]
+    RET["4 檢索"]
+  end
+  subgraph G["生成端：取回的內容如何變成輸出與動作"]
+    GEN["5 生成"] --> OUT["6 輸出"] --> AG["7 下游 agent"]
+  end
+  STO --> RET --> GEN
+  X["橫跨整條管線：監控、事件應變、失效即拒絕"] -.-> W
+  X -.-> R
+  X -.-> G
+</pre>
+<figcaption><strong>圖 1-1　RAG 管線的七個環節與三端分組（作者整理，非官方）。</strong>七個環節是把 AI Exchange 的五階段拆細而成；三端分組是為了讓 14 個 Section 好記。後面三章依序展開：第 2 章寫入端、第 3 章讀取端、第 4 章生成端與橫跨整條管線的控制。</figcaption>
+</figure>
+
+<h2 id="map-llm09">1.3 LLM09:2026 管到哪裡為止</h2>
+<p>RAG 的問題常橫跨好幾個 LLM Top 10 條目。LLM09:2026 自己寫明了它與其他條目的邊界，下表把官方寫明的邊界整理出來。</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　LLM09:2026 與相鄰條目的邊界（官方明載；最後一欄的「怎麼讀」為作者整理）</caption>
+<thead><tr><th scope="col">相鄰條目</th><th scope="col">官方劃給它的範圍</th><th scope="col">怎麼讀 <br>（作者整理）</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM01:2026 <br>Prompt Injection</th><td>經由檢索內容的間接提示詞注入</td><td>惡意指令藏在被取回的文字裡 → 看 LLM01:2026；攻擊靠嵌入空間的位置才取回得到 → 看 LLM09:2026</td></tr>
+<tr><th scope="row">LLM05:2026 <br>Data and Model Poisoning</th><td>嵌入模型在訓練階段被投毒</td><td>改的是模型本身 → LLM05:2026；改的是語料或索引 → LLM09:2026</td></tr>
+<tr><th scope="row">LLM04:2026 <br>Supply Chain</th><td>向量庫函式庫的序列化缺陷</td><td>弱點在第三方軟體套件 → LLM04:2026</td></tr>
+<tr><th scope="row">ASI06:2026 <br>Memory and Context Poisoning</th><td>不依賴嵌入幾何的 agent 記憶攻擊</td><td>agent 記憶被寫入惡意內容，但取回機制不靠相似度 → ASI06:2026</td></tr>
+</tbody></table></div>
+<p>官方另外指出：只用 BM25 之類關鍵字檢索、或讓 LLM 直接走訪文件樹的「無向量」檢索系統，仍然繼承所有非幾何性質的風險，但<strong>沒有 LLM09:2026 的攻擊面</strong>。意思是：LLM09:2026 的核心是「相似度搜尋位於資料來源與提示詞之間」這件事。</p>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：Cheat Sheet 與 AI Exchange 的涵蓋關係</p>
+  <p>Cheat Sheet 開頭寫「沒有任何現有的 OWASP 指引全面涵蓋這個攻擊面」，而 AI Exchange 已有 RAG 概觀（教材 AI Exchange 第 6 章）。作者的讀法是：兩者寫作時間與焦點不同，AI Exchange 偏威脅建模與跨文件的控制地圖，Cheat Sheet 偏可實作的做法，所以彼此是互補的，不是矛盾。這是作者的解讀，官方沒有說明兩者的關係。AI Exchange 是否把 RAG 風險對照到 LLM09:2026 未能確認（見<a href="references.html#ref-unsure">參考資料頁</a>），本教材不宣稱有或沒有。</p>
+</div>
+
+<h2 id="map-aisvs">1.4 驗證標準的位置：AISVS C8</h2>
+<p>Cheat Sheet 提到，AISVS 在 C08「記憶、嵌入與向量資料庫」一章以驗證標準層級處理 RAG，Cheat Sheet 則提供「可在生產環境落實的做法」。LLM Top 10 2026 的附錄把 LLM09:2026 對應到 AISVS 的 C5（存取控制與身分）與 C8 為主要防線，C1、C7、C12 為支持。附錄也聲明：這是章節粒度的方向性指引，不是合規對照。<span class="tag official">官方</span></p>
+<p>用你熟悉的類比：LLM09:2026 是「風險是什麼」，Cheat Sheet 是「怎麼做」，AISVS C8 是「做到了怎麼驗證」。這個三層對應是作者的記憶輔助，不是官方的說法。<span class="tag author">作者整理，非官方</span></p>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>RAG 不減少風險，而是把風險散布到整條管線；許多向量層攻擊在內容沒有任何惡意指令時也成立。</li>
+  <li>LLM09:2026 的四句框架：投毒讓系統答錯、反推讓它洩漏、干擾讓它沉默、存取控制失效讓它不分對象。</li>
+  <li>Cheat Sheet 的 14 個 Section 有三個優先層級；「立即」層級以邊界類控制為主。</li>
+  <li>LLM09:2026 的邊界：經檢索的指令注入屬 LLM01:2026；訓練期投毒屬 LLM05:2026；函式庫缺陷屬 LLM04:2026；不靠嵌入幾何的 agent 記憶攻擊屬 ASI06:2026。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出 LLM09:2026 的四句框架，並各舉一個例子。</li>
+  <li>我能為一個 RAG 專案挑出「立即」層級該先做的控制。</li>
+  <li>我能判斷一個 RAG 事件該優先查 LLM01:2026、LLM04:2026、LLM05:2026、LLM09:2026 還是 ASI06:2026 的哪一個。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-write-side.html">第 2 章　寫入端：文件投毒、嵌入操弄與攝入供應鏈</a>：從「誰能影響語料與索引」開始，看完整性清單為什麼不等於內容安全。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series，RAG Security Cheat Sheet（頁面無版本與日期；GitHub 歷史：2026-05-06 建立，2026-10-04 最後修改）；<a href="https://cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html</a>；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026，LLM09:2026 Vector and Embedding Weaknesses（Version 2026，發布日採 2026-08-04）；<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM09_VectorAndEmbeddingWeaknesses.md">GenAI-LLM-Top10 2026/final</a>；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026，附錄 AISVS 對應（Top 10 2026 對 AISVS 1.0）；<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLMZZ_Appendix_AISVS_Mapping.md">LLMZZ_Appendix_AISVS_Mapping.md</a>；CC BY-SA 4.0。</li>
+    <li>OWASP AI Exchange，RAG systems overview（2026-10-25 快照）；<a href="https://owaspai.org/go/ragoverview">owaspai.org/go/ragoverview</a>；CC0 1.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series 與 OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch1', topic: 'rag-security', mode: 'chapter',
+  questions: [
+    { id: 'c1q1', type: 'mc', lo: [1], refs: [{label: '1.1 風險重新分配', href: '01-pipeline-and-map.html#map-concept'}],
+      stem: 'RAG Security Cheat Sheet 說「RAG 不減少風險，而是重新分配風險」。這句話最貼近下列哪一種理解？',
+      options: [
+        { text: '導入 RAG 之後，模型本身的風險消失，只剩資料庫風險。', why: '模型的風險並沒有消失：檢索到的內容仍會進入提示詞，模型仍可能被影響。重點是風險散布到整條管線，不是轉移掉。' },
+        { text: '風險從單一的模型邊界，散布到攝入、嵌入、儲存、檢索、生成、輸出與下游整合每一站。', correct: true, why: '這正是 Cheat Sheet 的說法：每一站都有新的攻擊面，所以控制也要沿著管線分段放。' },
+        { text: 'RAG 只適用於內部文件，所以對外部攻擊者不構成風險。', why: '攻擊面來自誰能影響語料與索引，不取決於文件是內部還是外部；共享磁碟、連接器與上傳都可能成為入口。' },
+        { text: '只要把文件加密，管線各站的風險都會被消除。', why: '加密保護的是儲存與傳輸；文件被投毒、嵌入被操弄、檢索越權這些問題都與加密無關。' }
+      ],
+      summary: 'RAG 的風險分佈在整條管線，防禦也要分段，不是只守模型。' },
+    { id: 'c1q2', type: 'match', lo: [1], refs: [{label: '1.3 表 1-2', href: '01-pipeline-and-map.html#map-llm09'}],
+      stem: '依表 1-2，把下列事件配對到最該優先查閱的條目。',
+      cats: [
+        { id: 'llm01', label: 'LLM01:2026 Prompt Injection' },
+        { id: 'llm04', label: 'LLM04:2026 Supply Chain' },
+        { id: 'llm05', label: 'LLM05:2026 Data and Model Poisoning' },
+        { id: 'llm09', label: 'LLM09:2026 Vector and Embedding Weaknesses' }
+      ],
+      items: [
+        { text: '被取回的文件文字中含有給模型的指令，使助理改變了行為', answer: 'llm01', why: '經由檢索內容的間接提示詞注入，官方劃給 LLM01:2026。' },
+        { text: '向量庫使用的某個函式庫在處理序列化資料時有缺陷', answer: 'llm04', why: '向量庫函式庫的序列化缺陷，官方劃給 LLM04:2026。' },
+        { text: '嵌入模型在訓練階段被植入後門，使整個語料的嵌入幾何被扭曲', answer: 'llm05', why: '嵌入模型的訓練期投毒，官方劃給 LLM05:2026。' },
+        { text: '攻擊者製作了嵌入位置靠近熱門查詢的內容，使它被取回並影響答案', answer: 'llm09', why: '攻擊依賴嵌入空間的位置，屬於 LLM09:2026 的檢索期資料投毒。' }
+      ],
+      summary: '判斷關鍵：弱點是在「文字裡的指令」、「第三方套件」、「模型訓練」，還是「嵌入空間的位置」。' },
+    { id: 'c1q3', type: 'scn', lo: [1], refs: [{label: '1.2 表 1-1', href: '01-pipeline-and-map.html#map-table'}, {label: '1.1 風險重新分配', href: '01-pipeline-and-map.html#map-concept'}],
+      stem: '依本章，這個團隊最合理的第一批工作是什麼？',
+      scenario: '雲帆科技（虛構）有 3 位工程師，準備在一個月內把公司內部 wiki 與工單系統接進 RAG 助理上線。團隊清單上列了 14 件事，包括嵌入分布監控、跨模型驗證、快取隔離、文件來源允許清單、檢索權限過濾、輸出驗證、失效時拒絕服務。他們想知道哪幾件要先做、哪幾件可以延後。',
+      options: [
+        { text: '先做嵌入分布監控與跨模型驗證，因為它們最能偵測進階攻擊。', why: 'Cheat Sheet 把這兩項放在「進階」層級，建議高安全或受管制環境採用；基礎的邊界控制還沒做就先做進階偵測，順序反了。' },
+        { text: '先做來源允許清單與完整性基準、檢索時的權限過濾、輸出驗證、全管線記錄與失效即拒絕；嵌入分布監控與跨模型驗證延後。', correct: true, why: '這些是 Cheat Sheet 列為「立即」的基礎項目（誰能寫入、誰能讀取、輸出驗證、可觀測性、失效時的預設）；進階項目依風險再補。' },
+        { text: '全部 14 項同時開始，否則整體安全等於零。', why: 'Cheat Sheet 明說不需要一次全做，並提供優先序來聚焦最高影響的控制。' },
+        { text: '先請模型供應商保證不會被提示詞注入，再決定要做哪些。', why: '沒有任何供應商能保證；而且大部分「立即」項目是管線與資料層的控制，與模型供應商的保證無關。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) Cheat Sheet 明確提供三個層級：立即（基礎）、接著（合規與稽核）、進階。(2) 「立即」層級包含來源與完整性、上下文視窗保護、逐區塊存取控制中繼資料、租戶隔離、查詢濫用偵測、輸出驗證、全管線記錄與失效即拒絕。(3) 嵌入分布監控與跨模型驗證在「進階」，適合高安全環境，三人團隊在上線前沒有必要先做。</p><p><strong>結論：</strong>先做邊界類的基礎控制，並把快取隔離、來源歸屬等「接著」層級排進第二階段。對應教材：<a href="01-pipeline-and-map.html#map-table">1.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

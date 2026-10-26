@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　Deepfake 與整合｜事件應變與 Deepfake｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Deepfake 指南為什麼主張聚焦流程而不是辨識瑕疵、人工驗證與財務控管做法、四類 deepfake 事件的處置重點、訓練該怎麼設計，並與資料安全（日誌張力）、AIBOM 等前面主題整合，附一個虛構情境。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="incident-response-and-deepfake" data-page="04-deepfake-and-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　Deepfake 與整合</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 10 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="03-three-incidents.html">第 3 章</a></li>
+</ul>
+<p class="lead">財務人員收到「財務長」的視訊邀請，畫面和聲音都像本人，要求立刻付一筆款。多數人的直覺是：訓練大家看出破綻。Deepfake 指南的立場恰好相反：<strong>不要把防線建在「看出來」上</strong>。本章說明原因、替代方案、四類事件的處置重點，最後接回資料安全與 AIBOM。</p>
+
+<h2 id="df-stance">4.1 為什麼不靠辨識</h2>
+<div class="table-wrap"><table>
+<caption>表 4-1　指南主張「流程遵守，而非視覺／聽覺偵測」的三個理由</caption>
+<thead><tr><th scope="col">理由</th><th scope="col">指南怎麼說</th></tr></thead>
+<tbody>
+<tr><th scope="row">偵測技術還不成熟</th><td>引用美國 GAO 2024 的報告：偵測需要大量資料、是貓捉老鼠的賽跑、在真實環境中準確度下降。指南認為現階段偵測技術的採用對象仍是政府、防禦機構與媒體組織；事件應變計畫只要求「評估是否需要採購」辨識技術</td></tr>
+<tr><th scope="row">教人找瑕疵會很快過時</th><td>聚焦特定視覺或聽覺瑕疵的訓練會隨生成技術進步而失效；指南要求採用現成的「辨識 deepfake」訓練前先慎重考慮，因為許多已經過時</td></tr>
+<tr><th scope="row">人無法可靠辨識，還高估自己</th><td>引用 Köbis 等人 2021：即使受過訓練，人們既無法可靠分辨 deepfake，還會高估自己的能力；教辨識反而造成「虛假的專業感」</td></tr>
+</tbody></table></div>
+<p class="small">GAO 與 Köbis 等人的研究是指南引用的第三方資料，本教材沒有獨立查證。</p>
+
+<div class="concept">
+<h3 id="c-process">聚焦流程，而不是辨識</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>指南的核心主張：成功的 deepfake 詐欺<strong>幾乎都是目標被操縱而繞過既定程序，與偽造的精緻度無關</strong>。指南結論的原意：最有效的防禦不在於擁有最新的偵測技術，而在於創造一個無論偽造多逼真都難以得逞的環境（驗證、職責分離、雙重授權）。</dd>
+  <dt data-n="2">為什麼有效</dt>
+  <dd>攻擊靠恐懼與急迫（指南稱為 amygdala hack）讓人在有時間思考前就行動。流程替人「換掉當下的判斷」：不管像不像，這類請求就是要走另一個管道確認。</dd>
+  <dt data-n="3">運作方式</dt>
+  <dd>三層：(1) <strong>人工驗證</strong>：核准的溝通管道名冊、回撥到預先登記的號碼、Code of the Day、自訂安全問題、要求主管驗證（至少用其中兩種）；(2) <strong>財務控管</strong>：職責分離、雙重授權、MFA、雙頻驗證（交易不得僅靠 email 或電話請求／審核／核准）、超過門檻要多重核准、保留挑戰高階主管請求的空間；(3) <strong>文化與訓練</strong>：全員被授權也被鼓勵用「另一個管道」驗證不尋常的請求。</dd>
+  <dt data-n="4">在哪個控制層</dt>
+  <dd>主要是預防與偵測類的流程控制，加上回應階段的處置計畫。<span class="tag author">作者整理，非官方</span>：這與 AI Exchange 等材料「控制不依賴對輸入的正確判斷」的取向相近，但那是作者的對照，不是指南的說法。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「不靠辨識就是放棄偵測。」不是：指南要偵測的是<strong>流程偏離與異常</strong>（例如異常頻繁的銀行資訊更新），而不是偽造本身。另一個誤解：「流程就是多一道簽核。」職責分離要有效，兩個人的決策與理由鏈必須各自獨立、不重疊（指南原文）。</dd>
+</dl>
+</div>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="處理不尋常請求的流程：收到請求，尤其是來自非標準管道、要求立刻行動的請求。第一步，不以聲音或影像像不像本人作為判斷依據。第二步，改用另一個管道驗證：回撥預先登記的號碼，或透過核准的通訊管道。第三步，涉及金錢或敏感資料時，需要雙重授權與職責分離。通過則辦理，不通過或無法確認則升級並通報，保存記錄。">
+flowchart TD
+  R["收到不尋常請求<br>非標準管道、要求立刻行動"] --> N["不以聲音或影像像不像本人為依據"]
+  N --> V["改用另一個管道驗證<br>回撥預先登記號碼、核准通訊管道、Code of the Day"]
+  V --> M{"涉及金錢或敏感資料？"}
+  M -- "是" --> D["雙重授權、職責分離、超過門檻多重核准"]
+  M -- "否" --> OK
+  D --> OK{"驗證通過？"}
+  OK -- "是" --> DO["辦理並留下記錄"]
+  OK -- "否或無法確認" --> ESC["升級、通報、保存證據"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class N,V,M,D,OK,DO,ESC author
+</pre>
+<figcaption><strong>圖 4-1　不靠辨識的處理流程。</strong>各項控制（回撥、Code of the Day、雙重授權、雙頻驗證、通報）來自指南；把它們串成一條流程是<strong>作者整理，非官方畫法</strong>（虛線）。</figcaption>
+</figure>
+
+<h2 id="df-training">4.2 訓練該教什麼</h2>
+<p>指南對意識訓練的最低涵蓋範圍是：什麼是 deepfake、被針對時怎麼辦、自己成為 deepfake 對象時怎麼辦、在哪裡通報。它特別建議：</p>
+<ul>
+  <li><strong>不教辨識瑕疵</strong>，教「無論如何都要走流程」；</li>
+  <li>對<strong>要求改用其他通訊工具</strong>（即使以「連線有問題」為由）或來自不尋常來源的高階主管請求，培養質疑的習慣；</li>
+  <li>全員被授權用另一個管道確認：email 請求就打已知可信的電話，視訊請求就用 email 確認；</li>
+  <li>提供通報指引（錄下會議、記下聯絡方式與請求細節）；deepfake 模擬演練可做，但指南承認<strong>有爭議</strong>。</li>
+</ul>
+<p>指南也提醒：有些無害的視訊工具（例如修正視線方向的功能）會產生類似 deepfake 的瑕疵，也可能是身心障礙者使用的輔助科技，難以一律禁止。靠「看起來怪不怪」判斷，既不可靠，也可能誤傷正當的人。</p>
+
+<h2 id="df-four">4.3 四類事件的處置重點</h2>
+<p>指南的事件特定章，每類事件都依偵測、圍堵／根除／復原、事後活動展開。TTP 對照表（對映 MITRE ATT&amp;CK）、OSINT 工具清單本教材不逐項轉述；下表只留處置重點。</p>
+<div class="table-wrap"><table>
+<caption>表 4-2　四類 deepfake 事件的處置重點（意譯並節略）</caption>
+<thead><tr><th scope="col">事件類型</th><th scope="col">偵測與預防</th><th scope="col">圍堵、根除、復原</th><th scope="col">事後</th></tr></thead>
+<tbody>
+<tr><th scope="row">① 以冒充詐取金錢</th><td>檢視財務交易程序，保留質疑高階請求的空間；檢視職責分離與雙重授權並設法自動偵測例外；掌握第三方更新銀行資訊的平均頻率，對異常頻率告警（官方範例：保險公司預期供應商平均一年更新三次帳戶，一個月內三次就應告警審查）；盡快訪談收到 deepfake 的人並完整記錄</td><td>交易已完成：<strong>立即</strong>聯絡雙方金融機構（立即通報是追回資金的關鍵）；帳戶已提供但未交易：通知金融機構；搜尋類似的釣魚郵件</td><td>檢視 90 天內的交易異常、流程偏離與告警缺口；更新驗證與核准流程</td></tr>
+<tr><th scope="row">② 冒充以促成網路攻擊（例：helpdesk 被騙）</th><td>幾乎完全仰賴 helpdesk 受過訓練並有明確通報機制；告警：不可能的旅行、裝置指紋比對、helpdesk 工單紀錄分析（異常激增、驗證重設激增、非常態聯絡時間）</td><td>聯絡被冒充者核對近期 helpdesk 請求；請其核對已登錄的 MFA 裝置（發現未知裝置先保存證據再移除）；主動獵捕其他相似權限者；檢視攻擊者的資料從何取得（例：若員工編號曝光在公開程式庫，就不該再用於驗證）；檢查憑證是否出現在外洩資料中</td><td>把同樣的資料來源用於下一次 deepfake 模擬訓練</td></tr>
+<tr><th scope="row">③ 求職面試詐欺</th><td>教育 HR 與面試官；至少一次面對面面試；鏡頭開啟、不用背景模糊與影音濾鏡；背景調查並親自核實推薦人；新員工從高度受限的環境開始、逐步增加權限；在安全與可及性間取得平衡（部分合法求職者會用輔助科技）</td><td>諮詢法務（隱私與僱傭法規）；確認入侵就啟動事件應變計畫；隔離並撤銷存取</td><td>建立從申請到通報的詳細時間線；通報主管機關與資訊分享組織；與同業分享去識別化的細節</td></tr>
+<tr><th scope="row">④ 假資訊 (Mis/Dis/Mal information)</th><td>鼓勵員工通報透過非標準管道釋出的領導者影音或異常主張；以聲譽／品牌監控偵測負面情緒激增（尤其是財報等關鍵時點）</td><td>保存原始檔與雜湊；有鑑識合約就交付原檔；沒有就檢查中繼資料不一致；下架請求（但若著作權不明或可能是合理使用就有問題）；向平台通報違反服務條款；與公關和溝通團隊建立聯繫</td><td>檢討並評估是否需要更多訓練；評估是否採購偵測技術（仍不成熟）</td></tr>
+</tbody></table></div>
+<p class="small">第 ③ 類，指南引用第三方報告點名特定國家相關的行動並列出假人物的共同特徵；那些是指南引用的外部報告，本教材未查證，因此不轉述歸因與細節。</p>
+
+<h2 id="df-integ">4.4 與前面主題整合</h2>
+<div class="concept">
+<h3 id="c-integ">事件應變不是孤立的：它要用到、也會碰到其他主題</h3>
+<dl>
+  <dt data-n="1">與資料安全：日誌的張力</dt>
+  <dd>IR 指南把提示詞稱為「最常見的攻擊向量，也是最豐富的偵測訊號」，要求把模型輸入輸出、提示詞等串進日誌堆疊。但<a href="../data-security/index.html">資料安全 2026</a> 的 DSGAI14（過度遙測與監控外洩）的 Tier 1 第一步是<strong>預設最少日誌</strong>：內容層級 (body-level) 記錄預設關閉，提示詞、回應、工具輸出只記中繼資料，除非明確提升；Tier 2 的除錯記錄需核准並自動到期。不過同一份文件在 DSGAI12 也要求完整的閘道請求日誌與供事件調查用的查詢歸因日誌，所以它<strong>本身已承認兩邊的需要</strong>，折衷是「預設最少、明確提升、核准且到期」。IR 指南則自己承認儲存提示詞有隱私顧慮。兩份文件<strong>沒有互相引用</strong>，也沒有說事件應變時怎麼提升記錄層級；是否有意互補<strong>未能確認</strong>。<span class="tag author">作者整理，非官方</span>：保存什麼、多久、誰能看，以及事件時由誰核准提升記錄，應事前決定並記入政策。</dd>
+  <dt data-n="2">與 AIBOM、清單與代理</dt>
+  <dd>IR 指南多處要求拿出物料清單：設計階段建立 AI-BOM 要求、建置階段在 CI/CD 閘門強制、靜態偵測視為高信任環境的前提、<strong>根除階段重新產生</strong>、事後更新；<a href="../aibom/index.html">AIBOM 主題</a>談清單的範圍與限制（清單不等於防線）。IR 指南用 LLM Top 10 的 2025 編號標記攻擊，引用時補年份；它也請讀者參考 OWASP Agentic Threats and Mitigations 指南處理代理被利用。<span class="tag author">作者整理，非官方</span>：<a href="../agent-control-standard/index.html">Agent Control Standard</a> 談執行階段攔截代理動作，是事前降低發生機率的一種做法；這個銜接是作者的推論，指南沒有互相引用。</dd>
+  <dt data-n="3">常見誤解</dt>
+  <dd class="misc">「事件應變是出事以後才需要想的事。」不是：嚴重度矩陣、SLA、團隊編組、資產清單、日誌策略、金絲雀輸入、人工驗證流程，都是出事之前就要備好的。</dd>
+</dl>
+</div>
+
+<h2 id="df-scn">4.5 情境範例 B：深夜的「財務長」視訊</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：淡水機械的付款請求</h3>
+<p><span class="tag fiction">虛構</span> 淡水機械是虛構的製造公司。週五晚上，應付帳款專員收到一則即時通訊訊息，來自一個自稱「財務長」的新帳號，說原本的視訊會議平台連不上，改邀請她加入另一個工具的視訊。畫面上的人看起來是財務長，語氣急切，要求當晚將一筆款項付到一個新的供應商帳戶，並說「不要告訴別人，這是併購案」。</p>
+<ol class="steps">
+  <li><strong>辨識的陷阱：</strong>她覺得影像「還算自然」，聲音也像。依指南，這<strong>不應該是決定的依據</strong>；真正的警訊是流程偏離：新帳號、改用非標準工具、要求保密與當晚付款、新的收款帳戶。</li>
+  <li><strong>驗證：</strong>她以員工名冊上登記的電話回撥財務長本人，並用公司即時通訊確認（至少兩種驗證）。財務長表示完全不知情。</li>
+  <li><strong>流程擋下：</strong>即使驗證漏掉，新收款帳戶仍需採購與財務雙方獨立核准（職責分離、雙重授權），超過門檻要多重核准。付款沒有被處理。</li>
+  <li><strong>通報與處置：</strong>她保存對話記錄與請求細節並通知資安團隊。團隊依表 4-2 ①：確認沒有款項或帳戶資訊已送到金融機構（若已送出，立即通知）；搜尋是否有類似訊息寄給其他同事；盡快訪談她並完整記錄；檢視 90 天內的財務交易是否有異常；更新訓練與政策。注意：這個情境<strong>沒有一步需要鑑定影像是不是 AI 生成</strong>。</li>
+</ol>
+</div>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>Deepfake 指南主張聚焦流程而非辨識：偵測技術不成熟、教找瑕疵會過時、人無法可靠辨識還高估自己。</li>
+  <li>三層防線：人工驗證（至少用兩種）、財務控管（職責分離、雙重授權、雙頻驗證）、文化與訓練（全員被授權用另一個管道驗證）。訓練不教找破綻。</li>
+  <li>四類事件：冒充詐取金錢、冒充促成網路攻擊、求職面試詐欺、假資訊；官方文字有「三類／四類」兩種說法。</li>
+  <li>整合：IR 指南要求把提示詞串進日誌，資料安全的 DSGAI14 預設最少日誌，兩者有張力；資料安全文件自己提供「預設最少、明確提升、核准且到期」的折衷，但兩份文件沒有互相引用。IR 指南在多個階段用到 AI-BOM。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出指南不靠辨識的三個理由。</li>
+  <li>我能說出至少三種人工驗證做法與三種財務控管。</li>
+  <li>我能說明日誌保存與最少日誌之間的張力，並說出資料安全文件提供的折衷（預設只記中繼資料、明確提升、核准且到期）。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p>進行 <a href="quiz.html">總測驗</a>，檢查四個學習目標的掌握度；之後可以回到 <a href="../data-security/index.html">資料安全</a>或 <a href="../aibom/index.html">AIBOM</a> 主題，看這個主題引用的另外兩個面向。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Guide for Preparing and Responding to Deepfake Events（Overview；Assessment of Defenses 的 Human-Based Authentication Best Practices、Financial Transactions、Helpdesk；Awareness Training；Event Specific Guidance 的四個小節；Conclusion）：<a href="https://genai.owasp.org/resource/guide-for-preparing-and-responding-to-deepfake-events/">genai.owasp.org/resource/guide-for-preparing-and-responding-to-deepfake-events/</a>；Version 1；2026-10-26 讀取；PDF 授權頁 CC BY-SA 4.0。GAO 2024 與 Köbis 等人 2021 是指南引用的資料，本教材未查證。</li>
+    <li>OWASP GenAI Incident Response Guide 1.0（Detection 的日誌與提示詞、User Interactivity Logs 的隱私顧慮、AI BOM 於各階段）：<a href="https://genai.owasp.org/resource/genai-incident-response-guide-1-0/">genai.owasp.org/resource/genai-incident-response-guide-1-0/</a>；Version 1.0，July 28, 2025；2026-10-26 讀取。</li>
+    <li>Data Security Risks and Mitigations 2026 的 DSGAI14 與 Tier 1 控制：見本教材<a href="../data-security/04-tiers-and-scenarios.html">資料安全第 4 章</a>及該主題的參考資料頁。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Guide for Preparing and Responding to Deepfake Events — CC BY-SA 4.0（PDF 授權頁）；GenAI Incident Response Guide 1.0 — PDF 內文未見授權文字，以 genai.owasp.org 網站頁尾 CC BY-SA 4.0（除非另有說明）為準。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'i-ch4', topic: 'incident-response-and-deepfake', mode: 'chapter',
+  questions: [
+    { id: 'i4q1', type: 'mc', lo: [4], refs: [{label: '4.1 表 4-1', href: '04-deepfake-and-integration.html#df-stance'}],
+      stem: '依 Deepfake 指南，下列哪一項最符合它的核心立場？',
+      options: [
+        { text: '最重要的是採購最新的深偽偵測工具，並讓員工學會分辨影像破綻。', why: '指南認為偵測技術尚未成熟，教找瑕疵會很快過時。' },
+        { text: '聚焦流程遵守：用驗證、職責分離、雙重授權等控制，讓無論偽造多逼真都難以得逞。', correct: true, why: '符合指南的主張與結論。' },
+        { text: '禁止所有視訊會議，改用純文字溝通。', why: '指南沒有這樣建議，也承認難以一律禁止。' },
+        { text: '只要員工通過 deepfake 辨識測驗，就不需要其他控制。', why: '指南指出人們無法可靠辨識且會高估自己的能力。' }
+      ],
+      summary: '防線在流程，不在辨識。' },
+    { id: 'i4q2', type: 'scn', lo: [4], refs: [{label: '4.2 訓練該教什麼', href: '04-deepfake-and-integration.html#df-training'}, {label: '4.1 表 4-1', href: '04-deepfake-and-integration.html#df-stance'}],
+      stem: '依本章，這個訓練計畫應如何修正？',
+      scenario: '松江證券（虛構）的新訓練計畫：用兩小時教員工「辨識 deepfake 的五個破綻」（眨眼頻率、嘴型同步、光影不一致等），結業測驗全對就算合格，並承諾合格者「可自行判斷視訊請求的真偽，不必再走確認程序」。',
+      options: [
+        { text: '不需要修正，這是指南建議的做法。', why: '指南明確反對以辨識破綻為訓練核心，也不主張讓人免除流程。' },
+        { text: '應改為教「眼睛和耳朵不可信，不尋常請求一律走另一個管道驗證，無例外」；涵蓋什麼是 deepfake、被針對時怎麼辦、在哪裡通報；並刪除「合格者免走流程」的承諾，因為這會製造虛假的專業感。', correct: true, why: '符合 4.2 節。' },
+        { text: '只需要把五個破綻增加到十個。', why: '破綻清單會隨技術進步而過時，而且人們高估自己的辨識能力。' },
+        { text: '應該取消訓練，因為訓練對 deepfake 無效。', why: '指南主張訓練要教流程與通報，而不是取消訓練。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 指南警告許多辨識訓練已過時，並指出教辨識會造成虛假的專業感。(2) 它建議的重點是「無論如何走流程，無例外」，全員被授權用另一個管道驗證。(3) 「合格者免走確認程序」與這個立場相反。</p><p><strong>結論：</strong>改教流程與通報，移除免流程承諾。對應教材：<a href="04-deepfake-and-integration.html#df-training">4.2 節</a>。</p>' },
+    { id: 'i4q3', type: 'match', lo: [4], refs: [{label: '4.3 表 4-2', href: '04-deepfake-and-integration.html#df-four'}],
+      stem: '把下列處置重點配對到指南中最相關的 deepfake 事件類型。',
+      cats: [
+        { id: 'money', label: '冒充詐取金錢' },
+        { id: 'help', label: '冒充促成網路攻擊 (helpdesk)' },
+        { id: 'job', label: '求職面試詐欺' },
+        { id: 'info', label: '假資訊' }
+      ],
+      items: [
+        { text: '交易已完成時，立即聯絡雙方金融機構，因為立即通報是追回資金的關鍵', answer: 'money', why: '財務詐欺類的圍堵。' },
+        { text: '請被冒充者核對已登錄的 MFA 裝置，發現未知裝置先保存證據再移除', answer: 'help', why: 'helpdesk 類的圍堵。' },
+        { text: '新員工從高度受限的環境開始，逐步增加權限，並至少有一次面對面面試', answer: 'job', why: '求職面試詐欺類的預防。' },
+        { text: '用聲譽與品牌監控偵測負面情緒激增，保存原始檔與雜湊', answer: 'info', why: '假資訊類的偵測與保存。' }
+      ],
+      summary: '四類事件的處置重點各不相同。' }
+  ]
+});
+</script>
+</body>
+</html>

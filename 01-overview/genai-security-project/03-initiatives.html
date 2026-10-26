@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　八個 Initiatives 與產出地圖｜GenAI Security Project｜OWASP AI 資安學習教材</title>
+<meta name="description" content="GenAI Security Project 的八個 Initiatives 各管什麼、各有哪些代表性產出與日期；名稱在不同頁面不一致的情況；以及從需求找到對應文件的決策流程。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="01-overview" data-topic="genai-security-project" data-page="03-initiatives.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　八個 Initiatives 與產出地圖</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-governance.html">第 2 章</a></li>
+</ul>
+<p class="lead">這一章把「一堆文件名稱」整理成一張地圖。你會看到每個 Initiative（工作小組）管哪一塊、產出哪些文件、各自的日期；並學會從「我要做的事」反查該去哪裡找。後面的主題（LLM Top 10、Agentic、治理、紅隊、資料安全等）幾乎都會從這張地圖裡的某一格展開。</p>
+
+<h2 id="ini-names">3.1 八個 Initiatives，以及它們在不同頁面的名稱</h2>
+<p>官方 Initiatives 頁說明：Initiative 是為了處理特定的教育與研究領域，透過聚焦的工作小組，產出實用、可執行的資源。目前有八個。有一件事會讓初學者困惑：<strong>同一個 Initiative 在選單、首頁與 Initiatives 頁三處的名稱不完全相同</strong>（本教材在 2026-10-26 逐一比對）：</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　八個 Initiatives 在三處的名稱</caption>
+<thead><tr><th scope="col">本教材使用的名稱</th><th scope="col">Initiatives 頁</th><th scope="col">首頁「Our Initiatives」</th><th scope="col">選單「Project Initiatives」</th></tr></thead>
+<tbody>
+<tr><th scope="row">Top 10 for LLM and GenAI</th><td>Top 10 for LLM and GenAI</td><td>Top 10 for LLM and GenAI</td><td>Top 10 for LLM and GenAI</td></tr>
+<tr><th scope="row">Agentic App Security</th><td>Agentic App Security</td><td>Agentic App Security</td><td>AGENTIC SECURITY</td></tr>
+<tr><th scope="row">AI Security Governance</th><td>Secure Governance</td><td>AI Security Governance</td><td>AI Security Governance</td></tr>
+<tr><th scope="row">AI Security Solutions</th><td>AI Security Solutions</td><td>AI Security Solutions</td><td>AI Security Solutions</td></tr>
+<tr><th scope="row">AI Threat Intelligence and Response</th><td>Threat Intelligence</td><td>AI Threat Intelligence and Response</td><td>AI Threat Intel &amp; Resp</td></tr>
+<tr><th scope="row">AI Red Teaming</th><td>AI Red Teaming</td><td>Red Teaming &amp; Evaluation</td><td>AI Red Teaming</td></tr>
+<tr><th scope="row">Data Security</th><td>Data Security</td><td>Data Security</td><td>Ai Data Security（官方原文大小寫）</td></tr>
+<tr><th scope="row">AI Bill of Materials</th><td>AI Bill of Materials</td><td>AI Bill of Materials</td><td>AI Bill of Materials</td></tr>
+</tbody></table></div>
+<p>這只是命名差異，內容是同一批工作小組。本教材統一使用第一欄的名稱；你在官方頁面看到別的寫法，指的是同一個東西。各 Initiative 自己的網址也不完全依名稱：例如 Governance 的頁面網址是 <code>/initiatives/ai-security-governance-and-adoption/</code>，頁面標題則寫「AI Security Governance and Adoption Initiative」。</p>
+
+<h2 id="ini-map">3.2 產出地圖</h2>
+<p>下表依各 Initiative 頁面所連結的資源整理。「日期」是資源頁面標示的日期；版本若頁面沒有明載，就留空，不用檔名推測。</p>
+<div class="table-wrap"><table>
+<caption>表 3-2　各 Initiative 的代表性產出（資源頁日期；2026-10-26 讀取）</caption>
+<thead><tr><th scope="col">Initiative</th><th scope="col">官方描述重點</th><th scope="col">代表性產出（資源頁日期）</th></tr></thead>
+<tbody>
+<tr><th scope="row">Top 10 for LLM and GenAI</th><td>找出、記錄並提升對 LLM、GenAI 與新興 agentic AI 系統最關鍵資安風險的認知</td><td>LLM Top 10 2026（2026-08-03 資源頁；GitHub 與 PDF 寫 2026-08-04）；LLM Top 10 2025（2024-11-17 資源頁；PDF 封面 2024-11-18）</td></tr>
+<tr><th scope="row">Agentic App Security</th><td>探索 agentic 系統（如 LangGraph、AutoGPT、CrewAI 一類框架）的資安影響</td><td>Top 10 for Agentic Applications for 2026（2025-12-09）、Agentic AI – Threats and Mitigations（2025-02-17）、Multi-Agentic System Threat Modeling Guide v1.0（2025-04-23）、Agentic Threats Navigator（2025-03-06）、Securing Agentic Applications Guide 1.0（2025-07-27）、State of Agentic AI Security and Governance 2.01（2026-06-01）、Agent Control Standard（2026-09-01）、AIUC-1 Crosswalk（2026-05-25）、Agent Name Service v1.0（2025-05-14）、A Practical Guide for Secure MCP Server Development（2026-02-16）、第三方 MCP Server 使用指南 1.0（2025-11-04）、FinBot CTF（2025-08-12）、Insecure Agent Samples（2025-04-01）</td></tr>
+<tr><th scope="row">AI Security Governance</th><td>協助組織安全地導入並營運化 GenAI、LLM 與 agentic AI，提供治理框架、操作指引與給主管的資源</td><td>LLM Applications Cybersecurity and Governance Checklist v1.1（英文，2024-05-07）、LLM and Generative AI Security CoE Guide（2024-10-06）、Threat Defense COMPASS 1.0 與 RunBook（2025-09-10）</td></tr>
+<tr><th scope="row">AI Security Solutions</th><td>彙整並對照 LLM／GenAI、Agentic 與紅隊的解決方案</td><td>Solutions Landscape：LLM／GenAI Q2 2026（2026-03-17）、Agentic Q2 2026（2026-03-17）、AI 與 Agentic 紅隊 Q2 2026（2026-04-09）、紅隊 Taxonomy（2026-06-28）、Reference Guide Q2_Q3'25（2025-11-04）；線上目錄</td></tr>
+<tr><th scope="row">AI Threat Intelligence and Response</th><td>結合網路威脅情資與 GenAI，為資安維運產出威脅導向、可執行的指引</td><td>GenAI Incident Response Guide 1.0（2025-07-28）、Guide for Preparing and Responding to Deepfake Events（2024-09-23）、LLM Exploit Generation v1.0（2025-02-26）</td></tr>
+<tr><th scope="row">AI Red Teaming</th><td>為 LLM 建立 AI 紅隊與評估的完整指引，處理資安弱點、偏誤與使用者信任，提供標準化方法</td><td>GenAI Red Teaming Manual Version 1.0（2026-10-20）、GenAI Red Teaming Guide（2025-01-22）、Vendor Evaluation Criteria v1.0（2026-02-04）</td></tr>
+<tr><th scope="row">Data Security</th><td>針對 LLM 普及後的資料保護風險與法規遵循要求，提供進階資料安全實務</td><td>GenAI Data Security Risks &amp; Mitigations 2026（2026-03-17）、LLM and Gen AI Data Security Best Practices（2025-02-13）</td></tr>
+<tr><th scope="row">AI Bill of Materials</th><td>以工具與標準推動 AI 供應鏈透明度與安全，把 AIBOM 從理論變成可實作的社群作法</td><td>AIBOM Generator（2025-12-17）</td></tr>
+</tbody></table></div>
+<p>另有一項跨越多個 Initiative 的產出：<strong>GenAI Security Industry Framework Crosswalk</strong>（資源頁 2026-09-01）。官方描述它是開源資源，把 OWASP GenAI 資安風險對照到既有的產業資安、治理與合規框架：涵蓋四份來源清單中的 51 項弱點，對照 25 個框架（含 NIST、ISO、MITRE ATLAS、EU AI Act 等）。</p>
+
+<div class="callout official unsure">
+  <p class="callout-title">日期上的小差異（已採用較新或詳細頁為準）</p>
+  <p>LLM Top 10 2026：資源頁 08-03，GitHub 與 PDF 封面 08-04；採 08-04。Agentic Top 10：資源頁 2025-12-09，PDF 封面只寫 2025 年 12 月，兩者不衝突。LLM Top 10 2025 與 CoE Guide 等條目，本教材在這次的資源頁讀到的日期與筆記有一天或一個月以內的出入，細節見<a href="references.html">參考資料頁</a>。</p>
+</div>
+
+<h2 id="ini-flow">3.3 從需求找到對應文件</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程：先判斷需求類型，再對應到 Initiative 與代表文件。想認識 LLM 風險走 Top 10 for LLM and GenAI；系統有 agent 或 MCP 走 Agentic App Security；要給管理層導入與治理走 AI Security Governance；找工具走 AI Security Solutions；處理事件與深偽走 Threat Intelligence；做紅隊走 AI Red Teaming；保護資料走 Data Security；AI 供應鏈透明度走 AI Bill of Materials。">
+flowchart TD
+  S["我現在要做的事"] --> Q{"主題"}
+  Q -->|"認識 LLM 應用最重要的風險"| I1["Top 10 for LLM and GenAI<br>LLM Top 10 2026"]
+  Q -->|"系統有 agent、工具呼叫或 MCP"| I2["Agentic App Security<br>Agentic Top 10 2026、MCP 指南"]
+  Q -->|"向管理層說明導入的治理與風險"| I3["AI Security Governance<br>Checklist、CoE Guide、COMPASS"]
+  Q -->|"找對應風險的工具"| I4["AI Security Solutions<br>Solutions Landscape"]
+  Q -->|"事件發生、要應變或處理深偽"| I5["AI Threat Intelligence and Response<br>Incident Response Guide、Deepfake 指南"]
+  Q -->|"要對 GenAI 系統做紅隊或評估廠商"| I6["AI Red Teaming<br>Red Teaming Manual、Vendor Evaluation"]
+  Q -->|"保護訓練與檢索用資料"| I7["Data Security<br>Data Security Risks and Mitigations 2026"]
+  Q -->|"追蹤 AI 供應鏈、產出物料清單"| I8["AI Bill of Materials<br>AIBOM Generator"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q author
+</pre>
+<figcaption><strong>圖 3-1　從需求找到 Initiative 與代表文件。</strong>右側的「Initiative → 代表文件」是官方各 Initiative 頁所連結的資源；左側「需求」的措辭與整張圖的串接是<strong>作者整理，非官方</strong>。實務上一個需求常會跨多個 Initiative，這張圖是入口，不是唯一路徑。</figcaption>
+</figure>
+
+<h2 id="ini-concept">3.4 核心概念：Initiative 是「組織方式」，不是「風險類別」</h2>
+<div class="concept">
+<h3 id="c-initiative">Initiative 與風險類別的差別</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>Initiative 是依「工作小組負責的領域」劃分的組織單位；它不是依攻擊類型劃分的風險分類。</dd>
+  <dt data-n="2">為什麼這點重要</dt>
+  <dd>同一個資安問題常常橫跨多個 Initiative。例如「agent 被間接提示詞注入後外洩資料」同時涉及 LLM Top 10 的提示詞注入、Agentic Top 10 的條目、資料安全的指引，以及紅隊的測試方法。</dd>
+  <dt data-n="3">沒意識到時會怎樣（概念層級）</dt>
+  <dd>只在單一 Initiative 找答案，可能漏掉其他小組對同一問題給的指引；或者拿 A 小組的詞彙去讀 B 小組的文件，造成混淆（例如 AI Exchange 把目標劫持視為「影響」，而 Agentic Top 10 把它列為獨立條目 ASI01）。</dd>
+  <dt data-n="4">怎麼用</dt>
+  <dd>先用風險或情境起頭（例如 AI Exchange 的威脅建模），找到問題，再用 Initiative 地圖找「這個領域有沒有專門的指南」。第 5 章會把這個流程跟 AI Exchange 對照。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「Initiative 的名稱就是它處理的風險類型。」不一定。例如 AI Security Governance 處理的是組織導入與治理流程，不是某一種攻擊。</dd>
+</dl>
+</div>
+
+<h2 id="ini-scenario">3.5 情境範例 A：找不到「該看哪一份」</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：山嵐金融的資安團隊</h3>
+<p><span class="tag fiction">虛構</span> 山嵐金融是虛構的公司。資安長要在下週的董事會報告「公司導入生成式 AI 的資安準備度」，並希望附上三個東西：(1) 向董事會說明導入框架的治理文件；(2) 如果有客服 LLM 被入侵，團隊該怎麼應變；(3) 評估是否值得採購一套 LLM 防護產品。資安團隊的新人只知道「OWASP 有 LLM Top 10」，不確定這三件事該查哪裡。</p>
+<ol class="steps">
+  <li><strong>需求一（治理說明）：</strong>屬導入與治理。對應 <em>AI Security Governance</em> Initiative，代表文件有 LLM Applications Cybersecurity and Governance Checklist（給領導層，2024-05-07）、CoE Guide（建立 AI 安全卓越中心的指南）、Threat Defense COMPASS（威脅導向的風險排序儀表板）。</li>
+  <li><strong>需求二（事件應變）：</strong>屬事件處理。對應 <em>AI Threat Intelligence and Response</em> Initiative，代表文件有 GenAI Incident Response Guide 1.0（2025-07-28）；若涉及深偽事件，另有 Guide for Preparing and Responding to Deepfake Events。</li>
+  <li><strong>需求三（採購評估）：</strong>屬找工具。對應 <em>AI Security Solutions</em> Initiative 的 Solutions Landscape（第 4 章）。這一步有個重要的限制：官方明說該目錄「不是完整清單，也不是背書」。它可以幫你縮小候選，但不能替代你自己的評估。</li>
+  <li><strong>這個情境的提醒：</strong>LLM Top 10 是三者共同的「風險語言」，但本身不是治理文件、不是應變手冊，也不是採購指南。新人以為「看 LLM Top 10 就夠」，是把 Top 10 的認知清單誤當成萬用指南。</li>
+</ol>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>八個 Initiatives：Top 10 for LLM and GenAI、Agentic App Security、AI Security Governance、AI Security Solutions、AI Threat Intelligence and Response、AI Red Teaming、Data Security、AI Bill of Materials。</li>
+  <li>同一個 Initiative 在選單、首頁、Initiatives 頁的名稱略有出入，本教材統一用表 3-1 第一欄。</li>
+  <li>Initiative 是依工作領域劃分的組織單位，不是風險類別；同一個問題常橫跨多個 Initiative。</li>
+  <li>Crosswalk 是跨 Initiative 的產出：51 項弱點對照 25 個框架（官方描述）。</li>
+  <li>找文件時先問「我現在要做什麼」，再對應到 Initiative，最後核對該文件的版本與日期。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出八個 Initiatives，並為每一個說出至少一份代表文件。</li>
+  <li>給我一個需求（治理、應變、紅隊、資料、採購），我能指出該先查哪個 Initiative。</li>
+  <li>我知道 Initiative 的名稱不等於風險類型。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-landscape.html">第 4 章　Solutions Landscape</a>：看其中一個 Initiative 的產出——工具目錄與 SecOps 九階段——怎麼運作，以及它有哪些使用限制。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>GenAI Security Project，Initiatives 頁與各 Initiative 頁（Top 10 for LLM and GenAI、Agentic Security、AI Security Governance and Adoption、AI Security Solutions、AI Threat Intelligence、AI Red Teaming、AI Data Security、AI SBOM）：<a href="https://genai.owasp.org/initiatives/">genai.owasp.org/initiatives/</a>；2026-10-26 讀取；頁尾授權 CC BY-SA 4.0。</li>
+    <li>GenAI Security Project 資源庫：<a href="https://genai.owasp.org/resources/">genai.owasp.org/resources/</a> 第 1–4 頁，以及各資源頁（取其頁面標示的日期）。</li>
+    <li>GenAI Security Industry Framework Crosswalk 資源頁：<a href="https://genai.owasp.org/resource/genai-security-industry-framework-crosswalk/">…/genai-security-industry-framework-crosswalk/</a>（2026-09-01）。</li>
+    <li>GenAI Security Project 首頁（Our Initiatives 區塊）：<a href="https://genai.owasp.org/">genai.owasp.org</a>。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：genai.owasp.org 網站與資源頁 — CC BY-SA 4.0。表 3-2 提到的各文件，其授權以各文件自己標示為準，本頁僅引用名稱、日期與官方描述，未引用其內容。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'g-ch3', topic: 'genai-security-project', mode: 'chapter',
+  questions: [
+    { id: 'g3q1', type: 'mc', lo: [3], refs: [{label: '3.4 Initiative 與風險類別', href: '03-initiatives.html#ini-concept'}],
+      stem: '同事說：「我們要處理 agent 被間接提示詞注入的問題，所以只需要看 Agentic App Security 這個 Initiative 就夠了。」依本章，最恰當的回應是？',
+      options: [
+        { text: '不正確，應該看 AI Security Solutions，因為解決問題要靠工具。', why: 'Solutions Landscape 是工具目錄，不是風險分析或指引，並且官方明說它不是完整清單也不是背書。' },
+        { text: '不完全。Initiative 是依工作領域劃分的組織單位，不是風險類別；提示詞注入同時在 LLM Top 10 出現，資料外洩面向也與 Data Security 相關，測試方法則在 AI Red Teaming。', correct: true, why: '符合 3.4 節：Initiative 是組織方式，一個問題可能跨多個 Initiative。' },
+        { text: '正確，因為問題與 agent 有關，其他 Initiative 無關。', why: '這正是本章提醒的誤解：同一個問題常橫跨多個 Initiative。' },
+        { text: '不正確，應該只看 LLM Top 10，因為提示詞注入是它的第一條。', why: '同樣把問題限縮到單一 Initiative；而且對 agent 情境，Agentic 相關文件確實提供了更貼近的指引。' }
+      ],
+      summary: '先以風險或情境起頭，再用 Initiative 地圖找各領域的專門指南。' },
+    { id: 'g3q2', type: 'match', lo: [3], refs: [{label: '3.2 表 3-2', href: '03-initiatives.html#ini-map'}],
+      stem: '把下列文件配對到它所屬的 Initiative（依官方各 Initiative 頁所連結的資源）。',
+      cats: [
+        { id: 'agentic', label: 'Agentic App Security' },
+        { id: 'gov', label: 'AI Security Governance' },
+        { id: 'ti', label: 'AI Threat Intelligence and Response' },
+        { id: 'rt', label: 'AI Red Teaming' },
+        { id: 'data', label: 'Data Security' }
+      ],
+      items: [
+        { text: 'GenAI Incident Response Guide 1.0', answer: 'ti', why: '官方 AI Threat Intelligence 頁連結 Incident Response Guide。' },
+        { text: 'Threat Defense COMPASS 1.0', answer: 'gov', why: '官方 AI Security Governance 頁連結 COMPASS。' },
+        { text: 'GenAI Red Teaming Manual Version 1.0', answer: 'rt', why: '官方 AI Red Teaming 頁連結 Red Teaming Manual。' },
+        { text: 'Securing Agentic Applications Guide 1.0', answer: 'agentic', why: '屬 Agentic App Security Initiative 的產出。' },
+        { text: 'GenAI Data Security Risks &amp; Mitigations 2026', answer: 'data', why: '官方 Data Security 頁連結此文件。' }
+      ],
+      summary: '八個 Initiative 與其代表文件是 3.2 節表 3-2 的核心。' },
+    { id: 'g3q3', type: 'scn', lo: [3], refs: [{label: '3.5 情境範例 A', href: '03-initiatives.html#ini-scenario'}, {label: '3.3 圖 3-1', href: '03-initiatives.html#ini-flow'}],
+      stem: '依圖 3-1 與本章，這位同事該怎麼修正做法？',
+      scenario: '鳴鳳零售（虛構）的資安新人收到主管指示：「公司的客服 LLM 昨晚疑似被誘導洩漏了內部規則，請查 OWASP 有什麼可用的資料，並整理成給主管的處置建議。」新人打開 LLM Top 10，只讀了第一條提示詞注入就開始寫報告，沒有查過其他資源。主管看了報告，問：「事件應變的步驟呢？還有這件事要不要通報、對外怎麼溝通？」',
+      options: [
+        { text: '改查 AI Threat Intelligence and Response 的 GenAI Incident Response Guide 取得應變流程；風險面向仍回到 LLM Top 10 的相關條目；並注意核對該指南的版本與日期。', correct: true, why: '符合圖 3-1：事件發生要應變 → AI Threat Intelligence and Response。同時保留 LLM Top 10 作為風險語言。' },
+        { text: '改查 AI Security Solutions 的 Landscape，買一套防護產品最快。', why: '事件已發生，需要的是應變流程；工具目錄是採購參考，而且官方說明它不是完整清單也非背書。' },
+        { text: '改查 AI Bill of Materials，把所有元件列出來就能應變。', why: 'AIBOM 處理供應鏈透明度，不是事件應變流程。' },
+        { text: '重新讀完整份 LLM Top 10，十條都看過就能回答。', why: 'LLM Top 10 是風險認知清單，不是事件應變手冊；讀完十條也不會得到應變步驟。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 主管要的是「事件應變」，不是「風險是什麼」。(2) 依表 3-2，事件應變的代表文件在 AI Threat Intelligence and Response 的 Incident Response Guide 1.0。(3) LLM Top 10 仍可作為描述風險的共同語言，但不能取代應變指南。</p><p><strong>結論：</strong>先拿應變指南補上流程；對外溝通與通報的具體要求，教材沒有教過、也未讀過該指南內文，需到指南原文確認。對應教材：<a href="03-initiatives.html#ini-flow">3.3 節</a>、<a href="03-initiatives.html#ini-scenario">3.5 節</a>。</p>' },
+    { id: 'g3q4', type: 'mc', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-initiatives.html#ini-names'}],
+      stem: '你在官方 Initiatives 頁看到「Secure Governance」，在首頁看到「AI Security Governance」，在選單看到「AI Security Governance」，在這個 Initiative 自己的頁面標題看到「AI Security Governance and Adoption Initiative」。依本章，怎麼理解？',
+      options: [
+        { text: '其中三個是舊名，只有最新的一個有效。', why: '頁面上沒有任何說明哪個是舊名、哪個是新名；沒有證據不應這樣下結論。' },
+        { text: '這是同一個 Initiative 在不同頁面的不同稱呼；引用時可用統一名稱，並註明官方各處寫法不一。', correct: true, why: '本教材統一用「AI Security Governance」，並在表 3-1 說明各處差異。' },
+        { text: '這是四個不同的工作小組。', why: '不是。表 3-1 比對了名稱：它們是同一個工作小組的不同寫法。' },
+        { text: '代表官方網站有錯誤，應該忽略這個 Initiative。', why: '命名不一致不影響內容；而且該 Initiative 有實際產出（Checklist、CoE Guide、COMPASS）。' }
+      ],
+      summary: '名稱不一致 ≠ 不同小組；統一用語並註明。' }
+  ]
+});
+</script>
+</body>
+</html>

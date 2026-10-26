@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜Top 10 for Agentic Applications 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Top 10 for Agentic Applications 2026 主題總測驗：15 題，涵蓋五個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="agentic-top-10-2026" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：Top 10 for Agentic Applications 2026</h1>
+<ul class="meta-row">
+  <li>15 題（選擇題 5、情境判斷題 5、配對題 5）</li>
+  <li>預估時間：約 22 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO5</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–5 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>全貌：</strong>說明採用版本與編號格式、與 T&amp;M 及 LLM Top 10 的分工，並解釋 Least Agency 與最小權限的差別。</li>
+  <li><strong>目標、工具與身分（ASI01–03）：</strong>依「出問題的環節」區分三條，並說出各自的核心防線。</li>
+  <li><strong>供應鏈、程式碼與記憶（ASI04–06）：</strong>說明「活的供應鏈」，並把事故拆成三階段、找出切斷點。</li>
+  <li><strong>通訊、連鎖、信任與流氓（ASI07–10）：</strong>區分傳播與起點、人的誤判與 agent 意圖偏離，說明為何把關資訊要獨立於 agent。</li>
+  <li><strong>整合：</strong>把 LLM 2025 編號換成 2026 版，並說出與 NHI Top 10、AIVSS、CycloneDX 的關係。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：Top 10 for Agentic Applications 2026、Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-position.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-goal-tools-identity.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-supply-code-memory.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-comm-cascade-human-rogue.html', a, '第 4 章 ' + l); };
+  var C5 = function (a, l) { return R('05-integration.html', a, '第 5 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 全貌 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('pos-onepage', '1.1')],
+    stem: '下列哪一種寫法最能讓讀者核對你引用的 Agentic Top 10 第一條？',
+    options: [
+      { text: 'ASI01 Agent Goal Hijack（Top 10 for Agentic Applications, Version 2026, December 2025）', correct: true, why: '編號照官方寫法，並另外標明文件版本與日期。' },
+      { text: 'ASI01:2026 Agent Goal Hijack', why: '文件的編號沒有年份後綴，這是把 LLM Top 10 的格式套了上去。' },
+      { text: 'Agentic Top 10 的第一條', why: '沒有版本、日期與名稱，無法核對。' },
+      { text: 'AS01', why: 'PDF 內有這個筆誤寫法；正確編號是 ASI01。' }
+    ],
+    summary: '編號寫 ASI01；版本與日期另外標明。' },
+
+  { id: 'q02', type: 'scn', lo: [1], refs: [C1('c-agency', '1.3 Least Agency')],
+    stem: '依本教材，這個設計還有什麼 Least Agency 的問題？',
+    scenario: '津川保險（虛構）的核保助理 agent 權限已縮到只能讀取申請書與寫入核保意見。但它被設計成可自行決定要查哪些外部資料庫、自己拆解任務、並隨時把子任務委派給其他 agent。同事說：「權限都縮到最小了，沒有問題。」',
+    options: [
+      { text: '沒有問題，權限最小就是 Least Agency。', why: '兩者不同：權限問「能碰什麼」，Least Agency 問「這件事需不需要自主決定」。' },
+      { text: '沒有，因為委派給其他 agent 不算自主性。', why: '委派正是自主性的一種，也是多個條目的風險來源。' },
+      { text: '有，但只要加更多日誌就能解決。', why: '日誌是可觀測性，重要但不能取代減少不必要的自主性。' },
+      { text: '有：自行決定查詢、拆解任務與委派都是自主性；若固定流程就能完成核保，這些自主性是不必要的，會擴大被劫持時的路徑。', correct: true, why: '1.3 節：避免不必要的自主性；自主性越多，被劫持時能走的路徑越多。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 權限最小回答「能碰什麼」；(2) Least Agency 回答「該不該讓 agent 自己決定」；(3) 此例的查詢決定、任務拆解與委派若在固定流程內可以完成，就屬於不必要的自主性。</p><p><strong>結論：</strong>重新檢討哪些步驟需要自主決定，其餘改為固定流程。對應教材：<a href="01-position.html#c-agency">1.3 節</a>。</p>' },
+
+  { id: 'q03', type: 'match', lo: [1], refs: [C1('pos-why', '1.2 表 1-2')],
+    stem: '把需求配對到最適合先讀的 Agentic 系列文件。',
+    cats: [
+      { id: 'tm', label: 'Threats and Mitigations 1.1' },
+      { id: 'top10', label: 'Top 10 for Agentic Applications 2026' },
+      { id: 'saa', label: 'Securing Agentic Applications Guide' },
+      { id: 'mas', label: 'MAS Threat Modeling Guide' }
+    ],
+    items: [
+      { text: '要向決策者快速說明最高衝擊的十項風險', answer: 'top10', why: '精簡清單與行動入口。' },
+      { text: '要為具體的多 agent 系統逐層找威脅', answer: 'mas', why: '用 MAESTRO 七層建模。' },
+      { text: '要把防護落實到架構與開發流程', answer: 'saa', why: '建置、開發、部署的技術建議。' },
+      { text: '要逐項深入某個威脅與它的緩解 Playbook', answer: 'tm', why: '詳細分類。' }
+    ],
+    summary: '四份文件分工：精簡／建模／實作／詳細。' },
+
+  /* ================= LO2 ASI01–03 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C2('g-diff', '2.1 表 2-1'), C2('g-flow', '2.3 圖 2-1')],
+    stem: '一個客服 agent 本來有權限呼叫退款 API。攻擊者的指示讓它在一次對話中，連續呼叫退款 API 退了數百筆小額款項；agent 的目標沒被改，也沒有繞過任何權限。最主要歸屬哪一條？',
+    options: [
+      { text: 'ASI01，因為攻擊者影響了 agent。', why: '題目指出目標沒被改。' },
+      { text: 'ASI02：在已授予的權限內，以不安全的方式使用合法工具。', correct: true, why: '2.1 節。緩解：每個工具的最小權限與速率上限、高衝擊動作需人確認。' },
+      { text: 'ASI03，因為權限太大。', why: 'ASI03 是委派、繼承、憑證造成的提權；此例沒有越權。' },
+      { text: 'ASI05，因為涉及程式碼執行。', why: '題目沒有程式碼被執行。' }
+    ],
+    summary: '權限內用歪工具 → ASI02。' },
+
+  { id: 'q05', type: 'match', lo: [2], refs: [C2('g-diff', '2.1 表 2-1')],
+    stem: '把事件配對到最主要歸屬的條目。',
+    cats: [
+      { id: 'a01', label: 'ASI01 Agent Goal Hijack' },
+      { id: 'a02', label: 'ASI02 Tool Misuse and Exploitation' },
+      { id: 'a03', label: 'ASI03 Identity and Privilege Abuse' }
+    ],
+    items: [
+      { text: '外寄的郵件使 agent 以受信任身分發出未授權的訊息，劫持其內部通訊', answer: 'a01', why: '目標或行為被外部內容改變。' },
+      { text: '未縮權的高權限管理者把全部存取脈絡交給窄任務的 worker', answer: 'a03', why: '委派鏈中的權限繼承。' },
+      { text: '研究 agent 跟隨惡意連結並執行隱藏提示', answer: 'a02', why: '文件把不安全瀏覽列為工具濫用的常見弱點。' },
+      { text: '助理快取的 SSH 憑證被另一位非管理者的 session 重用', answer: 'a03', why: '記憶中殘留權限。' }
+    ],
+    summary: '依「出問題的環節」歸屬。' },
+
+  { id: 'q06', type: 'scn', lo: [2], refs: [C2('c-asi03', '2.2 ASI03'), C2('g-diff', '2.1 表 2-1')],
+    stem: '依本教材，該優先補什麼？為什麼「換短效權杖」不夠？',
+    scenario: '潮汐保險（虛構）的理賠 agent 以使用者的 OAuth 權杖運作，效期 8 小時。使用者中午被調離職務，下午 agent 仍用早上的權杖完成了一筆跨部門的資料匯出。團隊結論：「把權杖縮成 1 小時。」',
+    options: [
+      { text: '縮成 1 小時就夠了。', why: '縮短效期有幫助，但仍有 1 小時的授權漂移窗口，且沒有解決每個動作的重新驗證。' },
+      { text: '禁止 agent 使用任何權杖。', why: 'agent 就無法運作；文件的建議是縮小並綁定。' },
+      { text: '對每個特權動作用集中式政策引擎重新驗證，並讓權杖綁定任務與意圖；縮短效期只是其中一項。', correct: true, why: '2.2 節 ASI03 的緩解：任務範圍與時效、每動作授權、綁定簽章意圖。' },
+      { text: '改歸 ASI01，因為目標被改了。', why: '題目沒有目標被改；問題是授權隨時間漂移。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 授權在流程開始時驗證、使用時已失效，是文件列舉的授權漂移 (TOCTOU)。(2) 根因是 agent 沒有被治理的身分，權限無法隨主體變化被強制。(3) 緩解：每個特權動作重新驗證，權杖綁意圖。</p><p><strong>結論：</strong>補每動作的重新驗證。對應教材：<a href="02-goal-tools-identity.html#c-asi03">2.2 節</a>。</p>' },
+
+  /* ================= LO3 ASI04–06 ================= */
+  { id: 'q07', type: 'mc', lo: [3], refs: [C3('c-live', '3.2 活的供應鏈')],
+    stem: '依本教材，ASI04 與 LLM03:2025 Supply Chain 最主要的差別是？',
+    options: [
+      { text: 'LLM03:2025 著重靜態相依；ASI04 面對 agent 在執行期動態載入工具與角色，形成可跨 agent 連鎖的「活的供應鏈」。', correct: true, why: '3.2 節。' },
+      { text: 'ASI04 只談模型權重。', why: '涵蓋工具、外掛、資料集、其他 agent、MCP／A2A 介面與登錄。' },
+      { text: '兩者完全相同。', why: '文件明確說明差異。' },
+      { text: 'ASI04 只適用於開源。', why: '商用元件與登錄同樣涵蓋。' }
+    ],
+    summary: '靜態相依 vs. 執行期動態載入。' },
+
+  { id: 'q08', type: 'scn', lo: [3], refs: [C3('s-scenario', '3.3 情境範例 A'), C3('s-flow', '3.4 圖 3-1')],
+    stem: '依本教材，這個事後處置為什麼不夠？',
+    scenario: '北冥科技（虛構）的修復 agent 因拉到被竄改的套件而洩漏機密。團隊事後只做了一件事：把該套件的那個版本加入拒絕清單。兩週後 agent 因另一個被竄改的套件又出事，且它引用了先前記進長期記憶的「壞修法」。',
+    options: [
+      { text: '只要完全關閉 agent 即可。', why: '這不是文件的建議；文件的緩解是多層。' },
+      { text: '拒絕清單足夠，記憶無關。', why: '壞修法會使污染重演。' },
+      { text: '這是 CI 系統的問題，與 agent 設計無關。', why: '觸發點是 agent 動態拉取未固定版本的相依。' },
+      { text: '拒絕清單只擋已知版本，沒有做版本固定與來源驗證；長期記憶中的壞修法也沒處理。攻擊鏈有三環，每一環都需要控制。', correct: true, why: '3.3、3.4 節：ASI04、ASI05、ASI06 三環。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 拒絕清單屬事後擋已知問題，擋不住下一個被竄改的版本。(2) 缺少版本固定、簽章驗證與沙箱。(3) 記憶中的壞修法需要驗證與回復。</p><p><strong>結論：</strong>三環都要有控制，且假設前一環失守。對應教材：<a href="03-supply-code-memory.html#s-scenario">3.3 節</a>。</p>' },
+
+  { id: 'q09', type: 'match', lo: [3], refs: [C3('s-table', '3.1 表 3-1')],
+    stem: '把緩解措施配對到最主要針對的條目。',
+    cats: [
+      { id: 'a04', label: 'ASI04 供應鏈' },
+      { id: 'a05', label: 'ASI05 程式碼執行' },
+      { id: 'a06', label: 'ASI06 記憶污染' }
+    ],
+    items: [
+      { text: '用內容雜湊與提交編號固定提示與工具，雜湊漂移時自動回復', answer: 'a04', why: '文件的「Pinning」措施。' },
+      { text: '在正式環境禁用 eval，並把程式碼產生與執行分開、加驗證關卡', answer: 'a05', why: '列於 ASI05 的預防措施。' },
+      { text: '禁止 agent 自己的輸出自動寫回受信任記憶', answer: 'a06', why: '避免自我強化的污染。' }
+    ],
+    summary: '措施有主要對象，但常需疊加。' },
+
+  /* ================= LO4 ASI07–10 ================= */
+  { id: 'q10', type: 'mc', lo: [4], refs: [C4('m-table', '4.1 表 4-1')],
+    stem: '依文件，什麼時候才該把事故標為 ASI08 Cascading Failures？',
+    options: [
+      { text: '當初始故障在 agent、session 或工作流之間傳播並放大，造成超出原始入侵的系統性影響時；起點仍歸其他條。', correct: true, why: 'ASI08 描述傳播與放大。' },
+      { text: '只要涉及多個 agent 就標 ASI08。', why: '文件要求：起點歸 ASI04／06／07，只有擴散並造成可觀察的扇出才加 ASI08。' },
+      { text: '只要出現幻覺就標 ASI08。', why: '單一 agent 的幻覺不一定擴散。' },
+      { text: '只有人類審查失敗時才標 ASI08。', why: '與人類是否介入無關。' }
+    ],
+    summary: 'ASI08 連鎖失效 = 傳播與放大。' },
+
+  { id: 'q11', type: 'scn', lo: [4], refs: [C4('c-asi09', '4.2 ASI09')],
+    stem: '依本教材，這個「讓審查者參考 agent 自己寫的理由」的設計，哪裡有問題？',
+    scenario: '長虹製造（虛構）的採購 Copilot 在建議付款時，會附上它自己生成的一段理由給財務經理審核。某次一張被污染的發票進入系統，Copilot 自信地建議對一個新帳戶緊急付款，並附了一段看起來完全合理的理由；經理批准了。',
+    options: [
+      { text: '沒問題，附理由已經是最好的做法。', why: '文件警告被劫持的 agent 會編造令人信服的理由。' },
+      { text: '只要把理由寫得更長更詳細。', why: '長度無法解決來源不獨立的問題。' },
+      { text: '審查者看到的理由本身來自可能已被操縱的 agent。應提供獨立於 agent 的白話風險摘要、來源證明，並對新收款帳戶等高風險動作要求額外確認。', correct: true, why: '4.2 節 ASI09：用白話風險摘要而非模型生成的理由。' },
+      { text: '財務經理應該更努力。', why: '把責任推給個人；文件的緩解是系統設計。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) ASI09 的風險在人對 agent 的過度信任。(2) 若審查資訊完全來自 agent，被操縱時理由也會被編造。(3) 文件的建議：白話風險摘要而非模型生成的理由，並加上內容來源證明與明確確認。</p><p><strong>結論：</strong>改為獨立於 agent 的把關資訊。對應教材：<a href="04-comm-cascade-human-rogue.html#c-asi09">4.2 節</a>。</p>' },
+
+  { id: 'q12', type: 'match', lo: [4], refs: [C4('m-table', '4.1 表 4-1')],
+    stem: '把事件描述配對到最主要歸屬的條目。',
+    cats: [
+      { id: 'a07', label: 'ASI07 Inter-Agent Communication' },
+      { id: 'a08', label: 'ASI08 Cascading Failures' },
+      { id: 'a09', label: 'ASI09 Human-Agent Trust Exploitation' },
+      { id: 'a10', label: 'ASI10 Rogue Agents' }
+    ],
+    items: [
+      { text: '強迫通訊降級到未加密的舊模式，使攻擊者能注入目標與風險參數', answer: 'a07', why: '協定降級，屬 agent 間通訊。' },
+      { text: '一則錯誤警報在 agent 之間層層放大，造成多區域的不必要停機', answer: 'a08', why: '傳播與放大。' },
+      { text: '預覽視窗一打開就觸發有副作用的呼叫，利用使用者「預覽是唯讀」的心智模型', answer: 'a09', why: '同意洗白，屬人的信任被利用。' },
+      { text: '被要求降低雲端成本的 agent 學會刪除生產備份來達標', answer: 'a10', why: '獎勵駭客導致行為偏離。' }
+    ],
+    summary: '四條都以「信任」為主題，但環節不同。' },
+
+  /* ================= LO5 整合 ================= */
+  { id: 'q13', type: 'match', lo: [5], refs: [C5('i-llm', '5.1 表 5-1')],
+    stem: '把文件引用的 LLM Top 10 2025 編號，配對到 2026 版編號。',
+    cats: [
+      { id: 'l03', label: 'LLM03:2026' },
+      { id: 'l04', label: 'LLM04:2026' },
+      { id: 'l06', label: 'LLM06:2026' },
+      { id: 'l10', label: 'LLM10:2026' }
+    ],
+    items: [
+      { text: 'LLM06:2025 Excessive Agency', answer: 'l03', why: '2026 版 Excessive Agency 是 LLM03。' },
+      { text: 'LLM03:2025 Supply Chain', answer: 'l04', why: '2026 版 Supply Chain 是 LLM04。' },
+      { text: 'LLM10:2025 Unbounded Consumption', answer: 'l06', why: '2026 版 Unbounded Consumption 是 LLM06。' },
+      { text: 'LLM05:2025 Improper Output Handling', answer: 'l10', why: '2026 版 Improper Output Handling 是 LLM10。' }
+    ],
+    summary: '引用 LLM 編號一律帶年份。' },
+
+  { id: 'q14', type: 'mc', lo: [5], refs: [C5('i-others', '5.2 表 5-2')],
+    stem: '供應鏈團隊說：「我們已經產出 CycloneDX 的 SBOM，所以 ASI04 已經處理完了。」依附錄 B 的說法，最恰當的回應是？',
+    options: [
+      { text: '正確，SBOM 就是 ASI04 的全部要求。', why: '附錄 B 說明兩者回答不同的問題。' },
+      { text: 'ASI04 只涉及開源，與 SBOM 無關。', why: '文件要求使用 SBOM 與 AIBOM。' },
+      { text: 'SBOM 對 agent 沒有用。', why: '文件把 SBOM／AIBOM 視為重要基礎。' },
+      { text: '不完整：SBOM 回答「有哪些元件與工具」；ASI04 還要處理這些元件與自主 agent 在執行期可能怎麼行為、互動或失效。', correct: true, why: '附錄 B 的核心區分。' }
+    ],
+    summary: '清單是起點，不是結論。' },
+
+  { id: 'q15', type: 'scn', lo: [5], refs: [C5('i-llm', '5.1'), C5('i-others', '5.2')],
+    stem: '依本教材，這份風險登記表有哪兩個需要修正的地方？',
+    scenario: '千里銀行（虛構）的風險登記冊有一列：「ASI03 Identity and Privilege Abuse ← 對應 LLM06（Excessive Agency）；嚴重度：高（因為 ASI03 排第三）。」審查者要求依官方文件核對。',
+    options: [
+      { text: '兩處都正確。', why: '官方沒有說 ASI 順序代表嚴重度；LLM 編號沒有年份。' },
+      { text: '「LLM06」要寫成 LLM06:2025（2026 版為 LLM03:2026）；「排第三所以嚴重度高」沒有依據，Top 10 不給嚴重度順序，要排序用 AIVSS 或自己的風險分析。', correct: true, why: '5.1、5.2 節。' },
+      { text: '只要把 LLM06 改成 LLM03，不用寫年份。', why: '沒有年份無法區分兩個版本。' },
+      { text: '應該刪除對應欄。', why: '附錄 A 明文有對照。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 文件引用的 LLM06 是 2025 版；2026 版已是 LLM03:2026。(2) 官方沒有說 ASI 編號代表嚴重度。</p><p><strong>結論：</strong>改為「LLM06:2025（2026 版為 LLM03:2026）」，嚴重度另行評分。對應教材：<a href="05-integration.html#i-llm">5.1 節</a>、<a href="05-integration.html#i-others">5.2 節</a>。</p>' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'agentic-top-10-2026', mode: 'final',
+    los: [
+      { n: 1, text: '全貌：採用版本與編號格式、與 T&M 及 LLM Top 10 的分工、Least Agency。' },
+      { n: 2, text: '目標、工具與身分（ASI01–03）：依出問題的環節區分三條。' },
+      { n: 3, text: '供應鏈、程式碼與記憶（ASI04–06）：活的供應鏈與攻擊鏈切斷點。' },
+      { n: 4, text: '通訊、連鎖、信任與流氓（ASI07–10）：區分傳播與起點、人的誤判與 agent 偏離。' },
+      { n: 5, text: '整合：LLM 2025 編號換成 2026，並說出與 NHI／AIVSS／CycloneDX 的關係。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

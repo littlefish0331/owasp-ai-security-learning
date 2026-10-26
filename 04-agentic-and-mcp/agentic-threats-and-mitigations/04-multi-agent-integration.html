@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　多 Agent 威脅建模與整合收尾｜Agentic 威脅與緩解｜OWASP AI 資安學習教材</title>
+<meta name="description" content="用 MAESTRO 七層把 T1–T17 放到多 agent 系統的架構上、多 Agent 威脅建模指南新增的威脅編號與 T&amp;M 1.1 的衝突，以及這個主題與其他 OWASP 文件的對應。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="agentic-threats-and-mitigations" data-page="04-multi-agent-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　多 Agent 威脅建模與整合收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO4、LO5</li>
+  <li>前置：<a href="03-playbooks.html">第 3 章</a>；<a href="../../primer-security-for-developers.html#p-tm">威脅建模</a></li>
+</ul>
+<p class="lead">前三章讓你有了威脅清單與對策。但清單不會告訴你「我的系統裡每一層各有哪些威脅」。多 Agent 威脅建模指南 (MAS Threat Modeling Guide) 的做法是：用 MAESTRO 七層架構把 T1–T17 放上去，再往外發現清單裡沒有的威脅。本章看這個方法怎麼用，並把整個主題收攏到跨文件的位置。</p>
+
+<h2 id="mas-what">4.1 這份指南是什麼，跟 T&amp;M 1.1 的關係</h2>
+<div class="table-wrap"><table>
+<caption>表 4-1　Multi-Agentic System Threat Modeling Guide 一頁式全貌（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">版本與狀態</th><td>封面 <strong>Version 1.0、April 22, 2025、Status: Released</strong>，63 頁；資源頁日期 2025-04-23（差一天，兩者並記）。</td></tr>
+<tr><th scope="row">定位</th><td>把 T&amp;M 的威脅分類「套用到真實的多 agent 系統」；文件明說<strong>不另立一套分類</strong>，而是用 MAESTRO 提供更細的威脅建模。</td></tr>
+<tr><th scope="row">方法</th><td>MAESTRO（Multi-Agent Environment, Security, Threat, Risk, and Outcome）：由 Cloud Security Alliance 提出的分層架構方法；指南也示範與 MITRE ATLAS 並用。</td></tr>
+<tr><th scope="row">內容</th><td>MAESTRO 概觀、三個案例：RPA 報銷 agent、Eliza OS、Anthropic 的 MCP 協定。</td></tr>
+<tr><th scope="row">授權</th><td>CC BY-SA 4.0（PDF 封面）。</td></tr>
+</tbody></table></div>
+<p>它要與 T&amp;M 並用：指南自己說「應與 Agentic AI – Threats and Mitigations 並用」，並強調 agentic 的四個因素會讓威脅更難纏：<strong>非決定性、自主性、agent 身分管理、agent 間通訊</strong>。</p>
+
+<h2 id="mas-maestro">4.2 MAESTRO 七層與 T1–T17</h2>
+<p>指南用一張表把 T&amp;M 的威脅對到 MAESTRO 的各層。<strong>注意：同一項威脅可以出現在多層</strong>（例如 T3 同時在第 4、6 層，T13 在第 4、7 層），因為分層的角度是「問題出在哪一層」，不是「這是哪一種攻擊」。</p>
+<div class="table-wrap"><table>
+<caption>表 4-2　MAESTRO 各層與對應的 T&amp;M 威脅（依指南對照表整理）</caption>
+<thead><tr><th scope="col">層</th><th scope="col">焦點</th><th scope="col">對應的 T&amp;M 威脅</th></tr></thead>
+<tbody>
+<tr><th scope="row">1 基礎模型</th><td>LLM 與預訓練模型的完整性、對齊</td><td>T1（若記憶用於訓練）、T7</td></tr>
+<tr><th scope="row">2 資料作業</th><td>向量資料庫完整性、提示管理、檢索攻擊</td><td>T1、T12</td></tr>
+<tr><th scope="row">3 Agent 框架</th><td>執行邏輯、工作流控制、自主邊界</td><td>T2、T6、T5</td></tr>
+<tr><th scope="row">4 部署基礎設施</th><td>容器與編排安全、網路</td><td>T3、T4、T13、T14</td></tr>
+<tr><th scope="row">5 評估與可觀測性</th><td>監控、告警、日誌、HITL 介面</td><td>T8、T10</td></tr>
+<tr><th scope="row">6 安全與合規（垂直層）</th><td>存取控制、政策強制、法規限制</td><td>T3、T7</td></tr>
+<tr><th scope="row">7 Agent 生態系</th><td>與人類、外部工具、其他 agent 的互動</td><td>T9、T13、T14、T15</td></tr>
+<tr><th scope="row">跨層</th><td>多 agent 互動產生的湧現行為</td><td>T6、T12、T13、T15</td></tr>
+</tbody></table></div>
+<p>表中 T7 在原文第 1 層列的是「Misaligned &amp; Deceptive Behaviour」；指南的另一張表把同一項寫成「T2 Misaligned &amp; Deceptive Behavior」，是指南內部的筆誤（T2 是 Tool Misuse）。本教材一律用 T&amp;M 1.1 的 T7。</p>
+
+<h2 id="mas-new">4.3 指南新增的威脅，以及編號衝突</h2>
+<p>指南的價值在於「往外發現」：用 MAESTRO 逐層問，找出 T&amp;M 清單沒有的威脅。三個案例共新增了 T16 到 T39 的一批編號，例如：「T16 模型不一致導致核准結果不同」（原文 Model Inconsistency Leading to Variable Approvals；同一份報銷單，今天過、明天不過）、「T17 報銷政策嵌入向量的語義漂移」（政策改了但向量資料庫沒更新）、「T22 服務帳號憑證外洩」、「T23 選擇性竄改日誌」、「T24 動態政策強制失效」。</p>
+<div class="callout warn">
+  <p class="callout-title">編號衝突：指南的 T16–T39 不是 T&amp;M 1.1 的 T16、T17</p>
+  <p>T&amp;M <strong>1.1</strong> 的 T16 是 Insecure Inter-Agent Protocol Abuse、T17 是 Supply Chain Compromise。但 MAS 指南（<strong>2025-04</strong>，早於 T&amp;M 1.1 的 2025-12）在其案例裡把 T16、T17 用在別的威脅上（如上），且 T18 以後也是指南自己的編號。引用 T16 以上的編號時，<strong>一定要同時寫出名稱與出處</strong>，例如「MAS 指南 T16 Model Inconsistency」或「T&amp;M 1.1 T16 Insecure Inter-Agent Protocol Abuse」。</p>
+  <p>連指南自己的案例之間編號也不一致：同一項「服務帳號憑證外洩」（Service Account Exposure，也可說成服務帳號外洩），在 RPA 案例編為 T22，在 Eliza OS 案例編為 T21；「選擇性竄改日誌」則分別是 T23 與 T22。所以對 T16 以上的編號，<strong>名稱比編號可靠</strong>。</p>
+</div>
+<p>編號重疊是事實（作者逐一核對了兩份 PDF）；<strong>為什麼會重疊，官方沒有說明</strong>。作者的推測是：MAS 指南寫成時，T&amp;M 的編號還只到 T15（2025-03-06 的 Navigator 速查圖只列了 15 項，與此一致），T&amp;M 後來才加入 T16、T17，兩邊便撞號。<span class="tag author">作者整理，非官方</span>：本教材沒有讀過 T&amp;M 早期版本的完整內容來證實這件事。</p>
+
+<h2 id="mas-use">4.4 用 MAESTRO 做一次威脅建模：流程</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="MAESTRO 威脅建模流程：先把系統元件對應到七層；再對每一層先看 T&amp;M 已有的威脅，並用四個 agentic 因素非決定性、自主性、身分管理、agent 間通訊找新威脅；然後檢查跨層威脅；最後把威脅對應到 Playbook 並決定控制。">
+flowchart TD
+  A["1 把系統元件對應到七層"] --> B["2 每一層：套用 T&amp;M 已有威脅"]
+  B --> C["3 每一層：用四個因素找新威脅<br>非決定性、自主性、身分管理、agent 間通訊"]
+  C --> D["4 檢查跨層威脅<br>連鎖信任失效、資源枯竭、資料外洩連鎖"]
+  D --> E["5 威脅對應到 Playbook，決定控制並排序"]
+  E -.->|"系統改變時重做"| A
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class E author
+</pre>
+<figcaption><strong>圖 4-1　用 MAESTRO 做威脅建模的流程。</strong>步驟 1–4 是指南案例實際做的事（先分層對應，再逐層找威脅，再看跨層）；步驟 5「對應到 Playbook 並排序」是<strong>作者整理，非官方</strong>，指南並未把威脅建模與 Playbook 直接串接。</figcaption>
+</figure>
+<p>指南的三個案例各說明一件事：RPA 報銷 agent 示範「T&amp;M 基準威脅 + MAESTRO 延伸威脅」；Eliza OS（一個與區塊鏈互動的 agent 框架）示範框架與外掛帶來的威脅；Anthropic 的 MCP 協定示範「協定本身」該怎麼建模，並直接預告了下一個階段的主題：第 4 主題 <a href="../mcp-security/index.html">MCP 安全</a>。</p>
+
+<h2 id="mas-int">4.5 跨文件整合與收尾</h2>
+<div class="table-wrap"><table>
+<caption>表 4-3　本主題與其他 OWASP 文件的關係（只列官方有寫的；作者整理另標示）</caption>
+<thead><tr><th scope="col">相鄰文件</th><th scope="col">關係</th><th scope="col">依據</th></tr></thead>
+<tbody>
+<tr><th scope="row">Top 10 for Agentic Applications 2026</th><td>以 T&amp;M 為「基礎且詳細的分類」；附錄 A 把 ASI01–ASI10 對照 T&amp;M 的 T 編號與 LLM Top 10 2025</td><td>Agentic Top 10 本文與附錄 A；<a href="../agentic-top-10-2026/index.html">下一個主題</a></td></tr>
+<tr><th scope="row">Securing Agentic Applications Guide 1.0</th><td>自述為 T&amp;M 的實作配套：聚焦具體技術建議</td><td>資源頁描述；<a href="../securing-agentic-applications/index.html">第三個主題</a></td></tr>
+<tr><th scope="row">MAS Threat Modeling Guide v1.0</th><td>把 T&amp;M 套用到多 agent 並用 MAESTRO 找新威脅（本章）</td><td>指南本文</td></tr>
+<tr><th scope="row">LLM Top 10（2025／2026）</th><td>T&amp;M 引用 2025 版；2026 版重新編號，需帶年份對照</td><td>本主題第 2 章；<a href="../../01-overview/genai-security-project/05-integration.html#int-evolution">GenAI 專案第 5 章版本演進</a></td></tr>
+<tr><th scope="row">AI Exchange</th><td>T&amp;M 把 AI Exchange 列為通用威脅的參考；AI Exchange 的 Agentic AI 小節談的是同一批問題的控制面向</td><td>T&amp;M 範圍段落；<a href="../../01-overview/ai-exchange/05-agentic-genai.html">AI Exchange 第 5 章</a></td></tr>
+<tr><th scope="row">MCP 相關文件</th><td>T16 Insecure Inter-Agent Protocol Abuse 與 Playbook 3 的協定提醒，是 MCP 專題的入口</td><td>T&amp;M 威脅表與 Playbook 3；<a href="../mcp-security/index.html">MCP 安全</a></td></tr>
+</tbody></table></div>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>MAS 指南（v1.0，2025-04-22 封面／2025-04-23 資源頁）不另立分類，而是用 MAESTRO 七層把 T&amp;M 的威脅放進架構、再往外找新威脅。</li>
+  <li>同一項威脅可出現在多層；分層是「問題出在哪」，不是「攻擊種類」。</li>
+  <li>指南新增的 T16–T39 與 T&amp;M 1.1 的 T16、T17 <strong>編號衝突</strong>，指南各案例之間編號也不完全一致；引用要同時寫名稱與出處。</li>
+  <li>agentic 的四個因素讓威脅更難纏：非決定性、自主性、身分管理、agent 間通訊。</li>
+  <li>這個主題是後三個主題（Agentic Top 10、Securing Agentic Applications、MCP）共同的地基。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能把一個多 agent 系統的元件對應到 MAESTRO 七層，並說出每層可以先檢查哪些 T 編號。</li>
+  <li>我知道 T16 在兩份文件裡指不同的東西，引用時會同時寫名稱與出處。</li>
+  <li>我知道 MAS 指南的角色是方法示範，不是第二套分類。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO4、LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p>本主題的 <a href="quiz.html">總測驗（14 題）</a>；之後讀 <a href="../agentic-top-10-2026/index.html">Top 10 for Agentic Applications 2026</a>，看同一批問題如何被整理成十項「Top 10」風格的條目。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>Multi-Agentic system Threat Modeling Guide</em>, Version 1.0, April 22, 2025（PDF 封面，Status: Released）：<a href="https://genai.owasp.org/resource/multi-agentic-system-threat-modeling-guide-v1-0/">資源頁</a>（顯示日期 2025-04-23）；2026-10-26 讀取；CC BY-SA 4.0。引用段落：Executive Summary、MAS Threat Overview、Overview of MAESTRO、RPA／Eliza OS／MCP 三個案例。</li>
+    <li>OWASP GenAI Security Project, <em>Agentic AI – Threats and Mitigations</em>, Version 1.1, December 2025：<a href="https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/">資源頁</a>；用於比對 T16、T17。</li>
+    <li>OWASP Gen AI Security Project – Agentic Threats Navigator（2025-03-06）：<a href="https://genai.owasp.org/resource/owasp-gen-ai-security-project-agentic-threats-navigator/">資源頁</a>。</li>
+    <li>Cloud Security Alliance, MAESTRO 框架（由 MAS 指南引用；本教材未直接讀取 CSA 原文）：<a href="https://cloudsecurityalliance.org/blog/2025/02/06/agentic-ai-threat-modeling-framework-maestro">CSA 部落格</a>。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Multi-Agentic system Threat Modeling Guide、Agentic AI – Threats and Mitigations、Agentic Threats Navigator — CC BY-SA 4.0。MAESTRO 框架出自 Cloud Security Alliance，本頁僅引用 MAS 指南對它的描述，未引用其原文。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'atm-ch4', topic: 'agentic-threats-and-mitigations', mode: 'chapter',
+  questions: [
+    { id: 'a4q1', type: 'mc', lo: [4], refs: [{label: '4.2 MAESTRO 七層', href: '04-multi-agent-integration.html#mas-maestro'}],
+      stem: '依指南的對照表，T3 Privilege Compromise 同時列在第 4 層（部署基礎設施）與第 6 層（安全與合規）。最恰當的理解是？',
+      options: [
+        { text: '指南寫錯了，一項威脅只能屬於一層。', why: '指南是刻意如此：分層的角度是「問題出在哪一層」。' },
+        { text: '同一項威脅可能從不同層面出問題：例如部署層的權限設定、安全層的政策強制；分層不等於攻擊種類。', correct: true, why: '4.2 節說明：分層問的是出問題的位置，所以同一威脅可出現在多層。' },
+        { text: '第 4 層和第 6 層其實是同一層。', why: '它們是不同層：部署基礎設施 vs. 安全與合規（垂直層）。' },
+        { text: '表示 T3 的嚴重度比其他威脅高。', why: '對照表沒有嚴重度資訊；T 編號與出現次數都不是排序。' }
+      ],
+      summary: '分層看「問題出在哪」，同一威脅可以出現在多層。' },
+    { id: 'a4q2', type: 'scn', lo: [4, 5], refs: [{label: '4.3 編號衝突', href: '04-multi-agent-integration.html#mas-new'}],
+      stem: '依本章，這份內部威脅清單最需要改正哪一點？',
+      scenario: '晴川銀行（虛構）的資安團隊整理了一份 agent 威脅清單，其中一列寫：「T16：模型不一致導致同一份報銷單有時通過、有時被拒。來源：OWASP Agentic AI – Threats and Mitigations。」審查人員查了 T&M 1.1 的威脅表，發現 T16 寫的是別的東西。',
+      options: [
+        { text: '清單沒問題，T&M 1.1 的 T16 就是模型不一致。', why: 'T&M 1.1 的 T16 是 Insecure Inter-Agent Protocol Abuse。' },
+        { text: '來源標錯了：「模型不一致」是 MAS Threat Modeling Guide 案例裡的 T16；T&M 1.1 的 T16 是 Insecure Inter-Agent Protocol Abuse。應改為寫出名稱與正確出處。', correct: true, why: '4.3 節的編號衝突：兩份文件用同一編號指不同威脅。' },
+        { text: '應該刪除 T16，因為編號重複的威脅都不可信。', why: '兩項威脅都有各自的來源與內容；問題在引用沒寫清楚出處。' },
+        { text: '只要隨便換一個沒被用過的編號就好。', why: '編號本來就不可靠，換號只會讓核對更難；正確做法是寫出名稱與出處，讓讀者能回到原文。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) MAS 指南（2025-04）在 RPA 案例中把 T16 用於 Model Inconsistency Leading to Variable Approvals。(2) T&amp;M 1.1（2025-12）的 T16 是 Insecure Inter-Agent Protocol Abuse。(3) 清單的描述來自前者，來源卻寫成後者。</p><p><strong>結論：</strong>改為「MAS 指南 T16 Model Inconsistency」，並對 T&amp;M 的 T16 另列一行。引用 T16 以上編號時一律寫出名稱與出處。對應教材：<a href="04-multi-agent-integration.html#mas-new">4.3 節</a>。</p>' },
+    { id: 'a4q3', type: 'match', lo: [5], refs: [{label: '4.5 表 4-3', href: '04-multi-agent-integration.html#mas-int'}],
+      stem: '把下列說法配對到最符合的文件。',
+      cats: [
+        { id: 'tm', label: 'Agentic AI – Threats and Mitigations' },
+        { id: 'mas', label: 'MAS Threat Modeling Guide' },
+        { id: 'saa', label: 'Securing Agentic Applications Guide' },
+        { id: 'asi', label: 'Top 10 for Agentic Applications 2026' }
+      ],
+      items: [
+        { text: '被稱為「基礎且詳細的分類」，含 T1–T17 與六個 Playbook', answer: 'tm', why: 'Agentic Top 10 對它的描述。' },
+        { text: '用 MAESTRO 七層把威脅套用到真實多 agent 系統，並不另立分類', answer: 'mas', why: '指南本文的定位。' },
+        { text: '自述是 T&amp;M 的配套，聚焦具體可執行的技術建議', answer: 'saa', why: '資源頁的描述。' },
+        { text: '附錄 A 把 ASI01–ASI10 對照 T 編號與 LLM Top 10 2025', answer: 'asi', why: 'Agentic Top 10 的 Appendix A。' }
+      ],
+      summary: '四份文件分工：分類／方法／實作／Top 10 清單。' }
+  ]
+});
+</script>
+</body>
+</html>

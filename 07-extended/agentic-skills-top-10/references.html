@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜Agentic Skills Top 10｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Agentic Skills Top 10 主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="agentic-skills-top-10" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 6.4 節與第 8 節）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以本教材回到一手來源重新核對。這份清單的來源有三處（owasp.org 專案頁、GitHub 儲存庫、2026 年 8 月的白皮書 PDF），而且它們之間不完全一致。本頁列出：採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">owasp.org 專案頁</th><td>Incubator Project；類別 Documentation；Latest Version <strong>1.0-2026</strong>；23 位貢獻者</td><td><a href="https://owasp.org/projects/agentic-skills-top-10">owasp.org/projects/agentic-skills-top-10</a>（舊網址 <code>/www-project-agentic-skills-top-10/</code> 轉址至此）</td><td>專案頁未另標；以 README 為準</td></tr>
+<tr><th scope="row">GitHub README</th><td>badge：version 1.0-2026、updated March 2026；Status "Active Development → Launch Preparation"</td><td><a href="https://github.com/OWASP/www-project-agentic-skills-top-10">github.com/OWASP/www-project-agentic-skills-top-10</a></td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">GitHub 提交</th><td>最近提交 2026-08-12「Replace whitepaper PDF and cover with updated version」；2026-08-11「mark whitepaper as V1」</td><td>儲存庫 commits 動態 (atom feed)</td><td>—</td></tr>
+<tr><th scope="row">專案網站 Publication 頁</th><td>白皮書 V1 <strong>公開審查中</strong>；意見請寫在 Google Doc；GitHub issues／PRs 僅作歷史參考</td><td><a href="https://owasp.github.io/www-project-agentic-skills-top-10/">owasp.github.io/www-project-agentic-skills-top-10/</a></td><td>網站 License 段：CC BY-SA 4.0</td></tr>
+<tr><th scope="row">白皮書 PDF</th><td>66 頁；標題 "OWASP Agentic Skills Top 10"；PDF 中繼資料沒有建立日期，日期只能從 GitHub 提交推測</td><td><a href="https://owasp.github.io/www-project-agentic-skills-top-10/assets/publications/ast10-top10-whitepaper-2.pdf">ast10-top10-whitepaper-2.pdf</a></td><td><strong>PDF 內文找不到授權文字</strong>；以 README／專案網站的 CC BY-SA 4.0 為準</td></tr>
+<tr><th scope="row">條目檔 ast01.md 至 ast10.md</th><td>每個檔案頂部有 Severity 與 Platforms Affected 欄；內容為 GitHub main 分支 2026-10-26 讀取版</td><td>儲存庫根目錄</td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">LLM Top 10 2025／2026、Agentic Top 10 2026（對照用）</th><td>沿用既有主題已核對的名稱與編號</td><td>見 <a href="../../01-overview/genai-security-project/references.html">GenAI Security Project 參考資料頁</a>與 <a href="../../01-overview/ai-exchange/references.html">AI Exchange 參考資料頁</a></td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0（沿用既有副本）</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正或補充）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">成熟度與最新狀態</th><td>GitHub README 狀態「Active Development → Launch Preparation」、最後更新 2026 年 3 月</td><td>屬實，但已過時：專案網站的 Publication 頁寫白皮書 V1 公開審查中；GitHub 在 2026-08-11、08-12 還有更新</td><td>教材寫「白皮書 V1 公開審查中」，不引用 README 的「最後更新 2026 年 3 月」作為現況</td></tr>
+<tr><th scope="row">各條的詳細說明</th><td>「各條詳細說明本次未讀」</td><td>本次讀了 ast01.md 至 ast10.md 全部十個檔案，以及白皮書的目錄、Executive Summary、Key Terminology、決策樹、各條 OWASP Mapping</td><td>第 2–4 章依這些內容撰寫</td></tr>
+<tr><th scope="row">嚴重度</th><td>（筆記未提）</td><td>GitHub README 與每個條目檔都有 Severity：AST01、AST02 為 Critical；AST03–AST06 為 High；AST07–AST10 為 Medium。較新的白皮書明說：<strong>不為個別風險指派嚴重度</strong>，要等 AIVSS v1（預計 2026 年底）</td><td>見 R-3：不採用嚴重度</td></tr>
+<tr><th scope="row">領導者</th><td>Ken Huang、Fabio Cerullo</td><td>專案頁相同；另列 6 位 Major Contributors</td><td>第 1 章只列兩位領導者</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">嚴重度</th><td>GitHub README／條目檔：有 Critical／High／Medium。白皮書（2026-08，較新）：不指派，待 AIVSS v1。兩者同在官方儲存庫與官方網站</td><td>依「以最新來源為準」採白皮書：<strong>教材不使用、不依嚴重度排序</strong>。README 的嚴重度欄記在此處供對照。<strong>未能確認</strong>README 是否會同步更新</td></tr>
+<tr><th scope="row">「100% 的惡意技能同時含兩種攻擊向量」</th><td>GitHub 條目檔 AST01：寫 Snyk ToxicSkills 研究「確認 100% 的惡意技能同時結合程式碼層與自然語言層」。白皮書（較新）：改寫為「已發表的研究顯示兩種技術可結合，但現有證據不足以證明每個惡意技能都用兩者」</td><td>採白皮書較保守的說法（第 1 章 1.4 節只說「兩種」，沒有說「全部」）</td></tr>
+<tr><th scope="row">對 LLM Top 10 的編號</th><td>白皮書與條目檔寫 LLM01、LLM02、LLM03、LLM04、LLM08、LLM09，<strong>沒有年份</strong>。與本教材已核對的 LLM Top 10 2025／2026 比對：LLM03、LLM04 與 2025 版相符；Excessive Agency 同時被寫成 LLM08（AST06）與 LLM09（AST03、AST09），兩個年份都對不上</td><td><strong>未能確認</strong>白皮書所依的年份與更正計畫。教材不採用 AST10 的 LLM 編號，改為提醒讀者用名稱重查並寫帶年份的編號（第 4 章 4.2 節）</td></tr>
+<tr><th scope="row">MCP06:2025 的名稱</th><td>白皮書：Intent Flow Subversion。調查筆記（取自 MCP Top 10 專案頁）：Prompt Injection via Contextual Payloads</td><td><strong>未能確認</strong>哪個為準（MCP Top 10 是 04 階段的另一個主題，不在本主題核對）。表 4-1 對 MCP06 只列編號</td></tr>
+<tr><th scope="row">授權</th><td>README、專案頁、網站 License 段一致為 CC BY-SA 4.0；白皮書 PDF 內文沒有授權文字</td><td>採 CC BY-SA 4.0，並註明 PDF 內文未見授權文字</td></tr>
+<tr><th scope="row">AISVS 版本</th><td>白皮書的 OWASP Mapping 寫 "AISVS v1.0-C…"；既有教材（AI Exchange 主題）採 GitHub 的 1.01</td><td>本主題不引用 AISVS 的具體控制編號，不影響教材</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>白皮書 V1 的正式發布日期：</strong>專案網站寫公開審查中，GitHub 提交是 2026-08-11、08-12，PDF 沒有日期。教材只寫「V1 公開審查中」。</li>
+  <li><strong>README 與白皮書何者代表現行官方立場：</strong>兩者並存，白皮書較新，教材採白皮書；但 README 是否會跟進未能確認。</li>
+  <li><strong>白皮書 LLM 編號的所依年份：</strong>見 R-3。</li>
+  <li><strong>MCP06:2025 的正確名稱：</strong>見 R-3。</li>
+  <li><strong>AST10 引用的統計與事件：</strong>README 與條目檔引用了大量第三方研究與事件（某惡意技能大規模活動的數量、掃描結果的比例等）。這些是 AST10 引用的資料，本教材沒有逐項回到原始研究查證，因此<strong>教材不複述這些數字</strong>。</li>
+  <li><strong>「第一份完整資安框架」的說法：</strong>專案自述，未能獨立驗證。</li>
+  <li><strong>OpenClaw 等平台的格式細節：</strong>教材引用的平台格式（SKILL.md、skill.json、manifest.json、package.json）取自專案網站的 Publication 頁；本教材沒有逐一查證各平台官方文件。</li>
+  <li><strong>與 AI Exchange、MCP Top 10 的關係：</strong>官方文件只有白皮書的 OWASP Mapping；AI Exchange 沒有找到對 AST10 的引用（本次沒有逐頁搜尋，屬「沒找到」而非「沒有」）。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<ul>
+  <li>專案頁：<a href="https://owasp.org/projects/agentic-skills-top-10">owasp.org/projects/agentic-skills-top-10</a></li>
+  <li>GitHub：<a href="https://github.com/OWASP/www-project-agentic-skills-top-10">OWASP/www-project-agentic-skills-top-10</a>（README、ast01.md 至 ast10.md）</li>
+  <li>專案網站：<a href="https://owasp.github.io/www-project-agentic-skills-top-10/">owasp.github.io/www-project-agentic-skills-top-10/</a>（含 Publication 頁）</li>
+  <li>白皮書 PDF：<a href="https://owasp.github.io/www-project-agentic-skills-top-10/assets/publications/ast10-top10-whitepaper-2.pdf">ast10-top10-whitepaper-2.pdf</a></li>
+  <li>OWASP Top 10 for LLM Applications 2026（對照）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/tree/main/2026">GenAI-LLM-Top10/2026</a></li>
+  <li>OWASP AI Exchange（對照）：<a href="https://owaspai.org/">owaspai.org</a></li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>圖 1-1 的分層與箭頭（第 1 章）；表 1-2 的「適合的用途」列。</li>
+  <li>圖 2-1 中把四個面向串成「來源 → 執行 → 治理」順序，以及跨平台重用的虛線（第 2 章）。官方的四個面向本身不是推論。</li>
+  <li>表 3-1 的六類控制主題與「有獨立項目的條目」統計（第 3 章）；圖 3-1 的症狀措辭與串接；兩個情境的因果推演。</li>
+  <li>圖 4-1 的分流；第 4 章對 AST09 與 MCP09:2025 的描述措辭；4.2 節「前兩列可能依 2025 版寫成」的觀察，以及「建議視為編號錯誤」的處理（本教材無法判斷白皮書作者的原意）。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>OWASP Agentic Skills Top 10（README、專案頁、網站）：CC BY-SA 4.0。白皮書 PDF 內文未見授權文字。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>OWASP Top 10 for LLM Applications、Top 10 for Agentic Applications 2026：CC BY-SA 4.0；OWASP AI Exchange：CC0 1.0（僅用於對照）。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>（MCP Top 10 僅引用條目編號，其授權狀況見既有主題的未能確認項目）。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：OWASP Agentic Skills Top 10 — CC BY-SA 4.0（白皮書 PDF 內文未見授權文字）；OWASP Top 10 for LLM Applications、Top 10 for Agentic Applications 2026 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

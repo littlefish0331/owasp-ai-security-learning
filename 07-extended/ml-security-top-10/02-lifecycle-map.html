@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　十項風險地圖｜Machine Learning Security Top 10｜OWASP AI 資安學習教材</title>
+<meta name="description" content="把 ML01–ML10 放回機器學習生命週期（訓練期、模型與供應鏈、推論期）；分辨資料投毒與模型投毒、成員推論與模型反推這兩組容易混淆的條目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="ml-security-top-10" data-page="02-lifecycle-map.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　十項風險地圖</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position.html">第 1 章</a></li>
+</ul>
+<p class="lead">十個條目照編號讀很容易背不起來，也看不出彼此的關係。這一章換一個角度：問「<strong>攻擊者是在哪一段碰到你的系統</strong>」。依這個問題，十項風險自然分成三組，你也會看出哪幾組名稱像、但打擊的目標完全不同。</p>
+
+<h2 id="lc-list">2.1 十個條目一次看</h2>
+<p>下表是專案頁列出的十項。「官方一句話」是作者依各條目頁的 Description 改寫的摘要，不是逐字翻譯。</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　ML01:2023–ML10:2023 與官方描述重點</caption>
+<thead><tr><th scope="col">編號與名稱</th><th scope="col">官方描述重點</th></tr></thead>
+<tbody>
+<tr><th scope="row">ML01:2023 Input Manipulation Attack <br>(輸入操縱攻擊)</th><td>涵蓋對抗樣本；攻擊者刻意微調輸入，讓模型誤判。官方稱它是「涵蓋多種攻擊的上位詞」。</td></tr>
+<tr><th scope="row">ML02:2023 Data Poisoning Attack <br>(資料投毒攻擊)</th><td>攻擊者竄改訓練資料，使模型行為偏離預期。</td></tr>
+<tr><th scope="row">ML03:2023 Model Inversion Attack <br>(模型反推攻擊)</th><td>攻擊者對模型做逆向，取出原本不該揭露的資訊（官方情境：從人臉辨識模型取回個人資訊）。</td></tr>
+<tr><th scope="row">ML04:2023 Membership Inference Attack <br>(成員推論攻擊)</th><td>判斷某筆資料是否在訓練集中，進而推知敏感資訊（見 2.4 的說明：官方描述文字與情境不一致）。</td></tr>
+<tr><th scope="row">ML05:2023 Model Theft <br>(模型竊取)</th><td>攻擊者取得模型的參數。</td></tr>
+<tr><th scope="row">ML06:2023 AI Supply Chain Attacks <br>(AI 供應鏈攻擊)</th><td>攻擊 ML 專案依賴的函式庫、MLOps 平台、資料與模型管理工具、模型庫。條目頁標題寫成 "ML Supply Chain Attacks"，見參考資料頁。</td></tr>
+<tr><th scope="row">ML07:2023 Transfer Learning Attack <br>(遷移學習攻擊)</th><td>攻擊者先在某個任務訓練模型、再微調到另一個任務，使目標系統帶入有害行為。</td></tr>
+<tr><th scope="row">ML08:2023 Model Skewing <br>(模型偏斜)</th><td>攻擊者操縱訓練資料的分佈，通常透過回饋迴路餵入假資料。</td></tr>
+<tr><th scope="row">ML09:2023 Output Integrity Attack <br>(輸出完整性攻擊)</th><td>攻擊者竄改模型的輸出，使下游系統受害。</td></tr>
+<tr><th scope="row">ML10:2023 Model Poisoning <br>(模型投毒)</th><td>攻擊者直接竄改模型的參數，使其產生有害結果。</td></tr>
+</tbody></table></div>
+
+<h2 id="lc-map">2.2 依生命週期分三組</h2>
+<p>官方是以編號列出，沒有分組。下圖是作者依「攻擊者最先碰到系統的哪一段」整理的分組，用來幫助記憶。分組是<strong>作者整理，非官方</strong>。有些條目橫跨兩段，圖中放在它最典型的位置。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="ML 生命週期分三組：資料與訓練期包含 ML02 資料投毒、ML07 遷移學習攻擊、ML08 模型偏斜；模型與供應鏈包含 ML06 AI 供應鏈攻擊、ML10 模型投毒、ML05 模型竊取；推論期包含 ML01 輸入操縱、ML03 模型反推、ML04 成員推論、ML09 輸出完整性。">
+flowchart LR
+  subgraph T["資料與訓練期"]
+    ML02["ML02 資料投毒"]
+    ML07["ML07 遷移學習攻擊"]
+    ML08["ML08 模型偏斜<br>（回饋迴路）"]
+  end
+  subgraph S["模型與供應鏈"]
+    ML06["ML06 AI 供應鏈攻擊"]
+    ML10["ML10 模型投毒"]
+    ML05["ML05 模型竊取"]
+  end
+  subgraph I["部署後的推論期"]
+    ML01["ML01 輸入操縱"]
+    ML03["ML03 模型反推"]
+    ML04["ML04 成員推論"]
+    ML09["ML09 輸出完整性"]
+  end
+  T --> S --> I
+  I -. "回饋迴路把推論資料帶回訓練" .-> T
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class T,S,I author
+</pre>
+<figcaption><strong>圖 2-1　ML01–ML10 依生命週期分組。</strong>條目編號與名稱是官方內容；三個分組框與條目的歸屬是<strong>作者整理，非官方</strong>（虛線框）。ML08 在圖中放在訓練期，因為它改變的是訓練資料分佈，但攻擊入口是部署後的回饋迴路，所以圖尾的虛線回饋箭頭是它的關鍵。</figcaption>
+</figure>
+
+<h2 id="lc-confuse">2.3 兩組最容易混淆的條目</h2>
+<p>看名稱很容易混淆的有兩組。判斷的竅門只有一個：<strong>問「攻擊者動的是什麼」</strong>——是動了資料、動了模型本身，還是只拿模型的輸出去推論別的東西。</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　容易混淆的條目：攻擊者動的是什麼</caption>
+<thead><tr><th scope="col">條目</th><th scope="col">攻擊者動的是</th><th scope="col">結果</th><th scope="col">發生時機</th></tr></thead>
+<tbody>
+<tr><th scope="row">ML02 資料投毒</th><td>訓練資料</td><td>模型從壞資料學到壞行為</td><td>訓練期</td></tr>
+<tr><th scope="row">ML10 模型投毒</th><td>模型參數本身</td><td>模型被直接改寫（官方情境：改變辨識結果的數字）</td><td>模型存在之後</td></tr>
+<tr><th scope="row">ML03 模型反推</th><td>對模型的查詢與輸出</td><td>從輸出推回輸入端的敏感資訊</td><td>推論期</td></tr>
+<tr><th scope="row">ML04 成員推論</th><td>對模型的查詢與輸出</td><td>判斷某筆資料在不在訓練集</td><td>推論期</td></tr>
+</tbody></table></div>
+<p>資料投毒與模型投毒的差別，等於「污染食材」與「直接改食譜」：前者讓模型自己學壞，後者不經過學習、直接改模型檔案裡的數字。模型反推與成員推論都是「不改任何東西，只從輸出推論」，差別在推論的目標：反推是取回資料內容，成員推論只回答「這筆在不在」。</p>
+
+<h2 id="lc-concept">2.4 核心概念：成員推論 vs. 模型反推</h2>
+<div class="concept">
+<h3 id="c-infer">只靠查詢就能洩漏什麼</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>兩者都是「攻擊者只能對模型提問，不能改動它，卻想知道訓練資料的事」。<strong>成員推論 (Membership Inference)</strong>：判斷某人的資料是否在訓練集；<strong>模型反推 (Model Inversion)</strong>：從模型輸出推回輸入端的資訊。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>模型對它訓練過的資料常表現得比沒見過的資料「更有把握」。官方的防禦建議也圍繞這件事：減少過擬合（正則化）、降低輸出透露的資訊量（加入雜訊或差分隱私）、縮減訓練資料。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>官方 ML04 的情境：攻擊者想知道某人是否出現在一份金融紀錄資料中，就用模型查詢來推斷。官方 ML03 的情境：對人臉辨識模型取回與個人有關的資訊。教材不提供查詢步驟。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>ML03 的建議偏向<strong>限制誰能問、問什麼</strong>：存取控制、輸入驗證、記錄輸入輸出、監控輸出分佈。ML04 的建議偏向<strong>讓模型更不暴露訓練痕跡</strong>：隨機化訓練資料、輸出模糊化、正則化、縮減資料。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「只要模型不公開權重就沒事。」兩者都只需要查詢能力。另外要小心：官方 ML04 的 Description 一句話寫成「攻擊者<em>操縱</em>訓練資料使模型洩漏敏感資訊」，這更像資料投毒；但它的預防措施與情境都是「判斷某筆資料是否在訓練集」。本教材依預防措施與情境，並與 AI Exchange 的成員推論一致來理解。</dd>
+</dl>
+</div>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>用「攻擊者動的是什麼」分辨：資料（ML02）、模型參數（ML10）、只對模型提問（ML03、ML04）。</li>
+  <li>三組：資料與訓練期（ML02、ML07、ML08）、模型與供應鏈（ML05、ML06、ML10）、推論期（ML01、ML03、ML04、ML09）。分組是作者整理，非官方。</li>
+  <li>ML08 的攻擊入口是部署後的回饋迴路，但改變的是訓練資料分佈。</li>
+  <li>官方 ML04 的 Description 與其預防措施、情境用字不一致；本教材依預防措施與情境理解。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能在不看表的情況下，說出十項各自的一句話描述。</li>
+  <li>我能分辨資料投毒與模型投毒，並說出各自的防禦方向。</li>
+  <li>我知道成員推論與模型反推的差別，以及官方 ML04 描述的不一致。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-defenses-and-scenarios.html">第 3 章　防禦與情境</a>：看官方建議的防禦如何重複出現，並用兩個虛構情境練習判斷。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Machine Learning Security Top Ten 專案頁的條目清單，以及十個條目頁（ML01:2023–ML10:2023，各含 Description、How to Prevent、Risk Factors、Example Attack Scenarios）：<a href="https://owasp.github.io/www-project-machine-learning-security-top-10/index.html">owasp.github.io/www-project-machine-learning-security-top-10/</a>，條目頁路徑 <code>/docs/ML0x_2023-….html</code>；2026-10-26 讀取；頁面標示 Edition 2023、Version 0.3 Draft、CC BY-SA 4.0。</li>
+    <li>OWASP Machine Learning Security Top 10 – Draft release v0.3（PDF）：<a href="https://mltop10.info/OWASP-Machine-Learning-Security-Top-10.pdf">mltop10.info/OWASP-Machine-Learning-Security-Top-10.pdf</a>；2026-10-26 讀取，用於比對條目文字。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Machine Learning Security Top 10 專案頁與 PDF — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'm-ch2', topic: 'ml-security-top-10', mode: 'chapter',
+  questions: [
+    { id: 'm2q1', type: 'mc', lo: [2], refs: [{label: '2.3 兩組最容易混淆的條目', href: '02-lifecycle-map.html#lc-confuse'}],
+      stem: '一個團隊發現正式環境的模型檔案被人替換成參數被改過的版本，訓練資料與訓練流程都沒有被動過。最貼近的官方條目是？',
+      options: [
+        { text: 'ML02:2023 Data Poisoning Attack', why: '資料投毒動的是訓練資料；這個情境中訓練資料沒被動過。' },
+        { text: 'ML04:2023 Membership Inference Attack', why: '成員推論是只對模型提問、推論某筆資料在不在訓練集，沒有改動任何東西。' },
+        { text: 'ML10:2023 Model Poisoning', correct: true, why: '模型投毒是直接竄改模型參數，不經過訓練資料。' },
+        { text: 'ML08:2023 Model Skewing', why: '模型偏斜是透過回饋迴路改變訓練資料分佈；情境中沒有回饋資料。' }
+      ],
+      summary: '動資料 = ML02；直接動模型參數 = ML10。' },
+    { id: 'm2q2', type: 'match', lo: [2], refs: [{label: '2.2 圖 2-1', href: '02-lifecycle-map.html#lc-map'}],
+      stem: '把下列條目配對到最典型的生命週期組（作者整理的分組）。',
+      cats: [
+        { id: 'train', label: '資料與訓練期' },
+        { id: 'supply', label: '模型與供應鏈' },
+        { id: 'infer', label: '部署後的推論期' }
+      ],
+      items: [
+        { text: 'ML02:2023 Data Poisoning Attack', answer: 'train', why: '動的是訓練資料。' },
+        { text: 'ML06:2023 AI Supply Chain Attacks', answer: 'supply', why: '針對函式庫、MLOps 平台與模型庫。' },
+        { text: 'ML01:2023 Input Manipulation Attack', answer: 'infer', why: '攻擊者在使用時刻意改變輸入。' },
+        { text: 'ML09:2023 Output Integrity Attack', answer: 'infer', why: '竄改模型輸出，使下游受害，發生在使用階段。' }
+      ],
+      summary: '依「攻擊者最先碰到系統的哪一段」記憶。' },
+    { id: 'm2q3', type: 'scn', lo: [2], refs: [{label: '2.3 表 2-2', href: '02-lifecycle-map.html#lc-confuse'}, {label: '2.4 成員推論 vs. 模型反推', href: '02-lifecycle-map.html#lc-concept'}],
+      stem: '依本章，這位同事把哪兩個條目混為一談？該怎麼分辨？',
+      scenario: '松濤醫療（虛構）的資料科學家說：「我們的病患風險模型會被成員推論和模型反推攻擊，這兩個其實是同一種攻擊，都是在偷模型。」資安顧問不同意，要他區分兩者各自在問什麼、攻擊者動了什麼。',
+      options: [
+        { text: '兩者都是在改動模型參數，只是手法不同。', why: '改動模型參數是模型投毒（ML10）；這兩個都不改任何東西。' },
+        { text: '兩者都只對模型提問、不改動任何東西；成員推論問「某筆資料在不在訓練集」，模型反推想從輸出取回輸入端的資訊；也都不是在偷模型（那是 ML05 模型竊取）。', correct: true, why: '符合 2.3 與 2.4 節：它們動的都是查詢與輸出，目標不同；偷模型是 ML05。' },
+        { text: '成員推論是在改訓練資料，模型反推是在改輸出。', why: '改訓練資料是資料投毒（ML02）、改輸出是 ML09；這兩個都沒有改動任何東西。' },
+        { text: '兩者是同一個條目在不同頁面的名稱。', why: '兩者是專案頁清單中不同編號的條目（ML03 與 ML04）。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 成員推論 (ML04) 與模型反推 (ML03) 都只透過查詢與輸出進行，攻擊者沒有改動資料或模型。(2) 成員推論的目標是判斷「某筆資料是否在訓練集」；模型反推的目標是從輸出取回輸入端的資訊。(3) 取得模型參數是 ML05 模型竊取，是另一個條目。</p><p><strong>結論：</strong>兩者不是同一種攻擊，也都不是「偷模型」。對應教材：<a href="02-lifecycle-map.html#lc-confuse">2.3 節</a>、<a href="02-lifecycle-map.html#lc-concept">2.4 節</a>。</p>' },
+    { id: 'm2q4', type: 'mc', lo: [2], refs: [{label: '2.4 常見誤解', href: '02-lifecycle-map.html#lc-concept'}],
+      stem: '你讀到 ML04 的 Description 寫「攻擊者操縱模型的訓練資料，使其洩漏敏感資訊」，但同一頁的預防措施與情境都在談「判斷某筆資料是否在訓練集」。依本教材，較合理的處理是？',
+      options: [
+        { text: '以 Description 為準，把 ML04 當成資料投毒的一種。', why: '預防措施與情境一致指向成員推論，且 ML02 已是資料投毒。' },
+        { text: '把這頁當成錯誤頁，整份清單都不要用。', why: '一處措辭不一致不代表整份不可用；應註明並採用較一致的理解。' },
+        { text: '依預防措施與情境，把它理解為成員推論，並在引用時註明官方描述措辭不一致。', correct: true, why: '符合 2.4 節：依預防措施與情境理解，同時揭露不一致。' },
+        { text: '寫信給所有讀者說 OWASP 搞錯了。', why: '教材的做法是如實標註不一致並說明採用的理解，不需要下「官方搞錯」的結論。' }
+      ],
+      summary: '官方描述有不一致時，依整體證據理解並明說。' }
+  ]
+});
+</script>
+</body>
+</html>

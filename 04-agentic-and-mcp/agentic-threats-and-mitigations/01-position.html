@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　定位與參考架構｜Agentic 威脅與緩解｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Agentic AI – Threats and Mitigations 是什麼、採用哪個版本、它用來畫威脅模型的參考架構，以及 agent 最先要面對的兩個問題：混淆代理人與非人類身分。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="agentic-threats-and-mitigations" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　定位與參考架構</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../../primer-security-for-developers.html#p-surface">攻擊面與信任邊界</a>、<a href="../../primer-security-for-developers.html#p-lp">最小權限</a>（可略讀）；建議先讀 <a href="../../01-overview/ai-exchange/05-agentic-genai.html#ga-agentic">AI Exchange 第 5 章</a></li>
+</ul>
+<p class="lead">Agentic 系列的文件很多，但它們幾乎都回頭引用同一份「地基」：<em>Agentic AI – Threats and Mitigations</em>。本章先弄清楚它是什麼、現行版本是哪一版，再看它用來畫威脅模型的參考架構，以及它最先點名的兩個 agent 專屬問題：混淆代理人與非人類身分。</p>
+
+<h2 id="pos-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　Agentic AI – Threats and Mitigations 一頁式全貌（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">發布者</th><td>OWASP GenAI Security Project 的 Agentic Security Initiative (ASI)；封面同時標示「OWASP Top 10 for LLM Apps &amp; Gen AI」。</td></tr>
+<tr><th scope="row">採用版本與日期</th><td><strong>PDF 封面：Version 1.1，December 2025</strong>，共 53 頁。資源頁顯示的日期是 2025-02-17（推測為首次發布日）。</td></tr>
+<tr><th scope="row">性質</th><td>「以威脅模型為基礎的參考」，自稱是 ASI 系列指南中的第一份。</td></tr>
+<tr><th scope="row">給誰用</th><td>建置者與防禦者：開發者、架構師、平台與 QA 工程師、資安人員。官方說之後會出針對不同角色的指南。</td></tr>
+<tr><th scope="row">範圍</th><td>以大型語言模型 (LLM) 為基礎的 agent。通用的應用層、API 與 LLM 威脅<strong>不重複寫</strong>，改指向 OWASP Top 10、API Security Top 10、LLM Top 10、AI Exchange、MITRE ATLAS 與 NIST AI 100-2。</td></tr>
+<tr><th scope="row">內容結構</th><td>導論、AI Agents、參考架構、威脅模型 (T1–T17)、威脅分類導覽 (Navigator)、緩解策略 (Playbooks)、範例威脅模型。</td></tr>
+<tr><th scope="row">授權</th><td>CC BY-SA 4.0（PDF 封面）。</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">版本：筆記寫 v1.0，實際檔案是 1.1</p>
+  <p>調查筆記把版本記為 v1.0（取自檔名）。本教材下載的檔案封面寫 <strong>Version 1.1、December 2025</strong>；資源頁日期卻仍是 2025-02-17。依「以最新者為準」，本教材採 1.1。這份 PDF 成書早於 LLM Top 10 2026（2026-08-04），所以它引用的 LLM 條目都是 <strong>2025 版編號</strong>（第 2 章會處理編號對照）。</p>
+</div>
+<p>它在系列中的位置，其他官方文件有明確說法：Agentic Top 10 稱它是「基礎且詳細的分類 (foundational and detailed taxonomy)」；多 Agent 威脅建模指南稱它是「主要的 agentic 威脅分類」；Securing Agentic Applications Guide 則是它的實作配套。這三份是本階段接下來的主題。</p>
+
+<h2 id="pos-caps">1.2 Agent 比一般 LLM 應用多了什麼</h2>
+<p>文件把 agent 的核心能力分成三塊：<strong>規劃與推理</strong>（用 LLM 決定控制流程，常見做法是 ReAct：邊推理邊行動）、<strong>記憶</strong>（單次 session 內的短期記憶，以及跨 session 的長期記憶）、<strong>行動與工具使用</strong>（內建函式、外部 API，以及透過 MCP 這類協定連接工具）。自主性也不是二分法：從完全寫死的流程、受程式碼或狀態機約束的流程，到完全由對話與模型推理決定的流程，是一條光譜。</p>
+<p>文件對兩者關係的說法是：LLM 應用若帶有 agent 行為，在 LLM Top 10 中就是 Excessive Agency（LLM06:2025）；反過來，agent 本身也可以寫成一個有工具的 LLM 應用。差別在於下表這幾件事被放大了：</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　agent 讓哪些風險被放大（依文件威脅模型段落整理）</caption>
+<thead><tr><th scope="col">特徵</th><th scope="col">文件怎麼說（改寫）</th><th scope="col">風險上的意義</th></tr></thead>
+<tbody>
+<tr><th scope="row">記憶跨 session</th><td>一般 LLM 應用把工具整合限制在單次 session 內；agent 會保留記憶，因而更自主</td><td>一次污染可以持續影響之後的行為</td></tr>
+<tr><th scope="row">委派與工具串接</th><td>agent 可把執行委派給其他 agent，也可把多個工具串成非預期的順序</td><td>每個工具 API 單獨看都有權限檢查，串起來仍可能繞過控制</td></tr>
+<tr><th scope="row">自主排程</th><td>agent 能自己觸發任務、衍生處理程序、與多個 agent 協調</td><td>資源消耗可能呈倍數成長，而且沒有人在現場</td></tr>
+<tr><th scope="row">機器身分</th><td>agent 常以機器帳號、服務身分或 API 金鑰運作，可能缺少 session 層級的監督</td><td>權限濫用與憑證濫用更難被注意到</td></tr>
+</tbody></table></div>
+
+<h2 id="pos-arch">1.3 參考架構：威脅模型的畫布</h2>
+<p>文件用一張「單一 agent 架構」當作討論威脅的畫布，並明說這不是要定義標準的 agent 架構。它列出可部署的元件：(1) 代表使用者執行任務的應用；(2) 接收自然語言輸入的 agent，通常建在 LangChain、AutoGen、CrewAI 這類框架上；(3) 一個或多個負責推理的 LLM；(4) 被呼叫的服務與工具（透過框架層的工具呼叫，或由模型回傳要呼叫的內容）；(5) 支援服務：存放長期記憶的外部儲存，以及向量資料庫等資料來源（RAG 內容）。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="單一 agent 參考架構：使用者與外部內容輸入 agent 應用；agent 應用與 LLM、長期記憶、資料來源雙向互動，並呼叫工具與服務；工具輸出再回到 agent 應用；多 agent 時，agent 之間再加上通訊與協調者。圖中標示哪些箭頭帶進不可信內容。">
+flowchart LR
+  U["使用者輸入<br>外部檔案、網頁、郵件"] -->|"不可信輸入"| A
+  subgraph SCOPE["Agent 部署範圍"]
+    A["Agent 應用<br>框架加應用程式碼"] &lt;--> L["LLM<br>本地或遠端"]
+    A &lt;--> M["長期記憶<br>外部儲存"]
+    A &lt;--> R["資料來源<br>向量資料庫、RAG 內容"]
+  end
+  A -->|"工具呼叫"| T["工具與服務<br>內建函式、外部 API、MCP Server"]
+  T -->|"工具輸出：不可信"| A
+  A &lt;-.->|"A2A 等協定"| P["其他 agent<br>或協調者"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class U,T,P author
+</pre>
+<figcaption><strong>圖 1-1　單一 agent 的參考架構（依官方文字與架構圖重新繪製，並非官方原圖）。</strong>元件取自官方的五項可部署元件；多 agent 時只多了「agent 間通訊」與選配的協調者。虛線框的節點與「不可信」標註是<strong>作者整理，非官方</strong>：把「會把外部內容帶進 agent」的入口標出來，是為了接到第 2 章的威脅分類。</figcaption>
+</figure>
+<p>多 agent 架構的差別，文件寫得很精簡：架構相似，只多了 agent 間通訊與選配的協調 agent；Google 的 Agent2Agent (A2A) 是其中一種通訊協定。文件另列了多種 agentic 模式（如 Reflective、Hierarchical、RAG-Based 等），用意是讓威脅建模的討論有一致用語，並不是安全分類。</p>
+
+<h2 id="pos-concept">1.4 核心概念：混淆代理人與非人類身分</h2>
+<p>文件在參考威脅模型裡最先提的兩個 agent 專屬問題，都跟「agent 用誰的權限做事」有關。</p>
+<div class="concept">
+<h3 id="c-deputy">混淆代理人 (Confused Deputy) 與非人類身分 (Non-Human Identity, NHI)</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>混淆代理人：agent（「代理人」）的權限高於使用者，卻被誘導代替使用者做了使用者本來無權做的事。非人類身分 (NHI)：機器帳號、服務身分與 agent 使用的 API 金鑰；agent 對接雲端服務、資料庫與外部工具時，通常就是用這類身分。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>agent 若缺乏權限隔離，就分不清「合法使用者的請求」與「被注入的惡意指示」，只看得到自己手上那把權限更大的鑰匙。NHI 則可能沒有 session 層級的監督，一旦被濫用或權杖外洩，比較不容易被察覺。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>文件舉的例子：agent 被允許執行資料庫查詢，但沒有確實檢查提交提示詞的人與其憑證；攻擊者便能誘使它執行自己直接無權執行的高權限查詢。另外，agent 繼承的權限若過寬（例如整個使用者 session 或服務權杖），即使個別工具 API 各自有限制，agent 也能把多個工具串起來，例如從外部 API 取回敏感資料再放進使用者看得到的回應。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>文件的做法：代表使用者行動時，依<a href="../../primer-security-for-developers.html#p-lp">最小權限</a>縮小 agent 的授權範圍；驗證提交提示詞的使用者是否有權執行該動作；建立清楚的身分流向、嚴格的 RBAC，以及對 agent 存取企業環境採零信任。第 3 章的 Playbook 4 會把這些展開。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「每個工具 API 都有自己的權限檢查，所以 agent 是安全的。」文件明說：即使個別工具 API 有限制，agent 仍可能把多個工具串成非預期的順序來繞過控制。權限要在「agent 能做什麼的總和」這一層檢查，不只是逐一工具。</dd>
+</dl>
+</div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>採用版本：Agentic AI – Threats and Mitigations <strong>Version 1.1，December 2025</strong>（筆記寫的 v1.0 已更正）；資源頁日期 2025-02-17 與檔案版本不同步。</li>
+  <li>它是 Agentic 系列的基礎分類，只談 agent 特有或被 agent 放大的威脅，通用威脅指向其他 OWASP 文件。</li>
+  <li>agent 比一般 LLM 應用多的是：跨 session 記憶、委派與工具串接、自主排程、機器身分。</li>
+  <li>混淆代理人與 NHI 是參考威脅模型最先點名的兩個問題，防線是縮小授權與驗證發出請求的人。</li>
+  <li>這份 PDF 引用的 LLM Top 10 編號是 <strong>2025 版</strong>，不可直接套用 2026 版編號。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出這份文件的採用版本，並解釋為什麼不是 v1.0。</li>
+  <li>我能指出 agent 相對於一般 LLM 應用多出的四個風險來源。</li>
+  <li>我能用自己的話說明混淆代理人，並說出文件建議的防線。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-threat-taxonomy.html">第 2 章　威脅分類與 Navigator</a>：把文件的 17 項威脅（T1–T17）放進同一張地圖，並看它們跟 LLM Top 10 的關係。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>Agentic AI – Threats and Mitigations</em>, Version 1.1, December 2025（PDF 封面）：<a href="https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/">資源頁</a>（顯示日期 2025-02-17）；2026-10-26 讀取；封面標示 CC BY-SA 4.0。引用段落：Introduction、AI Agents、Agentic AI Reference Architecture、Reference Threat Model。</li>
+    <li>OWASP Top 10 for Agentic Applications for 2026（Version 2026，December 2025）：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a>；引用其對本文件的描述。</li>
+    <li>Multi-Agentic system Threat Modeling Guide v1.0：<a href="https://genai.owasp.org/resource/multi-agentic-system-threat-modeling-guide-v1-0/">資源頁</a>；引用其對本文件的描述。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Agentic AI – Threats and Mitigations、Top 10 for Agentic Applications 2026、Multi-Agentic system Threat Modeling Guide — CC BY-SA 4.0（PDF 封面）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'atm-ch1', topic: 'agentic-threats-and-mitigations', mode: 'chapter',
+  questions: [
+    { id: 'a1q1', type: 'mc', lo: [1], refs: [{label: '1.1 版本說明', href: '01-position.html#pos-onepage'}],
+      stem: '調查筆記把這份文件記為「v1.0（取自檔名）」，資源頁顯示 2025-02-17。依本章，引用它時應該寫哪一個？',
+      options: [
+        { text: 'v1.0，2025-02-17，因為資源頁是官方頁面。', why: '資源頁的日期對應首次發布；實際下載到的檔案封面是 1.1。依「以最新者為準」不採舊版。' },
+        { text: 'Version 1.1，December 2025（PDF 封面）。', correct: true, why: '封面是最新且最具體的版本標示；資源頁日期與檔案版本不同步，要並記但以封面為準。' },
+        { text: '2026 版，因為它被 Agentic Top 10 2026 取代了。', why: '沒有任何來源說它被取代；Agentic Top 10 反而稱它是基礎且詳細的分類，兩者是並用關係。' },
+        { text: '不需要寫版本，因為它是持續更新的知識庫。', why: '那是 AI Exchange 的特性。這份是有版本與日期的 PDF 文件。' }
+      ],
+      summary: '採 Version 1.1，December 2025；資源頁日期只當作首次發布日參考。' },
+    { id: 'a1q2', type: 'mc', lo: [1], refs: [{label: '1.1 範圍', href: '01-position.html#pos-onepage'}],
+      stem: '依本章，這份文件對「通用的應用程式與 LLM 威脅」（例如一般 Web 弱點）是怎麼處理的？',
+      options: [
+        { text: '全部重寫一遍，讓讀者只讀這一份就夠。', why: '文件明說通用威脅已被其他 OWASP 指南涵蓋，不在範圍內。' },
+        { text: '完全不提，認為 agent 與一般應用沒有關係。', why: '文件有指向其他文件，並在相關處說明 agent 對既有威脅的影響。' },
+        { text: '不重複寫，指向 OWASP Top 10、API Security Top 10、LLM Top 10、AI Exchange 等；只談 agent 特有或被放大的威脅。', correct: true, why: '符合 1.1 節「範圍」一列。' },
+        { text: '只處理訓練階段的威脅。', why: '文件談的是 agent 的運作：推理、記憶、工具、身分與多 agent 互動，不是訓練階段。' }
+      ],
+      summary: '只談 agent 特有或被放大的威脅，通用威脅指向其他文件。' },
+    { id: 'a1q3', type: 'match', lo: [1], refs: [{label: '1.2 表 1-2', href: '01-position.html#pos-caps'}],
+      stem: '把 agent 的特徵配對到它最直接放大的風險。',
+      cats: [
+        { id: 'persist', label: '污染可持續影響之後的行為' },
+        { id: 'chain', label: '逐一工具的權限檢查被串接繞過' },
+        { id: 'resource', label: '資源消耗可能倍數成長' },
+        { id: 'cred', label: '權限與憑證濫用較難被察覺' }
+      ],
+      items: [
+        { text: '記憶會跨 session 保留', answer: 'persist', why: '長期記憶讓一次污染持續存在。' },
+        { text: '可把多個工具串成非預期的順序', answer: 'chain', why: '每個工具單看都合規，串起來可能繞過控制。' },
+        { text: '能自行觸發任務、衍生處理程序並與其他 agent 協調', answer: 'resource', why: '自主排程使消耗呈倍數成長，且沒有人在現場。' },
+        { text: '以機器帳號或 API 金鑰運作，缺少 session 監督', answer: 'cred', why: '這是非人類身分 (NHI) 的風險。' }
+      ],
+      summary: '四個特徵各對應一種被放大的風險。' },
+    { id: 'a1q4', type: 'scn', lo: [1], refs: [{label: '1.4 混淆代理人', href: '01-position.html#c-deputy'}],
+      stem: '依本章，這個設計最需要補哪一項控制？',
+      scenario: '明月電商（虛構）的客服 agent 可以替客服人員查詢整個訂單資料庫，使用的是權限很大的服務帳號。任何一位客服人員在對話框輸入的文字，都會讓 agent 去查它認為需要的資料；系統不檢查發問的客服人員是否有權看那些訂單。測試時有人用一句看似正常的要求，讓 agent 回傳了不屬於該客服部門的客戶訂單。',
+      options: [
+        { text: '把 agent 換成更大的模型，讓它更準確地判斷該不該查。', why: '問題是授權沒有被強制執行，不是模型不夠聰明；模型判斷不能取代權限控制。' },
+        { text: '依發問者的授權縮小 agent 查詢的範圍，並驗證提交請求的人有權取得那些資料；服務帳號也只給最小權限。', correct: true, why: '正是文件對混淆代理人的建議：依最小權限縮小授權，並驗證提交提示詞的使用者是否有權。' },
+        { text: '在系統提示詞裡加一句「不得洩漏他人訂單」。', why: '把授權寫在提示詞裡，仍然是讓模型自己決定；agent 看不出請求是否合法時，這句話擋不住。' },
+        { text: '只要記錄所有查詢就夠了，因為可以事後追查。', why: '日誌是偵測，不能阻止這次洩漏；而且前提是 agent 已經拿到不該拿的權限。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) agent 用服務帳號（NHI）執行，權限遠大於任何單一客服人員，這是混淆代理人的典型結構。(2) 系統沒有檢查發問者是否有權看這些資料，agent 無從分辨合法與被誘導的請求。(3) 文件的防線是縮小授權、驗證使用者權限，並對 agent 存取採零信任。</p><p><strong>結論：</strong>授權必須由系統在 agent 之外強制執行，而且要依「代表誰行動」縮小範圍。對應教材：<a href="01-position.html#c-deputy">1.4 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

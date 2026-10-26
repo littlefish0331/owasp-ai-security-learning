@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　防禦與情境｜Agentic Skills Top 10｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AST10 十條官方緩解建議反覆出現的控制主題（來源驗證、釘選、權限清單、隔離、掃描、治理），並用兩個虛構情境練習：被改寫的外部說明文件、同事自行安裝的技能。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="agentic-skills-top-10" data-page="03-controls-and-scenarios.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　防禦與情境</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-ten-risks.html">第 2 章</a></li>
+</ul>
+<p class="lead">每個條目檔都有一段 Preventive Mitigations。把十段並排讀，你會發現官方建議的控制反覆圍繞幾個主題。這一章先整理這個規律，再用兩個虛構情境練習「看到症狀、推回條目、選控制」。</p>
+
+<h2 id="ct-themes">3.1 十段緩解建議，其實只有幾個主題</h2>
+<p>下表「官方的獨立項目」是作者逐條讀官方 Preventive Mitigations 的標題後數的結果；「主題」這個歸類是<strong>作者整理，非官方</strong>。官方是各條各自列舉，沒有做這樣的跨條目彙整。</p>
+<div class="table-wrap"><table>
+<caption>表 3-1　官方緩解建議的重複主題（歸類為作者整理，非官方）</caption>
+<thead><tr><th scope="col">主題</th><th scope="col">有獨立項目的條目</th><th scope="col">官方寫到的做法（摘要）</th></tr></thead>
+<tbody>
+<tr><th scope="row">來源與簽章</th><td>AST01、AST02、AST07</td><td>以密碼學簽章綁定可撤銷的發佈者身分；來源追溯；透明日誌；每次更新都驗證簽章。官方特別強調：簽章證明<strong>作者是誰，不證明內容安全</strong>。</td></tr>
+<tr><th scope="row">內容釘選</th><td>AST02、AST05、AST07</td><td>以不可變的雜湊值（例如 sha256）釘選技能與相依性，而不是用版本範圍；外部引用內容要記錄雜湊並每次驗證，或直接內嵌進簽章的技能包。</td></tr>
+<tr><th scope="row">權限宣告與強制</th><td>AST03、AST04、AST05（網域允許清單）；AST02 的內部鏡像／允許清單屬類似的來源收斂</td><td>要求技能宣告權限清單；每個技能使用範圍有限的憑證；網路用網域允許清單而非開關；<strong>執行期強制而非只宣告</strong>；用沙箱測試比對宣告與實際行為。</td></tr>
+<tr><th scope="row">隔離</th><td>AST01、AST04、AST06</td><td>預設以容器隔離技能執行；每個技能獨立行程；控制介面綁定本機並要求驗證；限制熱重載與工作區覆蓋。</td></tr>
+<tr><th scope="row">掃描與測試</th><td>AST01、AST02、AST04、AST05、AST08</td><td>同時掃描程式碼層與自然語言指令層；用行為分析而非只比對特徵；在沙箱觀察實際行為；掃描整個技能目錄；持續重新掃描；掃描器結果只作參考、不當唯一關卡。</td></tr>
+<tr><th scope="row">清單、審批與稽核</th><td>AST01、AST07、AST09</td><td>集中的技能清單（名稱、版本、雜湊、安裝者、最近掃描狀態）；安裝與更新的審批流程；技能動作的稽核日誌；撤銷程序；整合既有 CMDB、ITSM、CASB。</td></tr>
+</tbody></table></div>
+<p>這張表有兩個用法。第一，面對一個新的 Agent 平台，可以先問「這六類控制我各有沒有」，而不是逐條背十個條目。第二，注意<strong>官方自己有一句很重要的警語放在 AST08</strong>：掃描器結果只能當參考 (advisory)，而且掃描器自己的 LLM 也可能被注入。也就是說，「有掃描」不等於「安全」。</p>
+<p>另外兩點要補充。表中沒列出某個條目，只代表官方在那一條<strong>沒有獨立列出</strong>該主題，不代表不需要；各條的項目數也不一，不代表風險大小。還有，AST04 的第一項不在這張表的任何一列：它是<strong>使用安全的解析器</strong>（例如用安全模式載入 YAML、設定允許的鍵清單），因為中繼資料在載入時就會被自動解析，是解析層的獨立控制。</p>
+
+<h2 id="ct-flow">3.2 從症狀推回條目與控制</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="從症狀推回條目：技能已簽章並釘選，但行為在上線後改變，查 AST05 看外部引用內容；技能在載入時就出現異常行為、與 frontmatter 有關，查 AST04 看安全解析與模式驗證；技能能讀寫超出其功能的檔案或網路，查 AST03 與 AST06 看權限強制與隔離；組織無法回答裝了哪些技能，查 AST09 看集中清單與審批；掃描器放行了後來證實惡意的技能，查 AST08 並依官方規則把根因記為源頭條目。">
+flowchart TD
+  S["觀察到的症狀"] --> Q{"哪一類？"}
+  Q -->|"技能已簽章並釘選，行為卻在上線後改變"| A1["AST05 外部指令<br>先看：外部內容雜湊與內嵌"]
+  Q -->|"載入時就出現異常，與 frontmatter 有關"| A2["AST04 中繼資料<br>先看：安全解析與模式驗證"]
+  Q -->|"技能碰到超出其功能的檔案或網路"| A3["AST03 權限過大 / AST06 隔離薄弱<br>先看：權限強制與容器隔離"]
+  Q -->|"答不出組織裡裝了哪些技能"| A4["AST09 缺乏治理<br>先看：集中清單與審批"]
+  Q -->|"掃描器放行了後來證實惡意的技能"| A5["AST08 掃描不足<br>依官方規則：根因記源頭條目，掃描缺口為促成因素"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q,A1,A2,A3,A4,A5 author
+</pre>
+<figcaption><strong>圖 3-1　由症狀推回條目與優先檢查的控制。</strong>條目名稱與其官方緩解建議是官方內容；「症狀」的措辭與整張圖的串接是<strong>作者整理，非官方</strong>（虛線框）。最後一列引用官方決策樹的規則。真實事件常同時符合多個症狀，這張圖是入口，不是診斷結論。</figcaption>
+</figure>
+
+<h2 id="ct-scn-a">3.3 情境範例 A：簽章過的技能，行為卻變了</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：鳳梨財務的報表技能</h3>
+<p><span class="tag fiction">虛構</span> 鳳梨財務是虛構的會計軟體公司。團隊在內部登錄庫安裝了一個「匯率換算」技能，已簽章、以雜湊釘選，並通過掃描器。技能的說明文件只有幾行，其中一行指示 Agent「依外部供應商的 API 說明頁格式化查詢」，並給了一個網址。三個月後，財務人員發現 Agent 偶爾會在換算後多做一件沒人要求的事。技能檔案的雜湊與上線時完全一致。</p>
+<ol class="steps">
+  <li><strong>先看症狀：</strong>技能檔案本身沒有變（雜湊一致），但行為變了。對照圖 3-1，指向 AST05：變動的可能是技能執行時才讀取的外部內容。</li>
+  <li><strong>哪一環出問題：</strong>簽章與釘選只涵蓋技能這包檔案。外部網址在執行時回傳什麼，不在任何一道控制之內。掃描器在審查時看到的可能是當時乾淨的版本（官方的「審查者被騙」形態）。</li>
+  <li><strong>對應條目與相近條目：</strong>主要是 AST05。若發現外部網址的內容曾被刻意改寫成指令，它也和 AST02 的供應鏈脈絡相關，但依官方決策樹與 AST05 的說明，AST02 的完整性控制管不到這一段。</li>
+  <li><strong>該採的控制（取自官方 AST05 的緩解清單）：</strong>在審查時為每份外部文件記錄內容雜湊並於每次載入時重新驗證；盡量把外部說明內嵌進簽章過的技能包；用網域允許清單限制可抓取的來源；傳遞性地審查引用鏈；盤點全機隊技能各自抓哪些外部來源；持續重新掃描而不是只在安裝時掃一次。</li>
+  <li><strong>這個情境的提醒：</strong>「已簽章、已釘選、已掃描」三項都成立，不代表執行時看到的內容沒有變。這正是 AST05 官方所說的「簽章技能對該網址回傳什麼什麼也沒說」。</li>
+</ol>
+</div>
+
+<h2 id="ct-scn-b">3.4 情境範例 B：沒人知道裝了什麼</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：藍鵲電商的開發者各自安裝</h3>
+<p><span class="tag fiction">虛構</span> 藍鵲電商是虛構的電商公司。工程師們為了提高效率，各自在自己的開發環境安裝了許多 Agent 技能，安裝只要一行指令。資安團隊在一次內部盤點時發現：沒有人說得出全公司裝了哪些技能、各自什麼版本、誰裝的；這些技能和開發者的雲端憑證放在同一台機器。一週後，外部通報其中一個熱門技能被發現含有不當行為，資安團隊無法回答「我們有沒有裝」。</p>
+<ol class="steps">
+  <li><strong>先看症狀：</strong>最核心的問題是「答不出裝了哪些技能」。對照圖 3-1，指向 AST09 缺乏治理。</li>
+  <li><strong>哪一環出問題：</strong>技能安裝沒有進入任何組織管控：沒有清單、沒有審批、沒有稽核、沒有撤銷程序。官方描述這是安全團隊「看不見也控制不了」的影子 AI 層。</li>
+  <li><strong>相近條目：</strong>憑證與技能同機放置，涉及 AST03（權限過大）與 AST06（隔離薄弱）；沒有人重新檢查已裝的技能，涉及 AST07（更新漂移）與 AST08（掃描不足）。AST09 在官方交叉引用裡被描述為讓這些風險得以長期存在的背景條件。</li>
+  <li><strong>該採的控制（取自官方 AST09 的緩解清單）：</strong>建立集中技能清單（名稱、版本、雜湊、安裝日期、安裝者、最近掃描狀態）；技能安裝的審批流程；給 Agent 非人類身分與範圍有限的憑證並定期輪替；完整稽核日誌；整合既有 CMDB／ITSM／CASB；與離職和事件應變連動的撤銷程序。</li>
+  <li><strong>這個情境的提醒：</strong>先有清單，才談得上回答「我們有沒有受影響」。清單是所有後續控制的前提，這也是為什麼官方把它列在 AST09 的第一項。</li>
+</ol>
+</div>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>官方緩解建議可歸成六類重複主題：來源與簽章、內容釘選、權限宣告與強制、隔離、掃描與測試、清單審批與稽核（歸類為作者整理，非官方）。</li>
+  <li>簽章證明作者是誰，不證明內容安全；掃描器結果只當參考，不當唯一關卡。</li>
+  <li>已簽章、已釘選、已掃描，仍擋不住執行時才讀取的外部內容（AST05）。</li>
+  <li>先有技能清單，才回答得了「我們有沒有受影響」（AST09）。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能對一個 Agent 平台問出「六類控制各有沒有」。</li>
+  <li>給我一個症狀，我能說出最先要查的條目與控制。</li>
+  <li>我能說明為什麼「掃描通過」不是安全的證明。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-integration.html">第 4 章　跨文件整合與收尾</a>：看 AST10 與 Agentic Top 10、MCP Top 10、LLM Top 10 怎麼對應，以及哪些對應不能照用。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Agentic Skills Top 10 GitHub 儲存庫 ast01.md 至 ast10.md 的 Preventive Mitigations 與 Attack Scenarios：<a href="https://github.com/OWASP/www-project-agentic-skills-top-10">github.com/OWASP/www-project-agentic-skills-top-10</a>；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>白皮書 PDF（含 AST05、AST08 的新增緩解項）：<a href="https://owasp.github.io/www-project-agentic-skills-top-10/assets/publications/ast10-top10-whitepaper-2.pdf">ast10-top10-whitepaper-2.pdf</a>；2026-10-26 讀取；公開審查中的 V1。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Agentic Skills Top 10 — CC BY-SA 4.0（README、專案頁、網站；白皮書 PDF 內文未見授權文字）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'a-ch3', topic: 'agentic-skills-top-10', mode: 'chapter',
+  questions: [
+    { id: 'a3q1', type: 'mc', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-controls-and-scenarios.html#ct-themes'}],
+      stem: '同事說：「我們要求所有技能都用 ed25519 簽章了，所以裝進來的技能一定是安全的。」依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，簽章能保證內容安全。', why: '官方明說簽章證明的是作者身分，不是安全性。' },
+        { text: '不完全：簽章證明作者是誰且可被撤銷，不證明內容安全；仍需要權限強制、隔離、掃描與治理。', correct: true, why: '符合 3.1 節：官方特別強調簽章證明作者，不證明內容安全。' },
+        { text: '不正確，簽章對技能完全沒有用。', why: '官方把簽章列為 AST01、AST02、AST07 的第一類控制；有用，只是不夠。' },
+        { text: '不正確，因為簽章只適用於程式碼，不適用於技能。', why: '官方建議簽章要涵蓋 SKILL.md 與其宣告的資源檔，不只是程式碼。' }
+      ],
+      summary: '簽章證明作者，不證明安全。' },
+    { id: 'a3q2', type: 'match', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-controls-and-scenarios.html#ct-themes'}],
+      stem: '把下列官方建議的控制，配對到它所屬的主題（作者整理的歸類）。',
+      cats: [
+        { id: 'sign', label: '來源與簽章' },
+        { id: 'pin', label: '內容釘選' },
+        { id: 'iso', label: '隔離' },
+        { id: 'gov', label: '清單、審批與稽核' }
+      ],
+      items: [
+        { text: '以不可變的 sha256 雜湊釘選已安裝的技能，而不是用版本範圍', answer: 'pin', why: 'AST07 的第一項。' },
+        { text: '預設以容器隔離技能執行，主機模式需明確同意', answer: 'iso', why: 'AST06 的第一項。' },
+        { text: '建立集中的技能清單，記錄名稱、版本、雜湊、安裝者與最近掃描狀態', answer: 'gov', why: 'AST09 的第一項。' },
+        { text: '要求簽章綁定可解析、可撤銷的發佈者身分', answer: 'sign', why: 'AST01 的第一項。' }
+      ],
+      summary: '每條都有一項首要控制可作為記憶錨點。' },
+    { id: 'a3q3', type: 'scn', lo: [3], refs: [{label: '3.3 情境 A', href: '03-controls-and-scenarios.html#ct-scn-a'}, {label: '3.2 圖 3-1', href: '03-controls-and-scenarios.html#ct-flow'}],
+      stem: '依本章，這位主管的結論有什麼問題？最先該補的是什麼？',
+      scenario: '梧葉物流（虛構）的 Agent 技能都已簽章、以雜湊釘選，並通過掃描。最近發現某個技能的行為偶爾和審查時不同。主管說：「雜湊完全一致，所以技能沒有被動過，一定是模型自己出錯，不用查技能了。」',
+      options: [
+        { text: '主管說得對，雜湊一致就代表一切沒變。', why: '雜湊只涵蓋技能這包檔案，不涵蓋技能在執行時才讀取的外部內容。' },
+        { text: '應該換成更大的模型，穩健性會提高。', why: '教材與官方 AST10 都沒有這樣的說法；問題在外部內容的完整性。' },
+        { text: '雜湊一致只代表技能包沒變。要檢查技能是否引用外部文件（AST05）：記錄並每次驗證其內容雜湊，或把內容內嵌進簽章過的技能包。', correct: true, why: '符合 3.3 節：簽章與釘選管不到執行時才讀取的外部內容。' },
+        { text: '應該停止使用所有技能。', why: '官方沒有這樣建議；要的是補上外部內容的驗證與其他控制。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 技能包的雜湊一致，說明技能這包檔案沒變。(2) 行為卻變了，對照圖 3-1 指向 AST05。(3) 簽章與釘選對外部網址在執行時回傳的內容什麼也沒說。</p><p><strong>結論：</strong>檢查外部引用，補上內容雜湊驗證或內嵌。對應教材：<a href="03-controls-and-scenarios.html#ct-scn-a">3.3 節</a>。</p>' },
+    { id: 'a3q4', type: 'mc', lo: [3], refs: [{label: '3.4 情境 B', href: '03-controls-and-scenarios.html#ct-scn-b'}],
+      stem: '依情境 B，為什麼官方把「集中技能清單」列為 AST09 的第一項控制？',
+      options: [
+        { text: '因為清單本身能阻擋惡意技能。', why: '清單是可見度，不會直接阻擋。' },
+        { text: '因為沒有清單就回答不了「我們有沒有受影響」，後續的審批、稽核與撤銷都需要先知道裝了什麼。', correct: true, why: '符合 3.4 節第 5 點。' },
+        { text: '因為清單是 CMDB 廠商要求的格式。', why: '官方只說要整合既有 CMDB 等工具，沒有這樣的理由。' },
+        { text: '因為清單可以取代簽章。', why: '兩者功能不同：簽章驗證來源，清單提供可見度。' }
+      ],
+      summary: '先有清單，才有後續控制的基礎。' }
+  ]
+});
+</script>
+</body>
+</html>

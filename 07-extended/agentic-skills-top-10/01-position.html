@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌與定位｜Agentic Skills Top 10｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP Agentic Skills Top 10 (AST10) 是什麼、技能夾在 Agent 架構的哪一層、與 MCP Top 10 和 Agentic Top 10 的分工，以及官方資料裡的兩處內部不一致。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="agentic-skills-top-10" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌與定位</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="index.html">主題首頁</a></li>
+</ul>
+<p class="lead">你已經知道 Agent 會呼叫工具，也聽過 MCP。但現在很多 Agent 還會載入「技能」：一個資料夾，裡面是給模型讀的指令，外加一些腳本與資源。AST10 就是專門談這一層的風險清單。這一章回答三件事：技能到底夾在架構的哪一層、AST10 跟你已經看過的清單怎麼分工、官方資料有哪兩處需要小心。</p>
+
+<h2 id="sk-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　OWASP Agentic Skills Top 10 一頁式全貌（2026-10-26 讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">名稱與縮寫</th><td>OWASP Agentic Skills Top 10，縮寫 AST10；條目編號 AST01–AST10（注意：這與 Agentic Top 10 的 ASI01–ASI10 是不同清單）</td></tr>
+<tr><th scope="row">官方自我定位</th><td>自稱針對 AI Agent 技能的「第一份完整資安框架」（"the first comprehensive security framework for AI agent skills"）。這是專案的自述，本教材沒有也無法驗證「第一份」</td></tr>
+<tr><th scope="row">層級與版本</th><td>owasp.org 專案頁：<strong>Incubator Project</strong>、類別 Documentation、Latest Version <strong>1.0-2026</strong></td></tr>
+<tr><th scope="row">最新狀態</th><td>專案網站的 Publication 頁寫：白皮書 V1 <strong>公開審查中</strong>（意見請寫在 Google Doc）。GitHub 最近的內容更新是 2026-08-11、08-12（標記白皮書為 V1、換新 PDF）。README 的狀態仍寫「Active Development → Launch Preparation」，更新日標 2026 年 3 月</td></tr>
+<tr><th scope="row">領導者</th><td>Ken Huang（Project Lead）、Fabio Cerullo（Co-Leader）</td></tr>
+<tr><th scope="row">涵蓋的生態</th><td>Publication 頁標示涵蓋四類技能格式：OpenClaw（SKILL.md YAML）、Claude Code（skill.json）、Cursor／Codex（manifest.json）、VS Code（package.json）</td></tr>
+<tr><th scope="row">授權</th><td>CC BY-SA 4.0（README、專案頁與網站的 License 段）。白皮書 PDF 內文沒有授權文字</td></tr>
+<tr><th scope="row">取得方式</th><td>GitHub 儲存庫（README 與 ast01.md 至 ast10.md）、專案網站、白皮書 PDF（66 頁）</td></tr>
+</tbody></table></div>
+<p>最重要的一行是「公開審查中」。它代表這份清單<strong>還在成形</strong>：你可以用它建立「技能層有哪些風險」的概念地圖，但別把它當成已定稿的標準。</p>
+
+<h2 id="sk-layer">1.2 技能夾在哪一層</h2>
+<p>白皮書的 Key Terminology 把四個容易混在一起的詞分開。以下用作者自己的話整理：</p>
+<ul>
+  <li><strong>技能 (Skill)：</strong>一個自成一體、Agent 可以自動發現的指令與資源包，核心是 <code>SKILL.md</code> 加上它的檔案，Agent 會把它載入脈絡 (context)。<code>SKILL.md</code> 開頭有一段中繼資料，稱為 frontmatter，載入器常在使用者動手之前就會解析它。</li>
+  <li><strong>工具 (Tool)：</strong>Agent 直接呼叫的單一函式。</li>
+  <li><strong>MCP 伺服器 (MCP server)：</strong>另一個行程，透過 Model Context Protocol 提供工具與資源。官方明說它由 MCP Top 10 涵蓋，<strong>不在 AST10 的範圍</strong>。</li>
+  <li><strong>外掛／擴充 (Plugin or extension)：</strong>特定宿主專用的安裝單位，可能打包一個或多個技能或工具。</li>
+</ul>
+<figure class="diagram">
+<pre class="mermaid" data-alt="分層示意：Agent 載入技能（SKILL.md 加資源，內含自然語言指令與可執行程式）；技能與 Agent 可以呼叫 MCP 伺服器與工具。技能層由 AST10 涵蓋，MCP 伺服器由 MCP Top 10 涵蓋，Agent 本身的行為風險由 Agentic Top 10 涵蓋。">
+flowchart LR
+  AG["Agent（LLM 加執行環境）<br>Agentic Top 10"]
+  SK["技能 Skill<br>SKILL.md + 資源<br>自然語言指令 + 可執行程式<br>AST10"]
+  MCP["MCP 伺服器與工具<br>MCP Top 10"]
+  AG -->|"載入進脈絡"| SK
+  AG -->|"以 MCP 協定呼叫"| MCP
+  SK -.->|"指示 Agent 使用"| MCP
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class SK author
+</pre>
+<figcaption><strong>圖 1-1　技能在 Agent 架構中的位置。</strong>三份清單各管哪一層，以及「MCP 伺服器由 MCP Top 10 涵蓋」是官方說法；圖中的箭頭與分層是依官方術語<strong>重新繪製的簡化版，屬作者整理，非官方</strong>。虛線表示技能的指令可能要求 Agent 去用工具，這一條連線是作者為了說明加的。</figcaption>
+</figure>
+
+<h2 id="sk-compare">1.3 與相鄰清單的分工</h2>
+<div class="table-wrap"><table>
+<caption>表 1-2　AST10 與相鄰清單的定位比較（「適合的用途」一列為作者整理，非官方）</caption>
+<thead><tr><th scope="col">面向</th><th scope="col">AST10</th><th scope="col">MCP Top 10</th><th scope="col">Agentic Top 10 2026</th></tr></thead>
+<tbody>
+<tr><th scope="row">談什麼</th><td>技能層：技能這包指令與資源實際做什麼</td><td>MCP 系統的風險</td><td>自主 Agent 型系統的十項風險</td></tr>
+<tr><th scope="row">官方的一句話</th><td>"MCP = how the model talks to tools; AST10 = what those tools actually do"</td><td>（模型如何與工具溝通的協定層）</td><td>（Agent 的行為與委派）</td></tr>
+<tr><th scope="row">條目編號</th><td>AST01–AST10</td><td>MCP01:2025–MCP10:2025</td><td>ASI01–ASI10</td></tr>
+<tr><th scope="row">成熟度</th><td>Incubator；白皮書 V1 公開審查中</td><td>仍在 Beta 階段（見 AI Exchange 主題）</td><td>Version 2026（PDF 封面 2025 年 12 月）</td></tr>
+<tr><th scope="row">適合的用途</th><td>審查與管理 Agent 要載入的技能</td><td>審查 MCP 伺服器</td><td>評估 Agent 整體行為風險</td></tr>
+</tbody></table></div>
+
+<h2 id="sk-concept">1.4 核心概念：技能為什麼不是「又一種套件」</h2>
+<div class="concept">
+<h3 id="c-skill">指令與程式住在同一個檔案</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>技能同時攜帶兩種「可執行」的東西：<strong>程式碼層</strong>（腳本、一般程式的函式呼叫）與<strong>自然語言指令層</strong>（markdown 散文，教 Agent 做什麼）。官方每一條都用「Why It's Unique to Skills」說明這件事。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>套件管理生態有簽章、鎖定檔、掃描器等成熟機制，但它們是為「程式碼」設計的。技能的另一半是文字，而且載入後以 Agent 的完整權限被「照著做」。官方條目指出：沒有可以釘住一份文件雜湊值的欄位，也沒有「散文的鎖定檔」。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>攻擊者不一定要寫惡意程式；一段看似無害的指令，叫 Agent 把某個檔案送到某個位址，就能達到與一行腳本相同的效果，卻不含任何可被特徵比對的程式碼。教材不提供任何實際內容。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>沒有單一解。官方分散在十條裡：來源可驗證（簽章、釘選）、權限最小化並在執行期強制、隔離、掃描指令層與程式碼層、治理與稽核。第 3 章會整理這些主題。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「技能就是提示詞，不是軟體，所以不用做供應鏈管理。」技能會以宿主 Agent 的權限執行或影響執行；官方的立場正好相反，把它當作需要簽章、釘選、審查的軟體製品。另一個誤解是：「用 MCP 就等於處理了技能風險。」官方明說 MCP 談的是溝通方式，技能實際做的事不在 MCP 的範圍。</dd>
+</dl>
+</div>
+
+<h2 id="sk-conflict">1.5 官方資料裡的兩處內部不一致</h2>
+<p>這份文件還很新，且有不同版本的內容並存。你在引用時，必須先知道這兩點，否則容易引用到官方自己已經改掉的說法。</p>
+<div class="callout official unsure">
+  <p class="callout-title">不一致 1：嚴重度</p>
+  <p>GitHub 的 README 與每個條目檔（ast01.md 到 ast10.md）都標了嚴重度：AST01、AST02 為 Critical，AST03 到 AST06 為 High，AST07 到 AST10 為 Medium。但較新的白皮書（GitHub 2026-08 更新）明說：<strong>不為個別風險指派嚴重度</strong>，要等 AIVSS v1（預計 2026 年底）可用之後再說。依「以最新來源為準」，本教材<strong>不採用這些嚴重度，也不依它排序</strong>；兩處的差別記在<a href="references.html">參考資料頁</a>。</p>
+</div>
+<div class="callout official unsure">
+  <p class="callout-title">不一致 2：對 LLM Top 10 的編號沒有帶年份</p>
+  <p>白皮書每條的 OWASP Mapping 寫 "LLM03 (Supply Chain)"、"LLM09 (Misinformation / Excessive Agency)"、"LLM08 (Excessive Agency)" 這類編號，<strong>都沒有年份</strong>。同樣是 Excessive Agency，有的條目寫 LLM09、有的寫 LLM08；對照 LLM Top 10 2025 與 2026，兩者的 Excessive Agency 編號分別是 LLM06 與 LLM03，都對不上。這部分在第 4 章處理，這裡只先提醒：<strong>別照抄 AST10 裡的 LLM 編號</strong>。</p>
+</div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>AST10 談的是 Agent 載入的「技能」這一層；官方口訣是 MCP 管溝通方式、AST10 管那些工具實際做什麼。MCP 伺服器本身由 MCP Top 10 涵蓋。</li>
+  <li>現行標示：Incubator、1.0-2026；白皮書 V1 公開審查中，不是定稿。</li>
+  <li>技能把自然語言指令與可執行程式放在同一個製品，這是它與一般套件供應鏈最大的差別。</li>
+  <li>官方資料有兩處內部不一致：嚴重度（GitHub 有、白皮書說不指派）與 LLM 編號（沒有年份且彼此不一致）。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能用一句話說明 AST10、MCP Top 10、Agentic Top 10 各管哪一層。</li>
+  <li>我知道為什麼技能不能只當作「提示詞」處理。</li>
+  <li>我知道不該引用 AST10 的嚴重度排序，也不該照抄它的 LLM 編號。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-ten-risks.html">第 2 章　十項風險與歸類</a>：用官方的四個面向記住 AST01–AST10，並學會用官方決策樹歸類一個發現。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Agentic Skills Top 10 專案頁（Incubator、Latest Version 1.0-2026、領導者、Mental Model）：<a href="https://owasp.org/projects/agentic-skills-top-10">owasp.org/projects/agentic-skills-top-10</a>（舊網址 <code>/www-project-agentic-skills-top-10/</code> 轉址至此）；2026-10-26 讀取。</li>
+    <li>GitHub 儲存庫 README 與 ast01.md 至 ast10.md：<a href="https://github.com/OWASP/www-project-agentic-skills-top-10">github.com/OWASP/www-project-agentic-skills-top-10</a>；README 標示 version 1.0-2026、updated March 2026、CC BY-SA 4.0；2026-10-26 讀取；最近提交 2026-08-12。</li>
+    <li>專案網站（Publication 頁：V1 公開審查中）：<a href="https://owasp.github.io/www-project-agentic-skills-top-10/">owasp.github.io/www-project-agentic-skills-top-10/</a>；2026-10-26 讀取。</li>
+    <li>白皮書 PDF（66 頁，Key Terminology 與 Executive Summary）：<a href="https://owasp.github.io/www-project-agentic-skills-top-10/assets/publications/ast10-top10-whitepaper-2.pdf">ast10-top10-whitepaper-2.pdf</a>；2026-10-26 讀取；PDF 內文未見授權文字，授權以 README 與專案頁為準。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Agentic Skills Top 10 — CC BY-SA 4.0（README、專案頁、網站 License 段；白皮書 PDF 內文未見授權文字）；MCP Top 10、Agentic Top 10 僅用於對照，授權見其各自頁面。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'a-ch1', topic: 'agentic-skills-top-10', mode: 'chapter',
+  questions: [
+    { id: 'a1q1', type: 'mc', lo: [1], refs: [{label: '1.2 技能夾在哪一層', href: '01-position.html#sk-layer'}, {label: '1.3 表 1-2', href: '01-position.html#sk-compare'}],
+      stem: '團隊說：「我們的 MCP 伺服器都依 MCP Top 10 審查過了，所以 Agent 載入的技能也沒問題。」依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，MCP Top 10 已經涵蓋所有 Agent 擴充元件。', why: '官方明說 MCP 談的是模型如何與工具溝通；技能實際做什麼是 AST10 的範圍。' },
+        { text: '不完全：MCP 伺服器由 MCP Top 10 涵蓋，技能這一層（SKILL.md 與其資源）由 AST10 處理，需另外審查。', correct: true, why: '符合 1.2 節：官方明說 MCP 伺服器由 MCP Top 10 涵蓋，不在 AST10 範圍；反過來技能也不在 MCP 審查範圍內。' },
+        { text: '不正確，因為技能其實就是 MCP 伺服器的另一個名稱。', why: '白皮書把技能（指令與資源包）和 MCP 伺服器（另一個行程）列為不同概念。' },
+        { text: '不正確，因為 AST10 已經取代了 MCP Top 10。', why: '沒有任何官方文字說取代；兩者談不同層。' }
+      ],
+      summary: 'MCP Top 10 管 MCP 伺服器；AST10 管技能層，需分別審查。' },
+    { id: 'a1q2', type: 'mc', lo: [1], refs: [{label: '1.5 不一致 1：嚴重度', href: '01-position.html#sk-conflict'}],
+      stem: '簡報寫：「AST01 與 AST02 是 Critical，所以我們先處理這兩條，其他 Medium 的可以延後。」依本章，這句話有什麼問題？',
+      options: [
+        { text: '沒有問題，官方明確用嚴重度排序十項風險。', why: '官方資料不一致：較新的白皮書明說不指派個別風險的嚴重度。' },
+        { text: '問題是 Critical 其實是 AST03 與 AST04。', why: '本章列的 Critical 就是 GitHub 上的 AST01 與 AST02；問題不在對錯，而在這個嚴重度本身不是最新的官方立場。' },
+        { text: '嚴重度欄位只出現在 GitHub 的條目檔與 README；較新的白皮書明說不指派，要等 AIVSS v1。引用應註明這個不一致，優先順序要依自己的系統情況判斷。', correct: true, why: '符合 1.5 節不一致 1，並依「以最新來源為準」不採用嚴重度排序。' },
+        { text: '問題是 Medium 的風險不需要處理。', why: '白皮書並沒有這樣的說法。' }
+      ],
+      summary: '嚴重度在不同官方來源有出入；不依它排序。' },
+    { id: 'a1q3', type: 'scn', lo: [1], refs: [{label: '1.1 表 1-1', href: '01-position.html#sk-onepage'}, {label: '1.5 兩處不一致', href: '01-position.html#sk-conflict'}],
+      stem: '依本章，這份內部規範的引用有哪些地方要修正？',
+      scenario: '千葉科技（虛構）的資安團隊在規範寫：「依 OWASP Agentic Skills Top 10（2026 年定稿標準），技能風險的優先順序為 AST01 > AST02 > … > AST10；對應 LLM Top 10 的 LLM09 (Excessive Agency)。」審查人員查到：專案網站寫白皮書 V1 公開審查中；白皮書不指派嚴重度；白皮書對 Excessive Agency 同時寫了 LLM09 與 LLM08。',
+      options: [
+        { text: '沒有問題，AST 編號本來就是優先順序。', why: '官方沒有說編號是優先順序，且白皮書明說不指派嚴重度。' },
+        { text: '只需要把「2026 年」改成「2025 年」。', why: '版本標示是 1.0-2026；年份不是問題所在。' },
+        { text: '只需要刪掉 LLM09 的對應。', why: '「定稿標準」與「優先順序」也沒有官方依據。' },
+        { text: '要修正三處：改為「Incubator、1.0-2026、白皮書 V1 公開審查中」而非「定稿標準」；刪除依編號排序的優先順序；LLM 編號要重新對照 LLM Top 10 2026 的名稱，並寫 LLMnn:2026，不照抄 AST10 的編號。', correct: true, why: '符合 1.1 節的成熟度與 1.5 節的兩處不一致。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 專案網站寫白皮書 V1 公開審查中，專案頁是 Incubator，所以不能稱「定稿標準」。(2) 白皮書明說不指派嚴重度，編號順序也沒有被官方定義成優先順序。(3) 白皮書的 LLM 編號沒有年份且彼此不一致（Excessive Agency 同時寫 LLM09 與 LLM08），與 LLM Top 10 2025、2026 都對不上。</p><p><strong>結論：</strong>三處都要改。對應教材：<a href="01-position.html#sk-onepage">1.1 節</a>、<a href="01-position.html#sk-conflict">1.5 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

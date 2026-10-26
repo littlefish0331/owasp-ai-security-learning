@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　第三方執行證據怎麼驗｜AI Agent Security Cheat Sheet｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Verifying Third-Party Agent Execution Evidence Cheat Sheet：獨立可重驗、供應者主張、無資訊三種結論，以及判斷一份第三方執行紀錄的六個問題與四個工作範例。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="ai-agent-security-cheat-sheet" data-page="04-third-party-evidence.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　第三方執行證據怎麼驗</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="03-see-and-test.html">第 3 章</a></li>
+</ul>
+<p class="lead">第 3 章的「看見」假設紀錄是你自己的。但整合第三方 MCP 伺服器、外部 agent 或雲端服務時，你拿到的常是<strong>對方給的執行紀錄</strong>，甚至附了簽章。Verifying Third-Party Agent Execution Evidence Cheat Sheet 的出發點很簡單：<strong>供應者可以簽署一份漏列動作、甚至描述根本沒發生過的紀錄</strong>。所以每次只驗證一個具體的主張，並問誰有能力偽造支撐它的證據。</p>
+
+<h2 id="e-split">4.1 先分清三種結論</h2>
+<p>文件借用軟體供應鏈（SLSA 驗證指引）的區分：<strong>檢查簽章與成品身分</strong>，和<strong>決定信任哪些產出者</strong>是兩件事。套用到執行紀錄，每個問題的結果只有三種：</p>
+<div class="table-wrap"><table>
+<caption>表 4-1　三種結論與各自的意義（改寫自文件的結果表）</caption>
+<thead><tr><th scope="col">結論</th><th scope="col">證據支持什麼</th></tr></thead>
+<tbody>
+<tr><th scope="row">獨立可重驗 <br>(Independently re-checkable)</th><td>另一位審查者能用<strong>供應者並非獨占控制</strong>的、經過驗證的證據與信任材料，驗證所述的那個屬性。它<strong>不</strong>證明執行的其他屬性</td></tr>
+<tr><th scope="row">供應者主張 <br>(Supplier assertion)</th><td>供應者聲稱有該屬性，但缺少獨立證據。這類紀錄仍可用於除錯與日常維運</td></tr>
+<tr><th scope="row">無資訊 <br>(No information)</th><td>證據讓你無從評估該屬性。<strong>不要因此推論這次執行是乾淨的</strong></td></tr>
+</tbody></table></div>
+<p>文件的底線是：簽章可以說明<strong>誰</strong>做了這個斷言，卻不能說明這個斷言<strong>是真的</strong>。所以涉及該供應者的事件歸因或爭議，不能只靠供應者主張來定案。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="對一個屬性分類的流程：先問是否有經過驗證的證據，且信任材料不由供應者獨占控制。有，結論是獨立可重驗，只限這一個屬性。沒有，再問供應者是否主張了這個屬性：有主張，結論是供應者主張，可用於除錯與日常維運；沒有可評估的證據，結論是無資訊，不要推論這次執行是乾淨的。">
+flowchart TB
+  P["要確認的一個屬性<br>簽署者、時效、對象、完整性"] --> Q1{"有經過驗證的證據，<br>且信任材料不由<br>供應者獨占控制？"}
+  Q1 -->|"是"| A["獨立可重驗<br>只限這一個屬性"]
+  Q1 -->|"否"| Q2{"供應者有主張<br>這個屬性？"}
+  Q2 -->|"有"| B["供應者主張<br>可用於除錯與日常維運"]
+  Q2 -->|"沒有可評估的證據"| C["無資訊<br>不要推論這次執行是乾淨的"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class P,Q1,Q2 author
+</pre>
+<figcaption><strong>圖 4-1　對一個屬性做分類。</strong>三種結論與其定義是官方；把它們串成一個決策流程是<span class="tag author">作者整理，非官方</span>（虛線框的問題節點）。重點是分類單位是「一個屬性」，不是「一份紀錄」。</figcaption>
+</figure>
+
+<h2 id="e-six">4.2 六個問題</h2>
+<p>文件列出六個問題。下表把每個問題的弱點、需要的獨立證據與仍不能推論的範圍並排（皆為改寫）。</p>
+<div class="table-wrap"><table>
+<caption>表 4-2　審查第三方執行紀錄的六個問題（改寫自 Cheat Sheet）</caption>
+<thead><tr><th scope="col">問題</th><th scope="col">單靠供應者會有的弱點</th><th scope="col">要有什麼才算可獨立重驗</th><th scope="col">仍不能推論的</th></tr></thead>
+<tbody>
+<tr><th scope="row">1 誰能寫入或改動它？</th><td>元件、主機、記錄器、營運者、簽章金鑰持有者都列出來，且要數「獨立的當事方」，同一供應者下的多個服務仍是一方。只吃元件資料的記錄器，保存的是元件的說法；會對元件交來的任何內容簽章的服務，並未獨立確認內容</td><td>有一個不靠元件自己回報就取得事件資料的觀察者；它的紀錄保存在元件與供應者都改不了的地方；供應者紀錄與你控制的閘道或其他邊界的呼叫紀錄對照</td><td>邊界記錄器只涵蓋穿過邊界的東西：看不到本機檔案寫入或程序內動作，沒有明文也看不進加密的請求內容。無法獨立觀察時，歸為供應者主張並限制據此的決定</td></tr>
+<tr><th scope="row">2 時間證據證明了什麼？</th><td>供應者寫的時間戳是供應者主張</td><td>送出一個新的、不可預測的挑戰值 (Nonce)，要求它與執行主張一起被簽署；驗簽章並比對回傳的挑戰值</td><td>相符的挑戰值只界定「簽署發生在挑戰之後」，不顯示各項主張何時被擷取；受信任時間戳只證明紀錄「在某時之前已存在」。不要把新鮮簽章或透明日誌收錄說成「即時擷取」</td></tr>
+<tr><th scope="row">3 它指的是預期的成品與這次執行嗎？</th><td>對別的成品或別次執行有效的簽章，回答不了你的問題</td><td>自行重算預期成品的抗碰撞摘要值並與簽署的主體比對（預期成品或摘要值要獨立於被審的報告取得）；另外把簽署的執行識別碼或挑戰值對上你要審的那次；並檢查涵蓋哪些輸入（工具定義、設定、提示、模型版本、政策）</td><td>摘要值相符只確立成品身分，執行識別碼相符只確立「供應者主張描述的是哪次執行」；兩者都不證明所述動作真的發生。成品摘要值可在許多次執行間不變，所以不能當作唯一的執行綁定</td></tr>
+<tr><th scope="row">4 漏掉的事件看得出來嗎？</th><td>供應者自己維護的序號，只計算它選擇納入的事件</td><td>界定執行或時間窗，以及獨立觀察者有條件看到的事件；用供應者不能悄悄重定義的預期事件清單或每次執行序列來對帳；若用透明日誌 (Transparency Log)，要驗收錄與一致性證明，並檢查如何偵測日誌對不同用戶端呈現不一致的檢視（例如在獨立觀察者之間比對簽署的日誌狀態）</td><td>透明日誌能讓事後修改被發現，無法揭露從未被提交的事件，日誌營運者仍是信任相依；日誌的總筆數不是某次執行的事件數；注入一個預期事件並在回傳紀錄中找到它，只是抽查，不是完整性測試</td></tr>
+<tr><th scope="row">5 記錄或傳送失敗時會怎樣？</th><td>元件可能丟棄事件、緩衝重送，或停止執行；緩衝溢出時的行為也要看</td><td>在你控制的環境中中斷記錄路徑，觀察執行是否繼續、缺口是否可見；無法測試時，要求實際的中斷事故或演練證據；保存元件控制範圍以外觀察到的傳送失敗</td><td>只有文件說明仍是供應者主張；缺口標記若只由元件寫入，仍是它的主張；一次測試只確立該條件下的行為；可能漏事件的記錄器交出空報告，不能據此宣稱乾淨</td></tr>
+<tr><th scope="row">6 審查者不靠偽造能力也驗得了嗎？</th><td>金鑰跟著紀錄一起打包，並不因為「能驗證這份紀錄」就成為信任錨 (Trust Anchor)；問供應者自己的服務「這份紀錄有效嗎」，來源仍是供應者</td><td>用維護中的驗證器，並獨立於紀錄之外設定可信的簽署者身分、金鑰或憑證根，以及允許的演算法；驗證憑證路徑與撤銷資訊</td><td>公開金鑰驗證不需要簽署祕密；但訊息驗證碼 (MAC) 的驗證需要共享祕密，持有者也能製造，無法在這些持有者之間歸屬作者。不要只因密碼運算成功就接受簽章</td></tr>
+</tbody></table></div>
+<p>問題 5 還有一個容易漏掉的限定：文件說，每次記錄失敗都讓執行停止並不一定恰當，因為那會把記錄中斷變成可用性故障；要依動作的風險選擇行為，並讓證據的遺失看得見。這與第 2 章「高衝擊動作在稽核紀錄失敗時失效即拒絕」並不矛盾：兩者是依動作風險分級選擇，不是一律停止或一律放行（<span class="tag author">作者整理，非官方</span>）。</p>
+<p>文件還指出：這些檢查評估的是<strong>單筆紀錄</strong>，不能確立一連串委派動作的端到端完整性。要產生並保護自己的日誌請看 Logging Cheat Sheet；agent 與伺服器之間選配的訊息完整性與重放保護 (Replay Protection)，見 MCP Security Cheat Sheet 的第 7 項，本站的對應說明在<a href="../mcp-security/05-integration.html#n-rc">MCP 安全第 5 章</a>。</p>
+
+<h2 id="e-concept">4.3 核心概念：簽章證明誰說的，不證明說的是真的</h2>
+<div class="concept">
+<h3 id="c-sign">可獨立重驗要看「誰能偽造證據」</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>每個屬性（簽署者、時效、對象、完整性、失敗行為）各自問一次：<strong>支撐它的證據與信任材料，供應者能不能單獨控制或偽造？</strong>能，就是供應者主張；不能且已驗證，才是獨立可重驗；沒有可評估的證據，就是無資訊。</dd>
+  <dt data-n="2">為什麼需要</dt>
+  <dd>在軟體供應鏈裡「簽章驗證通過」常被當成最後一關。文件指出，簽章只確立簽署者做了斷言；斷言內容可以漏列動作、描述沒發生過的執行，或是別次執行的真紀錄。</dd>
+  <dt data-n="3">怎麼被誤用（概念層級）</dt>
+  <dd>用供應者的驗證服務來驗它自己的紀錄；把隨紀錄附上的金鑰當成信任錨；把穩定的成品摘要值當作「就是這次執行」；因為日誌收錄證明或簽章新鮮，就說紀錄是即時擷取；因為紀錄裡沒有某個事件，就說它沒發生。</dd>
+  <dt data-n="4">怎麼用</dt>
+  <dd>把驗證政策與預期值放在被審證據之外；每個結果都寫明「驗了哪個屬性」與「信任假設與限制」；盡量用你控制的觀察點（例如閘道）對帳；在受控環境練習記錄失敗並保存結果。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「簽章有效就是證據。」簽章有效只回答「誰簽的」。另一個誤解是：「全部不可信，所以這些紀錄沒用。」文件明說供應者主張仍可用於除錯與日常維運；它要你做的是<strong>不拿它來單獨定案</strong>。</dd>
+</dl>
+</div>
+
+<h2 id="e-examples">4.4 文件的四個工作範例</h2>
+<p>文件最後用一張表示範「做完這些檢查之後，可以下什麼結論」，而不是替某種檔案格式背書：</p>
+<div class="table-wrap"><table>
+<caption>表 4-3　工作範例：證據與檢查、可下的結論、仍未確立的事（改寫）</caption>
+<thead><tr><th scope="col">證據與已做的檢查</th><th scope="col">可以下的結論</th><th scope="col">仍未確立</th></tr></thead>
+<tbody>
+<tr><th scope="row">供應者匯出的追蹤，沒有任何獨立佐證</th><td>供應者提供了這些主張</td><td>動作是否發生、紀錄是否完整</td></tr>
+<tr><th scope="row">用你信任的簽署者驗過的簽署紀錄，成品摘要值與執行識別碼也符合預期</th><td>該簽署者對預期的成品與執行，斷言了這些位元組</td><td>斷言是否為真、是否完整</td></tr>
+<tr><th scope="row">同一份紀錄，再加上已驗證的日誌收錄與一致性證據，以及獨立受信任的時間戳</th><td>簽署紀錄在所支持的時間之前已存在，且被收錄在檢查過的日誌狀態裡</td><td>事件何時被擷取、是否發生、提交前是否有遺漏</td></tr>
+<tr><th scope="row">紀錄與獨立邊界觀察者擷取的事件對帳</th><td>紀錄是否包含該觀察者在所述時間窗內看到的事件</td><td>內部動作、其他邊界、觀察者涵蓋範圍以外的事件</td></tr>
+</tbody></table></div>
+<p>由上往下，每多一項<strong>獨立</strong>的證據，可下的結論才多一點；而最底下那一列的結論也只限於「觀察者看得到的範圍」。</p>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>三種結論：獨立可重驗、供應者主張、無資訊；分類單位是「一個屬性」，不是「一份紀錄」。</li>
+  <li>簽章證明誰說的，不證明說的是真的；供應者主張仍可用於除錯與日常維運，只是不能單獨用來定案。</li>
+  <li>六個問題：誰能寫入或改動、時間證據證明什麼、是否指向預期的成品與執行、漏掉的事件看不看得出、記錄失敗時會怎樣、審查者能否不靠偽造能力驗證。</li>
+  <li>四組常被混淆的東西：成品摘要值與執行識別碼；新鮮簽章與即時擷取；抽查與完整性測試；日誌總筆數與某次執行的事件數。</li>
+  <li>驗證政策與預期值要放在被審證據之外；隨紀錄附上的金鑰不是信任錨；MAC 無法在共享祕密持有者間歸屬作者。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能對一份第三方紀錄的某個屬性，說出它是獨立可重驗、供應者主張還是無資訊，並說明理由。</li>
+  <li>我能說明為什麼挑戰值只界定簽署時間、為什麼摘要值不等於執行識別碼。</li>
+  <li>我能說出邊界觀察者的涵蓋範圍限制，並避免把空報告說成乾淨。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p><a href="05-integration.html">第 5 章　跨文件整合與收尾</a>：把兩份 Cheat Sheet 放回 Cheat Sheet 系列與 04 階段，並用一個虛構的第三方 MCP 伺服器審查情境，把六個問題套用一次。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series, <em>Verifying Third-Party Agent Execution Evidence Cheat Sheet</em>：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Verifying_Third_Party_Agent_Execution_Evidence_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；無版本號；2026-10-26 讀取；GitHub 提交紀錄 2026-10-02（建立）至 2026-10-03；CC BY-SA 4.0。</li>
+    <li>該文件的 References：SLSA Verifying Artifacts（<a href="https://slsa.dev/spec/v1.2/verifying-artifacts">slsa.dev/spec/v1.2/verifying-artifacts</a>）、RFC 9334 與 RFC 9162（IETF）。本教材只轉述 Cheat Sheet 對它們的說法，沒有讀規格本身。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series（Verifying Third-Party Agent Execution Evidence）— CC BY-SA 4.0（站台頁尾與儲存庫 LICENSE.md）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'aas-ch4', topic: 'ai-agent-security-cheat-sheet', mode: 'chapter',
+  questions: [
+    { id: 'a4q1', type: 'mc', lo: [4], refs: [{label: '4.3 核心概念', href: '04-third-party-evidence.html#e-concept'}, {label: '4.1 三種結論', href: '04-third-party-evidence.html#e-split'}],
+      stem: '供應者說：「我們的執行紀錄每筆都有數位簽章，驗證通過，所以內容可信。」依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，簽章通過就代表內容為真。', why: '簽章只確立簽署者做了斷言，不確立斷言為真。' },
+        { text: '簽章只說明「誰」做了這個斷言；紀錄可能漏列動作或描述沒發生的執行。要驗證的是具體的屬性，且證據不能由供應者獨占。', correct: true, why: '符合 4.3 節。' },
+        { text: '簽章完全沒有用，應該忽略所有紀錄。', why: '供應者主張仍可用於除錯與日常維運；它只是不能單獨用來定案。' },
+        { text: '只要換一家簽章服務商就可以了。', why: '若簽章服務會對元件交來的任何內容簽章，換服務商也沒有獨立確認內容。' }
+      ],
+      summary: '簽章證明誰說的，不證明說的是真的。' },
+    { id: 'a4q2', type: 'mc', lo: [4], refs: [{label: '4.2 表 4-2（問題 2）', href: '04-third-party-evidence.html#e-six'}],
+      stem: '審查者送出一個新的挑戰值，供應者回傳的簽署紀錄包含相符的挑戰值。這個結果最多能支持下列哪一項結論？',
+      options: [
+        { text: '紀錄裡的每個事件都是即時擷取的。', why: '相符的挑戰值不顯示各項主張何時被擷取。' },
+        { text: '紀錄是完整的，沒有遺漏任何事件。', why: '時間性質與完整性是不同的屬性。' },
+        { text: '供應者的時間戳可以信任。', why: '供應者寫的時間戳仍是供應者主張。' },
+        { text: '簽署發生在挑戰產生之後。', correct: true, why: '這是文件說的：挑戰值界定簽署時間的下界，僅此而已。' }
+      ],
+      summary: '挑戰值只界定「簽署在挑戰之後」。' },
+    { id: 'a4q3', type: 'match', lo: [4], refs: [{label: '4.2 表 4-2', href: '04-third-party-evidence.html#e-six'}, {label: '4.4 表 4-3', href: '04-third-party-evidence.html#e-examples'}],
+      stem: '把下列審查結果配對到最恰當的結論分類。',
+      cats: [
+        { id: 'indep', label: '獨立可重驗（僅限所述屬性）' },
+        { id: 'supplier', label: '供應者主張' },
+        { id: 'none', label: '無資訊' }
+      ],
+      items: [
+        { text: '供應者的文件說記錄路徑中斷時會緩衝重送，但審查方沒有測過', answer: 'supplier', why: '單靠文件仍是供應者主張。' },
+        { text: '審查方的閘道紀錄了穿過邊界的 3 次呼叫，供應者紀錄只列 2 次', answer: 'indep', why: '對帳證明紀錄缺了觀察者看到的事件；但結論僅限於觀察者的涵蓋範圍。' },
+        { text: '想知道供應者內部的本機檔案寫入，但審查方只有閘道，且供應者的紀錄也未提到這類動作', answer: 'none', why: '邊界記錄器看不到內部動作，沒有可評估的證據，不要推論乾淨。' }
+      ],
+      summary: '分類單位是屬性；沒有可評估的證據就是無資訊。' },
+    { id: 'a4q4', type: 'scn', lo: [4], refs: [{label: '4.2 表 4-2（問題 3）', href: '04-third-party-evidence.html#e-six'}, {label: '4.4 表 4-3', href: '04-third-party-evidence.html#e-examples'}],
+      stem: '依本章，這個審查結論有什麼問題？',
+      scenario: '浪花旅遊（虛構）請第三方供應者執行一次訂位 agent 的測試，供應者回傳一份簽署紀錄。審查員用自己信任的簽署者驗證通過，並確認紀錄中的成品摘要值與預期相符。他在報告寫：「已證實本次測試中，agent 沒有送出任何付款請求。」',
+      options: [
+        { text: '沒有問題，簽章與摘要值都符合預期。', why: '兩者只確立簽署者與成品身分，不證明動作的有無。' },
+        { text: '結論保守過頭，簽章通過就可以說執行乾淨。', why: '文件明說不要因缺少紀錄或簽章有效就推論乾淨。' },
+        { text: '結論過度：簽章與摘要值只確立「該簽署者對預期成品斷言了這些位元組」；摘要值也不是執行識別碼，沒有核對是這次執行；「沒有付款請求」要靠獨立觀察者（如自家閘道）對帳，且只限於它看得到的範圍。', correct: true, why: '符合表 4-3 第二列與問題 3、4。' },
+        { text: '只需要再驗一次簽章。', why: '重複驗同一個屬性不會增加其他屬性的證據。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 簽章通過、摘要值相符，對應表 4-3 的第二列：簽署者斷言了這些位元組。(2) 摘要值可在許多次執行間不變，不能當作唯一的執行綁定；還要核對執行識別碼或挑戰值。(3) 「沒有付款請求」是關於完整性的主張，要靠獨立觀察者對帳，且只限它涵蓋的範圍。</p><p><strong>結論：</strong>把報告改為「簽署者對預期成品斷言了這些內容；是否發生、是否完整未確立」，並補上對帳。對應教材：<a href="04-third-party-evidence.html#e-six">4.2 節</a>、<a href="04-third-party-evidence.html#e-examples">4.4 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

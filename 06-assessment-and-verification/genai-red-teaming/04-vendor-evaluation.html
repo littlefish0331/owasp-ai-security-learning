@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　評估紅隊廠商與工具｜GenAI 紅隊演練｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP Vendor Evaluation Criteria for AI Red Teaming Providers &amp; Tooling：簡單與進階 GenAI 系統、十三個評估類別、顧問與自動化工具的比較、常見陷阱與探索問題；附一個只看越獄分數的虛構採購情境，以及與其他文件的對應。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="genai-red-teaming" data-page="04-vendor-evaluation.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　評估紅隊廠商與工具</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4（含 LO1 的跨文件對應）</li>
+  <li>前置：<a href="03-phases-5-8.html">第 3 章</a>（測試判準、可重現性、ASR 與預算）</li>
+</ul>
+<p class="lead">前三章假設你自己做紅隊。但很多組織會採購：請顧問，或買自動化測試工具。問題是，市面上不少服務只是把公開的越獄提示詞跑一遍。Vendor Evaluation Criteria 就是給決策者用的「怎麼分辨」指南。它的讀者是採購者，所以本章讀起來像採購檢核表，每一項都對應前面你學過的概念。</p>
+
+<h2 id="vd-scope">4.1 先分清楚你的系統屬於哪一類</h2>
+<p>文件把被測系統分成兩類，且每個評估類別都對兩類各給一套期望：</p>
+<ul>
+  <li><strong>簡單 GenAI 系統：</strong>客服聊天機器人、內部 LLM 副駕駛、工作流程助理、FAQ 機器人、RAG 與檢索式問答。典型風險：越獄、有害內容、幻覺、洩漏、內部資料誤用、行為不一致、角色操控。</li>
+  <li><strong>進階 GenAI 系統：</strong>原生工具呼叫、經由 MCP 暴露工具、多代理編排與協作（含 A2A 協定）、自主或角色式 agent、串接下游動作的工作流、持久記憶、與營運自動化整合。典型風險：不安全的工具執行、工具遮蔽、能力升級、agent 間污染、訊息傳遞弱點、記憶與上下文污染、資料外洩。</li>
+</ul>
+<p>文件還把廠商分成三種：專做聊天機器人／基本 LLM 的紅隊專家（偏模型與應用層互動）、AI 紅隊顧問（人類對手，擅長複雜多步驟發現、威脅建模與突發行為分析）、自動化 AI 紅隊工具（規模化跑大批測試，常接 CI/CD 做 24/7 持續測試）。文件<strong>不</strong>處理用 AI 做傳統基礎設施、網路或社交工程紅隊的廠商。</p>
+
+<h2 id="vd-criteria">4.2 十三個評估類別，與綠旗、紅旗</h2>
+<div class="table-wrap"><table>
+<caption>表 4-1　十三個評估類別（Vendor Evaluation Criteria 第 3 節，以一句話改寫）</caption>
+<thead><tr><th scope="col">類別</th><th scope="col">要問的核心問題（改寫）</th></tr></thead>
+<tbody>
+<tr><th scope="row">3.1 技術能力</th><td>懂不懂你的架構？進階系統要懂工具呼叫、MCP 內部、多代理與有狀態互動</td></tr>
+<tr><th scope="row">3.2 方法與涵蓋</th><td>測試是否依你的資料與用例客製，還是通用的越獄包？</td></tr>
+<tr><th scope="row">3.3 對抗創意與領域專長</th><td>能否做出新的、跨工具跨代理的攻擊鏈，而不只是庫存提示詞？</td></tr>
+<tr><th scope="row">3.4 威脅模型的真實度</th><td>威脅模型是否超出「只有越獄」，涵蓋資料、工作流與系統性失敗？</td></tr>
+<tr><th scope="row">3.5 評估嚴謹度與指標</th><td>指標是否量化、可重複、與真實風險掛鉤？是否報告多次嘗試而非單次？</td></tr>
+<tr><th scope="row">3.6 工具與基礎設施品質</th><td>能否在你的環境測試、重放多輪互動與工具呼叫？</td></tr>
+<tr><th scope="row">3.7 資料治理與安全</th><td>如何儲存、保留、隔離與刪除你的提示詞、日誌與輸出？</td></tr>
+<tr><th scope="row">3.8 透明與可解釋</th><td>給得出逐步攻擊鏈、工具呼叫來歷與原始證據嗎？</td></tr>
+<tr><th scope="row">3.9 客製與適應</th><td>能否依你的領域、工作流、工具堆疊與政策調整？</td></tr>
+<tr><th scope="row">3.10 營運契合與整合</th><td>能否接 CI/CD、做回歸測試、在沙箱測試破壞性工具？</td></tr>
+<tr><th scope="row">3.11 已知限制與偏誤</th><td>是否坦白自己不涵蓋什麼、自動化的極限、以 LLM 當評審的風險？</td></tr>
+<tr><th scope="row">3.12 成本對價值</th><td>發現是否降低真實風險、報告是否可行動？</td></tr>
+<tr><th scope="row">3.13 法律、倫理與合規</th><td>是否有清楚授權與交戰規則，能對應 OWASP、NIST AI RMF、ISO 42001 等？</td></tr>
+</tbody></table></div>
+<p>每個類別官方都附紅旗（值得細查的警訊）與綠旗（可能有價值的訊號）。Executive Summary 的快速版已經夠用於初篩：</p>
+<ul>
+  <li><strong>綠旗：</strong>可重現的單輪與多輪對抗評估；不是回收公開越獄庫的客製測試與新發現；清楚且對應業務衝擊的報告；簡單與進階系統都有經驗；關鍵發現有人工驗證；能評估有狀態系統（記憶、長工作階段、跨工作階段行為）；發現能轉成可行動的修補建議。</li>
+  <li><strong>紅旗：</strong>把庫存越獄庫當紅隊；說不清 RAG、記憶、MCP 等架構如何運作；沒有多輪或有狀態測試能力；AI 產生的評估完全沒有人監督；宣稱「完整涵蓋」或「一鍵紅隊」；只看模型輸出、無視動作與系統狀態變化；黑箱評分、不透明的方法。</li>
+</ul>
+
+<h2 id="vd-compare">4.3 顧問還是自動化工具</h2>
+<div class="table-wrap"><table>
+<caption>表 4-2　AI 紅隊顧問與自動化工具的比較（文件第 4 節比較矩陣，改寫；High／Medium 等為文件原評級）</caption>
+<thead><tr><th scope="col">面向</th><th scope="col">AI 紅隊顧問</th><th scope="col">自動化工具</th></tr></thead>
+<tbody>
+<tr><th scope="row">優勢</th><td>創意、新穎性、發現突發行為</td><td>規模、可重複性、回歸測試、速度</td></tr>
+<tr><th scope="row">弱點</th><td>成本、可得性</td><td>適應性有限，有「覆蓋幻覺」(coverage illusion) 風險</td></tr>
+<tr><th scope="row">適配：簡單系統</th><td>High</td><td>High</td></tr>
+<tr><th scope="row">適配：工具呼叫系統</th><td>High</td><td>High（需良好儀表化）</td></tr>
+<tr><th scope="row">適配：MCP 系統</th><td>High</td><td>Medium-High</td></tr>
+<tr><th scope="row">適配：多代理系統</th><td>High</td><td>Low-Medium</td></tr>
+<tr><th scope="row">誤用風險</th><td>對成果的期望過度</td><td>把測試套件當成完整涵蓋</td></tr>
+<tr><th scope="row">客戶所需專業</th><td>Medium</td><td>High（要能解讀原始結果）</td></tr>
+</tbody></table></div>
+<p>這張表的讀法（<span class="tag author">作者整理，非官方</span>）：兩者不是二選一。工具適合你已經知道要測什麼、需要反覆回歸的部分；顧問適合你還不知道失守點在哪、系統越複雜越需要。文件沒有叫你兩者並用，這是依表中「優勢」欄做的推論。文件另列九個<strong>常見陷阱</strong>：假設簡單系統是安全的；把越獄與系統性紅隊混為一談（例如系統能抗越獄、卻擋不住 Denial of Wallet）；過度重視漂亮的示範，應要求日誌、軌跡與可重現性；把現代架構當聊天機器人；以為自動化能取代有經驗的對手；信任不計入突發行為的指標；沒驗證就假設可重現；假設工具呼叫與 MCP 輸出本身是安全的；過度看重「我們會為你客製建造」這類說法。</p>
+
+<h2 id="vd-flow">4.4 怎麼用：評估流程與探索問題</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="廠商評估決策流程：先判斷系統是簡單還是進階，再判斷要顧問還是自動化工具；對每個候選要求證據：新穎發現、可重現的多輪測試、軌跡與日誌、與業務風險對應的嚴重度；出現紅旗就細查或淘汰；通過後確認資料治理與授權範圍，再簽約。">
+flowchart TD
+  S["要採購紅隊服務或工具"] --> T{"被測系統"}
+  T -->|"簡單：聊天、RAG"| C1["要求客製的多輪測試與量化指標"]
+  T -->|"進階：工具、MCP、多代理"| C2["要求系統層級測試與軌跡可觀測"]
+  C1 --> E["要證據：新穎發現、可重現、日誌軌跡、嚴重度對應業務"]
+  C2 --> E
+  E --> R{"有紅旗？"}
+  R -->|"是"| X["細查原因或淘汰"]
+  R -->|"否"| G["確認資料治理、授權與交戰規則"]
+  G --> D["決定顧問、工具或兩者並用"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,T,C1,C2,E,R,X,G,D author
+</pre>
+<figcaption><strong>圖 4-1　廠商評估決策流程。</strong>整張圖是<strong>作者整理，非官方</strong>：把文件的簡單／進階分類、綠旗紅旗、資料治理與合規要求串成一條流程。文件本身並沒有畫出這樣的流程。</figcaption>
+</figure>
+<p>文件第 5 節提供了「探索問題」，用來穿透行銷說法，分成通用、簡單系統、工具呼叫、MCP 與多代理五組。通用問題包括：給我看新發現，而不只是越獄；你怎麼確保多輪測試可重現；有多少比例的測試是為我們的用例客製的；你怎麼把發現對應到業務風險；怎麼處理非確定性輸出。第 7 節還提供一張評分檢核表，把顧問與工具各自的要求逐類並列。</p>
+
+<h2 id="vd-scn">4.5 情境範例 B：只看越獄分數的採購</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：赤松銀行的紅隊工具採購</h3>
+<p><span class="tag fiction">虛構</span> 赤松銀行是虛構的公司。它的內部理財副駕駛能查詢客戶帳務、起草轉帳申請，並經由 MCP 連到內部工具。採購小組比較兩家廠商：甲只給一份簡報，標題是「我們的工具越獄成功率 97%，涵蓋全部已知攻擊」；乙交來樣本報告，含逐步攻擊鏈、工具呼叫軌跡、嚴重度與業務影響的對應，並說明哪些情境無法自動化測試。採購主管傾向選甲，因為「數字漂亮」。</p>
+<ol class="steps">
+  <li><strong>甲的主張：</strong>「越獄成功率 97%」只衡量模型輸出被誘導的程度，沒有說明是否測了工具呼叫與系統狀態變化。文件把「只看模型輸出，無視動作與系統狀態變化」列為紅旗，且指出越獄只是風險的一小部分（4.2、4.3 節）。</li>
+  <li><strong>「涵蓋全部已知攻擊」：</strong>文件把宣稱「完整涵蓋」列為紅旗，並在顧問與工具的比較矩陣裡，把「覆蓋幻覺」列為自動化工具的弱點；對 MCP 與多代理系統，自動化工具的適配評級分別只有 Medium-High 與 Low-Medium（表 4-2）。</li>
+  <li><strong>乙的證據：</strong>逐步攻擊鏈與工具呼叫軌跡對應「透明與可解釋」「可重現」；嚴重度對應業務影響對應「評估嚴謹度」；主動說明限制對應「已知限制」。這些是綠旗。</li>
+  <li><strong>該怎麼做：</strong>用 4.4 節的探索問題請甲補證據（新發現、可重現的多輪測試、軌跡、資料治理）；補不出來就淘汰。系統屬進階類，應優先考慮顧問，必要時搭配工具做回歸。這個建議是依文件條件做的 <span class="tag author">作者整理，非官方</span> 判斷。</li>
+</ol>
+</div>
+
+<h2 id="vd-integ">4.6 跨文件整合：這三份文件在 OWASP 其他資料裡的位置</h2>
+<p>以下是官方文件中明確寫到的連結（<span class="tag official">官方</span>），以及作者標示的推論：</p>
+<ul>
+  <li><strong>Manual → AISVS：</strong>Manual 在 5.2 節（權限升級測試）寫「這些測試的防禦對應物在驗證面，位於 OWASP AISVS 第 C9 章」。AISVS 是 OWASP 的 AI 安全驗證標準，見 <a href="../aisvs-and-llmsvs/index.html">AISVS 與 LLMSVS</a>。</li>
+  <li><strong>Manual → AIVSS：</strong>Manual 3.3.3 節說，若組織使用 AIVSS 或其他評分系統，分數要與 OWASP 分類標籤分開記錄。見 <a href="../aivss/index.html">AIVSS</a>。</li>
+  <li><strong>Manual → LLM／Agentic Top 10：</strong>以 2026 版標籤追蹤涵蓋（第 2、3 章）。</li>
+  <li><strong>AI Testing Guide → Red Teaming Guide：</strong>AI Testing Guide 的 GitHub README 把 OWASP GenAI Red Teaming Guide 列為現有資源之一。見 <a href="../ai-testing-guide/index.html">AI Testing Guide</a>。</li>
+  <li><strong>Vendor 準則 → 框架：</strong>3.13 節期望廠商熟悉 OWASP、NIST AI RMF、MITRE ATLAS、ISO 42001／23894、EU AI Act 與 Google SAIF。</li>
+  <li><span class="tag author">作者整理，非官方</span> 一種合用方式：用 AI Testing Guide 的測試編號當作可重複的測試案例清單，用 Manual 的階段決定演練怎麼做，用 AISVS 當驗證需求，用 AIVSS 為發現評分。這只是建議的搭配，四份文件之間沒有官方串接。</li>
+</ul>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>先分系統類型：簡單（聊天、RAG）或進階（工具、MCP、多代理）。每個評估類別對兩類有不同期望。</li>
+  <li>十三個評估類別，每類有綠旗與紅旗；初篩看：新發現、可重現的多輪測試、軌跡、人工驗證、對應業務風險。</li>
+  <li>顧問與工具各有優勢：顧問擅長創意與突發行為；工具擅長規模與回歸；多代理系統工具評級只有 Low-Medium。</li>
+  <li>「只會越獄」「完整涵蓋」「一鍵紅隊」「黑箱評分」都是紅旗。</li>
+  <li>Manual 與 AISVS（C9 防禦對應）、AIVSS（評分分開記）、AI Testing Guide（README 列出 Red Teaming Guide）有官方連結。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出簡單與進階 GenAI 系統各舉兩個例子。</li>
+  <li>我能舉出至少三個紅旗，並說明為什麼是紅旗。</li>
+  <li>我能判斷一個多代理系統該優先找顧問還是工具，並說明依據。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<ol>
+  <li><strong>先做這個主題的 <a href="quiz.html">總測驗</a>（14 題）</strong>，答錯的題目會連回對應章節。</li>
+  <li>本階段其他主題：<a href="../ai-testing-guide/index.html">AI Testing Guide</a>、<a href="../aisvs-and-llmsvs/index.html">AISVS 與 LLMSVS</a>、<a href="../aivss/index.html">AIVSS</a>。</li>
+  <li>來源核對見 <a href="references.html">參考資料與來源核對</a>。</li>
+</ol>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Vendor Evaluation Criteria for AI Red Teaming Providers &amp; Tooling，v1.0，資源頁 2026-02-04（PDF 封面 Version 1.0 – Public Release, 2026-01-13，32 頁）：<a href="https://genai.owasp.org/resource/owasp-vendor-evaluation-criteria-for-ai-red-teaming-providers-tooling-v1-0/">資源頁</a>；第 1–7 節；CC BY-SA 4.0。表 4-2 的評級另對照 PDF 第 24 頁的圖確認。</li>
+    <li>GenAI Red Teaming Manual，Version 1.0，資源頁 2026-10-20：3.3.3（AIVSS 的說法）、5.2 末段（AISVS C9 的說法）、參考文獻 [109]；<a href="https://genai.owasp.org/resource/genai-red-teaming-manual-version-1-0/">資源頁</a>；CC BY-SA 4.0。</li>
+    <li>OWASP AI Testing Guide，GitHub README（列出 GenAI Red Teaming Guide）：<a href="https://github.com/OWASP/www-project-ai-testing-guide">github.com/OWASP/www-project-ai-testing-guide</a>；2026-10-26 讀取；專案頁標示 CC BY-SA 4.0（見該主題）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Vendor Evaluation Criteria 與 GenAI Red Teaming Manual（各 PDF 封面）、genai.owasp.org 網站 — CC BY-SA 4.0。Vendor 文件要求引用時須含專案名稱與所參照資產名稱，本頁已於「本章來源」標示。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'rt-ch4', topic: 'genai-red-teaming', mode: 'chapter',
+  questions: [
+    { id: 'r4q1', type: 'mc', lo: [4], refs: [{label: '4.2 紅旗與綠旗', href: '04-vendor-evaluation.html#vd-criteria'}],
+      stem: '下列哪一項是 Vendor Evaluation Criteria 明確列為「紅旗」的？',
+      options: [
+        { text: '對關鍵發現做人工驗證。', why: '這是綠旗。' },
+        { text: '提供可重現的單輪與多輪對抗評估。', why: '這是綠旗。' },
+        { text: '宣稱「完整涵蓋」或「一鍵紅隊」。', correct: true, why: '文件把這類宣稱列為紅旗；4.2 節的快速版列出。' },
+        { text: '主動說明自己不涵蓋什麼、自動化的極限。', why: '這是 3.11「已知限制與偏誤」的綠旗。' }
+      ],
+      summary: '「完整涵蓋」「一鍵紅隊」是紅旗；坦白限制與人工驗證是綠旗。' },
+    { id: 'r4q2', type: 'match', lo: [4], refs: [{label: '4.3 表 4-2', href: '04-vendor-evaluation.html#vd-compare'}],
+      stem: '把下列描述配對到它在比較矩陣裡最符合的對象。',
+      cats: [
+        { id: 'consult', label: 'AI 紅隊顧問' },
+        { id: 'tool', label: '自動化工具' }
+      ],
+      items: [
+        { text: '優勢是規模、可重複性、回歸測試與速度', answer: 'tool', why: '比較矩陣把這些列為自動化工具的優勢。' },
+        { text: '優勢是創意、新穎性與發現突發行為', answer: 'consult', why: '比較矩陣把這些列為顧問的優勢。' },
+        { text: '弱點之一是「覆蓋幻覺」風險', answer: 'tool', why: '覆蓋幻覺是自動化工具的弱點。' },
+        { text: '誤用風險是對成果的期望過度', answer: 'consult', why: '顧問的誤用風險；工具的誤用風險是把測試套件當成完整涵蓋。' }
+      ],
+      summary: '顧問：創意與新穎；工具：規模與回歸；各有誤用風險。' },
+    { id: 'r4q3', type: 'scn', lo: [4], refs: [{label: '4.5 情境範例 B', href: '04-vendor-evaluation.html#vd-scn'}, {label: '4.2 十三個評估類別', href: '04-vendor-evaluation.html#vd-criteria'}],
+      stem: '依本章，採購小組該如何回應廠商的簡報？',
+      scenario: '松濤保險（虛構）要為多代理的理賠系統採購紅隊服務。廠商簡報說：「我們一鍵完成全面紅隊，使用 AI 自動產生評估與評分，不需要人工介入，涵蓋全部攻擊類型。」報價很低。採購小組問：這樣可以採用嗎？',
+      options: [
+        { text: '可以，自動化成本低，而且涵蓋全部攻擊類型。', why: '「完整涵蓋」「一鍵紅隊」與無人工監督的 AI 評估都是文件列的紅旗；多代理系統的自動化適配評級也只有 Low-Medium。' },
+        { text: '先要求補證據：新發現、可重現的多輪測試、軌跡與日誌、人工驗證，並說明限制；多代理系統應優先考慮顧問或顧問加工具。', correct: true, why: '符合 4.2、4.3 節與探索問題。' },
+        { text: '改成只做黑箱測試，成本就會降低。', why: '黑箱／灰箱／白箱是存取等級，與廠商是否可信無關。' },
+        { text: '只要廠商保證不洩漏資料就可以採用。', why: '資料治理只是 13 個類別之一；其他紅旗仍未解決。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 「一鍵」「完整涵蓋」是紅旗；(2) AI 產生評估而無人工監督，也是紅旗（進階系統尤其如此）；(3) 多代理系統的自動化工具適配只有 Low-Medium，顧問為 High；(4) 低價不是評分類別，成本要對照價值（3.12）。</p><p><strong>結論：</strong>先請廠商補證據；補不出來就不採用，並優先考慮顧問。對應教材：<a href="04-vendor-evaluation.html#vd-criteria">4.2 節</a>、<a href="04-vendor-evaluation.html#vd-compare">4.3 節</a>。</p>' },
+    { id: 'r4q4', type: 'mc', lo: [4], refs: [{label: '4.3 常見陷阱', href: '04-vendor-evaluation.html#vd-compare'}],
+      stem: '依文件的常見陷阱，「系統能抗越獄」最不能推出下列哪個結論？',
+      options: [
+        { text: '系統已經安全，不需要再測。', why: '正是陷阱之一：把越獄與系統性紅隊混為一談。' },
+        { text: '系統不會受到 Denial of Wallet 這類資源耗盡攻擊影響。', correct: true, why: '文件舉的例子就是：系統可能抗越獄，卻仍無法抵擋 Denial of Wallet。' },
+        { text: '系統不需要測工具呼叫。', why: '同樣是把越獄當成全部風險。' },
+        { text: '簡單系統比較安全。', why: '「假設簡單系統是安全的」也是陷阱之一。' }
+      ],
+      summary: '抗越獄不等於系統安全；可能仍有資源耗盡等問題。' }
+  ]
+});
+</script>
+</body>
+</html>

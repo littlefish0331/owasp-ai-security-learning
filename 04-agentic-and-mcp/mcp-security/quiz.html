@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜MCP 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="MCP 安全主題總測驗：16 題，涵蓋五個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="mcp-security" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：MCP 安全</h1>
+<ul class="meta-row">
+  <li>16 題（選擇題 7、情境判斷題 4、配對題 5）</li>
+  <li>預估時間：約 24 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO5</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–5 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>地圖與成熟度：</strong>說出四份主要 MCP 安全文件各自給誰、版本與日期，以及 MCP Top 10 的 Beta 狀態與 MCP06 的改名。</li>
+  <li><strong>十項風險：</strong>把 MCP Top 10 依出問題的地方分組，並解釋 Tool Poisoning 與 Rug Pull。</li>
+  <li><strong>開發者視角：</strong>依八類控制與最低標準檢查 MCP 伺服器設計，找出隔離與身分的破口。</li>
+  <li><strong>使用者視角：</strong>說明受信任登錄與五步驟治理，並對第三方伺服器列出該先檢查的事項。</li>
+  <li><strong>整合：</strong>決定先看哪份文件，分辨官方明文與作者整理，說出 MCP 與 Agentic 系列的關係。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：Secure MCP Server Development 指南、第三方 MCP 使用 Cheat Sheet — CC BY-SA 4.0；MCP Security Cheat Sheet — Cheat Sheet Series 網站標示。<span class="tag nc">NC</span> OWASP MCP Top 10 的授權文字自相矛盾，本頁保守視為非商業，僅引用其名稱與編號。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-map-and-status.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-top10-groups.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-server-developer.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-third-party-user.html', a, '第 4 章 ' + l); };
+  var C5 = function (a, l) { return R('05-integration.html', a, '第 5 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 地圖與成熟度 ================= */
+  { id: 'q01', type: 'match', lo: [1], refs: [C1('m-map', '1.1 表 1-1')],
+    stem: '把讀者情境配對到最適合先讀的 MCP 文件。',
+    cats: [
+      { id: 'dev', label: 'Secure MCP Server Development 指南' },
+      { id: 'use', label: '第三方 MCP 使用 Cheat Sheet' },
+      { id: 'cs', label: 'MCP Security Cheat Sheet' },
+      { id: 'top', label: 'MCP Top 10' }
+    ],
+    items: [
+      { text: '團隊要自己開發並部署一個對外的 MCP 伺服器', answer: 'dev', why: '官方給 MCP 伺服器開發團隊。' },
+      { text: '公司要導入別人開發的 MCP 伺服器給員工用', answer: 'use', why: '官方明說這份給使用非自家 MCP 的人。' },
+      { text: '想要一份持續修訂、涵蓋用戶端與伺服器的 12 項實務清單', answer: 'cs', why: 'Cheat Sheet Series。' },
+      { text: '想要一套描述 MCP 最高風險的共同語言（仍在 Beta）', answer: 'top', why: 'MCP Top 10。' }
+    ],
+    summary: '先分清楚你是開發者還是使用者。' },
+
+  { id: 'q02', type: 'mc', lo: [1], refs: [C1('m-evo', '1.4 表 1-2')],
+    stem: '你要引用 MCP Top 10 的第六項。下列哪種寫法最能避免日後失效或混淆？',
+    options: [
+      { text: '「MCP06 Prompt Injection via Contextual Payloads」，因為 owasp.org 頁面這樣寫。', why: '那是較舊的名字。' },
+      { text: '「MCP06」', why: '沒有名稱、年份與版本。' },
+      { text: '「LLM06」', why: '那是 LLM Top 10 的編號，且不同年份意義不同。' },
+      { text: '「MCP06:2025 Intent Flow Subversion（舊名 Prompt Injection via Contextual Payloads）；MCP Top 10 Beta，2026-10-26 讀取」', correct: true, why: '現名、舊名、Beta 狀態與讀取日。' }
+    ],
+    summary: '寫現名、舊名、Beta、讀取日。' },
+
+  { id: 'q03', type: 'scn', lo: [1], refs: [C1('c-maturity', '1.3 成熟度'), C1('m-evo', '1.4')],
+    stem: '依本教材，這份內部規範的引用方式有什麼問題？',
+    scenario: '雲杉科技（虛構）的規範寫：「所有 MCP 伺服器必須符合 OWASP MCP Top 10（Production 專案）十項要求。MCP Security Cheat Sheet 第 6 條永遠有效。」',
+    options: [
+      { text: '沒有問題，Production 標籤代表穩定標準。', why: '路線圖寫 Phase 3 Beta；標籤與成熟度的對應沒有官方說明。' },
+      { text: '只需要把 Production 改成 Lab。', why: '重點是版本與可核對性，不是標籤。' },
+      { text: 'MCP Top 10 是 Beta、名稱與編號會變（MCP06 已改名）；Cheat Sheet 沒有版本號、近期才修訂過，不能保證「永遠有效」。規範應寫明版本或讀取日。', correct: true, why: '1.3、1.4 節。' },
+      { text: '應該改引用 LLM Top 10。', why: '不能取代 MCP 專屬的問題。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) MCP Top 10 自述 Beta，條目年份為 2025，MCP06 已改名，授權文字矛盾。(2) Cheat Sheet 沒有版本號，2026-10 內有數次修訂。</p><p><strong>結論：</strong>PDF 寫版本，Cheat Sheet 寫讀取日，Top 10 寫 Beta 與年份。對應教材：<a href="01-map-and-status.html#c-maturity">1.3 節</a>。</p>' },
+
+  /* ================= LO2 十項風險 ================= */
+  { id: 'q04', type: 'match', lo: [2], refs: [C2('g-list', '2.1 表 2-1')],
+    stem: '把 MCP Top 10 條目配對到本教材（作者整理）的分組。',
+    cats: [
+      { id: 'a', label: 'A 憑證與權限' },
+      { id: 'b', label: 'B 工具與脈絡' },
+      { id: 'c', label: 'C 治理與可見性' }
+    ],
+    items: [
+      { text: 'MCP02 Privilege Escalation via Scope Creep', answer: 'a', why: '權限隨時間擴大。' },
+      { text: 'MCP03 Tool Poisoning', answer: 'b', why: '模型看到的工具定義。' },
+      { text: 'MCP09 Shadow MCP Servers', answer: 'c', why: '組織管不到的伺服器。' },
+      { text: 'MCP10 Context Injection &amp; Over-Sharing', answer: 'b', why: '脈絡的共享與外流。' }
+    ],
+    summary: '依「出問題的地方」分組。' },
+
+  { id: 'q05', type: 'mc', lo: [2], refs: [C2('c-poison', '2.3 核心概念')],
+    stem: '依 Cheat Sheet，為什麼要雜湊「完整的」工具定義，而不只是描述文字？',
+    options: [
+      { text: '只改輸入結構、輸出結構或註記（如被翻轉的唯讀提示）也能改變用戶端的核准行為，描述文字卻看不出變化。', correct: true, why: '2.3 節。' },
+      { text: '因為雜湊描述太慢。', why: '與效能無關。' },
+      { text: '因為雜湊完整定義就能保證伺服器程式碼沒被改。', why: 'Cheat Sheet 明說只偵測中繼資料變更。' },
+      { text: '因為官方規定一定要用特定雜湊演算法。', why: '文件沒有指定。' }
+    ],
+    summary: '雜湊要涵蓋完整定義，但仍有限制。' },
+
+  { id: 'q06', type: 'mc', lo: [2], refs: [C2('g-map', '2.2 表 2-2')],
+    stem: '同事要在規範寫「MCP06 對應 ASI01，這是 OWASP 官方的對照」。依本教材，最恰當的回應是？',
+    options: [
+      { text: '正確，OWASP 提供了完整的對照表。', why: 'MCP Top 10 沒有官方跨文件對照表。' },
+      { text: '錯誤，兩者完全無關。', why: '語意上接近，只是不是官方對映。' },
+      { text: '不準確：官方沒有 MCP 對 ASI 的對照表；這是依語意的作者整理，只能當找資料的起點，並要標明來源。', correct: true, why: '2.2 節。' },
+      { text: '應改成對應 LLM06。', why: '2026 版 LLM06 是 Unbounded Consumption。' }
+    ],
+    summary: '沒有官方對照表，別寫成官方。' },
+
+  /* ================= LO3 開發者視角 ================= */
+  { id: 'q07', type: 'mc', lo: [3], refs: [C3('s-eight', '3.2 表 3-1（第 5 類）')],
+    stem: '指南要求「禁止權杖直通 (Token Passthrough)」。最主要的理由是？',
+    options: [
+      { text: '權杖直通會讓網路變慢。', why: '不是效能。' },
+      { text: '因為權杖不能超過一分鐘。', why: '短效是另一條建議。' },
+      { text: '把用戶端權杖轉給下游 API 會破壞稽核，也使伺服器可能被誘導濫用使用者的權限，形成混淆代理人風險。', correct: true, why: '指南第 5 類。' },
+      { text: '因為下游 API 一律不接受權杖。', why: '問題在誰的權杖。' }
+    ],
+    summary: '不轉發用戶端權杖。' },
+
+  { id: 'q08', type: 'scn', lo: [3], refs: [C3('s-scenario', '3.4 情境範例 A'), C3('s-minbar', '3.3 最低標準')],
+    stem: '依本教材，團隊用最低標準檢查，應該先修哪一類？為什麼？',
+    scenario: '松濤雲端（虛構）的 MCP 伺服器同時服務多個客戶。審查發現：(1) 伺服器用一個全域字典儲存各客戶最近的查詢結果；(2) 所有客戶的後端存取都用同一個服務帳號；(3) 授權只檢查 session ID 是否存在；(4) 稽核日誌完整。團隊想先做「更多日誌」。',
+    options: [
+      { text: '先做更多日誌。', why: '日誌已完整，缺的是隔離與身分。' },
+      { text: '先換更快的快取。', why: '效能不是問題。' },
+      { text: '不需要修，日誌完整就能追查。', why: '追查是事後；洩漏已發生。' },
+      { text: '先修隔離與身分：每 session 獨立狀態、以使用者脈絡的權杖存取（保留獨立的伺服器 NHI）、授權綁定已驗證身分。對應最低標準第 1、2 類。', correct: true, why: '3.3、3.4 節。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 全域字典違反「禁止全域變數與共享單例」。(2) 共用服務帳號無法歸因。(3) 只靠 session ID 違反「session 是狀態，不是身分」。(4) 日誌只能事後調查。</p><p><strong>結論：</strong>先補隔離與身分。對應教材：<a href="03-server-developer.html#s-scenario">3.4 節</a>。</p>' },
+
+  { id: 'q09', type: 'match', lo: [3], refs: [C3('s-eight', '3.2 表 3-1')],
+    stem: '把設計決定配對到它違反的指南控制類別。',
+    cats: [
+      { id: 'iso', label: '1 隔離使用者與 session' },
+      { id: 'auth', label: '5 驗證與授權' },
+      { id: 'tool', label: '2 安全工具設計' },
+      { id: 'dep', label: '6 安全部署與更新' }
+    ],
+    items: [
+      { text: '用類別層級屬性快取使用者的查詢結果，所有 session 共用', answer: 'iso', why: '禁止全域變數與共享單例。' },
+      { text: '只拿 session ID 當作授權依據', answer: 'auth', why: 'session 是狀態，不是身分。' },
+      { text: '工具描述寫「查詢天氣」，實際程式碼還會把資料寄到外部', answer: 'tool', why: '要驗證描述與實際行為相符。' },
+      { text: '把 API 金鑰放在環境變數，並讓 LLM 讀得到', answer: 'dep', why: '機密放保管庫、不給 LLM。' }
+    ],
+    summary: '八類控制各有對應的錯誤。' },
+
+  /* ================= LO4 使用者視角 ================= */
+  { id: 'q10', type: 'match', lo: [4], refs: [C4('c-registry', '4.3 五步驟與角色')],
+    stem: '把工作配對到官方治理流程中負責的角色。',
+    cats: [
+      { id: 'sub', label: '提交者（開發者）' },
+      { id: 'sec', label: '安全審查員' },
+      { id: 'dom', label: '領域負責人' },
+      { id: 'ops', label: '營運者 (SRE)' }
+    ],
+    items: [
+      { text: '提出新的第三方伺服器整合並提供文件', answer: 'sub', why: '提交者。' },
+      { text: '驗證安全控制、掃描與供應鏈完整性', answer: 'sec', why: '安全審查員。' },
+      { text: '確認該伺服器在功能上確有必要，並核准其範圍', answer: 'dom', why: '領域負責人。' },
+      { text: '管理連線上線、監控與緊急關閉開關', answer: 'ops', why: '營運者 (SRE)。' }
+    ],
+    summary: '安全與領域負責人都要簽核。' },
+
+  { id: 'q11', type: 'mc', lo: [4], refs: [C4('u-cs', '4.4 與 Cheat Sheet')],
+    stem: '一個 MCP 工具的註記標示它是唯讀。依 Cheat Sheet，用戶端應如何看待這個標示？',
+    options: [
+      { text: '完全信任，因為是協定的一部分。', why: 'Cheat Sheet 明說除非來自可信伺服器，否則註記視為不可信。' },
+      { text: '一律忽略所有註記。', why: '註記可作提示，只是不可只靠它。' },
+      { text: '註記標唯讀就代表不用 HITL。', why: '讀取也可能是敏感讀取或外洩管道。' },
+      { text: '視為提示而非強制；除非來自可信伺服器否則不可信；需依實際可能的影響決定是否確認或授權。', correct: true, why: '4.4 節。' }
+    ],
+    summary: '註記是提示，不是保證。' },
+
+  { id: 'q12', type: 'scn', lo: [4], refs: [C4('u-scenario', '4.5 情境範例 B'), C4('c-registry', '4.3 治理')],
+    stem: '依本教材，這個狀況缺的最關鍵一環是？',
+    scenario: '星河保險（虛構）的資安長詢問：「我們公司目前有多少個 MCP 伺服器在運作？」沒有人答得出來，因為行銷團隊自己安裝了一個第三方套件，辯稱：「下載量很高，應該沒問題。」',
+    options: [
+      { text: '缺登錄與審核流程：沒有核准清單，無法回答數量，也無法固定版本與重新驗證。', correct: true, why: '4.3 節；MCP09 的典型症狀。' },
+      { text: '缺更高的下載量證明。', why: '下載量不等於安全。' },
+      { text: '缺的是封鎖所有 MCP 伺服器。', why: '官方的做法是控管而非禁止。' },
+      { text: '缺向 OWASP 回報。', why: '不是組織內部治理要做的事。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 官方主張只有經審查且受監控的伺服器才能被使用，以受信任登錄為核心。(2) 答不出數量，代表沒有登錄與探索掃描。</p><p><strong>結論：</strong>先建立登錄與五步驟流程。對應教材：<a href="04-third-party-user.html#c-registry">4.3 節</a>。</p>' },
+
+  /* ================= LO5 整合 ================= */
+  { id: 'q13', type: 'mc', lo: [5], refs: [C5('n-rc', '5.2 表 5-1')],
+    stem: '同事說：「MCPS 是 MCP 的標準安全層，所有部署都應要求每個 JSON-RPC 訊息簽章。」依本教材，最恰當的回應是？',
+    options: [
+      { text: '不準確：MCPS 是社群提交的個人工作，不是已採納的 MCP 標準；選配簽章只在威脅模型需要時評估，不應說成一般部署的必要條件。', correct: true, why: '5.2 節。' },
+      { text: '正確，MCP 規格要求簽章。', why: '核心傳輸規格不要求。' },
+      { text: '錯誤，簽章對 MCP 完全沒用。', why: '特定威脅模型下有用。' },
+      { text: '應該改用 TLS 取代簽章。', why: '兩者保護的威脅不同。' }
+    ],
+    summary: '選配的完整性層不等於標準要求。' },
+
+  { id: 'q14', type: 'match', lo: [5], refs: [C5('n-link', '5.3 表 5-2')],
+    stem: '把 MCP 相關的說法配對到 Agentic 系列中官方明寫的落點。',
+    cats: [
+      { id: 't16', label: 'T&M：T16 Insecure Inter-Agent Protocol Abuse' },
+      { id: 'asi04', label: 'Agentic Top 10：ASI04 供應鏈' },
+      { id: 'asi02', label: 'Agentic Top 10：ASI02 工具濫用' },
+      { id: 'mas', label: 'MAS 威脅建模指南' }
+    ],
+    items: [
+      { text: '攻擊 MCP 或 A2A 等協定的同意繞過或脈絡劫持', answer: 't16', why: 'T16 明寫 MCP 與 A2A。' },
+      { text: '被通報的冒充套件的惡意 MCP 伺服器，以及工具描述中的隱藏指示', answer: 'asi04', why: 'ASI04。' },
+      { text: '竄改 MCP 工具描述、結構或路由資訊，使 agent 依假的能力呼叫工具', answer: 'asi02', why: 'ASI02 情境 1。' },
+      { text: '用 MAESTRO 七層對 Anthropic 的 MCP 協定做威脅建模', answer: 'mas', why: '三個案例之一。' }
+    ],
+    summary: 'MCP 風險在 Agentic 系列有明文落點。' },
+
+  { id: 'q15', type: 'scn', lo: [5], refs: [C5('n-which', '5.1 圖 5-1'), C5('n-rc', '5.2 表 5-1')],
+    stem: '依本教材，團隊的文件選擇與引用方式有哪兩處需要修正？',
+    scenario: '北辰電商（虛構）要導入第三方 MCP 伺服器給客服團隊。技術主管規劃：「依 Secure MCP Server Development 指南的最低標準逐項檢查這個第三方伺服器；並在規範裡寫『依 MCP Top 10 的建議控制 MCPS 要求所有訊息簽章』。」',
+    options: [
+      { text: '兩處都正確。', why: '第一處角色不符，第二處把社群建議控制寫成要求。' },
+      { text: '只有第二處需要修正。', why: '第一處也有問題。' },
+      { text: '應該全部改引用 LLM Top 10。', why: '不能取代 MCP 專屬的治理與協定問題。' },
+      { text: '(1) 該指南是給「開發」MCP 伺服器的人；使用第三方伺服器應看第三方使用 Cheat Sheet 與其治理流程。(2) MCPS 是社群建議控制，不是規格要求或已採納標準，不應寫成強制要求。', correct: true, why: '5.1、5.2 節。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 開發指南對象是 MCP 伺服器開發團隊；第三方使用指南明說不是給開發者的。(2) MCPS 是倉庫的社群建議控制，相關草案不是已採納標準。</p><p><strong>結論：</strong>改用第三方使用 Cheat Sheet 與五步驟治理；MCPS 改寫為「依威脅模型可評估的選項」。對應教材：<a href="05-integration.html#n-which">5.1 節</a>、<a href="05-integration.html#n-rc">5.2 節</a>。</p>' },
+
+  { id: 'q16', type: 'mc', lo: [5], refs: [C5('n-stage', '5.4 04 階段回顧')],
+    stem: '依 04 階段的脈絡，MCP 安全這個主題相對於前三個主題，主要處理什麼？',
+    options: [
+      { text: '它取代了前三個主題。', why: '互補，不取代。' },
+      { text: '它處理 agent 與工具、資料之間的協定本身；前三者談 agent 本體。', correct: true, why: '圖 5-2。' },
+      { text: '它只處理模型訓練。', why: '與訓練無關。' },
+      { text: '它只適用於單一 agent。', why: '與 agent 數量無關。' }
+    ],
+    summary: 'MCP = agent 的外部連接。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'mcp-security', mode: 'final',
+    los: [
+      { n: 1, text: '地圖與成熟度：四份文件的對象、版本、Beta 與 MCP06 改名。' },
+      { n: 2, text: '十項風險：依出問題的地方分組，解釋 Tool Poisoning 與 Rug Pull。' },
+      { n: 3, text: '開發者視角：八類控制與最低標準，找出隔離與身分的破口。' },
+      { n: 4, text: '使用者視角：受信任登錄與五步驟治理，列出該先檢查的事項。' },
+      { n: 5, text: '整合：決定先看哪份文件，分辨官方與作者整理，說出與 Agentic 系列的關係。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

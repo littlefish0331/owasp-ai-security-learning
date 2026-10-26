@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>治理檢核表與卓越中心｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="LLM Applications Cybersecurity and Governance Checklist 與 Center of Excellence Guide 主題首頁：學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="governance-checklist-and-coe" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>治理檢核表與卓越中心</h1>
+<ul class="meta-row">
+  <li>05 治理與風險｜主題 1</li>
+  <li>預估學習時間：約 55–65 分鐘（5 章閱讀約 34 分鐘；章末檢核與總測驗約 25 分鐘）</li>
+  <li>採用來源：genai.owasp.org 資源頁與兩份官方 PDF，2026-10-26 讀取</li>
+</ul>
+<p class="lead">前面的主題教你「風險長什麼樣子」。這個主題換一個問題：<strong>組織要怎麼開始管？</strong>OWASP 為此提供兩份給領導層的文件：一份檢核表，列出導入 LLM 前後要想清楚的 13 個面向；一份指南，說明怎麼把資安、法務、資料科學、營運與使用者組成一個跨部門的卓越中心。學完後，你能拿它們來盤點一個組織的 AI 導入準備度，並分清楚哪些事該由誰、在什麼時候做。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>定位：</strong>說明兩份文件各是什麼、給誰用、版本與日期，以及它們不是什麼（不是法律意見、不是完整清單、不是認證）。<br><small>對應：<a href="01-position.html">第 1 章</a>、<a href="05-integration.html">第 5 章</a></small></li>
+  <li id="lo2"><strong>威脅與策略：</strong>說明檢核表如何從五個威脅標籤出發，決定 LLM 導入策略（含「不使用」的風險與影子 AI），並依使用情境選擇部署方式。<br><small>對應：<a href="02-checklist-strategy.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>檢核項目：</strong>依檢核表的 13 個區塊，把一個治理問題歸到正確的區塊，並說明法務與合規區塊在查什麼。<br><small>對應：<a href="03-checklist-areas.html">第 3 章</a></small></li>
+  <li id="lo4"><strong>卓越中心：</strong>說明 CoE 的組成、五個目標與 KPI 的寫法，以及哪些角色負責哪類工作。<br><small>對應：<a href="04-coe.html">第 4 章</a></small></li>
+  <li id="lo5"><strong>整合：</strong>判斷一個組織現況該先用檢核表還是 CoE 指南，並把它們與 AI Exchange、COMPASS、AIMA 等文件接起來。<br><small>對應：<a href="05-integration.html">第 5 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>建議先讀 <a href="../../01-overview/genai-security-project/index.html">GenAI Security Project 架構</a> 的第 2、3 章：知道治理是社群共識、Initiative 是依工作領域劃分的組織單位。這兩份文件都屬於其中的 AI Security Governance Initiative。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>。本主題用到的主要是威脅建模、攻擊面與縱深防禦。</li>
+  <li>這個主題<strong>不需要</strong>先讀技術性的主題。它面向的是 CISO、法務、合規與管理層，也適合想理解「為什麼資安團隊一直問我這些問題」的開發者。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="01-position.html">第 1 章　全貌與定位</a></span><span class="p-state" data-file="01-position.html"></span><span class="p-desc">兩份文件各是什麼、版本與日期、修訂史的疑點、它們的限制。表 3 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="02-checklist-strategy.html">第 2 章　檢核表的前半：威脅與導入策略</a></span><span class="p-state" data-file="02-checklist-strategy.html"></span><span class="p-desc">五個威脅標籤、「不使用」的風險、影子 AI、六步部署策略與六種部署類型。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-checklist-areas.html">第 3 章　檢核表的 13 個區塊</a></span><span class="p-state" data-file="03-checklist-areas.html"></span><span class="p-desc">13 個區塊逐一說明；法務與合規為重點。情境 A。表 2 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="04-coe.html">第 4 章　卓越中心 (CoE)</a></span><span class="p-state" data-file="04-coe.html"></span><span class="p-desc">CoE 的結構、五個目標與 KPI、十一種角色、12 個月階段。情境 B。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="05-integration.html">第 5 章　跨文件整合與收尾</a></span><span class="p-state" data-file="05-integration.html"></span><span class="p-desc">什麼時候用哪一份、與其他 OWASP 文件的對應、使用限制、全主題重點。表 1 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（14 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO5，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">核對清單、版本與日期對照、文件內部的不一致、授權、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>檢核表是<strong>給領導層的提問清單</strong>，不是技術規格：它列出 13 個要想清楚的面向，每個面向底下是「請確認……」的行動項。</li>
+  <li>CoE 指南回答的是<strong>誰來做</strong>：把資安、法務、資料科學、營運與使用者放進同一個跨部門結構，並用 OKR 與 KPI 衡量。</li>
+  <li>兩份文件都是 <strong>2024 年發布</strong>，早於 Agentic 興起；用它們時要自己補上 agent、MCP 等新範圍，並核對法規是否仍是原文所寫的狀態。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的類比、歸類或流程。</li>
+  <li>兩個情境（A、B）都是 <span class="tag fiction">虛構</span> 的公司與系統，不含可直接使用的攻擊手法。</li>
+  <li>本主題的主要來源是<strong>兩份官方 PDF</strong>。PDF 的文字抽取會遺失數字，本教材另外把相關頁面轉成圖片逐頁核對；所有已知的不一致與未能確認項目，都集中列在 <a href="references.html">參考資料頁</a>。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；無法使用時，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>圖表以本地 Mermaid 繪製；若圖沒有顯示，每張圖下方都有文字說明。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：LLM Applications Cybersecurity and Governance Checklist、LLM and Generative AI Security Center of Excellence Guide、genai.owasp.org 網站 — CC BY-SA 4.0。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

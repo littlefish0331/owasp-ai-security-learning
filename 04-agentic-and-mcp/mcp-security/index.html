@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCP 安全｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP 的 MCP 安全文件主題首頁：MCP Top 10（Beta）、伺服器開發指南、第三方使用 Cheat Sheet 與 MCP Security Cheat Sheet；學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="mcp-security" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>MCP 安全</h1>
+<ul class="meta-row">
+  <li>04 Agentic 與 MCP｜主題 4</li>
+  <li>預估學習時間：約 75–85 分鐘（5 章閱讀約 39 分鐘；章末檢核與總測驗約 30–35 分鐘）</li>
+  <li>採用來源：Secure MCP Server Development 指南 Version 1.0（February 2026）、第三方 MCP 使用 Cheat Sheet Version 1.0（October 23, 2025）、MCP Security Cheat Sheet（最近修改 2026-10-16）、MCP Top 10（Beta）；2026-10-26 讀取</li>
+  <li><span class="tag nc">NC</span> MCP Top 10 的授權文字自相矛盾，保守視為非商業；詳見第 2 章與參考資料頁</li>
+</ul>
+<p class="lead">MCP (Model Context Protocol) 把 agent 接到工具與資料，也把一個新的攻擊面接進來。OWASP 圍繞它出了四份主要文件，成熟度與讀者都不同。這個主題教你分清楚它們：你是開發者還是使用者？哪一份相對穩定、哪一份仍在 Beta？十項風險怎麼分組？官方的控制怎麼落到一個具體的伺服器或導入流程？學完後，你能拿到任一個 MCP 情境，說出該看哪份文件、先補哪類控制。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>地圖與成熟度：</strong>說出四份主要 MCP 安全文件各自給誰、版本與日期，以及 MCP Top 10 的 Beta 狀態與 MCP06 的改名。<br><small>對應：<a href="01-map-and-status.html">第 1 章</a></small></li>
+  <li id="lo2"><strong>十項風險：</strong>把 MCP Top 10 依出問題的地方分組，並解釋 Tool Poisoning 與 Rug Pull。<br><small>對應：<a href="02-top10-groups.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>開發者視角：</strong>依八類控制與最低標準檢查一個 MCP 伺服器設計，找出隔離與身分的破口。<br><small>對應：<a href="03-server-developer.html">第 3 章</a></small></li>
+  <li id="lo4"><strong>使用者視角：</strong>說明受信任登錄與五步驟治理，並對第三方伺服器列出該先檢查的事項。<br><small>對應：<a href="04-third-party-user.html">第 4 章</a></small></li>
+  <li id="lo5"><strong>整合：</strong>決定先看哪份文件，並分辨官方明文與作者整理，說出 MCP 與 Agentic 系列的關係。<br><small>對應：<a href="05-integration.html">第 5 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>建議先讀 <a href="../agentic-threats-and-mitigations/index.html">Agentic 威脅與緩解</a>（尤其 T16 與 Playbook 3）與 <a href="../agentic-top-10-2026/index.html">Top 10 for Agentic Applications 2026</a>（尤其 ASI02、ASI04）。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>（約 10 分鐘）。本主題用到攻擊面、信任邊界、最小權限、混淆代理人。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="01-map-and-status.html">第 1 章　MCP 文件地圖與成熟度</a></span><span class="p-state" data-file="01-map-and-status.html"></span><span class="p-desc">四份文件、三個角色與兩種傳輸、成熟度與版本演進（MCP06 改名）。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="02-top10-groups.html">第 2 章　MCP Top 10 十項分組</a></span><span class="p-state" data-file="02-top10-groups.html"></span><span class="p-desc">十項分三組、與 Agentic Top 10 的對照（作者整理）、Tool Poisoning 與 Rug Pull。表 2 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-server-developer.html">第 3 章　伺服器開發者視角</a></span><span class="p-state" data-file="03-server-developer.html"></span><span class="p-desc">八類控制與最低標準；情境 A 多租戶知識庫伺服器。表 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="04-third-party-user.html">第 4 章　第三方使用者視角</a></span><span class="p-state" data-file="04-third-party-user.html"></span><span class="p-desc">四類攻擊模式、客戶端信任最小化、受信任登錄與五步驟治理；情境 B。表 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="05-integration.html">第 5 章　跨文件整合與收尾</a></span><span class="p-state" data-file="05-integration.html"></span><span class="p-desc">選文件的決策流程、兩個社群建議控制、與 Agentic 系列的關係、04 階段回顧。表 2 張、圖 2 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（16 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO5，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">版本與日期對照、與調查筆記的差異、授權矛盾、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>先分角色：<strong>開發</strong> MCP 伺服器看開發指南；<strong>使用</strong>別人的看第三方使用 Cheat Sheet；兩者都用 MCP Security Cheat Sheet 補最新實務。</li>
+  <li>成熟度不同，引用方式不同：PDF 寫版本；Cheat Sheet 寫讀取日；<strong>MCP Top 10 仍是 Beta，MCP06 已改名為 Intent Flow Subversion</strong>。</li>
+  <li>多租戶的洩漏常來自三個各自合理的決定組合起來；<strong>禁止權杖直通</strong>、<strong>session 是狀態而非身分</strong>、<strong>信任有期限且可撤銷</strong>是三個反覆出現的設計原則。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的類比、歸類或流程。</li>
+  <li>情境 A、B 是 <span class="tag fiction">虛構</span> 的公司與系統，不含可直接使用的攻擊手法。</li>
+  <li>MCP Top 10 的授權文字自相矛盾，本教材<strong>不複製其內文</strong>，只引用名稱、編號與簡短描述。指南中列舉的各種工具名稱（如 mcp-scan 等）是官方舉例，本教材不背書。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；無法使用時，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>圖表以本地 Mermaid 繪製；若圖沒有顯示，每張圖下方都有文字說明。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：Secure MCP Server Development 指南、第三方 MCP 使用 Cheat Sheet — CC BY-SA 4.0；MCP Security Cheat Sheet — Cheat Sheet Series 網站標示。<span class="tag nc">NC</span> OWASP MCP Top 10 的授權文字自相矛盾（LICENSE.md 為 CC BY-SA 4.0；README 與 index.md 為 CC BY-NC-SA 4.0），本教材保守視為非商業授權，僅引用其名稱、編號與簡短描述。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

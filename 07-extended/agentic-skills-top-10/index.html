@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentic Skills Top 10｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP Agentic Skills Top 10 (AST10) 主題首頁：學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="agentic-skills-top-10" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>Agentic Skills Top 10</h1>
+<ul class="meta-row">
+  <li>07 延伸主題｜主題 4</li>
+  <li>預估學習時間：約 55–65 分鐘（4 章閱讀約 30 分鐘；章末檢核與總測驗約 25–30 分鐘）</li>
+  <li>採用來源：owasp.org 專案頁、GitHub 儲存庫（README 與 AST01–AST10 條目檔）、2026 年 8 月的白皮書 PDF，2026-10-26 讀取</li>
+</ul>
+<p class="lead">這個主題帶你讀 OWASP 針對「Agent 技能 (skill)」的十大風險清單。技能是 Agent 載入的一包指令與資源（典型是一個 <code>SKILL.md</code> 加上相關檔案）。它夾在「模型怎麼呼叫工具」(MCP) 與「工具實際做什麼」之間，正是這份清單想補的缺口。學完後，你能分辨 AST01–AST10、用官方的決策樹歸類一個發現，並知道這份文件<strong>在嚴重度與編號上有哪些內部不一致</strong>，引用時該怎麼處理。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>定位與版本：</strong>說明 AST10 是什麼、與 MCP Top 10 及 Agentic Top 10 的分工、現行版本與成熟度，以及它在嚴重度與外部編號上有哪些不一致。<br><small>對應：<a href="01-position.html">第 1 章</a></small></li>
+  <li id="lo2"><strong>風險分辨：</strong>依官方的四個生態面向分辨 AST01–AST10，並用官方決策樹為一個發現選出主要條目。<br><small>對應：<a href="02-ten-risks.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>防禦選擇：</strong>面對一個技能相關情境，指出涉及哪些條目，並選出官方建議中對應的控制（簽章、釘選、權限清單、隔離、掃描、治理）。<br><small>對應：<a href="03-controls-and-scenarios.html">第 3 章</a></small></li>
+  <li id="lo4"><strong>跨文件整合：</strong>正確處理 AST、ASI、MCP、LLM 的編號與年份，知道哪些對應是官方明載、哪些不能照用。<br><small>對應：<a href="04-integration.html">第 4 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>建議先讀 <a href="../../01-overview/ai-exchange/index.html">OWASP AI Exchange 主題</a>第 5 章（GenAI 與 Agentic AI），了解 Agent 與工具呼叫的基本風險。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>（約 10 分鐘）。本主題用到最小權限、供應鏈、信任邊界與縱深防禦。</li>
+  <li>你需要熟悉「Agent 會載入並執行技能」這件事；套件管理（npm、PyPI）的經驗會有幫助，教材會多次拿它做類比。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="01-position.html">第 1 章　全貌與定位</a></span><span class="p-state" data-file="01-position.html"></span><span class="p-desc">技能是什麼、AST10 的定位、版本與兩處內部不一致。表 2 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="02-ten-risks.html">第 2 章　十項風險與歸類</a></span><span class="p-state" data-file="02-ten-risks.html"></span><span class="p-desc">四個生態面向、十項風險、官方決策樹。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-controls-and-scenarios.html">第 3 章　防禦與情境</a></span><span class="p-state" data-file="03-controls-and-scenarios.html"></span><span class="p-desc">反覆出現的控制主題；兩個虛構情境。情境 A、B。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="04-integration.html">第 4 章　跨文件整合與收尾</a></span><span class="p-state" data-file="04-integration.html"></span><span class="p-desc">與 Agentic Top 10、MCP Top 10、LLM Top 10 的對應與不能照用的地方；全主題重點。表 2 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（14 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO4，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">核對清單、版本與日期對照、授權、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>AST10 的口訣：<strong>MCP 是模型怎麼跟工具說話；AST10 談的是那些工具（技能）實際做什麼</strong>。技能把自然語言指令與可執行程式混在一起，這是它與一般套件供應鏈最大的差別。</li>
+  <li>十項風險可依官方四個面向記：來源與登錄信任、執行邊界、生命週期治理、跨平台重用。</li>
+  <li>官方資料有<strong>內部不一致</strong>：GitHub 條目檔有嚴重度，2026 年 8 月的白皮書卻明說不指派嚴重度；對 LLM Top 10 的編號也沒有帶年份。引用時要註明。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的類比、歸類或流程。</li>
+  <li>兩個情境（A、B）都是 <span class="tag fiction">虛構</span> 的公司與系統，不含可直接使用的攻擊手法。</li>
+  <li>AST10 自己引用了許多統計與事件（例如某次大規模惡意技能活動）。這些是 AST10 引用的第三方研究，<strong>本教材沒有獨立查證，因此不複述其數字</strong>，只講風險的結構。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；無法使用時，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>圖表以本地 Mermaid 繪製；若圖沒有顯示，每張圖下方都有文字說明。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：OWASP Agentic Skills Top 10 — CC BY-SA 4.0（README 與專案頁）；OWASP Top 10 for LLM Applications 2026、Top 10 for Agentic Applications 2026 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

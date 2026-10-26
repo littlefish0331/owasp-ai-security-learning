@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜治理檢核表與卓越中心｜OWASP AI 資安學習教材</title>
+<meta name="description" content="治理檢核表與卓越中心主題總測驗：14 題，涵蓋五個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="governance-checklist-and-coe" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：治理檢核表與卓越中心</h1>
+<ul class="meta-row">
+  <li>14 題（選擇題 4、情境判斷題 6、配對題 4）</li>
+  <li>預估時間：約 20 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO5</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–5 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位：</strong>說明兩份文件各是什麼、給誰用、版本與日期，以及它們不是什麼。</li>
+  <li><strong>威脅與策略：</strong>說明檢核表如何從五個威脅標籤出發，決定導入策略（含「不使用」的風險與影子 AI），並依情境選擇部署方式。</li>
+  <li><strong>檢核項目：</strong>依 13 個區塊把治理問題歸類，並說明法務與合規區塊在查什麼。</li>
+  <li><strong>卓越中心：</strong>說明 CoE 的組成、五個目標與 KPI 寫法，以及哪些角色負責哪類工作。</li>
+  <li><strong>整合：</strong>判斷先用檢核表還是 CoE，並把它們與其他 OWASP 文件接起來。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：Governance Checklist、CoE Guide、genai.owasp.org 網站 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-position.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-checklist-strategy.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-checklist-areas.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-coe.html', a, '第 4 章 ' + l); };
+  var C5 = function (a, l) { return R('05-integration.html', a, '第 5 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('pos-onepage', '1.1'), C1('pos-position', '1.2')],
+    stem: '下列哪一項最準確地描述 Governance Checklist 與 CoE Guide 的關係？',
+    options: [
+      { text: '它們是同一份 PDF 的兩個章節，版本與日期相同。', why: '它們是各自的 PDF、各自的版本與日期。' },
+      { text: 'CoE Guide 是 Checklist 的第二版，取代了它。', why: '沒有任何官方文字說明取代關係，兩者談的是不同問題。' },
+      { text: '兩者都只給開發者使用，用來撰寫程式。', why: '兩者的對象是領導層、資安、法務、合規等，而不是開發手冊。' },
+      { text: '同屬 AI Security Governance Initiative 的兩份文件：Checklist 列出要想清楚的面向，CoE Guide 說明由誰、用什麼結構來做。', correct: true, why: '這是 1.1、1.2 節的定位；官方 Initiative 頁同時列出兩者。' }
+    ],
+    summary: 'Checklist：要想清楚什麼；CoE Guide：誰來做。同屬一個 Initiative。' },
+
+  { id: 'q02', type: 'scn', lo: [1], refs: [C1('pos-version', '1.3 表 1-2'), C1('pos-limit', '1.4 表 1-3')],
+    stem: '依本教材，這份內部文件的引用有哪些地方需要修正？',
+    scenario: '潮汐金融（虛構）的合規文件寫著：「依 OWASP CoE Guide v1.0（2024-10-01）建立 AI 卓越中心；並依 OWASP 治理檢核表，所有 13 個區塊皆已完成，因此可視為通過 OWASP 的認證，不需另行法律審查。」',
+    options: [
+      { text: '只需要把日期改成 2024-10-06。', why: '日期和版本寫法固然要修，但「通過 OWASP 認證」與「不需法律審查」更是沒有依據。' },
+      { text: '把「13 個區塊」改成「15 個區塊」。', why: '區塊數是 13，在第 3 章逐一列出，這不是錯誤所在。' },
+      { text: '全部正確，因為是官方文件。', why: '官方文件也有其限制；而且文件本身並沒有提供認證。' },
+      { text: '版本與日期要如實寫：PDF 內頁標示 1.0rc，資源頁日期為 2024-10-06；另外，OWASP 沒有為檢核表提供認證，兩份文件也明說不是法律意見、不窮盡，不能取代法律審查。', correct: true, why: '對應表 1-2（版本日期）與表 1-3（不是法律意見、不完整）。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 版本：CoE Guide 的 PDF 每頁頁尾寫 1.0rc，修訂史也寫 1.0rc，檔案屬性的標題寫 v1.0；依「以最新者為準」採資源頁 2024-10-06，版本寫「PDF 內頁標示 1.0rc」，不能寫成 v1.0。(2) 認證：沒有任何 OWASP 機制為檢核表認證，檢核表還有「Not Comprehensive」一節。(3) 法律：兩份 PDF 都聲明內容不構成法律意見。</p><p><strong>結論：</strong>改寫版本與日期，並把檢核表定位為準備度盤點的議程，法律面向仍由法務審查。對應教材：<a href="01-position.html#pos-version">1.3 節</a>、<a href="01-position.html#pos-limit">1.4 節</a>。</p>' },
+
+  { id: 'q03', type: 'match', lo: [1], refs: [C1('pos-onepage', '1.1 表 1-1')],
+    stem: '把下列描述配對到它最符合的文件。',
+    cats: [
+      { id: 'chk', label: 'Governance Checklist' },
+      { id: 'coe', label: 'CoE Guide' }
+    ],
+    items: [
+      { text: '列出 13 個要確認的區塊，每個區塊底下是行動項', answer: 'chk', why: 'Checklist 的主體就是 13 個區塊。' },
+      { text: '說明領導團隊與工作小組如何組成，並附 12 個月的範例階段', answer: 'coe', why: '結構與階段是 CoE Guide 的內容。' },
+      { text: '提供五個目標與範例 OKR、KPI', answer: 'coe', why: 'OKR 與 KPI 在 CoE Guide。' },
+      { text: '提供部署類型的比較與影子 AI 的說明', answer: 'chk', why: '導入策略與影子 AI 在 Checklist 的前半部。' }
+    ],
+    summary: 'Checklist：問什麼；CoE：誰來做、怎麼衡量。' },
+
+  /* ================= LO2 威脅與策略 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C2('cs-notuse', '2.2')],
+    stem: '一位主管主張：「只要全面禁止使用生成式 AI，我們就沒有 AI 風險了。」依 Checklist，這個說法的問題是什麼？',
+    options: [
+      { text: '沒有問題，禁止使用是最安全的做法。', why: '文件把「不使用 AI」也列為一類威脅，並指出影子 AI 是最迫切的非攻擊者威脅。' },
+      { text: '法規要求所有公司都必須使用 AI。', why: '文件沒有這樣的要求。' },
+      { text: '忽略了不使用的成本（競爭、營運、人為錯誤等），也忽略了員工仍可能私下使用未核准的工具（影子 AI）。', correct: true, why: '2.1、2.2 節：不使用有代價；影子 AI 繞過軟體核准流程。' },
+      { text: '禁止使用只在 Type 1 直接使用才有效。', why: '文件沒有這樣的分類說明。' }
+    ],
+    summary: '「不使用」有成本；禁令不會讓影子 AI 消失（後者為作者推論）。' },
+
+  { id: 'q05', type: 'match', lo: [2], refs: [C2('cs-steps', '2.3 表 2-2')],
+    stem: '把下列使用情境配對到最接近的部署類型。',
+    cats: [
+      { id: 'a', label: 'Type 1 直接使用' },
+      { id: 'b', label: 'Type 2 透過模型 API' },
+      { id: 'c', label: 'Type 4 預訓練模型' },
+      { id: 'd', label: 'Type 6 自訂模型' }
+    ],
+    items: [
+      { text: '用通用基礎模型，再以企業資料微調', answer: 'c', why: '預訓練模型：通用基礎模型加上企業或自訂資料的微調。' },
+      { text: '員工直接在聊天介面提問', answer: 'a', why: '直接使用 LLM 的介面。' },
+      { text: '為特定業務情境建置量身打造的模型架構', answer: 'd', why: '自訂模型。' },
+      { text: '應用程式向供應商以 API 呼叫模型', answer: 'b', why: '透過模型 API。' }
+    ],
+    summary: '越往 Type 6，控制與能見度越高，投入也越大。' },
+
+  { id: 'q06', type: 'scn', lo: [2], refs: [C2('cs-steps', '2.3 圖 2-1'), C2('c-strategy', '2.4')],
+    stem: '依本章，這個計畫的順序有什麼問題？',
+    scenario: '青嵐醫療（虛構）的專案計畫書寫：「第一步：選定要採購的模型。第二步：向員工宣布使用規範。第三步：事後再盤點是否有人在用未核准的 AI 工具。」資安經理認為順序怪怪的，想引用 OWASP 檢核表的導入策略。',
+    options: [
+      { text: '應該先做韌性優先（威脅建模濫用案例、掃描並監控非核准應用），再更新政策、訓練、與領導層對齊、更新第三方風險管理，最後才選擇部署策略。', correct: true, why: '對應圖 2-1 的六步順序；影子 AI 的盤點屬第 1 步，不該拖到最後。' },
+      { text: '順序沒問題，先選模型才知道要規範什麼。', why: '檢核表的六步中，選擇部署策略是最後的第 6 步；選模型不是起點。' },
+      { text: '應該把三步全部刪掉，改成直接做紅隊演練。', why: '紅隊是驗證步驟，無法取代策略、政策與盤點。' },
+      { text: '只需要把第三步移到第二步。', why: '調整一個順序仍沒有補上威脅建模、訓練與第三方風險等步驟，而且部署策略仍排在最前。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 官方圖 2.1 的六步：韌性優先、更新既有政策、訓練與教育、與領導層對齊、更新第三方風險管理、選擇部署策略。(2) 計畫把「選模型」放第一步，是把最後一步放到最前。(3) 把影子 AI 盤點放到最後，違反第 1 步「掃描並監控非核准應用」。</p><p><strong>結論：</strong>調整為韌性優先開始、部署策略最後決定。需注意：官方圖的箭頭是編號順序，官方沒有說必須完成前一步才能開始下一步，這是教材標示過的限制。對應教材：<a href="02-checklist-strategy.html#cs-steps">2.3 節</a>。</p>' },
+
+  /* ================= LO3 檢核項目 ================= */
+  { id: 'q07', type: 'match', lo: [3], refs: [C3('ar-map', '3.1 表 3-1')],
+    stem: '把下列問題配對到它最該歸屬的檢核區塊。',
+    cats: [
+      { id: 'inv', label: 'AI Asset Inventory' },
+      { id: 'gov', label: 'Governance' },
+      { id: 'reg', label: 'Regulatory' },
+      { id: 'card', label: 'Model Cards and Risk Cards' }
+    ],
+    items: [
+      { text: '誰負責、誰當責、誰被諮詢、誰被告知？', answer: 'gov', why: 'RACI 屬治理區塊。' },
+      { text: '確認某地的員工監控與臉部辨識同意規定', answer: 'reg', why: '各地法規與同意規定屬合規區塊。' },
+      { text: '追蹤並維護所有已部署模型（含第三方）的模型卡', answer: 'card', why: '模型卡與風險卡區塊的行動項。' },
+      { text: '盤點內部與第三方的 AI 服務與資料來源', answer: 'inv', why: '資產清冊區塊的行動項。' }
+    ],
+    summary: '歸類的關鍵是：這個問題最終由誰回答。' },
+
+  { id: 'q08', type: 'mc', lo: [3], refs: [C3('ar-legal', '3.2 表 3-2')],
+    stem: '一個團隊要用 AI 產生的程式碼放進公司的商業產品。依本章，這個決策最該先找誰討論？為什麼？',
+    options: [
+      { text: '只找資安，因為程式碼風險是資安問題。', why: '程式碼安全是一部分，但文件指出另有權利歸屬的問題：聊天機器人寫的程式碼可能影響公司對產品的權利。' },
+      { text: '不需要找人，Checklist 已經規定不能使用。', why: '文件沒有規定不能使用；而是要審閱並限縮在有權利疑慮的情境。' },
+      { text: '找行銷，因為與品牌有關。', why: '與權利歸屬的關係不大。' },
+      { text: '找法務：AI 產生內容的權利歸屬、使用的資料是否侵權，屬法務區塊（智慧財產與著作權）。', correct: true, why: '3.2 節表 3-2：智慧財產與著作權議題需法務與研發共同處理。' }
+    ],
+    summary: '三類技術決策最容易觸發法律問題：資料送給誰、AI 程式碼進產品、AI 用於招募。' },
+
+  { id: 'q09', type: 'scn', lo: [3], refs: [C3('ar-map', '3.1'), C3('ar-scenario', '3.4 情境 A')],
+    stem: '依本章，哪一個區塊是這個團隊最先該補的？',
+    scenario: '寰宇旅遊（虛構）打算導入一個客服 LLM。會議中，各部門各說各話：行銷說已買了某訂閱服務；客服不知道哪些資料送進了那個服務；法務沒有看過任何一份供應商協議。資安長要求先釐清「現在到底有哪些 AI 工具、誰在用、資料往哪去」。',
+    options: [
+      { text: 'AI Red Teaming（區塊 13）。', why: '沒有盤點就不知道要測哪些系統。' },
+      { text: 'Establish Business Cases（區塊 5）。', why: '商業案例重要，但無法解決「看不見」的暴露。' },
+      { text: 'AI Asset Inventory（區塊 3）：盤點 AI 服務、負責人與資料來源，並建立 AI 方案上線流程。', correct: true, why: '現況的根本缺口是看不見；其他區塊都要以盤點結果為範圍。' },
+      { text: 'RAG（區塊 12）。', why: '該區塊行動項只有參考資料，不是起點。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 資安長要的是清單：有哪些工具、誰在用、資料去哪，這正是資產清冊區塊的內容。(2) 法務沒看過協議，屬法務區塊，但要先知道有哪些協議才能審。(3) 所以盤點是其他區塊的前提。</p><p><strong>結論：</strong>先補資產清冊，再接續治理、法務與訓練。對應教材：<a href="03-checklist-areas.html#ar-map">3.1 節</a>。</p>' },
+
+  /* ================= LO4 卓越中心 ================= */
+  { id: 'q10', type: 'mc', lo: [4], refs: [C4('coe-structure', '4.1')],
+    stem: '依 CoE Guide，下列哪一項被列為 CoE 面臨的內部挑戰？',
+    options: [
+      { text: '溝通障礙、抗拒改變、資源分配與技能落差。', correct: true, why: '4.1 節：文件列的四種內部挑戰。' },
+      { text: '只有資安團隊願意參與。', why: '文件沒有這樣列。' },
+      { text: '法規太多，所以無法成立 CoE。', why: '文件沒有這樣說。' },
+      { text: '外部顧問一定會洩漏機密。', why: '文件反而建議借助外部專家來彌補技能。' }
+    ],
+    summary: '四種內部挑戰：溝通、抗拒改變、資源分配、技能落差。' },
+
+  { id: 'q11', type: 'scn', lo: [4], refs: [C4('coe-okr', '4.2 表 4-1'), C4('coe-roles', '4.3 表 4-2')],
+    stem: '依本章，這份 CoE 計畫最需要補強的是什麼？',
+    scenario: '玉山機械（虛構）只有 300 人，沒有專責的倫理與治理部門。CoE 計畫書要求新設該部門，並把所有十一種角色都設為專職；KPI 全部是「舉辦場次」「發布份數」。管理層質疑成本太高。',
+    options: [
+      { text: '不需要補強，照單全收才完整。', why: '文件總結明說不是每家公司都需要所有角色。' },
+      { text: '只保留資安團隊一個角色。', why: '跨部門協作是 CoE 的核心；單一角色等於放棄這個設計。' },
+      { text: '把 12 個月縮成 6 個月。', why: '文件沒有建議縮短，而是說依自身情況調整。' },
+      { text: '依組織需求裁剪角色，倫理與治理可由法務、風險與業務分擔；並在 KPI 中加入衡量效果的指標。', correct: true, why: '角色裁剪與倫理治理分擔是文件說的；KPI 要分辨活動量與效果是作者建議。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 文件總結：不是每家公司都需要所有角色。(2) Ethics and Governance 角色段落承認不是每個組織都有專責團隊，可由法務、風險、營運與業務組成。(3) KPI 全是活動量，缺少效果指標，這是教材標示的作者建議。</p><p><strong>結論：</strong>裁剪角色並補效果指標。對應教材：<a href="04-coe.html#coe-roles">4.3 節</a>、<a href="04-coe.html#coe-okr">4.2 節</a>。</p>' },
+
+  { id: 'q12', type: 'match', lo: [4], refs: [C4('coe-phases', '4.4 圖 4-1')],
+    stem: '把下列行動配對到 CoE 範例時程中最相關的階段。',
+    cats: [
+      { id: 'p1', label: '階段 1（第 1–3 月）' },
+      { id: 'p2', label: '階段 2（第 4–6 月）' },
+      { id: 'p3', label: '階段 3（第 7–9 月）' },
+      { id: 'p4', label: '階段 4（第 10–12 月）' }
+    ],
+    items: [
+      { text: '組成領導團隊並定義各部門角色', answer: 'p1', why: '階段 1 的關鍵行動。' },
+      { text: '實施 CoE 成員訓練，並啟動初期跨部門專案', answer: 'p2', why: '階段 2：整合與開發。' },
+      { text: '進行首輪安全稽核與風險評估', answer: 'p3', why: '階段 3：營運化。' },
+      { text: '依成效與回饋調整政策，並規劃納入更多 AI 專案', answer: 'p4', why: '階段 4：評估與擴展。' }
+    ],
+    summary: '四階段：規劃建置 → 整合開發 → 營運化 → 評估擴展。' },
+
+  /* ================= LO5 整合 ================= */
+  { id: 'q13', type: 'scn', lo: [5], refs: [C5('int-which', '5.1 圖 5-1')],
+    stem: '依本章的判斷流程（作者整理），這家公司現在最合理的第一步是什麼？',
+    scenario: '新昌物流（虛構）有三個部門各自導入 AI 工具，沒有人整體負責。資安長想先用檢核表做準備度評估，但發現連「誰來認領每個區塊」都沒有答案。',
+    options: [
+      { text: '直接把 13 個區塊分給資安團隊一個人做。', why: '這會讓區塊都由同一人回答，無法覆蓋法務、人資等問題的主人。' },
+      { text: '先放棄，因為文件已過時。', why: '兩份文件雖是 2024 年發布，仍可作為組織層級的起點，使用時補上新範圍。' },
+      { text: '先組 CoE 的領導團隊與角色，讓檢核表的區塊有主人，再用檢核表做準備度評估。', correct: true, why: '圖 5-1：沒有人整體負責時，先成立 CoE 領導團隊；兩份文件互補。這個判斷流程屬作者整理。' },
+      { text: '先去買一個宣稱「OWASP 認證」的產品。', why: 'OWASP 沒有為檢核表提供認證。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 檢核表的區塊是「該有人回答的問題」，缺少主人就無法落實。(2) 沒有人整體負責，正是 CoE Guide 的使用時機。(3) 兩者互補：CoE 成立後，檢核表是它的第一份工作清單。</p><p><strong>結論：</strong>先組 CoE 領導團隊，再用檢核表。此判斷流程是作者整理，非官方。對應教材：<a href="05-integration.html#int-which">5.1 節</a>。</p>' },
+
+  { id: 'q14', type: 'mc', lo: [5], refs: [C3('ar-map', '3.1 表 3-1'), C5('int-table', '5.2 表 5-1'), C5('int-limit', '5.3')],
+    stem: '你的團隊在 Checklist 的「使用或實作」區塊看到「訓練管線安全」只有一句要求，想知道具體怎麼做。依本章，下一步最合理的是什麼？',
+    options: [
+      { text: '換用更技術性的文件，例如 AI Exchange（選控制與做風險分析），或 LLM Top 10 2026、06 階段評估與驗證的主題。', correct: true, why: '5.3 節：用到邊界就換文件。' },
+      { text: '期待 Checklist 在其他頁面補足細節，繼續找。', why: '本章指出：這兩份文件是組織層級的提問與結構，不是技術控制手冊。' },
+      { text: '把這一句當成完整規格直接實作。', why: '一句話無法當作規格。' },
+      { text: '認定 OWASP 沒有相關資料。', why: '其他 OWASP 文件有更深入的內容，只是不在這兩份文件裡。' }
+    ],
+    summary: '兩份文件在技術深度上有邊界；用到邊界就換文件。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'governance-checklist-and-coe', mode: 'final',
+    los: [
+      { n: 1, text: '定位：說明兩份文件各是什麼、給誰用、版本與日期，以及它們不是什麼。' },
+      { n: 2, text: '威脅與策略：說明檢核表如何從威脅出發決定導入策略，含「不使用」的風險與影子 AI，並依情境選擇部署方式。' },
+      { n: 3, text: '檢核項目：依 13 個區塊把治理問題歸類，並說明法務與合規區塊在查什麼。' },
+      { n: 4, text: '卓越中心：說明 CoE 的組成、五個目標與 KPI 寫法，以及角色分工。' },
+      { n: 5, text: '整合：判斷先用檢核表還是 CoE，並把它們與其他 OWASP 文件接起來。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

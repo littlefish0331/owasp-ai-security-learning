@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜Agentic 威脅與緩解｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Agentic 威脅與緩解主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="agentic-threats-and-mitigations" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 3.2 節與第 8 節）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以作者回到一手來源重新核對：下載四份官方 PDF（用瀏覽器標頭與 Referer）並讀其封面、目錄與本教材引用的段落，同時讀各資源頁的顯示日期。本頁列出採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。舊版資訊只出現在本頁。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">Agentic AI – Threats and Mitigations</th><td><strong>Version 1.1、December 2025</strong>；PDF 53 頁；資源頁顯示 2025-02-17</td><td>PDF 封面；資源頁 February 17, 2025；網頁中繼資料 datePublished 2025-02-17、dateModified 2025-04-28；PDF 檔案建立日 2025-12-07</td><td>CC BY-SA 4.0（PDF 封面）</td></tr>
+<tr><th scope="row">Multi-Agentic system Threat Modeling Guide</th><td><strong>Version 1.0、April 22, 2025、Status: Released</strong>；PDF 63 頁；資源頁 2025-04-23</td><td>PDF 封面；資源頁；網頁 dateModified 2025-06-10</td><td>CC BY-SA 4.0（PDF 封面）</td></tr>
+<tr><th scope="row">Agentic Threats Navigator</th><td>資源頁 2025-03-06；PDF 1 頁（資訊圖）；版本未載</td><td>資源頁；PDF 內文只列 15 項威脅（沒有 T16、T17）</td><td>網站頁尾 CC BY-SA 4.0（除非另有說明）；PDF 內未見授權文字</td></tr>
+<tr><th scope="row">Top 10 for Agentic Applications for 2026（僅引用其附錄 A 與對 T&amp;M 的描述）</th><td>Version 2026、December 2025；PDF 57 頁；資源頁 2025-12-09</td><td>PDF 封面；資源頁</td><td>CC BY-SA 4.0（PDF 封面）</td></tr>
+<tr><th scope="row">Top 10 for LLM Applications 2026（僅用於對照 2026 版編號）</th><td>Version 2026，2026-08-04（沿用 01 總覽主題的處理）</td><td>GitHub <code>2026/README.md</code></td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0（沿用先前主題已放置的副本）</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">T&amp;M 版本</th><td>「2025-02-17；v1.0 取自封面檔名」，並在第 8 節第 19 項註明版本取自檔名屬推論</td><td>PDF 封面明載 <strong>Version 1.1、December 2025</strong>。資源頁日期仍是 2025-02-17</td><td>採 1.1（較新）；第 1 章以提示框說明</td></tr>
+<tr><th scope="row">T&amp;M 威脅數量</th><td>未列</td><td>詳細威脅表有 <strong>T1–T17</strong> 共 17 項</td><td>第 2 章表 2-1 逐項列出</td></tr>
+<tr><th scope="row">MAS 指南日期</th><td>2025-04-23</td><td>資源頁 2025-04-23；封面 April 22, 2025（差一天）；網頁 datePublished 2025-04-24T01:58Z（UTC，換算台灣時間為 04-24）</td><td>兩個日期並記，不下結論（見第 4 節）</td></tr>
+<tr><th scope="row">T&amp;M 的 Playbook 數量</th><td>未列</td><td>文字寫「five playbooks」，實際列出 <strong>6 個</strong>（Playbook 1–6）</td><td>採實際列出的六個；第 3 章註明</td></tr>
+<tr><th scope="row">Navigator 的面向</th><td>決策邏輯、記憶、工具、憑證、人類監督、多 Agent 互動</td><td>與 PDF 的六個面向一致（代理與推理、記憶與脈絡、工具與執行、身分與認證、人類參與、多 agency）</td><td>一致，無更正</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">T&amp;M 的版本／日期</th><td>資源頁 2025-02-17（網頁 dateModified 2025-04-28）；PDF 封面 Version 1.1、December 2025；PDF 檔案建立 2025-12-07</td><td>採 PDF 封面（最新且最具體）；資源頁日期只當首次發布日</td></tr>
+<tr><th scope="row">T 編號在不同文件的意義</th><td>T&amp;M 1.1：T16 Insecure Inter-Agent Protocol Abuse、T17 Supply Chain Compromise；MAS 指南 v1.0：T16 Model Inconsistency、T17 Semantic Drift 等，且 T18–T39 為指南自己的編號</td><td>兩者並列，引用要寫名稱與出處；重疊原因為作者推測（見第 4、6 節）</td></tr>
+<tr><th scope="row">LLM Top 10 編號年份</th><td>T&amp;M 1.1 與 Agentic Top 10 附錄 A 引用 LLM Top 10 <strong>2025</strong> 編號；LLM Top 10 2026 重新編號</td><td>教材一律寫 <code>LLMnn:年份</code>；2025 與 2026 的對照見第 2 章提示框</td></tr>
+<tr><th scope="row">T&amp;M 名稱與 Agentic Top 10 附錄 A 的差異</th><td>附錄 A 在 ASI06 一列寫「T4 Memory Overload、T6 Broken Goals、T12 Shared Memory Poisoning」；T&amp;M 1.1 威脅表是 T4 Resource Overload、T6 Intent Breaking &amp; Goal Manipulation、T12 Agent Communication Poisoning</td><td>以 T&amp;M 1.1 威脅表為準；差異是否為筆誤或另有所指，未能確認</td></tr>
+<tr><th scope="row">文件內部的不一致</th><td>(a) 「five playbooks」vs. 六個；(b) Playbook 6 標頭寫 Step 5，Navigator 中多 agent 是 Step 6；(c) MAS 指南同一張表把 T7 列成「T2 Misaligned」</td><td>一律依表中實際內容，教材已提示</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>T&amp;M 1.1 相對於 1.0 的具體變動：</strong>PDF 沒有版本歷史或變更記錄，本教材沒有取得 1.0 的內容比對；無法說明新增了哪些威脅。教材不推測。</li>
+  <li><strong>MAS 指南的確切發布日：</strong>封面 April 22、資源頁 April 23、網頁中繼資料 04-24（UTC）。無法判斷何者為「正式發布日」。</li>
+  <li><strong>T&amp;M 與 MAS 指南 T16 以上編號重疊的原因：</strong>官方沒有說明，教材的解釋是作者推測。</li>
+  <li><strong>Agentic Top 10 附錄 A 的名稱差異：</strong>見 R-3。</li>
+  <li><strong>Agentic Threats Navigator 的授權：</strong>PDF 內沒有授權文字；以網站頁尾的 CC BY-SA 4.0 為準，但其是否為此資源的有效授權未獨立確認。</li>
+  <li><strong>T&amp;M 引用的 MAESTRO 與其他外部來源：</strong>未讀取 Cloud Security Alliance 的原文，只引用 MAS 指南對 MAESTRO 的描述。</li>
+  <li><strong>範例威脅模型與 MAS 案例只讀了教材引用的部分：</strong>T&amp;M 的「Agentic IoT」與「RPA」範例、MAS 指南的 Eliza OS 與 MCP 案例內文，未逐項整理。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<ul>
+  <li>Agentic AI – Threats and Mitigations：<a href="https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/">https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/</a></li>
+  <li>Multi-Agentic system Threat Modeling Guide v1.0：<a href="https://genai.owasp.org/resource/multi-agentic-system-threat-modeling-guide-v1-0/">https://genai.owasp.org/resource/multi-agentic-system-threat-modeling-guide-v1-0/</a></li>
+  <li>Agentic Threats Navigator：<a href="https://genai.owasp.org/resource/owasp-gen-ai-security-project-agentic-threats-navigator/">https://genai.owasp.org/resource/owasp-gen-ai-security-project-agentic-threats-navigator/</a></li>
+  <li>Top 10 for Agentic Applications for 2026：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/</a></li>
+  <li>Agentic Security Initiative 頁：<a href="https://genai.owasp.org/initiatives/agentic-security-initiative/">https://genai.owasp.org/initiatives/agentic-security-initiative/</a></li>
+  <li>LLM Top 10 2026 清單（對照用）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">GitHub 2026/README.md</a></li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 1 章圖 1-1 中標示「不可信」的入口（虛線框）。</li>
+  <li>第 2 章圖 2-1「六個問題各自獨立、可以多個為是」的畫法。</li>
+  <li>第 3 章圖 3-1 的症狀分類與 Playbook 的串接，以及情境 A 中「最先補限縮後果的控制」的優先順序判斷。</li>
+  <li>第 4 章圖 4-1 的步驟 5（威脅對應到 Playbook 並排序）；T16 以上編號重疊原因的推測。</li>
+  <li>所有 Mermaid 圖皆為依官方文字重新繪製的簡化版，不是官方原圖。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>Agentic AI – Threats and Mitigations、MAS Threat Modeling Guide、Top 10 for Agentic Applications 2026、Top 10 for LLM Applications 2026：PDF 封面標示 CC BY-SA 4.0。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>PDF 封面的署名要求：必須包含專案名稱以及所參照資產的名稱；本教材已在各章「本章來源」標示。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：Agentic AI – Threats and Mitigations、Multi-Agentic system Threat Modeling Guide、Top 10 for Agentic Applications 2026、Top 10 for LLM Applications 2026 — CC BY-SA 4.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

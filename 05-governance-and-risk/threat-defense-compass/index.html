@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Threat Defense COMPASS｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Threat Defense COMPASS 1.0 與 RunBook 主題首頁：學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="threat-defense-compass" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>Threat Defense COMPASS</h1>
+<ul class="meta-row">
+  <li>05 治理與風險｜主題 2</li>
+  <li>預估學習時間：約 45–55 分鐘（4 章閱讀約 25 分鐘；章末檢核與總測驗約 20–25 分鐘）</li>
+  <li>採用來源：genai.owasp.org 資源頁、COMPASS RunBook PDF 與 COMPASS 試算表，2026-10-26 讀取</li>
+</ul>
+<p class="lead">治理檢核表告訴你「要想清楚哪些面向」，但沒有告訴你<strong>先處理哪一個</strong>。Threat Defense COMPASS 是同一個 Initiative 提供的「排優先順序」工具：一份試算表加一本 RunBook，用 OODA 循環（觀察、定位、決策、行動）把 AI 威脅、弱點、防禦與對策放進同一個儀表板，並用 1 到 5 分的簡單評分快速排序。學完後，你能對一個 AI 專案走完一輪，並知道這個工具自己承認的限制在哪裡。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>定位：</strong>說明 COMPASS 是什麼（方法加試算表）、它的版本與日期，以及它不適合拿來做什麼。<br><small>對應：<a href="01-position-and-ooda.html">第 1 章</a>、<a href="04-integration.html">第 4 章</a></small></li>
+  <li id="lo2"><strong>觀察與定位：</strong>說明 Observe 與 Orient 各階段做什麼：三種組織視角與威脅檔案、5 分制評分、已知弱點與事件。<br><small>對應：<a href="02-observe-orient.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>決策與行動：</strong>把威脅對映到防禦、建立有負責人與期限的路線圖，並走完一個兩階段的範例。<br><small>對應：<a href="03-decide-act.html">第 3 章</a></small></li>
+  <li id="lo4"><strong>評分：</strong>用「可能性 × 衝擊」算出分數與等級，並辨認 RunBook 範例與試算表分級之間的不一致。<br><small>對應：<a href="02-observe-orient.html">第 2 章</a>、<a href="03-decide-act.html">第 3 章</a></small></li>
+  <li id="lo5"><strong>整合：</strong>知道 COMPASS 與 Governance Checklist、LLM Top 10、MITRE、AIVSS 如何接，以及何時該換別的工具。<br><small>對應：<a href="04-integration.html">第 4 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>建議先讀 <a href="../governance-checklist-and-coe/index.html">治理檢核表與卓越中心</a>：COMPASS 與它同屬 AI Security Governance Initiative，並常被拿來接續檢核表的盤點結果。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>，特別是威脅建模與風險（可能性乘以衝擊）。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="01-position-and-ooda.html">第 1 章　全貌與定位：OODA 循環</a></span><span class="p-state" data-file="01-position-and-ooda.html"></span><span class="p-desc">COMPASS 是什麼、版本日期、四個階段、三份資料之間的差異。表 2 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="02-observe-orient.html">第 2 章　觀察與定位：威脅檔案與評分</a></span><span class="p-state" data-file="02-observe-orient.html"></span><span class="p-desc">三種視角、威脅檔案、5 分制、弱點與事件、紅隊結果。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-decide-act.html">第 3 章　決策、行動與兩個範例</a></span><span class="p-state" data-file="03-decide-act.html"></span><span class="p-desc">對映防禦、路線圖、客服聊天機器人與多 Agent 的範例，以及分級不一致。情境 A。表 2 張、題 4 題（本章沒有圖）。</span></li>
+  <li><span class="p-title"><a href="04-integration.html">第 4 章　跨文件整合與收尾</a></span><span class="p-state" data-file="04-integration.html"></span><span class="p-desc">與 Checklist、LLM Top 10、MITRE、AIVSS 的對應；限制；全主題重點。表 1 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（13 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO5，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">核對清單、三份資料的版本與日期對照、試算表與 RunBook 的不一致、授權、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>COMPASS 是<strong>快速排序工具</strong>，不是精確的威脅建模或風險評估；官方 FAQ 自己這樣說。</li>
+  <li>流程是 <strong>OODA 循環</strong>（觀察、定位、決策、行動），可重複使用；評分是可能性乘以衝擊的 5 分制。</li>
+  <li>三份資料（資源頁、RunBook PDF、試算表）<strong>彼此有出入</strong>：發布日、分頁編號、風險分級都不完全一致，使用時要自己核對。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的類比、歸類或流程。</li>
+  <li>情境 A 是 <span class="tag fiction">虛構</span> 的公司與系統，不含可直接使用的攻擊手法。RunBook 內的範例是官方的，會標明來源。</li>
+  <li>COMPASS 的本體是 Google 試算表。本教材下載了它的匯出檔並讀取各分頁的文字，但<strong>沒有操作試算表的公式</strong>，也沒有檢查它的計算是否正確。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；無法使用時，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>圖表以本地 Mermaid 繪製；若圖沒有顯示，每張圖下方都有文字說明。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：Threat Defense COMPASS RunBook、COMPASS 試算表、genai.owasp.org 網站 — CC BY-SA 4.0。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

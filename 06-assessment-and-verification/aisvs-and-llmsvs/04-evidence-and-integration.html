@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　把需求變成驗證證據與跨文件整合｜AISVS 與 LLMSVS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="選驗證層級、把需求對應到驗證方法與證據、判斷供應商的認證宣稱，並比較 AISVS、LLMSVS、Top 10 與 AI Testing Guide 的用途；含兩個虛構情境與決策流程。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="aisvs-and-llmsvs" data-page="04-evidence-and-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　把需求變成驗證證據與跨文件整合</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4（含 LO1–LO3 的應用）</li>
+  <li>前置：<a href="02-aisvs.html">第 2 章</a>、<a href="03-llmsvs.html">第 3 章</a></li>
+</ul>
+<p class="lead">前三章講「標準是什麼」。這一章回到你真正要做的事：<strong>手上有個系統，怎麼用這些標準驗證它，並產出別人能複查的證據？</strong>你會學到怎麼選目標層級、怎麼把一條需求變成一項驗證、證據要長什麼樣、AISVS 和 LLMSVS 以及其他文件怎麼分工，並用兩個虛構情境練習。</p>
+
+<h2 id="ev-choose">4.1 先選目標層級、再選要用的標準</h2>
+<p>順序很重要。LLMSVS v2.1 草稿明說「在測試前先選層級」，AISVS 也說依風險輪廓選。實務上可以分三步（以下流程是<span class="tag author">作者整理，非官方</span>，但每一步的規則都出自官方文字）：</p>
+<ol>
+  <li><strong>盤點系統有哪些功能：</strong>只是呼叫雲端模型的聊天介面？有檢索？有工具與 MCP？自己訓練或託管模型？功能決定哪些章會用到（草稿的適用標籤、AISVS 的 C8 / C9 / C10 就是這個邏輯）。</li>
+  <li><strong>依風險輪廓選層級：</strong>內部工具、低風險 → 層級 1；面向客戶、處理個資 → 層級 2（AISVS 說多數正式系統至少層級 2）；關鍵或受高度監管 → 層級 3。</li>
+  <li><strong>選標準：</strong>範圍橫跨代理、MCP、資料與基礎設施 → AISVS 較合適；系統是以 LLM 為核心的應用、需要較短的目錄 → LLMSVS 的 70 條較易上手。兩者並用時各自標明版本與層級，並明白兩者的需求編號不通用。</li>
+</ol>
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程：先盤點系統功能，再依風險輪廓選層級，接著決定要驗證什麼用哪份文件。想知道有哪些風險用 Top 10；想知道做到什麼算過用 AISVS 或 LLMSVS；想知道怎麼測用 AI Testing Guide 或紅隊手冊；組織治理用治理框架；一般應用程式安全仍用 ASVS。">
+flowchart TD
+  S["我要驗證一個 AI 系統"] --> Q{"我現在需要什麼？"}
+  Q -->|"認識最關鍵的風險"| T["Top 10 for LLM 2026<br>Top 10 for Agentic 2026"]
+  Q -->|"定義做到什麼才算過"| V{"系統範圍？"}
+  V -->|"代理、MCP、資料、基礎設施都有"| A["AISVS 1.01"]
+  V -->|"以 LLM 應用為主，要較短的目錄"| L["LLMSVS v2.0"]
+  Q -->|"想知道怎麼去測"| G["AI Testing Guide<br>GenAI 紅隊演練"]
+  Q -->|"組織如何管理與負責"| M["治理框架<br>NIST AI RMF、ISO/IEC 42001"]
+  Q -->|"系統其餘的一般網頁安全"| W["OWASP ASVS"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q,V author
+</pre>
+<figcaption><strong>圖 4-1　要驗證什麼、用哪份文件。</strong>各文件的角色分工（Top 10 是認知、驗證標準是判準、測試指南是方法、治理框架是組織管理、ASVS 管一般應用）來自官方描述；把它們串成這個決策流程，以及「依範圍選 AISVS 或 LLMSVS」的建議是<strong>作者整理，非官方</strong>，官方沒有說兩者的選用準則。</figcaption>
+</figure>
+
+<h2 id="ev-evidence">4.2 把一條需求變成驗證與證據</h2>
+<p>每條需求要拆成三件事：<strong>要驗證的結果</strong>、<strong>用什麼方法驗證</strong>、<strong>留下什麼證據</strong>。以下用兩條真實需求示範，驗證方法與證據是作者依 LLMSVS 2.0 認證指引的原則（工作底稿、截圖、重現問題的腳本、proxy 日誌）做的對應，屬<span class="tag author">作者整理，非官方</span>。</p>
+<div class="table-wrap"><table>
+<caption>表 4-1　需求 → 驗證 → 證據（範例；方法與證據為作者整理）</caption>
+<thead><tr><th scope="col">需求（官方）</th><th scope="col">驗證方法</th><th scope="col">可留下的證據</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>v1.01-C2.1.4</code>（層級 1）：輸入長度控制要拒絕超出 token 上限的輸入，不是截斷</th><td>送出一個超過上限的輸入，觀察系統是拒絕還是截斷後繼續</td><td>測試步驟、請求與回應記錄、設定中的上限值</td></tr>
+<tr><th scope="row"><code>v1.01-C9.5.3</code>（層級 2）：存取控制決定絕不由 AI 模型本身做出</th><td>審查程式碼與架構：授權判斷在哪個元件？再用低權限帳號嘗試用說服模型的方式取得高權限動作</td><td>架構圖標出政策決策點、程式碼審查紀錄、低權限帳號被拒絕的記錄</td></tr>
+<tr><th scope="row">LLMSVS <code>V5.13</code>：把 LLM 輸出視為不可信，不串接進 SQL</th><td>檢查使用輸出的程式碼是否用參數化查詢；對含特殊字元的輸出做無害性測試</td><td>程式碼片段、單元測試與其結果</td></tr>
+</tbody></table></div>
+<p>要注意兩個官方立場。第一，<strong>自動化工具的結果單獨不夠</strong>（LLMSVS 2.0），v2.1 草稿也寫廠商問卷或掃描報告單獨不構成通過。第二，<strong>怎麼測</strong>不在驗證標準裡：AISVS 1.01 發布說明指出測試程序請看 OWASP AI Testing Guide。所以每條需求如何具體測，應轉到兄弟主題 <a href="../ai-testing-guide/index.html">AI Testing Guide</a> 的對應測試，或 <a href="../genai-red-teaming/index.html">GenAI 紅隊演練</a>的方法。</p>
+
+<h2 id="ev-compare">4.3 AISVS、LLMSVS、Top 10、Testing Guide 怎麼分工</h2>
+<div class="table-wrap"><table>
+<caption>表 4-2　四份文件的比較（「官方明載」欄來自各文件自述；「作者整理」欄為作者的比較）</caption>
+<thead><tr><th scope="col">面向</th><th scope="col">AISVS 1.01</th><th scope="col">LLMSVS v2.0</th><th scope="col">LLM Top 10 2026</th><th scope="col">AI Testing Guide</th></tr></thead>
+<tbody>
+<tr><th scope="row">官方明載的定位</th><td>可測試的安全需求目錄，涵蓋整個 AI 生命週期</td><td>使用 LLM 的應用的安全需求目錄；不取代 ASVS</td><td>最關鍵的 LLM 應用風險（認知清單）</td><td>技術中立的 AI 測試方法（含可信度）</td></tr>
+<tr><th scope="row">需求／項目數</th><td>213 條現行（12 章）</td><td>70 條（8 章）</td><td>10 條風險</td><td>見該主題</td></tr>
+<tr><th scope="row">層級</th><td>1、2、3</td><td>L1、L2、L3 勾選</td><td>無</td><td>無</td></tr>
+<tr><th scope="row">廣度 <span class="tag author">作者整理，非官方</span></th><td>較廣：含 MCP、代理編排、基礎設施、訓練資料</td><td>較窄：限定於 LLM 使用與整合</td><td>風險類別層級</td><td>方法層級</td></tr>
+<tr><th scope="row">官方是否說明與對方的關係</th><td>README 的對照表列出 ASVS、LLM Top 10、Agentic Top 10、NIST AI RMF、ISO/IEC 42001</td><td>v2.1 草稿說明與 Top 10 的關係；<strong>未說明與 AISVS 的差異</strong></td><td>—</td><td>README 列出與 AISVS 等的關聯</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：LLMSVS 與 AISVS 的關係</p>
+  <p>本教材在兩份標準的 README 與文件中都沒有找到官方文字說明「LLMSVS 與 AISVS 差異何在、應如何搭配、是否會合併」。表 4-2 的廣窄比較是作者從範圍描述與章節內容<span class="tag author">作者整理，非官方</span>得到的觀察；若你需要正式的說法，請向兩個專案的負責人確認。</p>
+</div>
+
+<h2 id="ev-scnA">4.4 情境範例 A：客服 LLM 上線前，怎麼選層級並蒐證</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：潮汐電信的客服助理</h3>
+<p><span class="tag fiction">虛構</span> 潮汐電信（虛構）要在下個月上線客服助理：使用者登入後可詢問帳單；助理會檢索內部手冊與使用者自己的帳單資料，並能呼叫「申請退款」工具（上限由後端核准）。合規部門要求上線前提交「可被稽核的驗證報告」。資安新人要決定用 AISVS 還是 LLMSVS、目標層級與要蒐的證據。</p>
+<ol class="steps">
+  <li><strong>盤點功能：</strong>有檢索（C8）、有工具呼叫（C9）、處理個資、用雲端模型 API；沒有自訓模型。所以訓練資料與模型生命週期的章可標不適用（需寫理由）。</li>
+  <li><strong>選層級：</strong>面向客戶、處理個資 → 層級 2。AISVS 說多數正式系統至少層級 2。新人要在報告寫明這個選擇與理由，並寫明對「層級 2 是否包含層級 1」的解讀（官方未明說，見第 2 章）。</li>
+  <li><strong>選標準：</strong>因為有 C9 的工具授權與 C5 的檢索授權議題，選 AISVS 1.01 較完整，並在報告用 <code>v1.01-C5.2.2</code>、<code>v1.01-C9.5.3</code> 這種格式引用。一般登入與工作階段安全另依 ASVS。</li>
+  <li><strong>對應驗證與證據：</strong>例如：<code>v1.01-C5.2.2</code>（檢索套用使用者授權）→ 用另一位客戶的帳號嘗試檢索他人帳單，留測試記錄；<code>v1.01-C9.5.3</code> → 架構圖標出授權決策點在後端，並留審查紀錄。具體測法轉去 AI Testing Guide。</li>
+  <li><strong>這個情境的提醒：</strong>報告要寫版本（1.01）、層級、範圍排除項、每條需求的結果與證據。新人若只附一份掃描工具報告，依官方立場是不足的。</li>
+</ol>
+</div>
+
+<h2 id="ev-scnB">4.5 情境範例 B：供應商說「符合 LLMSVS 認證」</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：星橋科技的採購</h3>
+<p><span class="tag fiction">虛構</span> 星橋科技（虛構）要採購一套 LLM 客服平台。供應商的簡報首頁寫著「LLMSVS 認證 · OWASP 認可」，並附一枚像官方徽章的圖示。採購同事想直接把這一項當成安全要求已滿足。</p>
+<ol class="steps">
+  <li><strong>查官方立場：</strong>LLMSVS 2.0 明說 OWASP 目前不認證任何廠商、驗證者或軟體，任何這類標章都不是 OWASP 審核或註冊的。所以「OWASP 認可」這個說法無法成立。</li>
+  <li><strong>釐清宣稱的真實內容：</strong>供應商或許真的依 LLMSVS 做過自我評估或請第三方評估——官方不禁止提供這類服務，只要不聲稱是 OWASP 官方認證。要問：用的是哪個版本（v2.0？草稿 v2.1？）、目標層級、範圍排除項、評估者是誰。</li>
+  <li><strong>要求證據：</strong>依官方認證指引，要求評估報告（驗證範圍、通過與未通過、處理失敗的指引）與工作底稿（截圖、重現腳本、proxy 日誌等）；只有掃描工具輸出或問卷，不構成通過。</li>
+  <li><strong>決定如何採信：</strong>把供應商的報告當作一項輸入，仍要依自身風險決定要不要自己抽驗；可參考紅隊供應商評估準則（見兄弟主題 <a href="../genai-red-teaming/index.html">GenAI 紅隊演練</a>）。</li>
+  <li><strong>這個情境的提醒：</strong>「有標章」不等於「通過」，要看版本、層級、範圍與證據。</li>
+</ol>
+</div>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>先盤點功能、再依風險輪廓選層級、再選標準；層級要在測試前決定。</li>
+  <li>每條需求要拆成「結果、方法、證據」；方法在 AI Testing Guide，標準只定義查什麼。</li>
+  <li>證據不能只靠自動化工具或問卷；報告要寫版本、層級、範圍與排除項。</li>
+  <li>OWASP 不認證廠商、驗證者或軟體；任何「LLMSVS 認證」宣稱要追問版本、範圍、評估者與證據。</li>
+  <li>LLMSVS 與 AISVS 的關係官方未說明，任何比較都屬作者整理。</li>
+</ul></div>
+<ul class="checklist">
+  <li>給我一個系統描述，我能說出它該選哪個層級與哪份標準，並寫出理由。</li>
+  <li>我能把一條需求拆成驗證方法與可留下的證據。</li>
+  <li>遇到「OWASP 認證」宣稱，我知道該問哪些問題。</li>
+  <li>我能分清哪些對應是官方明載、哪些是作者整理。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<ol>
+  <li><strong>先做這個主題的 <a href="quiz.html">總測驗</a>（16 題）</strong>，檢查四個學習目標的掌握度。</li>
+  <li>需要核對來源時，看 <a href="references.html">參考資料與來源核對</a>。</li>
+  <li>同一階段的相鄰主題：<a href="../ai-testing-guide/index.html">AI Testing Guide</a>（怎麼測）、<a href="../genai-red-teaming/index.html">GenAI 紅隊演練</a>、<a href="../aivss/index.html">AIVSS</a>（弱點評分）。</li>
+</ol>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AISVS README 與 1.01 發布說明：<a href="https://github.com/OWASP/AISVS">github.com/OWASP/AISVS</a>、<a href="https://github.com/OWASP/AISVS/releases/tag/v1.01">v1.01</a>；2026-10-26 讀取；CC BY-SA 4.0。引用的 <code>v1.01-C2.1.4</code>、<code>v1.01-C5.2.2</code>、<code>v1.01-C9.5.3</code> 見 <a href="https://github.com/OWASP/AISVS/tree/main/1.01/en">1.01/en</a>。</li>
+    <li>OWASP LLMSVS v2.0（Assessment and certification、V5.13）與 v2.1 草稿（Applicability、Assessment）：<a href="https://github.com/OWASP/www-project-llm-verification-standard">github.com/OWASP/www-project-llm-verification-standard</a>；CC BY-SA 4.0。</li>
+    <li>OWASP AI Testing Guide 專案頁與 GitHub README（與 AISVS 的關聯）：<a href="https://owasp.org/www-project-ai-testing-guide/">owasp.org/www-project-ai-testing-guide/</a>。</li>
+    <li>OWASP Top 10 for LLM Applications 2026：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">2026/README.md</a>（僅用於表 4-2 的對照）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AISVS、OWASP LLMSVS、OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。情境 A、B 為虛構。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'v-ch4', topic: 'aisvs-and-llmsvs', mode: 'chapter',
+  questions: [
+    { id: 'v4q1', type: 'mc', lo: [4], refs: [{label: '4.2 需求 → 驗證 → 證據', href: '04-evidence-and-integration.html#ev-evidence'}],
+      stem: '評估員把一份自動化掃描工具的輸出附在報告後面，宣稱「所有 LLMSVS 需求皆已通過」。依本章，最需要指出的問題是？',
+      options: [
+        { text: '掃描工具太貴，應改用免費工具。', why: '問題不在價格，而在證據的性質。' },
+        { text: '自動化結果單獨不夠；需要能證明每個控制都被測過的記錄，如工作底稿、重現腳本與日誌。', correct: true, why: 'LLMSVS 2.0 認證指引與 v2.1 草稿都這樣要求。' },
+        { text: '應該把層級改成層級 3，才能接受掃描結果。', why: '層級與證據性質無關。' },
+        { text: '沒有問題，掃描工具是業界標準。', why: '官方明說不夠。' }
+      ],
+      summary: '證據要能證明每個控制都被測過；工具輸出不夠。' },
+    { id: 'v4q2', type: 'scn', lo: [4], refs: [{label: '4.5 情境 B', href: '04-evidence-and-integration.html#ev-scnB'}],
+      stem: '依本章，採購方最合適的下一步是什麼？',
+      scenario: '藍海銀行（虛構）收到一家供應商的提案書，封面寫「通過 OWASP LLMSVS 認證」。提案書附一張圖示，看起來像官方標章，沒有說明版本、層級或評估者。採購主管問你：「這樣算符合我們的 LLM 安全要求了嗎？」',
+      options: [
+        { text: '符合，因為 OWASP 已認證。', why: 'OWASP 目前不認證任何廠商、驗證者或軟體。' },
+        { text: '不符合，因為 LLMSVS 只能由 OWASP 自己評估。', why: '官方不禁止組織提供保證服務，只要不聲稱是 OWASP 官方認證。' },
+        { text: '先要求供應商說明依據的版本（v2.0 或草稿）、目標層級、範圍排除項、評估者與評估報告和工作底稿；不要把「認證」本身當成通過。', correct: true, why: '符合 4.5 節的步驟。' },
+        { text: '直接要求供應商升級到 v2.1，因為它比較新。', why: 'v2.1 是草稿，不是發布；現行引用是 v2.0。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 官方立場：OWASP 目前不認證；(2) 宣稱可能是自我評估或第三方評估的結果，官方不禁止，但不能稱官方認證；(3) 要判斷可信度，需版本、層級、範圍、評估者與證據。</p><p><strong>結論：</strong>先追問，再決定是否抽驗。對應教材：<a href="04-evidence-and-integration.html#ev-scnB">4.5 節</a>、<a href="03-llmsvs.html#ls-assess">第 3 章 3.5 節</a>。</p>' },
+    { id: 'v4q3', type: 'mc', lo: [4], refs: [{label: '4.3 表 4-2', href: '04-evidence-and-integration.html#ev-compare'}],
+      stem: '下列哪一個關於 LLMSVS 與 AISVS 關係的說法，是官方明確寫出的？',
+      options: [
+        { text: 'LLMSVS 是 AISVS 的子集，將被併入。', why: '本教材沒有找到任何官方文字這樣說。' },
+        { text: 'AISVS 取代了 LLMSVS，後者已停止維護。', why: '沒有這樣的官方說明；LLMSVS 仍有 v2.0 發布與 v2.1 草稿。' },
+        { text: '兩者範圍完全相同，只是名稱不同。', why: 'AISVS 涵蓋整個 AI 生命週期並含 MCP、編排等章；LLMSVS 限定於 LLM 使用與整合。' },
+        { text: '官方沒有說明兩者的差異與關係；任何比較都是作者整理。', correct: true, why: '表 4-2 之後的 callout：未能確認。' }
+      ],
+      summary: '兩者關係官方未說明，比較屬作者整理。' },
+    { id: 'v4q4', type: 'match', lo: [4], refs: [{label: '4.1 圖 4-1', href: '04-evidence-and-integration.html#ev-choose'}],
+      stem: '把下列需求配對到最適合查閱的文件。',
+      cats: [
+        { id: 'top10', label: 'LLM Top 10 2026（認知）' },
+        { id: 'std', label: 'AISVS／LLMSVS（判準）' },
+        { id: 'test', label: 'AI Testing Guide（方法）' },
+        { id: 'asvs', label: 'OWASP ASVS（一般應用）' }
+      ],
+      items: [
+        { text: '我要知道要寫進報告的 LLM 風險有哪些', answer: 'top10', why: 'Top 10 是認知清單。' },
+        { text: '我要定義「輸入長度控制要拒絕而不是截斷」算不算通過', answer: 'std', why: '驗證標準定義做到什麼才算過。' },
+        { text: '我要知道怎麼去測一個控制是否有效', answer: 'test', why: 'AISVS 1.01 發布說明指出測試程序請看 AI Testing Guide。' },
+        { text: '我要驗證這個系統的一般登入與工作階段安全', answer: 'asvs', why: 'AISVS 與 LLMSVS 都假設一般應用安全另依 ASVS 驗證。' }
+      ],
+      summary: '認知、判準、方法、一般應用各有分工。' }
+  ]
+});
+</script>
+</body>
+</html>

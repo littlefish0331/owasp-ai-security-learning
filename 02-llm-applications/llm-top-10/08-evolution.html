@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 8 章　版本演進 2023、2025、2026｜LLM Top 10 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="LLM Top 10 從 2023/24 到 2025 再到 2026 的版本時間線、同一個風險在三版的編號對照，以及哪些變動是官方明載、哪些只是依名稱比對推得，Insecure Plugin Design 與 Model Theft 的去向為何未能確認。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="02-llm-applications" data-topic="llm-top-10" data-page="08-evolution.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 8 章　版本演進 2023、2025、2026</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO5</li>
+  <li>前置：<a href="01-position.html">第 1 章</a>（引用規則）；建議讀完第 2–7 章</li>
+</ul>
+<p class="lead">十個條目都讀過了，現在回頭看這份清單怎麼走到今天。這一章有兩個用途：讓你能讀懂舊文件裡的編號，以及分清楚「官方寫了什麼」與「本教材從名稱比對推出什麼」。後者在版本演進裡特別容易被當成事實傳下去。</p>
+
+<h2 id="ev-timeline">8.1 三個版本的時間線</h2>
+<p>官方 PDF 的修訂歷史列了三個正式版本：2023-08-01 Version 1.0、2023-10-16 Version 1.1、2024-11-18 Version 2025；2026 版的修訂歷史最後一列仍是未填日期的「[2026 release date] Version 2026 Release」，發布日要看 GitHub 與其他來源（第 1 章已說明，採 2026-08-04）。官網的「2023-24」存檔頁另外列了一份標題為「LLM Top 10 for LLMs 2024」的文件，頁面日期是 2024-04-11；它與 Version 1.1 是不是同一份，本教材無法判斷（<a href="references.html#ref-unsure">未能確認</a>）。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="LLM Top 10 的版本時間線。2023-08-01 Version 1.0；2023-10-16 Version 1.1；官網存檔頁另列 2024-04-11 的 LLM Top 10 for LLMs 2024，與 1.1 的關係未能確認。2024-11-18 Version 2025：官方 What's New 寫明新增 Vector and Embeddings 與 System Prompt Leakage，Unbounded Consumption 擴充自 Denial of Service，Excessive Agency 擴充。2026-08-04 Version 2026：Excessive Agency 升到第 3，Unbounded Consumption 上升四名，Improper Output Handling 從第 5 降到第 10，System Prompt Leakage 更名並擴大為 Hidden Context Exposure；並在前言劃出元件與行動者的邊界，行動者情境搭配 Agentic Top 10。">
+flowchart TB
+  V1["2023-08-01　Version 1.0"] --> V11["2023-10-16　Version 1.1"]
+  V11 --> V25
+  V24["2024-04-11　資源頁「LLM Top 10 for LLMs 2024」<br>與 1.1 的關係未能確認"]
+  V11 -.-> V24
+  V24 -.-> V25
+  V25["2024-11-18　Version 2025<br>新增 Vector and Embeddings、System Prompt Leakage<br>Unbounded Consumption 擴充自 Denial of Service<br>Excessive Agency 擴充"] --> V26
+  V26["2026-08-04　Version 2026<br>Excessive Agency 升至第 3、Unbounded Consumption 上升四名<br>Improper Output Handling 第 5 降到第 10<br>System Prompt Leakage 更名並擴大為 Hidden Context Exposure"]
+  V26 -.-> AG["與 Agentic Top 10 的邊界<br>模型成為行動者時搭配閱讀"]
+</pre>
+<figcaption><strong>圖 8-1　LLM Top 10 的版本演進（依官方 PDF 修訂歷史與兩版 What's New 重繪）。</strong>實線是官方修訂歷史列出的正式版本；虛線表示關係未能確認（2024-04-11 的資源頁文件）或是主題間的關聯（與 Agentic Top 10 的邊界，見第 1 章）。每個版本框內的變動摘要都是官方 What's New 明載的內容，未加入推測。</figcaption>
+</figure>
+
+<h2 id="ev-numbers">8.2 同一個風險，三個編號</h2>
+<p>這是你在整合文件時最容易踩到的坑。2025 到 2026 的名次對照取自官方 Figure 1（2025→2026 排名遷移圖，本教材直接看過圖），2023/24 到 2025 的對照則是作者用條目名稱比對的結果。</p>
+<div class="table-wrap"><table>
+<caption>表 8-1　同一個風險在三個版本的編號與名稱</caption>
+<thead><tr><th scope="col">風險概念</th><th scope="col">2023/24</th><th scope="col">2025</th><th scope="col">2026</th></tr></thead>
+<tbody>
+<tr><th scope="row">提示詞注入</th><td>LLM01 Prompt Injection</td><td>LLM01:2025</td><td>LLM01:2026（未變）</td></tr>
+<tr><th scope="row">敏感資訊外洩</th><td>LLM06 Sensitive Information Disclosure</td><td>LLM02:2025</td><td>LLM02:2026（未變）</td></tr>
+<tr><th scope="row">過度授權</th><td>LLM08 Excessive Agency</td><td>LLM06:2025</td><td>LLM03:2026（升）</td></tr>
+<tr><th scope="row">供應鏈</th><td>LLM05 Supply Chain Vulnerabilities</td><td>LLM03:2025 Supply Chain</td><td>LLM04:2026（降一位）</td></tr>
+<tr><th scope="row">資料與模型投毒</th><td>LLM03 Training Data Poisoning</td><td>LLM04:2025 Data and Model Poisoning</td><td>LLM05:2026（降一位）</td></tr>
+<tr><th scope="row">無限制消耗</th><td>LLM04 Model Denial of Service</td><td>LLM10:2025 Unbounded Consumption</td><td>LLM06:2026（升四位）</td></tr>
+<tr><th scope="row">錯誤資訊</th><td>LLM09 Overreliance</td><td>LLM09:2025 Misinformation</td><td>LLM07:2026（升兩位）</td></tr>
+<tr><th scope="row">隱藏上下文</th><td>—（無對應條目）</td><td>LLM07:2025 System Prompt Leakage</td><td>LLM08:2026 Hidden Context Exposure（更名並擴大）</td></tr>
+<tr><th scope="row">向量與嵌入</th><td>—（無對應條目）</td><td>LLM08:2025 Vector and Embedding Weaknesses</td><td>LLM09:2026（降一位）</td></tr>
+<tr><th scope="row">不當輸出處理</th><td>LLM02 Insecure Output Handling</td><td>LLM05:2025 Improper Output Handling</td><td>LLM10:2026（降五位）</td></tr>
+<tr><th scope="row">不安全的外掛設計</th><td>LLM07 Insecure Plugin Design</td><td>—（無獨立條目）</td><td>—（無獨立條目）</td></tr>
+<tr><th scope="row">模型竊取</th><td>LLM10 Model Theft</td><td>—（無獨立條目）</td><td>—（無獨立條目）</td></tr>
+</tbody></table></div>
+<p>看這張表有兩個提醒：只有 LLM01 與 LLM02 的編號兩版相同，其餘八項都換了位置；而且 2025 的 LLM06 是 Excessive Agency、2026 的 LLM06 卻是 Unbounded Consumption——<strong>同一個編號在兩版指的是不同風險</strong>，這就是第 1 章強調一定要帶年份的原因。另外，供應鏈、資料與模型投毒、向量與嵌入三項各只下移一位；Figure 1 的圖例把下移標為「降級 (deprioritized)」，但它們只差一位，可能只是被上升的條目往下擠。這是作者的觀察，官方沒有這樣說。</p>
+
+<h2 id="ev-official">8.3 哪些變動是官方寫的，哪些是比對推得的</h2>
+<p>版本演進最常見的錯誤，是把「合理的推論」當成「官方說法」。下面分開列出：</p>
+<div class="table-wrap"><table>
+<caption>表 8-2　演進相關的說法：依據與性質</caption>
+<thead><tr><th scope="col">說法</th><th scope="col">依據</th><th scope="col">性質</th></tr></thead>
+<tbody>
+<tr><th scope="row">2025 版：新增 Vector and Embeddings（回應社群對 RAG 指引的需求）與 System Prompt Leakage（有真實案例且社群高度要求）；Unbounded Consumption 擴充自 Denial of Service；Excessive Agency 因 agentic 架構增加而擴充</th><td>2025 PDF 的 What's New</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">2026 版：Excessive Agency 升至第 3；Unbounded Consumption 上升四名；Improper Output Handling 從第 5 降到第 10；Prompt Injection 仍第 1、Sensitive Information Disclosure 仍第 2</th><td>2026 PDF 前言的 What's New</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">System Prompt Leakage 現在是範圍更廣的 Hidden Context Exposure（Figure 1 以紅色虛線標為「更名／重新界定範圍」）</th><td>2026 前言與 Figure 1</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">新風險「併入既有條目」而非另立類別：Prompt Injection 納入跨模態攻擊；Supply Chain 納入被偽裝的升級版模型成品；Data and Model Poisoning 納入微調顛覆；Improper Output Handling 納入助理大量產生的不安全程式碼</th><td>2026 前言</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">Misinformation 在 2026 版名次上升（9 → 7）；Supply Chain、Poisoning、Vector 各下移一位</th><td>Figure 1（圖示；前言文字沒有逐項寫出）</td><td><span class="tag official">官方</span>（圖）</td></tr>
+<tr><th scope="row">Insecure Output Handling → Improper Output Handling；Training Data Poisoning → Data and Model Poisoning；Overreliance → Misinformation</th><td>2023/24 與 2025 的條目名稱比對；2025 的 What's New 沒有逐項列出</td><td><span class="tag author">作者整理，非官方</span></td></tr>
+<tr><th scope="row">Insecure Plugin Design 與 Model Theft 在 2025 沒有獨立條目</th><td>兩版清單相比（事實）</td><td><span class="tag official">官方清單</span>（清單本身）</td></tr>
+<tr><th scope="row">它們各自「併入」了哪個 2025／2026 條目</th><td>官方未明述。本教材讀到的現象：2025 Excessive Agency 與 2026 LLM03 的文字都提到 plugins 是 tools 的別稱；Model Theft 一詞出現在 2025 LLM10 的描述中，2026 LLM06 則有「模型擷取與蒸餾竊取」這個範例</td><td><strong>未能確認</strong>；上述只是觀察，不是官方說法</td></tr>
+</tbody></table></div>
+<div class="callout unsure official">
+  <p class="callout-title">未能確認：去向不明的兩個條目</p>
+  <p>Insecure Plugin Design 與 Model Theft 是 2023/24 版的條目，在 2025 與 2026 版的清單都沒有獨立條目，官方沒有說明它們去哪了。上表最後一列的觀察讓「它們被併入 Excessive Agency 與 Unbounded Consumption」看起來很合理——<strong>但「看起來合理」不是官方說法</strong>。引用時請寫「2025 版起無獨立條目，官方未說明去向」，不要寫成「已併入」。</p>
+</div>
+
+<h2 id="ev-concept">8.4 核心概念：讀舊資料時怎麼轉換</h2>
+<div class="concept">
+<h3 id="c-ev">處理版本差異</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>把任何引用到 LLM Top 10 的資料（內部文件、廠商簡報、其他 OWASP 文件、工具的風險標籤）對回「它說的是哪一年的哪一個條目」，再轉到現行版本（目前是 2026）。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>各文件更新速度不一：官網目錄頁仍是 2025 版（第 1 章）；Solutions Landscape 的篩選器標籤停在 2025 與 2023（<a href="../../01-overview/genai-security-project/04-landscape.html">GenAI 專案第 4 章</a>）；AI Exchange 已跟進 2026 編號（<a href="../../01-overview/ai-exchange/08-integration.html">AI Exchange 第 8 章</a>）。同一個編號在不同年份指不同風險，所以光看編號會讀錯。</dd>
+  <dt data-n="3">怎麼被誤用（概念層級）</dt>
+  <dd>拿 2025 的編號去對 2026 的清單（LLM06 從過度授權變成無限制消耗）；把「名稱相近」當成「官方已合併」；把官方沒說明的去向（兩個消失的條目）寫成既成事實；或把 2023/24 的 Overreliance 與 2026 的 Misinformation 的差異抹平。</dd>
+  <dt data-n="4">怎麼處理</dt>
+  <dd>先確認年份；用表 8-1 轉換；有疑問的對應回到兩版條目原文核對；寫報告時用「LLMnn:年份」，並註明哪些對應是官方明載、哪些是自己比對的。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「編號變了就是風險變了」（兩版只有位置調整的條目很多）。「新版把舊的刪掉了，所以那個風險不重要了」（2026 前言說新風險是併入既有條目，而不是舊風險不重要）。「官方網站上看到的 LLM Top 10 就是最新版」（目錄頁可能仍是 2025 版）。</dd>
+</dl>
+</div>
+<div class="callout author">
+  <p class="callout-title"><span class="tag author">作者整理，非官方</span> 一個實用的檢查句</p>
+  <p>引用任何「LLMnn」之前，先問自己三件事：這個編號帶年份了嗎？我手上的條目名稱和該年份清單一致嗎？我說的「演進」是官方寫的，還是我比對出來的？三題都答得出來，才不會把舊編號帶進新文件。</p>
+</div>
+
+<h2 id="ch8-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>正式版本：2023-08-01 Version 1.0、2023-10-16 Version 1.1、2024-11-18 Version 2025、2026-08-04 Version 2026（2026 修訂歷史仍未填日期）；官網存檔頁另有 2024-04-11 的文件，與 1.1 的關係未能確認。</li>
+  <li>只有 LLM01、LLM02 的編號兩版相同；2025 的 LLM06 與 2026 的 LLM06 是不同風險。</li>
+  <li>官方明載的演進：2025 新增 Vector and Embeddings 與 System Prompt Leakage；2026 的名次調動與更名；新風險併入既有條目。</li>
+  <li>依名稱比對推得、官方未逐項列出的對應要標示為整理；Insecure Plugin Design 與 Model Theft 的去向官方未說明，未能確認。</li>
+  <li>讀舊資料先確認年份，再用對照表轉換。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出三個正式版本的日期，並知道 2026 版修訂歷史的缺口。</li>
+  <li>給我一個 2025 的編號，我能轉成 2026 的編號。</li>
+  <li>我能把一條關於演進的說法分成「官方明載」或「依名稱比對」。</li>
+  <li>我知道哪兩個舊條目的去向官方沒有說明。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch8-next">接下來讀什麼</h2>
+<p><a href="09-scenarios.html">第 9 章　情境演練</a>：把十個條目放進三個虛構系統，練習一個事件會同時碰到哪些條目，以及該先補哪一項控制。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Top 10 for LLM Applications 2026（Version 2026），封面修訂歷史、前言「What's New in the 2026 Top 10」與 Figure 1（2025→2026 排名遷移圖）：<a href="https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/">官方 PDF</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM00_Preface.md">LLM00_Preface.md</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/tree/main/2026/final/report/images">report/images</a>（Bump Chart）；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2025（Version 2025，2024-11-18），封面修訂歷史、What's New 與 LLM10 描述：<a href="https://genai.owasp.org/resource/owasp-top-10-for-llm-applications-2025/">資源頁</a>與 PDF（45 頁）；CC BY-SA 4.0。2025 版十項清單同時核對 <a href="https://genai.owasp.org/llm-top-10/">genai.owasp.org/llm-top-10/</a> 與 GitHub <code>2025/</code> 資料夾的檔名。</li>
+    <li>OWASP Top 10 for LLM Applications 2023/24 十項清單與頁面日期：<a href="https://genai.owasp.org/llm-top-10-2023-24/">genai.owasp.org/llm-top-10-2023-24/</a>（頁面列出「April 11, 2024　LLM Top 10 for LLMs 2024」）；僅用於表 8-1。2023/24 版的條目內文本主題沒有讀。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Top 10 for LLM Applications 2023/24、2025、2026 與 genai.owasp.org 網站 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'l-ch8', topic: 'llm-top-10', mode: 'chapter',
+  questions: [
+    { id: 'l8q1', type: 'mc', lo: [5], refs: [{label: '8.3 表 8-2', href: '08-evolution.html#ev-official'}],
+      stem: '下列關於 LLM Top 10 版本演進的說法，哪一項是官方文件明載的，而不是依名稱比對推得的？',
+      options: [
+        { text: 'Insecure Plugin Design 在 2025 版被併入 Excessive Agency。', why: '官方沒有說明這個條目的去向；「併入」是看起來合理的推論，不是官方說法。' },
+        { text: 'System Prompt Leakage 在 2026 版更名並擴大為 Hidden Context Exposure。', correct: true, why: '2026 前言明說「What used to be System Prompt Leakage is now Hidden Context Exposure」，Figure 1 也以紅色虛線標示。' },
+        { text: 'Model Theft 在 2025 版被併入 Unbounded Consumption。', why: '同樣是推論：Model Theft 一詞出現在 LLM10 的描述中，但官方沒有說這是它的去向。' },
+        { text: '2025 的 What\'s New 逐項列出了 Overreliance 如何變成 Misinformation。', why: '2025 的 What\'s New 沒有逐項列出這類對應；Overreliance → Misinformation 是依名稱比對。' }
+      ],
+      summary: '官方明載：2025 新增兩項與擴充兩項；2026 名次與更名。其他對應多是依名稱比對的整理。' },
+    { id: 'l8q2', type: 'scn', lo: [5], refs: [{label: '8.2 表 8-1', href: '08-evolution.html#ev-numbers'}, {label: '8.4 讀舊資料的轉換', href: '08-evolution.html#ev-concept'}],
+      stem: '依本章，這份內部文件的問題在哪，該怎麼處理？',
+      scenario: '寶島電子（虛構）的資安團隊兩年前做過一份「LLM 應用風險對照表」，其中寫著：「LLM06：限制外掛權限與自主，避免模型採取破壞性行動。」今年新來的工程師依 OWASP 現行的 LLM Top 10 2026 查 LLM06，發現它是 Unbounded Consumption，與對照表寫的完全對不上，於是懷疑對照表的作者弄錯了，要整份重寫。',
+      options: [
+        { text: '對照表作者弄錯了，應該把 LLM06 的內容全部換成 Unbounded Consumption。', why: '作者可能沒有弄錯：他引用的很可能是當時的版本，只是文件沒有標年份。直接換掉會改變原本想控制的風險。' },
+        { text: '不需要處理，LLM06 的內容在各版本都一樣。', why: '不正確：2025 的 LLM06 是 Excessive Agency，2026 的 LLM06 是 Unbounded Consumption，同一個編號指向不同風險。' },
+        { text: '對照表沒有標明版本年份。內容描述的是「過度授權」，在 2025 版是 LLM06:2025，在 2026 版是 LLM03:2026；應在表中補上年份並轉成現行編號，必要時回到兩版條目原文核對。', correct: true, why: '符合 8.2 節與 8.4 節：編號必須帶年份；轉換用表 8-1，並核對原文。' },
+        { text: '把 2026 版的編號改回 2025 版的編號，因為舊編號比較通用。', why: '引用現行版本比較妥當；重點是帶年份並說清楚指哪一版，而不是退回舊編號。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 對照表寫的是「外掛權限與自主、破壞性行動」，這是 Excessive Agency。(2) 在 2025 版它是 LLM06:2025，在 2026 版升為 LLM03:2026；而 2026 的 LLM06 是 Unbounded Consumption（原 LLM10:2025）。(3) 所以不是作者錯，而是文件沒有標年份，讀者拿不同年份的清單去比對。</p><p><strong>結論：</strong>補上年份，轉成 LLM03:2026，並在表中說明這是由 LLM06:2025 轉來的。對應教材：<a href="08-evolution.html#ev-numbers">8.2 節</a>、<a href="08-evolution.html#ev-concept">8.4 節</a>。</p>' },
+    { id: 'l8q3', type: 'match', lo: [5], refs: [{label: '8.2 表 8-1', href: '08-evolution.html#ev-numbers'}],
+      stem: '把下列 2025 版的條目，配對到它在 2026 版的編號。',
+      cats: [
+        { id: 'l03', label: 'LLM03:2026' },
+        { id: 'l06', label: 'LLM06:2026' },
+        { id: 'l07', label: 'LLM07:2026' },
+        { id: 'l08', label: 'LLM08:2026' },
+        { id: 'l10', label: 'LLM10:2026' }
+      ],
+      items: [
+        { text: 'LLM06:2025 Excessive Agency', answer: 'l03', why: '升到第 3（官方 What\'s New）。' },
+        { text: 'LLM10:2025 Unbounded Consumption', answer: 'l06', why: '上升四名到第 6（官方 What\'s New）。' },
+        { text: 'LLM09:2025 Misinformation', answer: 'l07', why: 'Figure 1 顯示由第 9 升到第 7。' },
+        { text: 'LLM07:2025 System Prompt Leakage', answer: 'l08', why: '更名並擴大為 Hidden Context Exposure（官方前言）。' },
+        { text: 'LLM05:2025 Improper Output Handling', answer: 'l10', why: '從第 5 降到第 10（官方 What\'s New）。' }
+      ],
+      summary: '只有 LLM01、LLM02 編號不變；其餘要用對照表轉換，編號務必帶年份。' }
+  ]
+});
+</script>
+</body>
+</html>

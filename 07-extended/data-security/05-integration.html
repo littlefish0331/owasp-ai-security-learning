@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 章　跨文件整合與收尾｜資料安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="資料安全 DSGAI 條目與 LLM Top 10 2026 的官方對照（附錄 A）、與 Agentic Top 10、AIBOM、事件應變、ML Top 10 的關係；以及年份編號的處理與全主題重點。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="data-security" data-page="05-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 5 章　跨文件整合與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO5</li>
+  <li>前置：<a href="04-tiers-and-scenarios.html">第 4 章</a></li>
+</ul>
+<p class="lead">本階段其他延伸主題（ML Top 10、Agentic Skills、ACS）的跨文件對應，大多得靠作者自己整理。這個主題比較幸運：<strong>LLM Top 10 2026 的附錄 A 本來就有一張官方的 LLM 風險 ↔ DSGAI 對照表</strong>。這一章先讀這張表，再把資料安全接到 Agentic、AIBOM、事件應變和 ML Top 10，最後整理全主題重點。</p>
+
+<h2 id="in-llm">5.1 官方對照：LLM Top 10 2026 ↔ DSGAI</h2>
+<p>LLM Top 10 2026 把原本每條各自的「相關框架」段落，合併到一份版本鎖定的附錄 A。其中有一節專門對照 OWASP GenAI Data Security 2026 (v1.0，2026-03-17)。官方的標示：<strong>● primary</strong> 表示最接近的資料安全對應（核心防線或風險描述），<strong>○ supporting</strong> 表示相鄰、有貢獻但不是重心。下表是作者從附錄 A 摘出的主要對應（只列 ●，並挑部分 ○）：</p>
+<div class="table-wrap"><table>
+<caption>表 5-1　LLM Top 10 2026 與 DSGAI 的官方對照（節錄；官方明載，來源為 LLM Top 10 2026 附錄 A）</caption>
+<thead><tr><th scope="col">LLM Top 10 2026 條目</th><th scope="col">● primary（最接近的資料風險）</th><th scope="col">○ supporting（節錄）</th></tr></thead>
+<tbody>
+<tr><th scope="row"><a href="../../02-llm-applications/llm-top-10/02-prompt-injection.html#pi-what">LLM01:2026</a> Prompt Injection</th><td>DSGAI01 敏感資料外洩；DSGAI06 工具、外掛與 Agent 資料交換</td><td>DSGAI09、DSGAI16、DSGAI04</td></tr>
+<tr><th scope="row"><a href="../../02-llm-applications/llm-top-10/06-disclosure.html#dc-what">LLM02:2026</a> Sensitive Information Disclosure</th><td>DSGAI01；DSGAI18 推論與資料重建</td><td>DSGAI15、DSGAI08、DSGAI14</td></tr>
+<tr><th scope="row"><a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a> Excessive Agency</th><td>DSGAI02 Agent 身分與憑證；DSGAI06</td><td>DSGAI01</td></tr>
+<tr><th scope="row"><a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-supply">LLM04:2026</a> Supply Chain</th><td>DSGAI04 投毒；DSGAI05 完整性與驗證失敗</td><td>DSGAI03、DSGAI08</td></tr>
+<tr><th scope="row"><a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-poison">LLM05:2026</a> Data and Model Poisoning</th><td>DSGAI04</td><td>DSGAI05、DSGAI21、DSGAI07</td></tr>
+<tr><th scope="row"><a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-consume">LLM06:2026</a> Unbounded Consumption</th><td>DSGAI20 模型外洩；DSGAI17 可用性與韌性</td><td>DSGAI04</td></tr>
+<tr><th scope="row"><a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-misinfo">LLM07:2026</a> Misinformation</th><td>DSGAI21 假資訊與完整性攻擊</td><td>DSGAI05、DSGAI06</td></tr>
+<tr><th scope="row"><a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-vector">LLM09:2026</a> Vector and Embedding Weaknesses</th><td>DSGAI13 向量庫平台；DSGAI18</td><td>DSGAI11、DSGAI04、DSGAI17</td></tr>
+<tr><th scope="row"><a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-output">LLM10:2026</a> Improper Output Handling</th><td>DSGAI12 不安全的自然語言資料閘道</td><td>DSGAI06、DSGAI01、DSGAI16</td></tr>
+</tbody></table></div>
+<p><a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-hidden">LLM08:2026</a> Hidden Context Exposure 在附錄 A 這一節只看到 ○ supporting 的對應（DSGAI18、DSGAI15、DSGAI02），沒有 ● primary，所以表中省略。附錄還包含對 ASI、MITRE ATLAS、NIST 等的對照，不在本主題範圍。</p>
+<div class="callout official">
+  <p class="callout-title">這張表給你的三個用法</p>
+  <ul>
+    <li><strong>從 LLM Top 10 走向資料：</strong>讀到 LLM02:2026，想追問「資料面的控制」，就查 DSGAI01、DSGAI18。</li>
+    <li><strong>看出 LLM 清單較少涵蓋的面向：</strong>本教材逐條數了附錄 A 的這一節：<strong>DSGAI10（合成資料與匿名化）和 DSGAI19（標註者過度暴露）在整張對照中完全沒有出現</strong>；DSGAI03（影子 AI）只出現一次，且是 ○ supporting。這表示這幾個條目談的是 LLM Top 10 較少涵蓋的面向（隱私保證、人在迴路、組織流程）。「完全沒出現」是作者數出來的事實；「所以是 LLM 清單較少涵蓋的面向」是作者的解讀，非官方。</li>
+    <li><strong>引用請帶年份：</strong>這張對照用的是 2026 年編號；本主題 2025 版的 Best Practices 對齊的是 2025 年編號（見 5.3）。</li>
+  </ul>
+</div>
+
+<h2 id="in-other">5.2 與其他清單的關係</h2>
+<div class="table-wrap"><table>
+<caption>表 5-2　資料安全與其他 OWASP 文件的關係（「性質」欄標示官方明載或作者整理）</caption>
+<thead><tr><th scope="col">相鄰文件</th><th scope="col">關係</th><th scope="col">性質</th></tr></thead>
+<tbody>
+<tr><th scope="row">Agentic Top 10 2026</th><td>2026 版稱自己「與 LLM Top 10 與 Agentic AI Top 10 對齊並交叉引用」；DSGAI02 明確指向 ASI03 Identity &amp; Privilege Abuse 處理更廣的身分與權限濫用；DSGAI04 指出它延伸 ASI04（Agentic 供應鏈）的資料完整性觀點</td><td><span class="tag official">官方</span></td></tr>
+<tr><th scope="row">RAG 安全主題 (Cheat Sheet)</th><td>DSGAI01 的「RAG 強化」、DSGAI11、DSGAI13 與 RAG 安全 Cheat Sheet 談同一批問題（每文件分層方式不同）。兩者互補：Cheat Sheet 偏實作，DSGAI 偏風險列舉與成熟度分層</td><td><span class="tag author">作者整理，非官方</span></td></tr>
+<tr><th scope="row">AI Exchange</th><td>2026 版直接引用 AI Exchange 的控制名稱：<code class="ctl">DATA MINIMIZE</code>、<code class="ctl">SEGREGATE DATA</code>、<code class="ctl">SHORT RETAIN</code>、<code class="ctl">SENSITIVE OUTPUT HANDLING</code>、<code class="ctl">MODEL INPUT CONFIDENTIALITY</code>、<code class="ctl">RUNTIME MODEL CONFIDENTIALITY</code> 等（其中一處把 <code class="ctl">LEAST MODEL PRIVILEGE</code> 寫成 "LEAST PRIVILEGE MODEL"，拼法與 AI Exchange 不同）</td><td><span class="tag official">官方</span>（引用控制名）</td></tr>
+<tr><th scope="row"><a href="../aibom/index.html">AIBOM</a></th><td>2026 版的 AI-DSPM 提出 DBOM (Data Bill of Materials)，以 CycloneDX ML-BOM (ECMA-424，v1.7) 為基礎格式；AIBOM Generator 產出的是 CycloneDX 1.6（見 AIBOM 主題）。兩者是互補的清單：模型與依賴 vs. 資料與血緣</td><td><span class="tag official">官方</span>（DBOM 與格式）；兩者互補的說法是 <span class="tag author">作者整理，非官方</span></td></tr>
+<tr><th scope="row"><a href="../incident-response-and-deepfake/index.html">事件應變</a></th><td>IR 指南的偵測要求串接更多訊號（含 prompts）；DSGAI14 要求預設最少日誌。官方兩份文件各自合理，但存在張力，沒有明說如何取捨</td><td><span class="tag author">作者整理，非官方</span></td></tr>
+<tr><th scope="row"><a href="../ml-security-top-10/index.html">ML Top 10</a></th><td>DSGAI18 的成員推論、模型反推與嵌入反推，與 ML Top 10 的 ML03、ML04 談同一類攻擊，只是 DSGAI18 把嵌入反推也納入。官方沒有明載兩份文件的對應</td><td><span class="tag author">作者整理，非官方</span></td></tr>
+</tbody></table></div>
+
+<h2 id="in-year">5.3 年份編號與引用規則</h2>
+<p>這個主題跨了兩個 <a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 年份</a>，所以更需要紀律：</p>
+<ul>
+  <li><strong>2026 版 DSGAI 文件</strong>引用 <code>LLM03:2025</code>（Supply Chain）時帶年份，且與 2025 版編號相符。它的整體對齊對象是 LLM Top 10 與 Agentic Top 10，但附錄 A 的 DSGAI 對照用的是 <strong>2026</strong> 編號（例如 Excessive Agency 是 LLM03:2026）。</li>
+  <li><strong>2025 版 Best Practices</strong> 全程使用 2025 編號，例如 <code>LLM01:2025</code> Prompt Injection、<code>LLM07:2025</code> System Prompt Leakage、<code>LLM05:2025</code> Improper Output Handling。這些與 2026 版不同（2026 版 Hidden Context Exposure 是 LLM08，Improper Output Handling 是 LLM10）。</li>
+  <li><strong>你自己的文件</strong>：寫 <code>LLMnn:年份</code>；引用 DSGAI 時<strong>用標題，不只寫編號</strong>（第 1 章的 DSGAI25／26 殘留引用就是原因）。</li>
+</ul>
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程：先問你關心的是風險認知還是資料控制。要認識風險用 LLM Top 10 2026 或 Agentic Top 10 2026；要追問資料面的控制，查附錄 A 的 DSGAI 對照，再讀 DSGAI 條目的 Tier 1 到 3。若涉及模型與依賴的追蹤走 AIBOM；涉及事件發生後的處置走事件應變；涉及傳統 ML 的推論攻擊走 ML Top 10。">
+flowchart TD
+  S["我想處理的問題"] --> Q{"哪一類？"}
+  Q -->|"認識風險"| L["LLM Top 10 2026 / Agentic Top 10 2026"]
+  L -->|"追問資料面的控制"| A["附錄 A 的 DSGAI 對照"]
+  A --> D["DSGAI 條目<br>Tier 1 → 2 → 3"]
+  Q -->|"直接問資料"| D
+  D -->|"要盤點模型與依賴"| B["AIBOM"]
+  D -->|"事件已發生"| R["事件應變"]
+  D -->|"傳統 ML 的推論攻擊"| M["ML Top 10"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q,B,R,M author
+</pre>
+<figcaption><strong>圖 5-1　資料安全與其他文件的接法。</strong>「LLM Top 10 → 附錄 A 的 DSGAI 對照 → DSGAI 條目」這條路徑是官方結構；其餘分流（AIBOM、事件應變、ML Top 10）是<strong>作者整理，非官方</strong>（虛線框）。真實問題常同時符合多個分支，這張圖是入口，不是唯一路徑。</figcaption>
+</figure>
+
+<h2 id="ch5-key">5.4 全主題重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>資料安全有兩份文件：2025 版（白皮書，對齊 LLM Top 10 2025）與 2026 版（Version 1.0，March 2026；風險列舉，21 項 DSGAI，分三層成熟度與 Buy／Build）。2026 版自己對編號有不一致（DSGAI25／26 殘留引用），引用請用標題。</li>
+  <li>GenAI 的核心特性：上下文視窗是單一扁平的信任空間；好幾個條目的緩解是繞過而非解決。</li>
+  <li>資料的風險常在衍生物（嵌入、備份、日誌、微調權重）；刪除不等於移除。</li>
+  <li>LLM Top 10 2026 附錄 A 有官方的 DSGAI 對照（● primary／○ supporting）；其他關係多是作者整理。</li>
+  <li>觀測與偵測的資料需求，與資料最小化之間存在張力；官方沒有替你解。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能由一個 LLM Top 10 2026 條目走到對應的 DSGAI，並標清楚官方或作者整理。</li>
+  <li>我能為一個資料事件選出條目、說出 Tier 1 的第一步。</li>
+  <li>我知道引用 DSGAI 要用標題、引用 LLM 要帶年份。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch5-next">接下來讀什麼</h2>
+<p>先做<a href="quiz.html">總測驗</a>。接著建議讀本階段的 <a href="../aibom/index.html">AIBOM</a>（DBOM 與 AgBOM 的鄰居）與 <a href="../incident-response-and-deepfake/index.html">事件應變與 Deepfake</a>。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Top 10 for LLM Applications 2026 附錄 A（Related Framework Mappings，OWASP GenAI Data Security 2026 一節，v1.0 2026-03-17）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/Appendix_A_Related_Framework_Mappings.md">GenAI-LLM-Top10/2026/final/Appendix_A_Related_Framework_Mappings.md</a>；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP GenAI Data Security Risks and Mitigations 2026（What is Data Security、DSPM、DSGAI02、DSGAI04）：<a href="https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/">genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/</a>；Version 1.0，March 2026；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP LLM and Gen AI Data Security Best Practices（Potential Risks &amp; Impacts）：<a href="https://genai.owasp.org/resource/llm-and-gen-ai-data-security-best-practices/">genai.owasp.org/resource/llm-and-gen-ai-data-security-best-practices/</a>；2025-02-13；2026-10-26 讀取；CC BY-SA 4.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP GenAI Data Security Risks and Mitigations 2026、LLM and Gen AI Data Security Best Practices、OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0（僅引用控制名稱）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'd-ch5', topic: 'data-security', mode: 'chapter',
+  questions: [
+    { id: 'd5q1', type: 'mc', lo: [5], refs: [{label: '5.1 官方對照', href: '05-integration.html#in-llm'}],
+      stem: '依本章，LLM Top 10 2026 的 LLM02（敏感資訊外洩）與資料安全文件的官方對照，最貼近下列哪一項？',
+      options: [
+        { text: '● primary 是 DSGAI01 敏感資料外洩與 DSGAI18 推論與資料重建；DSGAI15、DSGAI08、DSGAI14 是 ○ supporting。', correct: true, why: '符合表 5-1 與附錄 A。' },
+        { text: '只對應 DSGAI20 模型外洩。', why: 'DSGAI20 在附錄 A 是對應 LLM06 Unbounded Consumption。' },
+        { text: '沒有任何官方對照，全部是作者整理。', why: 'LLM Top 10 2026 附錄 A 有官方的 DSGAI 對照表。' },
+        { text: '只對應 DSGAI13 向量庫平台。', why: 'DSGAI13 在附錄 A 對應 LLM09。' }
+      ],
+      summary: 'LLM02 的 primary：DSGAI01、DSGAI18。' },
+    { id: 'd5q2', type: 'match', lo: [5], refs: [{label: '5.1 表 5-1', href: '05-integration.html#in-llm'}],
+      stem: '依附錄 A，把下列 LLM Top 10 2026 條目配對到最接近的 ● primary DSGAI。',
+      cats: [
+        { id: 'd12', label: 'DSGAI12 不安全的自然語言資料閘道' },
+        { id: 'd13', label: 'DSGAI13 向量庫平台資料安全' },
+        { id: 'd20', label: 'DSGAI20 模型外洩與智財複製' },
+        { id: 'd21', label: 'DSGAI21 經資料投毒的假資訊' }
+      ],
+      items: [
+        { text: 'LLM10:2026 Improper Output Handling', answer: 'd12', why: '附錄 A：LLM10 的 primary 是 DSGAI12。' },
+        { text: 'LLM09:2026 Vector and Embedding Weaknesses', answer: 'd13', why: '附錄 A：LLM09 的 primary 含 DSGAI13（另有 DSGAI18）。' },
+        { text: 'LLM06:2026 Unbounded Consumption', answer: 'd20', why: '附錄 A：LLM06 的 primary 含 DSGAI20（另有 DSGAI17）。' },
+        { text: 'LLM07:2026 Misinformation', answer: 'd21', why: '附錄 A：LLM07 的 primary 是 DSGAI21。' }
+      ],
+      summary: '附錄 A 是官方對照；請引用 2026 年編號。' },
+    { id: 'd5q3', type: 'scn', lo: [5], refs: [{label: '5.3 年份編號與引用規則', href: '05-integration.html#in-year'}, {label: '5.1', href: '05-integration.html#in-llm'}],
+      stem: '依本章，這份報告在引用上有哪些問題？',
+      scenario: '丹桂製造（虛構）的報告寫：「依 OWASP 資料安全，我們涵蓋了 LLM07 System Prompt Leakage 與 DSGAI25。對應 LLM Top 10 的 LLM08 是 Hidden Context Exposure。」審查人員發現：報告前半引用的是 2025 版 Best Practices，後半引用的是 2026 版 LLM Top 10。',
+      options: [
+        { text: '沒有問題，LLM 編號永遠不變。', why: 'LLM Top 10 2025 與 2026 的編號不同。' },
+        { text: '有問題：LLM 編號要帶年份（System Prompt Leakage 是 LLM07:2025；Hidden Context Exposure 是 LLM08:2026，兩者是不同年份的條目）；DSGAI25 在文件中沒有對應條目，應改用條目標題並刪除。', correct: true, why: '符合 5.3 節。' },
+        { text: '只有 DSGAI25 需要處理。', why: 'LLM 編號沒有帶年份，也混用了 2025 與 2026。' },
+        { text: '應該全部改成 2023 年編號。', why: '沒有理由；也不是這份資料的依據。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) System Prompt Leakage 是 LLM07:2025；Hidden Context Exposure 是 LLM08:2026，兩者是不同年份的條目，報告把它們並列卻沒標年份。(2) DSGAI25 在文件中沒有對應條目。(3) 引用 DSGAI 要用標題。</p><p><strong>結論：</strong>補上年份、刪掉 DSGAI25、用標題引用。對應教材：<a href="05-integration.html#in-year">5.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

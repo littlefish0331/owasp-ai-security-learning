@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　三層控制與情境｜資料安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="DSGAI 條目的三層成熟度（Tier 1 基礎、Tier 2 強化、Tier 3 進階）與 Buy／Build 範圍怎麼讀；兩個虛構情境：刪除請求後的幽靈資料、除錯日誌成為外洩管道。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="07-extended" data-topic="data-security" data-page="04-tiers-and-scenarios.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　三層控制與情境</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="03-dsgai-map.html">第 3 章</a></li>
+</ul>
+<p class="lead">官方不是丟給你 50 條控制清單，而是把每個條目的控制分成三層，並標註每項控制是靠買、靠自建，還是兩者並用。這一章先學怎麼讀這個結構，再用兩個虛構情境練習：看到症狀，推回條目，再決定今天能做什麼、下一季要做什麼。</p>
+
+<h2 id="tr-how">4.1 Tier 與 Buy／Build 怎麼讀</h2>
+<div class="table-wrap"><table>
+<caption>表 4-1　官方的三層成熟度與範圍標註</caption>
+<thead><tr><th scope="col">層級</th><th scope="col">官方定義</th><th scope="col">例子（DSGAI14 遙測外洩）</th></tr></thead>
+<tbody>
+<tr><th scope="row">Tier 1　基礎 (Foundational)</th><td>團隊用現有工具<strong>大概一個 sprint</strong> 能上線的控制，用最小摩擦降低最多暴露</td><td>預設最少日誌（預設關閉內容層級記錄）、強化觀測平台的存取控制、保留期限與來源系統對齊、第三方觀測廠商的管控</td></tr>
+<tr><th scope="row">Tier 2　強化 (Hardening)</th><td>可能需要<strong>架構調整、新工具或跨團隊協調</strong>，影響高、需要中等投入</td><td>對日誌與追蹤自動掃描個資與機密、分級除錯記錄需核准並自動到期、觀測資料靜態加密</td></tr>
+<tr><th scope="row">Tier 3　進階 (Advanced)</th><td>假設已有<strong>成熟計畫</strong>：紅隊、差分隱私、形式驗證、自訂偵測模型</td><td>對觀測平台做洩漏紅隊與桌面演練、對觀測平台的存取做行為異常偵測</td></tr>
+</tbody></table></div>
+<p>每項控制後面還標了範圍：<strong>Buy</strong>（靠廠商能力）、<strong>Build</strong>（靠自己工程）、<strong>Buy and Build</strong>（兩者並用）。這個標註回答的是「這件事我能直接採購嗎？」。官方用「爬、走、跑」(crawl, walk, run) 描述這個設計：幫助不同成熟度的組織，而不是丟出一份無差別的檢核表。</p>
+<div class="callout official unsure">
+  <p class="callout-title">三個要小心的地方</p>
+  <ul>
+    <li><strong>Tier 不是風險嚴重度。</strong>Tier 3 是「成熟度要求高」，不是「風險小」。一個條目的 Tier 3 控制可能對你的系統才是真正的缺口。</li>
+    <li><strong>Tier 1 也沒有保證「一個 sprint 做得完」。</strong>官方寫的是「可能」(likely)，要看你的現有工具。</li>
+    <li><strong>各條的控制數量不一，不代表風險大小。</strong>例如 DSGAI01 的 Tier 1 有九項，DSGAI17 的 Tier 1 只有三項。</li>
+  </ul>
+</div>
+
+<h2 id="tr-flow">4.2 從症狀推回條目與第一步</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="從症狀推回條目與第一步：已刪除客戶的資料仍從助理答出，查 DSGAI01、07、08，先做分類標籤傳遞與抹除驗證；日誌系統被入侵後洩出大量完整請求，查 DSGAI14，先做最少日誌預設；使用者在別人的對話中看到自己的資料，查 DSGAI11，先做租戶 ID 強制與每租戶索引；Ask your data 助理產生過寬的查詢，查 DSGAI12，先做預存程序與資料庫層列欄安全；員工把資料貼進未核准工具，查 DSGAI03，先做影子 AI 政策與集中服務目錄。">
+flowchart TD
+  S["觀察到的症狀"] --> Q{"哪一類？"}
+  Q -->|"已刪除的資料仍從助理被答出"| A1["DSGAI01 / 07 / 08<br>先做：標籤傳遞、抹除驗證"]
+  Q -->|"日誌系統被入侵，洩出大量完整請求"| A2["DSGAI14 遙測外洩<br>先做：最少日誌預設"]
+  Q -->|"使用者在對話裡看到別人的資料"| A3["DSGAI11 對話滲漏<br>先做：租戶 ID 強制、每租戶索引"]
+  Q -->|"資料問答助理產生過寬的查詢"| A4["DSGAI12 NL 資料閘道<br>先做：預存程序、資料庫層列欄安全"]
+  Q -->|"員工把資料貼進未核准的 AI 工具"| A5["DSGAI03 影子 AI<br>先做：政策、集中服務目錄"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q,A1,A2,A3,A4,A5 author
+</pre>
+<figcaption><strong>圖 4-1　由症狀推回條目與官方 Tier 1 的第一步。</strong>各條目名稱與其 Tier 1 控制是官方內容；「症狀」措辭與整張圖的串接是<strong>作者整理，非官方</strong>（虛線框）。真實事件常同時符合多個症狀，這張圖是入口，不是診斷結論。</figcaption>
+</figure>
+
+<h2 id="tr-scn-a">4.3 情境範例 A：刪除請求之後的幽靈資料</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：青林電商的客服助理</h3>
+<p><span class="tag fiction">虛構</span> 青林電商是虛構的網路商店。它的客服助理會檢索歷史訂單與客服對話，這些內容三個月前被轉成嵌入，存在向量資料庫，並用於一次微調。一位客戶依資料主體權利要求刪除個資。法務確認：CRM 與資料湖的紀錄都已刪除，回覆客戶「已完成」。六週後，因為向量庫遷移，團隊做了一次重新索引。再過一週，客戶投訴：客服助理在回答另一位使用者時，提到了他的姓名與訂單。</p>
+<ol class="steps">
+  <li><strong>先看症狀：</strong>已刪除的資料仍從助理被答出。對照圖 4-1，指向 DSGAI01、DSGAI07、DSGAI08。</li>
+  <li><strong>哪一環出問題：</strong>刪除流程只認得來源系統。嵌入留在向量庫；刪除前的夜間備份仍保有原始紀錄；重新索引把備份還回向量庫；沒有任何血緣紀錄說明這些嵌入來自哪筆來源，也沒有紀錄說明該紀錄是否被用於微調。這與官方 DSGAI07 的情境幾乎同型：「組織以為已履行抹除義務；其實沒有」。</li>
+  <li><strong>對應的條目：</strong>DSGAI01（外洩：衍生物持續浮現）、DSGAI07（治理：分類與血緣缺失，衍生物活得比來源久）、DSGAI08（合規：違反抹除義務，且微調後的權重難以移除）。</li>
+  <li><strong>官方 Tier 控制怎麼分層：</strong>Tier 1：分類標籤傳遞到衍生物、管線入口掃描、自動化保留期限、把保留與抹除義務延伸到 ML 管線；Tier 2：<strong>抹除驗證測試</strong>（確認刪除真的涵蓋嵌入與備份）、帶來源／授權／負責人標籤的資料目錄；Tier 3：資料到模型的血緣登記冊、為資料主體請求準備的衍生物清單、unlearning 就緒架構。</li>
+  <li><strong>這個情境的提醒：</strong>先做 Tier 1 的「標籤傳遞與保留期限」，才有後面 Tier 2 的「驗證」可驗。至於已經進入微調權重的資料，官方承認 machine unlearning 目前的技術限制；教材不宣稱有現成解法，Tier 3 的做法也只是「就緒架構」。</li>
+</ol>
+</div>
+
+<h2 id="tr-scn-b">4.4 情境範例 B：除錯日誌成了最容易偷的地方</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：雲杉保險的 Agent 除錯</h3>
+<p><span class="tag fiction">虛構</span> 雲杉保險是虛構的保險公司。為了找出理賠 Agent 偶發的異常行為，工程師把「除錯模式」打開，記錄完整的請求與回應，包含 OAuth token、內部 system prompt 與客戶貼上的文件。除錯模式後來沒關，資料一直累積在集中的日誌叢集。幾個月後，一位 SOC 分析師的帳號被釣魚，攻擊者匯出了數週的觀測資料。</p>
+<ol class="steps">
+  <li><strong>先看症狀：</strong>日誌系統成為大規模外洩的來源。對照圖 4-1，指向 DSGAI14 遙測外洩。</li>
+  <li><strong>哪一環出問題：</strong>官方的觀察是：觀測平台往往<strong>繞過資料分類</strong>，卻彙整了所有最敏感的內容。這裡有三個疊加的失誤：預設記錄過多、除錯模式沒有到期、觀測平台的存取控制不如主系統嚴。</li>
+  <li><strong>對應的條目：</strong>主要是 DSGAI14；因為日誌含 OAuth token，也牽涉 DSGAI02（Agent 身分與憑證暴露）；若日誌被匯出給第三方分析服務，還有 DSGAI03／06 的味道。</li>
+  <li><strong>官方 Tier 控制怎麼分層：</strong>Tier 1：預設最少日誌（內容層級記錄預設關閉，高風險欄位寫入前遮蔽或代碼化）、強化觀測平台存取控制（大量匯出與跨工作階段搜尋限制給指定核准人）、日誌保留不得長於其所記錄的資料；Tier 2：自動掃描日誌中的個資與機密、<strong>除錯記錄需核准並自動到期</strong>；Tier 3：對觀測平台做紅隊與桌面演練。</li>
+  <li><strong>這個情境的提醒：</strong>注意這裡有一個有趣的對照：GenAI Incident Response Guide（見<a href="../incident-response-and-deepfake/index.html">事件應變與 Deepfake 主題</a>）要求偵測要把 prompts 與模型輸出等訊號串進日誌堆疊，並提醒儲存使用者 prompts 會有隱私問題。這兩份文件的建議<strong>存在張力</strong>：偵測想要更多資料，資料安全想要更少。兩份文件<strong>沒有互相引用</strong>，官方也沒有說事件應變時怎麼調和。資料安全 2026 自己的做法是 (DSGAI14 Tier 1)：內容層級記錄預設關閉，提示詞、回應、工具輸出只記中繼資料，除非明確提升；憑證、OAuth 權杖、系統提示詞與個資在寫入前先遮蔽或代碼化；Tier 2 再要求除錯記錄需核准並自動到期。這是<strong>官方</strong>的折衷；「事件發生時由誰核准提升」則是<span class="tag author">作者整理，非官方</span>（見事件應變與 Deepfake 第 4 章）。</li>
+</ol>
+</div>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>每個條目的控制分三層：Tier 1（約一個 sprint 的基礎）、Tier 2（需架構或跨團隊）、Tier 3（假設成熟計畫）；每項標 Buy、Build 或 Buy and Build。</li>
+  <li>Tier 是成熟度，不是風險嚴重度；各條控制數量不一也不代表風險大小。</li>
+  <li>刪除請求類事件同時是 DSGAI01／07／08；先做標籤傳遞與保留期限，才能做抹除驗證。</li>
+  <li>日誌類事件是 DSGAI14；官方 Tier 1 第一步是預設最少日誌。偵測所需的資料與資料安全要求的最小化之間存在張力。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說明三層成熟度與 Buy／Build 各代表什麼。</li>
+  <li>我能由症狀推回條目，並說出官方 Tier 1 的第一步。</li>
+  <li>我知道為什麼「抹除驗證」要排在「標籤傳遞」之後。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p><a href="05-integration.html">第 5 章　跨文件整合與收尾</a>：把這份文件接回 LLM Top 10、Agentic Top 10、AIBOM 與事件應變。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Data Security Risks and Mitigations 2026（GenAI Data Risks 的 Tier 定義；DSGAI01、DSGAI02、DSGAI07、DSGAI08、DSGAI14 的情境、衝擊與 Tier 1–3）：<a href="https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/">genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/</a>；Version 1.0，March 2026；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP GenAI Incident Response Guide 1.0（偵測段與使用者互動日誌的隱私提醒）：<a href="https://genai.owasp.org/resource/genai-incident-response-guide-1-0/">genai.owasp.org/resource/genai-incident-response-guide-1-0/</a>；Version 1.0，July 28, 2025；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP GenAI Data Security Risks and Mitigations 2026 — CC BY-SA 4.0（PDF 封面）；OWASP GenAI Incident Response Guide 1.0 僅引用一句話並連結，其 PDF 內文未見授權文字，以 genai.owasp.org 網站頁尾 CC BY-SA 4.0 為準。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'd-ch4', topic: 'data-security', mode: 'chapter',
+  questions: [
+    { id: 'd4q1', type: 'mc', lo: [4], refs: [{label: '4.1 表 4-1', href: '04-tiers-and-scenarios.html#tr-how'}],
+      stem: '一位主管說：「DSGAI 的 Tier 3 控制是風險最低的，我們只做 Tier 1 就好。」依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，Tier 越大風險越低。', why: 'Tier 是成熟度要求，不是風險嚴重度。' },
+        { text: '不正確：Tier 是成熟度（Tier 3 假設已有成熟計畫），不是風險嚴重度；對你的系統，某條的 Tier 3 控制可能才是真正的缺口。', correct: true, why: '符合 4.1 節的第一個提醒。' },
+        { text: '不正確，因為 Tier 1 已經被官方宣布過時。', why: '沒有這樣的官方說法。' },
+        { text: '正確，因為官方明說只有 Tier 1 才需要實作。', why: '官方沒有說其他層可省略；三層是漸進的成熟度設計。' }
+      ],
+      summary: 'Tier ≠ 風險嚴重度。' },
+    { id: 'd4q2', type: 'match', lo: [4], refs: [{label: '4.1 表 4-1', href: '04-tiers-and-scenarios.html#tr-how'}],
+      stem: '把下列 DSGAI14 的控制配對到它的層級。',
+      cats: [
+        { id: 't1', label: 'Tier 1 基礎' },
+        { id: 't2', label: 'Tier 2 強化' },
+        { id: 't3', label: 'Tier 3 進階' }
+      ],
+      items: [
+        { text: '預設最少日誌：內容層級記錄預設關閉，高風險欄位寫入前遮蔽', answer: 't1', why: 'DSGAI14 Tier 1 的第一項。' },
+        { text: '除錯記錄需核准並自動到期', answer: 't2', why: 'DSGAI14 Tier 2。' },
+        { text: '對觀測平台做洩漏紅隊與桌面演練', answer: 't3', why: 'DSGAI14 Tier 3。' }
+      ],
+      summary: 'DSGAI14 的三層：最少日誌 → 除錯需核准並到期 → 紅隊演練。' },
+    { id: 'd4q3', type: 'scn', lo: [4], refs: [{label: '4.3 情境 A', href: '04-tiers-and-scenarios.html#tr-scn-a'}],
+      stem: '依本章，這個團隊該怎麼排控制的順序？',
+      scenario: '臨海生技（虛構）發現，一位已要求刪除資料的使用者，其紀錄仍會被內部助理在檢索時帶出。團隊立刻想上線「抹除驗證測試」，要確認嵌入與備份是否真的清乾淨。但他們發現：嵌入沒有任何標籤說明來源、也沒有紀錄說明哪些資料被用於微調。',
+      options: [
+        { text: '直接上線抹除驗證測試，其他以後再說。', why: '沒有來源標籤與血緣，驗證沒有可對照的依據，測試無法判斷哪些嵌入該被刪。' },
+        { text: '先做 Tier 1 的標籤傳遞與保留期限、並開始記錄資料到模型的血緣，再上抹除驗證測試 (Tier 2)；已進入微調權重的資料，承認 unlearning 的技術限制。', correct: true, why: '符合 4.3 節的提醒。' },
+        { text: '把整個助理關掉，直到官方發布 companion 實作文件。', why: '官方沒有這樣要求；companion 文件是否發布也未能確認。' },
+        { text: '改用更大的模型，就不需要刪除了。', why: '與抹除義務無關。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 官方 DSGAI07 Tier 1 是分類標籤傳遞與保留期限，Tier 2 才是抹除驗證。(2) 沒有來源標籤與血緣，驗證無從比對。(3) 微調權重的移除受 machine unlearning 技術限制。</p><p><strong>結論：</strong>先 Tier 1 打底，再 Tier 2 驗證。對應教材：<a href="04-tiers-and-scenarios.html#tr-scn-a">4.3 節</a>。</p>' },
+    { id: 'd4q4', type: 'mc', lo: [4], refs: [{label: '4.4 情境 B', href: '04-tiers-and-scenarios.html#tr-scn-b'}],
+      stem: '依情境 B，為什麼官方把「預設最少日誌」放在 DSGAI14 的 Tier 1 第一項？',
+      options: [
+        { text: '因為日誌會讓系統變慢。', why: '官方的理由是外洩風險，不是效能。' },
+        { text: '因為觀測平台常繞過資料分類卻彙整最敏感的內容；預設就不記內容，才能從源頭減少被偷走的東西。', correct: true, why: '符合 4.4 節第 2 點。' },
+        { text: '因為法律禁止任何日誌。', why: '官方並未禁止日誌，而是預設最少、可升級並需核准。' },
+        { text: '因為 Tier 1 只能放最容易的項目。', why: 'Tier 1 的定義是一個 sprint 內可上線且降低最多暴露，不是「最容易」。' }
+      ],
+      summary: '觀測平台是新的外洩來源；預設最少日誌從源頭減量。' }
+  ]
+});
+</script>
+</body>
+</html>

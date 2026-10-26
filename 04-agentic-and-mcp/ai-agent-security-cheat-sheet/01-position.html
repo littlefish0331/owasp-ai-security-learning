@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌、定位與兩群控制｜AI Agent Security Cheat Sheet｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AI Agent Security Cheat Sheet 與 Verifying Third-Party Agent Execution Evidence Cheat Sheet 是什麼、在 04 階段的位置、13 項 Key Risks，以及把九節最佳實務分成「限制」與「看見」兩群的讀法。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="ai-agent-security-cheat-sheet" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌、定位與兩群控制</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="index.html">主題首頁</a></li>
+</ul>
+<p class="lead">04 階段前面四個主題談的是「agent 有哪些風險」與「MCP 怎麼用」。OWASP Cheat Sheet Series 另有一份離工程現場更近的文件：<strong>AI Agent Security Cheat Sheet</strong>，用 13 項風險加九節最佳實務，告訴開發者設計 agent 時要先放進哪些控制。這一章先弄清楚它是什麼、和前四個主題怎麼分工，再看 13 項 Key Risks，最後用「限制」與「看見」兩群控制替後面兩章打底。</p>
+
+<h2 id="a1-onepage">1.1 一頁式全貌：兩份速查表</h2>
+<p>本主題讀兩份 Cheat Sheet。第二份是第一份在監控一節裡明說「紀錄來自你沒做的元件時請看這個」的延伸，所以放在同一個主題。</p>
+<div class="table-wrap"><table>
+<caption>表 1-1　兩份 Cheat Sheet 的一頁式全貌（2026-10-26 讀取；提交日取自 GitHub 提交紀錄）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">AI Agent Security</th><th scope="col">Verifying Third-Party Agent Execution Evidence</th></tr></thead>
+<tbody>
+<tr><th scope="row">類型與發布者</th><td>OWASP Cheat Sheet Series，開發者導向的實作速查表</td><td>同左</td></tr>
+<tr><th scope="row">首次提交 → 最近修改</th><td>2025-12-17 → 2026-10-04（共 13 次提交）</td><td>2026-10-02 → 2026-10-03（共 2 次提交）</td></tr>
+<tr><th scope="row">版本號</th><td>無（Cheat Sheet 沒有版本號與發布日）</td><td>無</td></tr>
+<tr><th scope="row">結構</th><td>Introduction、Key Risks（13 項）、Best Practices（九節）、Do's and Don'ts、References</td><td>Introduction、六個問題、工作範例、Do's and Don'ts、References</td></tr>
+<tr><th scope="row">要解決的問題</th><td>agent 會推理、用工具、有記憶、能行動，風險超過傳統的提示詞注入；用最佳實務縮小攻擊面</td><td>供應者可以簽署一份漏列動作、甚至描述從沒發生過的執行紀錄；要驗的是哪一個具體主張，以及誰有能力偽造支撐它的證據</td></tr>
+<tr><th scope="row">原文的 References</th><td>LLM06:2025 Excessive Agency（2025 版編號，換算見 <a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 第 8 章</a>）、NIST AI RMF 1.0</td><td>SLSA Verifying Artifacts、RFC 9334、RFC 9162</td></tr>
+<tr><th scope="row">授權</th><td colspan="2">Cheat Sheet Series 站台頁尾與儲存庫 LICENSE.md：CC BY-SA 4.0</td></tr>
+</tbody></table></div>
+<p>兩份文件都自稱「速查表 (Cheat Sheet)」，是提供最佳實務的實作指引，沒有自稱標準或規格，也沒有符合性宣告的機制；引用時不要寫成「依該標準」（這個說明是依文件沒有自稱標準所做的歸納，<span class="tag author">作者整理，非官方</span>）。</p>
+<p>原文大量使用 Python 示範碼。<strong>本教材不貼程式碼</strong>，只用文字描述每段示範想呈現的「危險 vs 安全」差別。原因之一來自它的提交紀錄：<span class="tag official">官方</span> 2026-10-04 的提交（標題：Replace unsafe agent approval and message replay examples）把兩段不安全的示範換成文字規則，其中一段原本是用「已確認」旗標當作批准；2026-09-30 另有一次修正行動分級的提交。連官方速查表都曾把不夠安全的示範寫進去，示範碼因此只能當說明，不能當實作。</p>
+<div class="callout official unsure">
+  <p class="callout-title">這份文件還在變動</p>
+  <p>AI Agent Security 在 2026-09-30 到 10-04 之間有六次提交：行動分級修正、示範替換、監控時間窗修正、批准要原子地檢查並消耗這四次改的是控制規則或示範；另兩次是加入對 Verifying 的指向，以及全儲存庫的參考資料審查。教材引用的是 2026-10-26 讀取的內容，細節可能已再改；用它時請寫「讀取日」，不要把某一條抄成永久規則。</p>
+</div>
+
+<h2 id="a1-place">1.2 在 04 階段的位置</h2>
+<p>先說官方明寫的：AI Agent Security 只引用三份 Cheat Sheet（Prompt Injection Prevention、Transaction Authorization、Verifying）；Verifying 引用 Logging Cheat Sheet 與 MCP Security 的第 7 項（選配的訊息層級完整性）。<strong>兩份都沒有引用 Agentic Top 10、威脅與緩解文件或保護 Agentic 應用指南。</strong>所以下表的分工是<span class="tag author">作者整理，非官方</span>。</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　04 階段的主題與兩份 Cheat Sheet 的分工（作者整理，非官方）</caption>
+<thead><tr><th scope="col">主題</th><th scope="col">主要回答</th><th scope="col">與 Cheat Sheet 的關係</th></tr></thead>
+<tbody>
+<tr><th scope="row"><a href="../agentic-threats-and-mitigations/index.html">Agentic 威脅與緩解</a></th><td>有哪些威脅（T1–T17）、六個緩解劇本 (Playbook)</td><td>同樣談記憶、工具、多 agent；那裡按「威脅」分類，Cheat Sheet 按「控制主題」條列</td></tr>
+<tr><th scope="row"><a href="../agentic-top-10-2026/index.html">Agentic Top 10 2026</a></th><td>十項風險的共同語言（ASI01–ASI10）與最小自主權</td><td>Cheat Sheet 的 13 項 Key Risks 沒有 ASI 編號；對照見 1.3 節</td></tr>
+<tr><th scope="row"><a href="../securing-agentic-applications/index.html">保護 Agentic 應用指南</a></th><td>六類元件、生命週期、架構與高風險能力</td><td>最接近的「落實」對象；指南按生命週期與架構，Cheat Sheet 按控制主題</td></tr>
+<tr><th scope="row"><a href="../mcp-security/index.html">MCP 安全</a></th><td>MCP 文件地圖、十項風險、開發者與使用者兩種視角</td><td>Cheat Sheet 的工具示範標為 MCP 工具設定；審查第三方伺服器看 MCP 主題，「它給你的執行紀錄能證明什麼」看本主題第 4 章</td></tr>
+</tbody></table></div>
+
+<h2 id="a1-risks">1.3 Key Risks：13 項風險怎麼讀</h2>
+<p>Key Risks 是一份 13 項的清單，每項一句話。它不是風險分類（沒有編號、沒有分級），也沒有逐項標明由哪一節處理。下表第二欄是文件的意思（改寫），第三欄是<span class="tag author">作者整理，非官方</span>的對應：最相關的最佳實務節（以第 1–9 節稱呼），以及語意相近的條目。</p>
+<div class="table-wrap"><table>
+<caption>表 1-3　13 項 Key Risks 與作者整理的對應（對應欄為作者整理，非官方；T 編號指威脅與緩解文件的 T1–T17，ASI 指 Agentic Top 10）</caption>
+<thead><tr><th scope="col">風險</th><th scope="col">文件的意思（改寫）</th><th scope="col">相關節；相近條目（作者整理）</th></tr></thead>
+<tbody>
+<tr><th scope="row">提示詞注入，直接與間接 <br>(Prompt Injection)</th><td>經使用者輸入或網站、文件、電子郵件等外部資料夾帶的指令，劫持 agent 行為；文件連到 Prompt Injection Prevention</td><td>第 2 節；<a href="../../02-llm-applications/llm-top-10/02-prompt-injection.html#pi-what">LLM01:2026</a>、ASI01</td></tr>
+<tr><th scope="row">工具濫用與權限提升 <br>(Tool Abuse &amp; Privilege Escalation)</th><td>agent 利用過度寬鬆的工具，做非預期動作或存取未授權資源</td><td>第 1、4 節；ASI02、ASI03</td></tr>
+<tr><th scope="row">資料外洩 <br>(Data Exfiltration)</th><td>敏感資訊經工具呼叫、API 請求或 agent 輸出流出</td><td>第 5、8 節；<a href="../../02-llm-applications/llm-top-10/06-disclosure.html#dc-what">LLM02:2026</a></td></tr>
+<tr><th scope="row">記憶污染 <br>(Memory Poisoning)</th><td>惡意資料留在記憶裡，影響之後的 session 或其他使用者</td><td>第 3 節；ASI06、T1</td></tr>
+<tr><th scope="row">目標劫持 <br>(Goal Hijacking)</th><td>操縱 agent 的目標為攻擊者服務，卻看起來合法</td><td>第 2、4 節；ASI01</td></tr>
+<tr><th scope="row">過度自主 <br>(Excessive Autonomy)</th><td>agent 在沒有適當人類監督下做高衝擊動作</td><td>第 4 節；<a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a> 過度授權</td></tr>
+<tr><th scope="row">高衝擊動作濫用 <br>(High-Impact Action Abuse)</th><td>不可逆、金融、管理或對外可見的操作，沒有獨立驗證就執行</td><td>第 1、4 節；ASI02</td></tr>
+<tr><th scope="row">決策與批准操縱 <br>(Decision and Approval Manipulation)</th><td>影響風險分數、模型信心或批准門檻以繞過防護</td><td>第 4、6 節；近似 ASI09，但 ASI09 談的是利用人的信任，不完全相同</td></tr>
+<tr><th scope="row">連鎖失效 <br>(Cascading Failures)</th><td>多 agent 系統中，被攻陷的 agent 把攻擊傳給其他 agent</td><td>第 7 節；ASI08</td></tr>
+<tr><th scope="row">AI 主控台惡意設定 <br>(AI Console Malicious Configuration)</th><td>AI 開發者主控台被誘導讀取含指令的資料，進而惡意改動底層 LLM 的設定</td><td>九節沒有專節；找不到名稱相近的 ASI 條目，不硬配</td></tr>
+<tr><th scope="row">錢包拒絕 <br>(Denial of Wallet, DoW)</th><td>無界的 agent 迴圈造成過量 API 或運算費用</td><td>第 6、9 節（遞迴工具濫用）；<a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-consume">LLM06:2026</a></td></tr>
+<tr><th scope="row">敏感資料暴露 <br>(Sensitive Data Exposure)</th><td>PII、憑證等被不慎放進 agent 的上下文或日誌</td><td>第 6、8 節；LLM02:2026</td></tr>
+<tr><th scope="row">供應鏈攻擊 <br>(Supply Chain Attacks)</th><td>攻陷 agent 使用的第三方工具、API 或資料來源</td><td>九節沒有專節（第 6 節指向 Verifying）；ASI04、<a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-supply">LLM04:2026</a></td></tr>
+</tbody></table></div>
+<p>表裡有兩個觀察（<span class="tag author">作者整理，非官方</span>）：第一，13 項風險裡至少有「AI 主控台惡意設定」與「供應鏈攻擊」在九節中找不到專節，後者靠第 6 節的一句話導向 Verifying；第二，這份清單比 ASI 十項多出錢包拒絕、敏感資料暴露這類偏營運的風險。所以拿它當「檢查清單的起點」比當「風險分類標準」更合適。</p>
+
+<h2 id="a1-two">1.4 核心概念：限制與看見是兩群不同的控制</h2>
+<div class="concept">
+<h3 id="c-two">先限制，再看見，兩者互相檢驗</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>官方把九節平列，沒有分群。<span class="tag author">作者整理，非官方</span> 本教材把它們分成兩群：<strong>限制</strong>是讓 agent 根本做不到（第 1 節工具與最小權限 (Least Privilege)、第 2 節外部輸入、第 3 節記憶、第 4 節人在迴路 (Human-in-the-Loop, HITL)、第 7 節多 agent、第 8 節資料保護）；<strong>看見</strong>是讓做了的事看得到、驗得出（第 5 節輸出驗證、第 6 節監控、第 9 節測試）。</dd>
+  <dt data-n="2">為什麼要分</dt>
+  <dd>兩群回答不同問題。限制屬預防類控制，回答「它能不能做」；看見屬偵測與證據，回答「它做了什麼、我怎麼知道」（預防／偵測／回應的分法見<a href="../../primer-security-for-developers.html#p-pdr">資安前置觀念</a>）。</dd>
+  <dt data-n="3">只做一群會怎樣（概念層級）</dt>
+  <dd>只有限制：控制若悄悄失效（例如批准被重複使用），沒有人看得到。只有看見：事情發生了才知道，紀錄只能事後追查。</dd>
+  <dt data-n="4">怎麼用</dt>
+  <dd>先決定哪些動作根本不該能做，再決定怎麼看見其餘動作。兩群互相檢驗：第 9 節的測試驗證限制真的有效，第 6 節的監控補測試沒涵蓋的情況。後兩章依這個順序走。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「有完整日誌就算安全。」日誌是看見，不是限制。另一個是反過來：「批准流程做好了，不需要監控。」批准邏輯本身也會被繞過或重放，要靠監控與測試才發現。</dd>
+</dl>
+</div>
+<figure class="diagram">
+<pre class="mermaid" data-alt="決策流程：先問要補哪一節。若問題是不該讓 agent 做到，屬限制群：第 1 節工具、第 2 節外部輸入、第 3 節記憶、第 4 節人在迴路、第 7 節多 agent、第 8 節資料保護。若問題是做了要看得見、驗得出，屬看見群：第 5 節輸出驗證、第 6 節監控、第 9 節測試。兩群最後互相檢驗：測試驗證限制有效，監控補測試沒涵蓋的情況。">
+flowchart TB
+  Q["要補哪一節？"] --> A{"問題是什麼？"}
+  A -->|"不該讓 agent 做到"| R["限制群<br>1 工具　2 外部輸入<br>3 記憶　4 人在迴路<br>7 多 agent　8 資料"]
+  A -->|"做了要看得見、驗得出"| S["看見群<br>5 輸出驗證<br>6 監控　9 測試"]
+  R --> C["互相檢驗：<br>測試驗證限制有效，<br>監控補測試沒涵蓋的"]
+  S --> C
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class Q,A,R,S,C author
+</pre>
+<figcaption><strong>圖 1-1　九節最佳實務的兩群讀法。</strong>九節的名稱與內容是官方；分成「限制」與「看見」兩群，以及兩群互相檢驗，是<span class="tag author">作者整理，非官方</span>（整張圖皆為虛線框）。</figcaption>
+</figure>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>兩份 Cheat Sheet 都沒有版本號；教材以讀取日 2026-10-26 加 GitHub 提交日標示（AI Agent Security：2025-12-17 → 2026-10-04；Verifying：2026-10-02 → 2026-10-03），授權 CC BY-SA 4.0。</li>
+  <li>文件本身沒有引用 Agentic Top 10、威脅與緩解或保護 Agentic 應用指南；與 ASI 的對照、與 04 階段其他主題的分工，都是作者整理。</li>
+  <li>13 項 Key Risks 是檢查清單的起點，不是風險分類；至少兩項（AI 主控台惡意設定、供應鏈攻擊）在九節裡沒有專節。</li>
+  <li>九節可讀成兩群：限制（第 1、2、3、4、7、8 節）與看見（第 5、6、9 節），兩者互相檢驗。</li>
+  <li>原文的 Python 示範碼曾被官方更正過；以文字規則為準，示範只當說明。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出兩份 Cheat Sheet 的讀取日、提交日期區間與授權，並說明為什麼不寫版本號。</li>
+  <li>我能指出哪些對照是文件明寫的、哪些是作者整理。</li>
+  <li>我能把九節分成「限制」與「看見」兩群，並說明兩者回答的問題不同。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-restrict.html">第 2 章　限制 agent 能做什麼</a>：限制群的六節，重點是「批准要綁定確切動作、授權放在執行元件」。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series, <em>AI Agent Security Cheat Sheet</em>：<a href="https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；無版本號；2026-10-26 讀取；GitHub 提交紀錄 2025-12-17（建立）至 2026-10-04（最近修改），共 13 次；CC BY-SA 4.0。</li>
+    <li>OWASP Cheat Sheet Series, <em>Verifying Third-Party Agent Execution Evidence Cheat Sheet</em>：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Verifying_Third_Party_Agent_Execution_Evidence_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；無版本號；2026-10-26 讀取；提交紀錄 2026-10-02（建立）至 2026-10-03，共 2 次；CC BY-SA 4.0。</li>
+    <li>OWASP Cheat Sheet Series 儲存庫：<a href="https://github.com/OWASP/CheatSheetSeries">github.com/OWASP/CheatSheetSeries</a>（提交紀錄、LICENSE.md）。</li>
+    <li>ASI 條目名稱取自 Top 10 for Agentic Applications 2026（見本站<a href="../agentic-top-10-2026/01-position.html#pos-map">Agentic Top 10 第 1 章</a>）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series（AI Agent Security、Verifying Third-Party Agent Execution Evidence）— CC BY-SA 4.0（站台頁尾與儲存庫 LICENSE.md）；Top 10 for Agentic Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'aas-ch1', topic: 'ai-agent-security-cheat-sheet', mode: 'chapter',
+  questions: [
+    { id: 'a1q1', type: 'mc', lo: [1], refs: [{label: '1.2 官方明寫的引用', href: '01-position.html#a1-place'}, {label: '1.3 Key Risks', href: '01-position.html#a1-risks'}],
+      stem: '同事說：「AI Agent Security Cheat Sheet 的 13 項 Key Risks 已經由 OWASP 官方對照到 Agentic Top 10 的 ASI 條目。」依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，文件在每項風險後面都標了 ASI 編號。', why: '文件沒有任何 ASI 編號；它的 References 只列 LLM06:2025 與 NIST AI RMF 1.0。' },
+        { text: '不準確：文件沒有引用 Agentic Top 10；對照是本教材依語意做的作者整理，只能當找資料的起點，並要標明來源。', correct: true, why: '符合 1.2、1.3 節。' },
+        { text: '不準確，因為兩者完全無關，不可能對照。', why: '語意上有許多相近處（例如記憶污染與 ASI06），只是不是官方對映。' },
+        { text: '正確，因為 Cheat Sheet 與 Agentic Top 10 是同一個專案發布的。', why: '兩者的發布者與專案不同；而且即使同屬 OWASP，也不代表文件之間有官方對照。' }
+      ],
+      summary: '官方沒有 ASI 對照；對照是作者整理。' },
+    { id: 'a1q2', type: 'mc', lo: [1], refs: [{label: '1.1 一頁式全貌', href: '01-position.html#a1-onepage'}],
+      stem: '你要在內部規範引用 AI Agent Security Cheat Sheet。下列哪種寫法最能避免日後失效或混淆？',
+      options: [
+        { text: '「AI Agent Security Cheat Sheet v1.0」，因為文件是 2025 年底建立的。', why: 'Cheat Sheet 沒有版本號，v1.0 沒有依據。' },
+        { text: '「OWASP 官方標準：所有 agent 必須完全照該文件實作」。', why: '它是實務速查表，不是標準；而且文件 2026-10 內仍在修改。' },
+        { text: '「AI Agent Security Cheat Sheet（無版本號；2026-10-26 讀取；GitHub 最近修改 2026-10-04；CC BY-SA 4.0）」。', correct: true, why: '寫明讀取日、提交日與授權，讀者能判斷內容是否已變。' },
+        { text: '只寫「OWASP 的 agent 安全文件」，不寫名稱。', why: '沒有名稱與日期，無法核對。' }
+      ],
+      summary: '無版本號 → 寫讀取日與提交日。' },
+    { id: 'a1q3', type: 'match', lo: [1], refs: [{label: '1.4 兩群控制', href: '01-position.html#a1-two'}],
+      stem: '依本教材（作者整理）的讀法，把九節中的做法配對到它屬於的群。',
+      cats: [
+        { id: 'restrict', label: '限制：讓 agent 根本做不到' },
+        { id: 'see', label: '看見：讓做了的事看得到、驗得出' }
+      ],
+      items: [
+        { text: '只給 agent 完成任務所需的最少工具，並分範圍授權', answer: 'restrict', why: '第 1 節，限制。' },
+        { text: '記錄每次決策與工具呼叫，並對異常行為告警', answer: 'see', why: '第 6 節，看見。' },
+        { text: '用濫用案例矩陣在發佈前驗證批准無法被繞過', answer: 'see', why: '第 9 節，看見；它驗證的是限制有沒有效。' },
+        { text: '為不同使用者與 session 的記憶做隔離，並設定到期', answer: 'restrict', why: '第 3 節，限制。' }
+      ],
+      summary: '限制回答「能不能做」，看見回答「做了什麼、怎麼知道」。' }
+  ]
+});
+</script>
+</body>
+</html>

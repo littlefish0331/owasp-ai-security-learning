@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　計分結構｜AIVSS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AIVSS v0.8 規格的計分結構：CVSS 基礎分、十個放大因子、威脅係數、緩解係數、取整與嚴重度級別，以及分數是順序尺度而非等距的官方提醒。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="aivss" data-page="02-scoring.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　計分結構</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 6 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-why-aivss.html">第 1 章</a></li>
+</ul>
+<p class="lead">本章教的是<strong>乙：v0.8 規格</strong>的算式（見<a href="01-why-aivss.html#three-layers">表 1-1</a>）。選它來教有兩個理由：它是官方網站標示的最新發布規格，而且公式完整、可以一步步算。算式不難，難的是知道每一項在<strong>改變什麼</strong>，以及分數該怎麼被解讀。</p>
+
+<h2 id="sc-flow">2.1 算式只有三步</h2>
+<p>v0.8 的流程是：先拿到弱點的 CVSS v4.0 基礎分，再算 agentic 放大量，最後乘上緩解係數。<span class="tag official">官方</span></p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="算式流程：第一步取得 CVSS v4.0 基礎分 CVSS_Base。第二步算風險缺口 10 減 CVSS_Base，乘以十個因子加總除以 10，再乘威脅係數 ThM，得到放大量 AARS。第三步 CVSS_Base 加 AARS 後乘緩解係數 Mitigation_Factor，四捨五入到小數一位，得到 AIVSS，再對照四個嚴重度級別。">
+flowchart LR
+  A["1 CVSS_Base<br>（CVSS v4.0 基礎分）"] --> G["2a 風險缺口<br>10 − CVSS_Base"]
+  F["2b Factor_Sum / 10<br>（十個因子加總）"] --> M
+  T["2c ThM<br>威脅係數"] --> M
+  G --> M["AARS＝缺口 × Factor_Sum/10 × ThM"]
+  M --> S["3 (CVSS_Base + AARS) × Mitigation_Factor"]
+  S --> R["四捨五入到 0.1<br>→ AIVSS → 嚴重度級別"]
+</pre>
+<figcaption><strong>圖 2-1　v0.8 的算式流程。</strong>放大量 AARS 只能填補「10 減基礎分」這段缺口的一部分，所以基礎分越高，能被放大的空間越小。圖是依規格文字重新繪製，不是官方原圖。</figcaption>
+</figure>
+<p>三個式子（<span class="tag official">官方</span>）：</p>
+<ul>
+  <li><code>AARS = (10 − CVSS_Base) × (Factor_Sum / 10) × ThM</code></li>
+  <li><code>AIVSS_raw = (CVSS_Base + AARS) × Mitigation_Factor</code></li>
+  <li><code>AIVSS = RoundHalfUp(AIVSS_raw, 1)</code>（四捨五入到小數一位，例如 8.65 變 8.7）</li>
+</ul>
+<p>規格說 AARS 只是中間值，可以記錄但不是主要輸出。「風險缺口」的意思是：基礎分離滿分 10 還有多少空間，agent 能力最多補上其中的一部分。<span class="tag official">官方</span></p>
+
+<h2 id="sc-factors">2.2 十個放大因子</h2>
+<p>每個因子只能打三種分：0.0（沒有）、0.5（部分或受限）、1.0（完整、不受限）。十個分數加總得到 Factor_Sum，最大 10.0。<span class="tag official">官方</span></p>
+<div class="table-wrap"><table>
+<caption>表 2-1　十個 Agentic 風險放大因子（取自 v0.8，0.0／0.5／1.0 的概念用作者自己的話整理）</caption>
+<thead><tr><th scope="col">因子</th><th scope="col">問的是什麼</th><th scope="col">0.0</th><th scope="col">1.0</th></tr></thead>
+<tbody>
+<tr><th scope="row">Autonomy <br>（執行自主性）</th><td>沒有人類共同簽核，agent 能不能自己把動作做完</td><td>每個動作都有人在迴路中</td><td>能在正式環境或關鍵系統自主提交動作</td></tr>
+<tr><th scope="row">Tools <br>（外部工具控制面）</th><td>能碰的外部 API／工具有多廣、權限多高</td><td>唯讀工具或沒有外部存取</td><td>廣泛且高權限（雲端、CI/CD、SQL、OT）</td></tr>
+<tr><th scope="row">Language <br>（自然語言介面）</th><td>控制邏輯有多依賴非結構化的自然語言</td><td>只用結構化 API 輸入</td><td>自然語言提示直接驅動工具執行與規劃</td></tr>
+<tr><th scope="row">Context <br>（情境感知）</th><td>是否用環境感測或廣泛資料脈絡來做決策</td><td>不使用，像在真空中運作</td><td>廣泛的環境訊號驅動自主決策</td></tr>
+<tr><th scope="row">Non-Determinism <br>（行為非確定性）</th><td>相同輸入下輸出或動作的變異程度</td><td>確定性（規則式或固定種子）</td><td>變異高、防護弱、機率式邏輯</td></tr>
+<tr><th scope="row">Opacity <br>（不透明與反身性）</th><td>能不能審視決策邏輯、追溯為什麼做某個動作</td><td>完整可追溯、確定性紀錄</td><td>可視性低，無法追溯動作原因</td></tr>
+<tr><th scope="row">Persistence <br>（持久狀態保留）</th><td>是否跨工作階段保留記憶或狀態</td><td>無記憶（無狀態）</td><td>長期記憶（如向量資料庫）跨工作階段存在</td></tr>
+<tr><th scope="row">Identity <br>（動態身分）</th><td>執行期能否切換角色或權限</td><td>固定身分或服務帳號</td><td>能動態取得角色或跨租戶邊界</td></tr>
+<tr><th scope="row">Multi-Agent <br>（多 Agent 互動）</th><td>與其他自主 agent 協調或依賴的程度</td><td>單獨的實例</td><td>複雜編排、群集模式</td></tr>
+<tr><th scope="row">Self-Mod <br>（自我修改）</th><td>能不能改自己的目標、提示、工具或程式</td><td>無，設定靜態</td><td>能更改工具、控制流程，或產生並執行程式碼</td></tr>
+</tbody></table></div>
+<p>規格另附一張「風險放大矩陣」，說明每一項 OWASP Agentic AI 核心風險受哪幾個因子影響最大，例如工具濫用主要受 Autonomy、Tools、Language 影響，供評分者判斷哪些因子該特別小心。<span class="tag official">官方</span>（細節以 PDF 為準，本教材不逐項抄錄。）</p>
+
+<h2 id="sc-thm-mit">2.3 威脅係數、緩解係數與嚴重度級別</h2>
+<div class="table-wrap"><table>
+<caption>表 2-2　v0.8 的 ThM、Mitigation_Factor 與嚴重度級別</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">選項與數值</th><th scope="col">預設與設計理由（官方說法）</th></tr></thead>
+<tbody>
+<tr><th scope="row">威脅係數 <br>(Threat Multiplier, ThM)</th><td>Attacked 1.00；Proof-of-Concept 0.97；Unreported 0.50</td><td>預設 <strong>0.97</strong>。理由：agentic 攻擊多為自然語言、不需編譯，且攻擊者也能用 AI 把概念驗證快速武器化，所以 PoC 與實際攻擊的距離很小</td></tr>
+<tr><th scope="row">緩解係數 <br>(Mitigation_Factor)</th><td>No／Weak 1.00；Partial 0.83；Strong 0.67</td><td>預設 <strong>1.0</strong>（假設緩解不足，除非評分者能證明緩解有效且已驗證）。0.67 是下限：即使緩解再強，也無法完全消除 agentic 帶來的殘餘風險；規格自己說這是暫定錨點，會隨實證校準，「不是永久常數」</td></tr>
+<tr><th scope="row">嚴重度級別 <br>(Severity Band)</th><td>Critical 9.0–10.0；High 7.0–8.9；Medium 4.0–6.9；Low 0.1–3.9</td><td>沿用 CVSS 的級別慣例以便跨框架一致；規格提醒 AIVSS 分數反映「被放大後的風險」，<strong>不能直接與 CVSS 基礎分比較</strong></td></tr>
+</tbody></table></div>
+<p>「強緩解」在規格裡的條件很具體：有效、已驗證、在真實運作條件下能一致地強制執行（適用時是失敗即封鎖）。「部分緩解」則是有些措施，但不完整、無法可靠強制，或沒有對真實濫用情況驗證過。<span class="tag official">官方</span>換句話說，<strong>寫在文件裡的防護不算強緩解，被測試過才算</strong>。這一點與紅隊的證據導向精神一致。<span class="tag author">作者整理，非官方</span></p>
+
+<h2 id="sc-ordinal">2.4 解讀分數：順序尺度，不是等距尺度</h2>
+<p>v0.8 的 3.2 節有一段容易被略過、但對使用者最重要的提醒（<span class="tag official">官方</span>）：</p>
+<ul>
+  <li>AIVSS 分數是<strong>順序</strong>的，不是<strong>等距</strong>的：5.0 到 6.0 的差距，和 9.0 到 10.0 的差距，在真實衝擊或財損上不代表同樣大的差別。</li>
+  <li><strong>不要跨發現做平均</strong>：平均順序值得到的數字沒有意義；分析單位是單一發現與它的嚴重度級別。</li>
+  <li><strong>以級別解讀，不要用小數位排名</strong>：同級別內（例如 9.4 與 9.7 都是 Critical）視為等價；跨過級別界線（例如 6.8 與 7.2）才有意義。</li>
+  <li>放大過程可能<strong>重排</strong>相對於 CVSS 的順序：CVSS 低的弱點，在高度 agentic 的部署裡可能比 CVSS 高的弱點得到更高的 AIVSS，所以應以 AIVSS 排名（不是 CVSS）決定補救優先順序。</li>
+</ul>
+<p>小數位只是計算過程的精確，不代表 9.7 一定比 9.4 更危險。<span class="tag official">官方</span>（這一段在第 3 章情境 B 會用到。）</p>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：評分的「一致性」有多高</p>
+  <p>規格把十個因子都設計成三分制，並附了評分準則，但本教材沒有找到「不同評分者對同一弱點是否會得到同樣分數」的驗證資料。規格自己也說緩解係數的下限等數值是「暫定錨點」。因此請把 Factor_Sum 當作<strong>結構化的判斷</strong>，而不是量測值。</p>
+</div>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>v0.8 算式：AARS ＝（10 − CVSS_Base）× Factor_Sum/10 × ThM；AIVSS ＝（CVSS_Base + AARS）× Mitigation_Factor，取到小數一位。</li>
+  <li>十個因子各 0／0.5／1.0；ThM 預設 0.97；Mitigation_Factor 預設 1.0（下限 0.67）。</li>
+  <li>級別：Critical 9.0–10.0、High 7.0–8.9、Medium 4.0–6.9、Low 0.1–3.9。</li>
+  <li>分數是順序尺度：不要平均、不要用小數位排名、跨級別才有意義。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能寫出 v0.8 的算式，並說出 AARS 為什麼只能填補「10 減基礎分」的一部分。</li>
+  <li>我能說出十個因子中至少六個，並知道三個分數的概念。</li>
+  <li>我知道為什麼緩解係數預設是 1.0，而不是假設團隊已經有防護。</li>
+  <li>我能解釋「9.4 與 9.7 視為等價、6.8 與 7.2 不是」。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-applying.html">第 3 章　套用與限制</a>：用兩個虛構情境實際算分，再看 1.0 的查表模型、使用限制，以及它與其他 OWASP 文件的關係。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>AIVSS Scoring System For OWASP Agentic AI Core Security Risks v0.8，Part 2 第 2 節（Agentic Risk Amplification Factors、Table 1–3）、第 3 節（3.2 Ordinal vs. Interval、3.3 AARS、3.4 Primary Equation、3.4.1 Mitigation Factor、3.5 Reporting）：<a href="https://aivss.owasp.org/">aivss.owasp.org</a> 提供的 PDF（98 頁；發布日未能確認）；PDF 內文未標示授權。</li>
+    <li>aivss.owasp.org 首頁（Publications：v0.8 為 Latest、v0.5 為 Archived）；2026-10-26 讀取；頁尾 CC BY-SA 4.0（除非另有說明）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：aivss.owasp.org 網站 — CC BY-SA 4.0（除非另有說明）；v0.8 PDF 內文未標示授權。本頁僅引用名稱、結構與數值並以自己的話重述，未大段複製。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'v-ch2', topic: 'aivss', mode: 'chapter',
+  questions: [
+    { id: 'v2q1', type: 'mc', lo: [2], refs: [{label: '2.1 算式', href: '02-scoring.html#sc-flow'}],
+      stem: '一個弱點的 CVSS 基礎分已經是 9.5。依 v0.8 算式，agent 的放大量 AARS 會有什麼特性？',
+      options: [
+        { text: 'AARS 與基礎分無關，只由十個因子決定。', why: 'AARS 以「10 減基礎分」的風險缺口為上限來縮放，所以與基礎分有關。' },
+        { text: 'AARS 一定超過 5，因為基礎分越高越危險。', why: '方向相反：基礎分越高，缺口越小，能被放大的空間越小。' },
+        { text: 'AARS 很小，因為缺口只剩 0.5，最多只能填補其中一部分。', correct: true, why: '2.1 節：AARS＝（10 − CVSS_Base）× Factor_Sum/10 × ThM，缺口 0.5 限制了放大量。' },
+        { text: 'AARS 會變成負數，用來降低分數。', why: '放大量不會是負的；降低分數的是緩解係數，且它下限是 0.67。' }
+      ],
+      summary: '基礎分高 → 風險缺口小 → 能被放大的空間小。' },
+    { id: 'v2q2', type: 'match', lo: [2], refs: [{label: '2.3 表 2-2', href: '02-scoring.html#sc-thm-mit'}],
+      stem: '把下列情況配對到 v0.8 的緩解係數 (Mitigation_Factor)。',
+      cats: [
+        { id: 'weak', label: '1.00（No／Weak）' },
+        { id: 'partial', label: '0.83（Partial）' },
+        { id: 'strong', label: '0.67（Strong）' }
+      ],
+      items: [
+        { text: '有一些措施，但不完整，或沒有針對真實濫用情況驗證過', answer: 'partial', why: '部分緩解的描述：不完整、無法可靠強制、未經真實對抗驗證。' },
+        { text: '措施有效、已驗證，且在真實運作條件下能一致強制（適用時失敗即封鎖）', answer: 'strong', why: '強緩解的條件；也是係數下限 0.67 所對應的情況。' },
+        { text: '評分者無法證明有任何有效的緩解（預設值）', answer: 'weak', why: '規格預設假設緩解不足，除非評分者能證明。' }
+      ],
+      summary: '預設 1.0；強緩解要「已驗證」才算，而且最低只降到 0.67。' },
+    { id: 'v2q3', type: 'scn', lo: [2], refs: [{label: '2.4 順序尺度', href: '02-scoring.html#sc-ordinal'}, {label: '2.3 表 2-2', href: '02-scoring.html#sc-thm-mit'}],
+      stem: '依 v0.8 的解讀原則，這個排序決定有什麼問題？',
+      scenario: '松濤保險（虛構）有兩個 agent 弱點：弱點甲的 AIVSS 為 9.4，弱點乙為 9.7，都在 Critical 級別。主管說：「乙的分數比較高，所以乙一定比甲危險；先修乙，甲排到下週。」另一個弱點丙為 6.8（Medium），主管說：「丙和 7.2 的丁差不多，都排到最後。」',
+      options: [
+        { text: '沒有問題，小數位越高就越危險。', why: '規格明說小數位反映計算精確，不代表真實衝擊更大。' },
+        { text: '甲與乙同屬 Critical，小數位差距不足以排序，應看其他因素；丙（6.8）與丁（7.2）跨過 Medium／High 的界線，差別才有意義，不應說差不多。', correct: true, why: '符合 2.4 節：同級視為等價，跨級才有意義。' },
+        { text: '只有丁需要處理，因為 AIVSS 只對 High 以上有效。', why: '規格沒有這樣限定；四個級別都有定義。' },
+        { text: '應該把四個分數平均後再決定。', why: '規格明說不要跨發現平均順序值。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 9.4 與 9.7 同屬 Critical，規格要求視為等價，不用小數位排名。(2) 6.8（Medium）與 7.2（High）跨過級別界線，是有意義的差別，不能說「差不多」。(3) 平均沒有意義。</p><p><strong>結論：</strong>同級內用其他資訊（例如可被利用性、影響範圍）排序；注意丙與丁屬不同級別。對應教材：<a href="02-scoring.html#sc-ordinal">2.4 節</a>。</p>' },
+    { id: 'v2q4', type: 'mc', lo: [2], refs: [{label: '2.3 表 2-2', href: '02-scoring.html#sc-thm-mit'}],
+      stem: 'v0.8 為什麼把威脅係數 (ThM) 的預設設為 0.97，而不是較保守的 0.50？',
+      options: [
+        { text: '因為官方認為所有 agent 弱點都已經被實際攻擊。', why: '0.97 是 Proof-of-Concept 的值；實際被攻擊（Attacked）是 1.00，兩者不同。' },
+        { text: '因為 0.50 的選項已經被取消。', why: '0.50 仍是 Unreported 的值，只是不是預設。' },
+        { text: '因為 ThM 沒有作用，隨便設一個值。', why: 'ThM 直接乘在放大量上，有實際作用。' },
+        { text: '因為 agentic 攻擊多為自然語言、不需編譯，概念驗證與實際攻擊的距離很小，所以預設接近實際攻擊。', correct: true, why: '2.3 節表 2-2 列的官方理由。' }
+      ],
+      summary: 'ThM 預設 0.97 是因為 PoC 與實際攻擊在 agentic 場景很接近。' }
+  ]
+});
+</script>
+</body>
+</html>

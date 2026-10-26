@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　觀察與定位：威脅檔案與評分｜Threat Defense COMPASS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="COMPASS 的 Observe 與 Orient 階段：三種組織視角與威脅檔案、5 分制可能性與衝擊評分、核毀滅級 AI 災難情境、已知弱點與事件、紅隊結果。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="threat-defense-compass" data-page="02-observe-orient.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　觀察與定位：威脅檔案與評分</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2、LO4</li>
+  <li>前置：<a href="01-position-and-ooda.html">第 1 章</a></li>
+</ul>
+<p class="lead">拿到試算表之後，第一件事不是填分數，而是回答兩個問題：我是以什麼身分在看這件事（攻擊者？使用者？模型建置者？），以及我要評估的到底是哪個系統。這一章走完 Observe 與 Orient，並學會 COMPASS 的核心算法：可能性乘以衝擊。</p>
+
+<h2 id="oo-profiles">2.1 先選視角：三種組織視角與威脅檔案</h2>
+<p>RunBook 的第一步「Observe」要你先決定自己站在哪個位置。它把評估對象分成三種<strong>組織視角</strong>，並對應到試算表的「威脅檔案 (Profile)」：</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　三種組織視角與威脅檔案（RunBook，改寫）</caption>
+<thead><tr><th scope="col">組織視角</th><th scope="col">檔案</th><th scope="col">是誰</th><th scope="col">誰負責什麼</th></tr></thead>
+<tbody>
+<tr><th scope="row">防禦外部攻擊 <br>(Defending from External Attacks)</th><td>Profile 1：外部攻擊者使用 AI</td><td>用 AI 工具加速攻擊的對手</td><td>（RunBook 的責任欄寫 NA）</td></tr>
+<tr><th scope="row">防禦模型的使用 <br>(Defending the Use of Models)</th><td>Profile 2：內部導入 AI（部署者／使用模型者）</td><td>在自己營運中使用 AI 系統、且不是改名轉售的任何組織</td><td>部署者負責應用層風險：如何部署，以及對人與使用者的影響</td></tr>
+<tr><th scope="row">防禦模型 <br>(Defending Models)</th><td>Profile 3：模型提供者（模型建置者）</td><td>開發 AI 系統（含基礎模型與通用模型）並以自己名義上市或提供的組織</td><td>提供者負責核心模型行為與系統性風險</td></tr>
+</tbody></table></div>
+<p>實際可評估的是 Profile 1 與 Profile 2；<strong>Profile 3 只處理它對部署者（當作第三方）的影響</strong>，針對模型提供者的具體指引不在 COMPASS 的範圍（官方 FAQ 與附錄 A 都這樣說）。Profile 2 再細分成三個子檔案：</p>
+<ul>
+  <li><strong>2a 一般企業 AI 使用與治理：</strong>檢查項分成十大類（治理與監督、法律與法規、資料治理、資產管理、身分與存取、第三方流程、技術與資安缺口、模型風險管理、事件應變、訓練與文化）。</li>
+  <li><strong>2b 生產力工具：</strong>Microsoft Copilot、Google Gemini 一類整合進辦公套件的助理；其特色是它們會<strong>放大既有的權限問題</strong>：RunBook 提醒，部署這類工具可能讓既有的資安弱點浮現，因為使用者更容易找到、分享不該存取的資訊。</li>
+  <li><strong>2c 自製的生成式 AI 與 Agent 專案：</strong>檢查項分成十大類，包括自主與非預期行為、工具與執行濫用、身分與權限、幻覺與記憶、多 Agent 委派、基礎設施、可追溯與治理、人類信任與操縱、法律倫理、第三方生態。</li>
+</ul>
+<p>RunBook 建議的評估順序是：先 Profile 1（外部威脅往往帶來最高的立即風險，需要快速回應），再 Profile 2a（目前內部已存在的弱點），最後依你的開發時程和策略優先序評估 2b 與 2c。</p>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：這些檢查項本質上是「提問」，而不是「結論」</p>
+  <p>附錄 A 的每一條都像一句擔憂：例如「沒有明確的負責人」「AI 服務帳號沒有管理或權限過大」。它們的作用是幫你快速想起可能漏看的地方，然後<strong>你自己判斷哪些適用</strong>。這個讀法是作者的觀察，接近 Governance Checklist 的提問式風格（附錄 A 的標題甚至用「讓我夜不能眠的是……」開頭）。</p>
+</div>
+
+<h2 id="oo-score">2.2 評分：可能性 × 衝擊，5 分制</h2>
+<div class="concept">
+<h3 id="c-score">COMPASS 的核心算法</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>對每個威脅各打兩個分數（各 1 到 5 分）：<strong>衝擊 (Impact)</strong> 與<strong>可能性 (Likelihood)</strong>，相乘得到風險分數。試算表 About 分頁的對照是：衝擊 5＝重大（嚴重業務中斷、法律行動、人命或策略失敗）、1＝極輕微；可能性 5＝幾乎確定（已在發生或被觀察到）、1＝罕見。2b 分頁把可能性對到機率：5＝80% 到 100% 或一年一次以上，4＝61–79%，3＝40–60%，2＝20–39%，1＝低於 20%。</dd>
+  <dt data-n="2">為什麼這樣設計</dt>
+  <dd>RunBook 說這個方法「設計成簡單且快速，加速初步的威脅估計」，隨 OODA 循環迭代再精煉。目標是讓不同系統的威脅可以用同一把尺比較。</dd>
+  <dt data-n="3">怎麼使用（概念層級）</dt>
+  <dd>每個威脅獨立打分並寫下假設；遇到不確定但後果嚴重的屬性（如存取或身分），RunBook 的做法是<strong>先假設高威脅、高衝擊，直到有證據顯示不是</strong>；不確定時寧可打高分。分數可以換算成各自團隊的尺度（成功要素中明說可客製）。</dd>
+  <dt data-n="4">怎麼防止誤用</dt>
+  <dd>5 分制只是排序用，不是精確數字。RunBook 要你記錄假設並隨新資訊回頭修正；2b 分頁甚至要你重新設定自己的「衝擊」金額範圍，使它和組織實際的損失規模對齊。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「分數越精確越好。」不是。這是快速估計，分數的功能是排序與溝通，不是定量風險模型。</dd>
+</dl>
+</div>
+<p>算分之後怎麼看？About 分頁有一張等級對照表：</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　風險分數與等級（試算表 About 分頁）</caption>
+<thead><tr><th scope="col">分數範圍</th><th scope="col">等級</th><th scope="col">5 分制整數乘積的例子（作者舉例）</th></tr></thead>
+<tbody>
+<tr><th scope="row">20–25</th><td>Critical（重大）</td><td>5 × 4＝20、5 × 5＝25</td></tr>
+<tr><th scope="row">15–19</th><td>High（高）</td><td>5 × 3＝15、4 × 4＝16</td></tr>
+<tr><th scope="row">10–14</th><td>Moderate（中等）</td><td>4 × 3＝12、5 × 2＝10</td></tr>
+<tr><th scope="row">5–9</th><td>Low（低）</td><td>3 × 3＝9、5 × 1＝5</td></tr>
+<tr><th scope="row">1–4</th><td>Minimal（極低）</td><td>2 × 2＝4、1 × 1＝1</td></tr>
+</tbody></table></div>
+<p>最右欄是作者用 5 分制的整數乘積舉的例子，不是官方範例。注意：<strong>RunBook 的範例把 4 × 4＝16 稱作 Critical，把 9 稱作 Medium；依這張表 16 是 High、9 是 Low。</strong>這個不一致放到第 3 章討論，現在只要記得：<strong>等級名稱以試算表 About 分頁為準，RunBook 的範例標籤不能直接比對。</strong></p>
+
+<h2 id="oo-disaster">2.3 先定義「最糟」：核毀滅級 AI 災難</h2>
+<p>在 2b「攻擊面分析」分頁，試算表要你做兩件事來校準分數：</p>
+<ol>
+  <li>把「衝擊」的五個等級（災難性、嚴重、重大、中等、輕微）換成<strong>你組織自己的金額區間</strong>（分頁給了示例金額，要求你修改）。</li>
+  <li>寫下至少三個「Nuclear AI Disaster」情境：你的組織可能面對的最糟的 AI 相關狀況（RunBook 建議參考既有的業務衝擊分析 BIA）。這些情境是之後排優先順序的基準。</li>
+</ol>
+<p>分頁還預填了一份示例威脅清單與預設的風險值，例如 Deep Fakes（5.0）、Adversary Attack w/ AI（5.0）、LLM01:2025 Prompt Injection（5.0）、LLM03:2025 Supply Chain（4.0）等。官方明說這些「只是例子」，要依組織調整。</p>
+
+<h2 id="oo-orient">2.4 Orient：用外部資訊修正你的分數</h2>
+<p>Observe 給你的是初估。Orient 階段的工作，是用外部證據去調整它。RunBook 列出的步驟：</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="Orient 階段流程：從 Observe 的初估分數出發，三個證據來源修正它。第一，已知弱點：在 CVE 資料庫以關鍵字搜尋，對應到 CWE，再用 CVSS 打分並轉成五分制。第二，已知事件：研究公開的 AI 事件與法規變化，更新可能性與衝擊。第三，紅隊與審查：用審查問題與紅隊結果補充，並把各種評分轉成五分制。三者都回到 2b 攻擊面分析更新威脅分數。">
+flowchart TD
+  S0["Observe 的初估<br>分頁 2b：衝擊 × 可能性"] --> A["3a 已知弱點<br>CVE 關鍵字搜尋 → 對映 CWE →<br>CVSS → 轉成 5 分制"]
+  S0 --> B["3b 已知事件<br>研究公開 AI 事件與法規變化<br>→ 更新可能性與衝擊"]
+  S0 --> C["3c–3e 應變準備度、紅隊審查與結果<br>審查問題 + 紅隊發現 → 轉成 5 分制"]
+  A --> U["回到 2b 更新威脅分數"]
+  B --> U
+  C --> U
+</pre>
+<figcaption><strong>圖 2-1　Orient 的三種修正來源（RunBook，重新繪製）。</strong>三條路都回到 2b 更新分數；RunBook 要求至少每兩週檢查一次新的弱點。</figcaption>
+</figure>
+<p>其中「弱點」這條路值得多看一眼，因為它示範了怎麼把 AI 問題接回傳統資安語言。RunBook 的做法是三步：</p>
+<ol>
+  <li><strong>對映到 CWE：</strong>例如把提示詞注入對到 CWE-77（命令注入）或 CWE-184（輸入的不一致解讀）。這幫助把 AI 特有的問題「正規化」到傳統軟體與資安的做法裡。附錄 B 另列了 AI 相關 CWE，包括 CWE-1426（官方建議避免用它來對映）與 CWE-1427（LLM 提示詞輸入的不當中和）。</li>
+  <li><strong>用 CVSS 打分：</strong>0 到 10 分，依攻擊向量、複雜度、所需權限、衝擊與環境因素；RunBook 提醒 AI 系統可能需要調整這些指標。</li>
+  <li><strong>加入 AI 特有的脈絡：</strong>如自主 agent 行為、模型範圍（基礎模型或微調模型）、業務邏輯與安全層的繞過，以及是對抗測試還是真實利用。</li>
+</ol>
+<p>最後，不同來源的分數要<strong>統一換算成 5 分制</strong>：3e 分頁有「把各種尺度（例如 CVSS 或 Bugcrowd 的評分）轉成 COMPASS 的 5 分制」的範例。</p>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：試算表的公式與換算表是否與文字一致</p>
+  <p>本教材讀的是試算表匯出的儲存值，沒有檢查公式，也沒有驗證 CVSS 換算表。RunBook 範例給的 CVSS 數字（如「9.1」「8.6–9.8」）本教材只能轉述，<strong>不能保證這些數字是通用基準</strong>，也不應該把它們當成你自己系統的評分依據。</p>
+</div>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>三種視角：外部攻擊者是 Profile 1、部署者是 Profile 2、模型提供者是 Profile 3（只處理對第三方的影響）。</li>
+  <li>Profile 2 再分 2a 一般治理、2b 生產力工具、2c 自製生成式／Agent 專案。</li>
+  <li>評分＝可能性（1–5）× 衝擊（1–5）；等級：20–25 Critical、15–19 High、10–14 Moderate、5–9 Low、1–4 Minimal。</li>
+  <li>先寫下三個以上的「核毀滅級 AI 災難」情境作為基準；金額區間要換成自己組織的。</li>
+  <li>Orient 用 CVE／CWE／CVSS、公開事件與紅隊結果修正初估，統一換成 5 分制；RunBook 範例的等級標籤與試算表不一致。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出三種視角，以及 Profile 3 為什麼只處理一部分。</li>
+  <li>給我可能性與衝擊，我能算出分數與等級。</li>
+  <li>我知道 Orient 的三條證據來源，以及它們最後都回到哪裡。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2、LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-decide-act.html">第 3 章　決策、行動與兩個範例</a>：把排好序的威脅對映到防禦，寫成有負責人與期限的路線圖，並用兩個官方範例走一遍。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，Threat Defense COMPASS RunBook（Version 1.0；封面 July 4, 2025；資源頁 2025-09-10）：Step 1 Observe、5 point Scoring、Step 4–5 Orient、Tab 3d／3f、Appendix A（Threat Profiles）、Appendix B（CWE &amp; CVSS in AI Red Teaming）；CC BY-SA 4.0；<a href="https://genai.owasp.org/resource/owasp-genai-security-project-threat-defense-compass-runbook/">genai.owasp.org/resource/owasp-genai-security-project-threat-defense-compass-runbook/</a>；2026-10-26 讀取。</li>
+    <li>COMPASS 試算表 V 1.0（About 分頁的使用說明與評分表；2b 攻擊面分析分頁的可能性與衝擊對照；FAQ）；CC BY-SA 4.0；2026-10-26 讀取匯出檔的文字（未檢查公式）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：COMPASS RunBook 與試算表 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'tc-ch2', topic: 'threat-defense-compass', mode: 'chapter',
+  questions: [
+    { id: 'tc2q1', type: 'mc', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-observe-orient.html#oo-profiles'}],
+      stem: '依 RunBook，Profile 3（模型提供者）在 COMPASS 裡是怎麼處理的？',
+      options: [
+        { text: '提供完整的模型訓練與安全指南，是 COMPASS 的核心。', why: 'RunBook 與 FAQ 明說模型提供者的完整指引在範圍外。' },
+        { text: '只處理它作為第三方、對部署者造成的影響；針對模型提供者的具體指引不在範圍內。', correct: true, why: '附錄 A 與 FAQ 的說法。' },
+        { text: '完全被排除，COMPASS 不提到提供者。', why: '它被當作第三方關係納入事件應變、韌性與供應鏈威脅，不是完全不提。' },
+        { text: '與部署者合併成同一個檔案。', why: 'Profile 2 是部署者，Profile 3 是模型提供者，兩者分開。' }
+      ],
+      summary: 'Profile 3 只處理對部署者（作為第三方）的影響。' },
+    { id: 'tc2q2', type: 'mc', lo: [2, 4], refs: [{label: '2.2 評分', href: '02-observe-orient.html#c-score'}],
+      stem: '某個威脅的可能性是 4（可能性高）、衝擊是 3（中等）。依 COMPASS 的算法與 About 分頁的等級表，結果是？',
+      options: [
+        { text: '分數 7，等級 Low。', why: '7 是把兩個分數相加；COMPASS 是相乘。' },
+        { text: '分數 12，等級 Moderate。', correct: true, why: '4 × 3＝12，落在 10–14 的 Moderate。' },
+        { text: '分數 12，等級 High。', why: '算式對，但 High 是 15–19；12 屬 Moderate。' },
+        { text: '分數 4，等級 Minimal。', why: '4 只是可能性，沒有乘上衝擊。' }
+      ],
+      summary: '風險分數＝可能性 × 衝擊；12 屬 Moderate。' },
+    { id: 'tc2q3', type: 'match', lo: [2], refs: [{label: '2.4 圖 2-1', href: '02-observe-orient.html#oo-orient'}],
+      stem: '把下列 Orient 階段的工作，配對到它使用的證據來源。',
+      cats: [
+        { id: 'vuln', label: '已知弱點（3a）' },
+        { id: 'inc', label: '已知事件（3b）' },
+        { id: 'rt', label: '紅隊結果（3e）' }
+      ],
+      items: [
+        { text: '用關鍵字在 CVE 資料庫搜尋 LLM 相關弱點，再對映 CWE', answer: 'vuln', why: '3a 以 CVE.org 關鍵字搜尋，並對映 CWE。' },
+        { text: '研究公開的 AI 事件報告與法規變化，更新可能性與衝擊', answer: 'inc', why: '3b 的用途是用已知事件與法規變化估計可能性與衝擊。' },
+        { text: '把紅隊演練發現的弱點依 5 分制評分並記錄補救動作', answer: 'rt', why: '3e 是 AI 紅隊結果的評分範本。' }
+      ],
+      summary: '三條證據來源最後都回到 2b 更新威脅分數。' },
+    { id: 'tc2q4', type: 'scn', lo: [2, 4], refs: [{label: '2.2 評分', href: '02-observe-orient.html#c-score'}, {label: '2.3 核毀滅級災難', href: '02-observe-orient.html#oo-disaster'}],
+      stem: '依本章，這個團隊在評分時做錯了什麼？',
+      scenario: '夏至銀行（虛構）的團隊第一次用 COMPASS。他們沒有定義任何最糟情境，直接沿用試算表預設的金額區間；對「AI 服務帳號權限」這項不確定的威脅，因為沒有證據，他們給了可能性 1、衝擊 1。還把 RunBook 範例的「分數 16＝Critical」當作自己的等級標準。',
+      options: [
+        { text: '都沒有問題，預設值就是官方標準。', why: '官方明說金額區間和威脅清單只是例子，要依組織調整。' },
+        { text: '三處：沒有先寫下三個以上的核毀滅級 AI 災難情境與修改金額區間；對身分或存取這類不確定但後果嚴重的屬性，RunBook 的做法是先假設高威脅高衝擊；等級應以 About 分頁的表為準，16 是 High 而非 Critical。', correct: true, why: '對應 2.3 節、2.2 節的步驟 3，以及表 2-2 的不一致提醒。' },
+        { text: '只有第三處有問題，其他都對。', why: '前兩處同樣違反 RunBook 的指引。' },
+        { text: '問題是不該使用 5 分制，應改用 10 分制。', why: 'RunBook 允許依需求客製尺度，但那不是這題的錯誤所在。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 2b 分頁要求先調整衝擊的金額區間並寫下三個以上的「核毀滅級 AI 災難」，否則分數沒有基準。(2) RunBook 的 5 分制說明：若有不明但後果嚴重的屬性（如存取或身分），假設高威脅、高衝擊，直到有證據顯示並非威脅；不確定時寧可打高分。(3) About 分頁的等級表：15–19 為 High、20–25 為 Critical，RunBook 範例把 16 稱 Critical 是不一致，應以試算表表格為準。</p><p><strong>結論：</strong>先定義基準、對不確定的高後果屬性保守打分、等級用 About 表。對應教材：<a href="02-observe-orient.html#oo-disaster">2.3 節</a>、<a href="02-observe-orient.html#c-score">2.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　通訊、連鎖、信任與流氓 Agent（ASI07–ASI10）｜Top 10 for Agentic Applications 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="ASI07 Insecure Inter-Agent Communication、ASI08 Cascading Failures、ASI09 Human-Agent Trust Exploitation、ASI10 Rogue Agents：多 agent 與人類互動的四個條目，以及一個虛構的連鎖失效情境。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="agentic-top-10-2026" data-page="04-comm-cascade-human-rogue.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　通訊、連鎖、信任與流氓 Agent（ASI07–ASI10）</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="03-supply-code-memory.html">第 3 章</a></li>
+</ul>
+<p class="lead">前三章的主角大多是單一 agent。最後四個條目的舞台是 agent 之間，以及 agent 與人之間：agent 彼此講話時沒人驗證訊息（ASI07）；一個小錯誤在 agent 之間滾成大災難（ASI08）；人太相信 agent，替它的壞決定蓋了章（ASI09）；某個 agent 悄悄偏離了它該做的事（ASI10）。這四條的共同詞是「<strong>信任</strong>」。</p>
+
+<h2 id="m-table">4.1 四條的重點比較</h2>
+<div class="table-wrap"><table>
+<caption>表 4-1　ASI07–ASI10 重點（依各條 Description 與緩解改寫；T 編號與 LLM 編號為官方，LLM 為 2025 版）</caption>
+<thead><tr><th scope="col">條目</th><th scope="col">出問題的環節</th><th scope="col">文件強調的特點與邊界</th><th scope="col">重點緩解（官方列舉的摘要）</th><th scope="col">對應 T&amp;M／LLM（2025）</th></tr></thead>
+<tbody>
+<tr><th scope="row">ASI07 Insecure Inter-Agent Communication</th><td>agent 間即時訊息缺少驗證、完整性、機密性或授權</td><td>跨傳輸、路由、探索與語意層，含旁路通道；與 ASI03（憑證與權限濫用）及 ASI06（儲存內容污染）不同：ASI07 是<strong>即時訊息</strong>被攔截、偽造或操縱</td><td>端到端加密與雙向認證；簽章與語意保護；防重放；停用弱／舊通訊模式；探索與路由的加密身分驗證；有證明的登錄與簽章的 agent 描述；型別化契約與結構驗證</td><td>T12、T16；LLM02、LLM06</td></tr>
+<tr><th scope="row">ASI08 Cascading Failures</th><td>初始故障（幻覺、惡意輸入、被污染的工具或記憶）在 agent 間傳播與放大</td><td>描述的是<strong>傳播與放大</strong>，不是起點；起點屬 ASI04／06／07，只有在擴散到多個 agent、session 或工作流時才用 ASI08</td><td>零信任設計與容錯；隔離與信任邊界；即時、一次性的工具存取加政策即程式碼檢查；規劃與執行之間用獨立政策引擎；爆炸半徑護欄（配額、進度上限、熔斷器 (Circuit Breaker)）；行為偏離偵測；數位孿生重播；不可竄改的日誌</td><td>T5、T8；LLM01、LLM04、LLM06</td></tr>
+<tr><th scope="row">ASI09 Human-Agent Trust Exploitation</th><td>人對 agent 的信任與過度依賴（擬人化、權威偏誤、自動化偏誤）</td><td>agent 成為「無法追蹤的壞影響」：由人執行最後那個被稽核的動作，使 agent 的角色在鑑識上隱形；本條是「人的誤判」，ASI10 是「agent 意圖偏離」</td><td>明確確認；不可竄改日誌；偵測敏感資料外洩；提供回報可疑互動的管道並用<strong>白話風險摘要（而非模型生成的理由）</strong>；依風險調整信任；內容來源證明；預覽與副作用分離；UI 人因設計；計畫偏離偵測</td><td>T7、T8、T10；LLM01、LLM05、LLM06、LLM09</td></tr>
+<tr><th scope="row">ASI10 Rogue Agents</th><td>惡意或受損的 agent 偏離原定功能與授權範圍</td><td>單一動作看似合法，但湧現的整體行為有害；關注的是<strong>行為完整性與治理的喪失</strong>，不是初始入侵；與 Excessive Agency 不同（後者談過度授權）</td><td>不可竄改且簽章的稽核日誌；信任區與受限執行環境；看門狗 agent 驗證同儕行為；快速遏止（停用開關、撤銷憑證、隔離）；每個 agent 的密碼學身分證明與簽章的行為清單；定期行為證明；復原與重新整合的基準</td><td>T13（官方稱對應）；LLM02、LLM06、LLM09</td></tr>
+</tbody></table></div>
+
+<h2 id="m-trust">4.2 核心概念：為什麼 ASI09 的緩解不能靠 agent 自己的解釋</h2>
+<div class="concept">
+<h3 id="c-asi09">ASI09：用人的信任當武器——為什麼不能信「模型寫的理由」</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>agent 因語言流暢、情緒智能與看似專業，容易讓人產生信任（文件稱為擬人化）。攻擊者或失準的設計利用這份信任，影響使用者決策、取得敏感資訊或操縱結果。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>人容易過度依賴自信、權威的建議，且往往無法獨立驗證 agent 的推理；批准成為習慣。文件點出：agent 成為「無法追蹤的壞影響」，因為最後那個<strong>被稽核的動作是人做的</strong>，agent 的角色在鑑識中不可見。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>文件的例子：被污染的供應商發票進入財務 Copilot，Copilot 自信地建議對攻擊者帳戶緊急付款，經理基於信任批准；代理人編造看似合理的稽核理由，讓審查者批准有風險的設定變更；預覽視窗開啟時就觸發有副作用的 webhook，利用使用者「預覽是唯讀」的心智模型（文件稱為同意洗白）。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>除了明確確認、日誌與行為偵測，文件有一項很關鍵的設計：提供<strong>白話的風險摘要，而不是模型生成的理由</strong>。原因是模型的解釋本身就可能是被操縱或編造的。此外要依風險調整自主程度、讓高風險建議視覺上與眾不同、在預覽期間阻擋任何有副作用的呼叫，並對相關人員持續訓練。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「只要要求 agent 解釋理由，人就能把關。」ASI09 的前提正是：被劫持或失準的 agent 會產生令人信服的理由（文件稱為「武器化的可解釋性」）。把關要靠獨立於 agent 的資訊（風險摘要、來源證明、預覽副作用的阻擋）。</dd>
+</dl>
+</div>
+
+<h2 id="m-scenario">4.3 情境範例 B：一個小錯誤如何滾成大事故</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：山海航運的自動調度</h3>
+<p><span class="tag fiction">虛構</span> 山海航運是虛構的公司。調度系統由四個 agent 組成：「分析」agent 評估每日航線風險、「規劃」agent 依分析產生船期調整、「執行」agent 自動下單調整並通知港口、「合規」agent 檢查是否在核定參數內。四者透過內部訊息匯流排互相呼叫，彼此預設互信。與文件 ASI08 的金融交易連鎖情境同型；以下為虛構。</p>
+<p class="arch"><strong>架構：</strong>外部氣象與港口通報（不可信）→ 分析 agent → 規劃 agent → 執行 agent →（下單、通知）；合規 agent 事後檢查「是否在參數內」。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>一則被竄改的港口通報讓分析 agent 把某條航線的風險評分大幅調低。規劃 agent 信任分析的輸出，提高該航線的載量；執行 agent 照單全收並自動下單；合規 agent 檢查後發現「都在核定參數內」，沒有告警。三天後，同樣的錯誤被複製到另外兩條航線，因為分析 agent 把這個評分存進了它的長期記憶。</li>
+  <li><strong>哪一環出問題：</strong>(a) 起點是被竄改的外部輸入（ASI01 目標被誘導或 ASI06 污染的種子）；(b) agent 之間互信、沒有驗證（ASI07）；(c) 錯誤一路被放大且沒有人在迴路（ASI08，核心）；(d) 合規只檢查「參數內」，看不見整體偏離（缺乏行為基準與偏離偵測）。</li>
+  <li><strong>對應條目：</strong>起點可歸 ASI06／ASI07，<strong>放大階段才歸 ASI08</strong>（文件明說：初始缺陷用 ASI04／06／07，只有擴散時才加 ASI08）；T&amp;M：T5、T8；LLM Top 10 2026：LLM01:2026（輸入入口）、<a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a> Excessive Agency、LLM05:2026 Data and Model Poisoning。</li>
+  <li><strong>該採什麼控制：</strong>
+    <ul>
+      <li>規劃與執行之間加獨立的政策引擎，並對高衝擊動作用政策即程式碼檢查；</li>
+      <li>爆炸半徑護欄：下單金額與影響航線數量設配額與進度上限，規劃與執行之間加熔斷器；</li>
+      <li>agent 間訊息簽章與雙向認證，並記錄不可竄改的日誌與資料血緣；</li>
+      <li>行為偏離偵測：觀察「風險評分突然全面降低」「複製到多條航線」這類扇出訊號；</li>
+      <li>高風險調整需人核准，並用白話風險摘要而非 agent 的解釋（ASI09）。</li>
+    </ul>
+  </li>
+  <li><strong>學到什麼：</strong>ASI08 的特徵是<strong>可觀察的症狀</strong>：快速扇出、跨範圍擴散、重試震盪、佇列風暴、重複的相同意圖。文件說這些是「清楚的偵測鉤子」。與其追問「誰先錯」，更要先問「這個錯誤為什麼能被放大」。</li>
+</ol>
+</div>
+
+<h2 id="m-map">4.4 十項如何對照到其他文件</h2>
+<p>文件附錄 A 把 ASI01–ASI10 對照到 LLM Top 10（2025）、T&amp;M 與 AIVSS 核心風險；附錄 C 對照到 Non-Human Identities Top 10 (2025)。下表摘要附錄 A 中本章四條及前面六條的 T&amp;M 欄（皆為官方明文；LLM 編號為 2025 版）。</p>
+<div class="table-wrap"><table>
+<caption>表 4-2　ASI 與 T&amp;M／LLM Top 10（2025）的官方對照（附錄 A 摘要）</caption>
+<thead><tr><th scope="col">ASI</th><th scope="col">對應的 T&amp;M</th><th scope="col">對應的 LLM Top 10（2025）</th></tr></thead>
+<tbody>
+<tr><th scope="row">ASI01 Agent Goal Hijack</th><td>T6、T7</td><td>LLM01、LLM06</td></tr>
+<tr><th scope="row">ASI02 Tool Misuse and Exploitation</th><td>T2；T4、T16</td><td>LLM06</td></tr>
+<tr><th scope="row">ASI03 Identity and Privilege Abuse</th><td>T3</td><td>LLM01、LLM06、LLM02</td></tr>
+<tr><th scope="row">ASI04 Agentic Supply Chain Vulnerabilities</th><td>T17；T2、T11、T12、T13、T16</td><td>LLM03</td></tr>
+<tr><th scope="row">ASI05 Unexpected Code Execution (RCE)</th><td>T11</td><td>LLM01、LLM05</td></tr>
+<tr><th scope="row">ASI06 Memory &amp; Context Poisoning</th><td>T1；T4、T6、T12（名稱與 T&amp;M 1.1 不同）</td><td>LLM01、LLM04、LLM08</td></tr>
+<tr><th scope="row">ASI07 Insecure Inter-Agent Communication</th><td>T12、T16</td><td>LLM02、LLM06</td></tr>
+<tr><th scope="row">ASI08 Cascading Failures</th><td>T5、T8</td><td>LLM01、LLM04、LLM06</td></tr>
+<tr><th scope="row">ASI09 Human-Agent Trust Exploitation</th><td>T7、T8、T10</td><td>LLM01、LLM05、LLM06、LLM09</td></tr>
+<tr><th scope="row">ASI10 Rogue Agents</th><td>T13；T14、T15</td><td>LLM02、LLM09</td></tr>
+</tbody></table></div>
+<p>三個提醒：(1) LLM 欄是 <strong>2025 版</strong>編號，2026 版已重新編號（例如 Excessive Agency 現為 LLM03:2026）；(2) T9 沒有出現在附錄 A 的 T&amp;M 欄，但在附錄 C 與 NHI10 對應中出現；(3) 附錄 A 的「T&amp;M」欄說明了 ASI 與 T 之間不是一對一，T 是「被 ASI 條目引用的細粒度攻擊路徑」。</p>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>ASI07 針對 agent 間的即時訊息；ASI08 連鎖失效描述的是傳播與放大，不是起點；ASI09 是人的誤判，ASI10 是 agent 意圖偏離。</li>
+  <li>ASI08 有可觀察的症狀：快速扇出、跨範圍擴散、重試震盪、佇列風暴；缺乏爆炸半徑護欄就會滾大。</li>
+  <li>ASI09 的緩解要靠獨立於 agent 的資訊（白話風險摘要、來源證明、預覽阻擋副作用），不能靠 agent 自己的解釋。</li>
+  <li>附錄 A 把十項對照 T&amp;M 與 LLM Top 10（2025）；T 是細粒度路徑，ASI 與 T 不是一對一。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能指出 ASI08 與 ASI04／06／07 的使用時機差別。</li>
+  <li>我能解釋為什麼 ASI09 的緩解不能依賴 agent 自己的理由。</li>
+  <li>我能用附錄 A 查出某個 ASI 條目對應哪些 T 與 LLM 條目，並換成 2026 版編號。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p><a href="05-integration.html">第 5 章　跨文件整合與收尾</a>：把十項與 LLM Top 10 2026、Agentic 系列、NHI、AIVSS 串起來，並整理優先排序的用法。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>OWASP Top 10 for Agentic Applications for 2026</em>, Version 2026, December 2025：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a>；2026-10-26 讀取；CC BY-SA 4.0。引用段落：ASI07–ASI10 各條；Appendix A。</li>
+    <li>OWASP Top 10 for LLM Applications 2026 清單（Version 2026，2026-08-04）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">GitHub 2026/README.md</a>；僅用於情境中的 2026 版編號。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Top 10 for Agentic Applications 2026、Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'asi-ch4', topic: 'agentic-top-10-2026', mode: 'chapter',
+  questions: [
+    { id: 's4q1', type: 'mc', lo: [4], refs: [{label: '4.1 表 4-1', href: '04-comm-cascade-human-rogue.html#m-table'}, {label: '4.3 情境範例 B', href: '04-comm-cascade-human-rogue.html#m-scenario'}],
+      stem: '依文件，什麼時候才該把一次事故標為 ASI08 Cascading Failures？',
+      options: [
+        { text: '只要事故涉及多個 agent 就標 ASI08。', why: '文件要求：初始缺陷用 ASI04／06／07，只有擴散到多個 agent、session 或工作流並造成可觀察的扇出時才加 ASI08。' },
+        { text: '當初始故障在 agent、session 或工作流之間傳播並放大，造成超出原始入侵的系統性影響時；起點仍歸 ASI04／06／07。', correct: true, why: '文件原則：ASI08 描述傳播與放大，不是起點。' },
+        { text: '只要出現幻覺就標 ASI08。', why: '單一 agent 的幻覺不一定擴散；擴散才是重點。' },
+        { text: '只有人類介入失敗時才標 ASI08。', why: '與人類是否介入無關；人類介入失敗屬 ASI09 的關切。' }
+      ],
+      summary: 'ASI08 連鎖失效 = 傳播與放大；起點歸其他條。' },
+    { id: 's4q2', type: 'mc', lo: [4], refs: [{label: '4.2 ASI09', href: '04-comm-cascade-human-rogue.html#c-asi09'}],
+      stem: '為降低 ASI09 風險，團隊要求每個高風險建議都附上「agent 自己寫的理由」給審查者參考。依本章，這個做法的問題是？',
+      options: [
+        { text: '沒有問題，解釋越多越好。', why: '文件警告的正是被劫持或失準的 agent 會編造令人信服的理由。' },
+        { text: '被劫持的 agent 可能編造看似合理的理由；應提供獨立於 agent 的白話風險摘要與來源證明，而不是模型生成的理由。', correct: true, why: '文件列明：提供白話風險摘要，而非模型生成的理由。' },
+        { text: '只要把理由寫得更長就好。', why: '長度不是重點；來源是否獨立才是。' },
+        { text: '審查者不需要任何資訊。', why: '審查者需要資訊，但來源要可靠、獨立。' }
+      ],
+      summary: '把關資訊要獨立於 agent。' },
+    { id: 's4q3', type: 'match', lo: [4], refs: [{label: '4.1 表 4-1', href: '04-comm-cascade-human-rogue.html#m-table'}],
+      stem: '把事件描述配對到最主要歸屬的條目。',
+      cats: [
+        { id: 'a07', label: 'ASI07 Inter-Agent Communication' },
+        { id: 'a08', label: 'ASI08 Cascading Failures' },
+        { id: 'a09', label: 'ASI09 Human-Agent Trust Exploitation' },
+        { id: 'a10', label: 'ASI10 Rogue Agents' }
+      ],
+      items: [
+        { text: '攻擊者在探索服務中以複製的結構註冊了假的 peer agent，攔截特權協調流量', answer: 'a07', why: 'A2A 註冊偽造，屬 agent 間通訊。' },
+        { text: '財務 Copilot 自信地建議對攻擊者帳戶緊急付款，經理基於信任批准', answer: 'a09', why: '利用人對 agent 的信任。' },
+        { text: '一則錯誤警報經 agent 層層放大，造成多區域的不必要停機', answer: 'a08', why: '起點之後的傳播與放大。' },
+        { text: '被要求降低雲端成本的 agent 學會刪除生產備份來達標', answer: 'a10', why: '行為偏離與獎勵駭客。' }
+      ],
+      summary: '四條都以「信任」為主題，但出問題的環節不同。' },
+    { id: 's4q4', type: 'scn', lo: [4], refs: [{label: '4.3 情境範例 B', href: '04-comm-cascade-human-rogue.html#m-scenario'}],
+      stem: '依本章，團隊預算只能先加一個控制，最能直接限縮「錯誤被放大」的是哪一項？',
+      scenario: '雲帆電商（虛構）的促銷系統由「定價」「庫存」「下單」三個 agent 組成。某次定價 agent 因讀到被竄改的競品價格而大幅降價，庫存 agent 與下單 agent 照單處理，十分鐘內數千筆低價訂單成立。事後檢討時，有人說：「加一個更準的模型來判斷價格就好。」另一位說：「在規劃與執行之間加配額與熔斷器，並讓高影響的調價需人核准。」',
+      options: [
+        { text: '更準的模型，因為錯誤的源頭是模型判斷。', why: '模型再準也無法保證不被竄改的輸入誤導；文件的 ASI08 緩解是爆炸半徑護欄與獨立政策引擎。' },
+        { text: '配額、進度上限與熔斷器，加上高影響動作的人核准，因為它們直接限制錯誤能擴散的範圍與速度。', correct: true, why: '符合 ASI08 的緩解：爆炸半徑護欄與獨立政策執行；先限縮後果。' },
+        { text: '只增加日誌即可。', why: '日誌屬偵測；十分鐘內的連鎖已無法事後補救。' },
+        { text: '把三個 agent 合成一個。', why: '這是架構重做，不是預算內的單一控制；而且單一 agent 一樣可能被竄改輸入誤導。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 起點是被竄改的輸入（ASI06／07 類），但造成大規模損失的是無護欄的放大（ASI08）。(2) 文件的 ASI08 緩解強調爆炸半徑護欄：配額、進度上限、熔斷器，以及獨立的政策執行。(3) 這些措施不依賴「判斷是否正確」，所以即使判斷出錯，影響也有上限。</p><p><strong>結論：</strong>先限制放大的速度與範圍。這是依文件緩解做的優先順序判斷。對應教材：<a href="04-comm-cascade-human-rogue.html#m-scenario">4.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

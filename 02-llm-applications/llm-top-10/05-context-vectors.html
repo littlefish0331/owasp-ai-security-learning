@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 章　LLM08 隱藏上下文暴露與 LLM09 向量與嵌入弱點｜LLM Top 10 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="LLM08:2026 隱藏上下文暴露與 LLM09:2026 向量與嵌入弱點：為什麼「模型看得到、使用者看不到」不等於祕密，以及相似度搜尋層為什麼是獨立的信任邊界；先授權再檢索。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="02-llm-applications" data-topic="llm-top-10" data-page="05-context-vectors.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 5 章　LLM08 隱藏上下文暴露與 LLM09 向量與嵌入弱點</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="04-agency-output.html">第 4 章</a>；建議讀過 <a href="../../01-overview/ai-exchange/06-rag.html">AI Exchange 第 6 章（RAG 系統）</a></li>
+</ul>
+<p class="lead">放大器層的另外兩項，都與「模型看到什麼」有關。LLM08 談模型看得到、使用者看不到的那部分上下文；LLM09 談決定「模型看得到哪些資料」的相似度搜尋層。兩者的共同教訓是：<strong>不要把安全建立在「別人看不到」或「檢索完再過濾」上</strong>。</p>
+
+<h2 id="cv-hidden">5.1 LLM08：隱藏上下文不是祕密</h2>
+<p>LLM08:2026 隱藏上下文暴露 (Hidden Context Exposure) 是指：隱藏的、不對使用者顯示的系統指令或營運脈絡，被未經授權地取出、推得或重建。它在「所含內容有安全意義」時才成為問題：裡面有祕密、政策邏輯、工具、信任邊界、工作流程判準或專有行為，且實質提高了攻擊者的能力。</p>
+<p>官方列舉的「隱藏上下文」不只是系統提示詞：還包括開發者指示、取回的政策文字（來自 RAG 知識庫、設定儲存或使用者檔案服務）、應用程式暴露給模型的<strong>工具與函式 schema</strong>，以及其他組進上下文視窗的規則與資料。共同點是：對最終使用者不可見，但模型看得到。</p>
+<p>2025 版的對應條目是 LLM07:2025 System Prompt Leakage；官方在 2026 年前言說它「現在是更廣義的 Hidden Context Exposure」，圖 Figure 1 以紅色虛線標為「更名／重新界定範圍」。官方給的設計立場只有一句，卻很重要：<strong>設計時就假設隱藏上下文會被發現，它的內容不應被視為祕密；開發者應確保它被揭露時，幾乎沒有直接的安全影響。</strong>具體來說，憑證、連線字串、token 不該放進去，也不該把隱藏上下文當成授權、權限分離、政策執行或內容過濾的唯一邊界。</p>
+<div class="table-wrap"><table>
+<caption>表 5-1　LLM08 的嚴重度階梯（官方）與它放大的鄰近條目（官方列了四項放大關係；把它們放進各嚴重度列是作者整理，非官方）</caption>
+<thead><tr><th scope="col">嚴重度（官方）</th><th scope="col">隱藏上下文裡有什麼</th><th scope="col">被揭露後會放大哪個條目</th></tr></thead>
+<tbody>
+<tr><th scope="row">資訊性</th><td>沒有祕密、沒有安全相關邏輯、沒有靠保密才成立的設計</td><td>—</td></tr>
+<tr><th scope="row">中</th><td>內部規則、過濾判準、角色描述或工作流程邏輯，對攻擊者有實質幫助，但不決定關鍵決策</td><td>揭露的規則讓提示詞注入更有針對性（LLM01:2026）；揭露的工具權限與 schema 擴大過度授權的攻擊面（LLM03:2026）；揭露的輸出格式規則便於製造不當輸出處理（LLM10:2026）</td></tr>
+<tr><th scope="row">高</th><td>嵌入的憑證或 token，或授權／內容政策依賴隱藏脈絡的保密</td><td>嵌入的憑證本身就是敏感資訊外洩（LLM02:2026）</td></tr>
+<tr><th scope="row">嚴重</th><td>揭露可串接成遠端程式碼執行、大規模資料外洩，或連動系統的權限提升</td><td>—</td></tr>
+</tbody></table></div>
+<p>官方明說 LLM08 <strong>不涵蓋</strong>三件事：受規範的使用者資料或訓練資料外洩（LLM02）；agent 化後的放大（持續記憶、agent 之間的通道、工具設定持久化、多步驟入侵，屬 Agentic Top 10）；以及 LLM 整合系統繼承的一般應用安全問題（伺服器端日誌洩漏、用戶端程式包檢視、基礎設施層側通道）。三項控制都在同一個方向：<strong>不放敏感資料進去；關鍵行為用獨立、決定性的機制強制（不靠提示詞）；授權與存取控制獨立於 LLM</strong>，需要不同存取層級的任務就按授權脈絡分開，各自只給需要的權限。</p>
+
+<h2 id="cv-vector">5.2 LLM09：相似度搜尋層是自己的信任邊界</h2>
+<p>LLM09:2026 向量與嵌入弱點 (Vector and Embedding Weaknesses) 涵蓋任何「把文字、圖片、程式碼或音訊轉成數值表示、再用相似度搜尋決定模型看到什麼」的應用。檢索增強生成 (Retrieval-Augmented Generation, RAG) 是最常見的例子，但同一套機制也是向量化的 agent 記憶、語意快取 (Semantic Cache) 與去重管線的基礎。官方的句子是：<strong>只要相似度搜尋位於資料來源與提示詞之間，嵌入層就成為應用信任邊界的一部分。</strong></p>
+<p>它和提示詞注入不同：這些弱點利用的是<strong>嵌入空間的幾何與相似度搜尋的機制</strong>，而不是模型的指令遵循行為；很多攻擊即使取回的內容沒有任何惡意指令，也能成立。官方給了一個好記的四字框架：</p>
+<div class="table-wrap"><table>
+<caption>表 5-2　LLM09 的四字框架與七項風險（官方）</caption>
+<thead><tr><th scope="col">框架（官方）</th><th scope="col">對應的風險</th><th scope="col">官方控制（編號為官方清單順序）</th></tr></thead>
+<tbody>
+<tr><th scope="row">投毒讓系統「錯」</th><td>檢索時資料投毒（攻擊者在能寫入語料的管道放內容，使其嵌入落在目標查詢附近）；語意快取與去重投毒；多模態嵌入投毒（一張圖片的嵌入貼近敏感文字查詢，且文字掃描抓不到）</td><td>#2 資料驗證、來源認證與溯源（嵌入前正規化、為每筆嵌入記來源／時間／信任層級／管線版本）；#3 依信任層級隔離；#4 攝入與檢索時的異常偵測</td></tr>
+<tr><th scope="row">反推讓系統「洩」</th><td>嵌入反推 (Embedding Inversion)：從儲存的向量重建原文；成員推論：若回傳原始相似度分數，索引就是直接的成員身分探測器</td><td>#4 不把原始相似度分數回傳給用戶端、加雜訊與多樣化、對可被當探測器的端點限流；#5 儲存生命週期（備份視同來源文件的敏感等級、嵌入加密、金鑰與應用層分開管理）</td></tr>
+<tr><th scope="row">干擾讓系統「啞」</th><td>檢索干擾 (Retrieval Jamming)：塞入一份「阻擋文件」，使 LLM 拒絕回答或宣稱沒有資訊；不含惡意指令，是檢索層的可用性攻擊</td><td>#4 異常偵測；重排序 (re-ranking) 提高攻擊成本，但取代不了來源與攝入控制</td></tr>
+<tr><th scope="row">存取控制失敗讓系統「無差別」</th><td>跨租戶外洩：相似度搜尋跑過整個索引後才在應用層套用存取控制，攻擊者可由結果數、分數分佈、時序推斷他人文件的存在與主題</td><td>#1 在索引查詢內做租戶範圍限制，並在伺服器端驗證，不是檢索後再過濾；高敏感工作負載用實體分開的索引；以區塊 (chunk) 為單位做存取控制</td></tr>
+</tbody></table></div>
+<p>官方畫的邊界很清楚：經由檢索內容送進來的指令屬 LLM01；嵌入模型的訓練期投毒屬 LLM05；向量資料庫函式庫的序列化缺陷屬 LLM04；不依賴嵌入幾何的 agent 記憶攻擊屬 ASI06 記憶與上下文投毒 (Memory &amp; Context Poisoning)。另外官方指出：<strong>無向量的檢索系統</strong>（只用 BM25、或由 LLM 瀏覽樹狀結構）繼承了非幾何的風險，但沒有 LLM09 的攻擊面。</p>
+
+<h2 id="cv-flow">5.3 授權放在哪裡：同一個 RAG，兩種設計</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="兩種 RAG 授權設計的對照。左側是有問題的設計：使用者查詢先在整個共用索引上做相似度搜尋，結果數量、分數分佈與時序已受他人文件影響，再於應用層依租戶過濾，最後把過濾後的區塊交給模型；問題是過濾發生在搜尋之後，攻擊者可從搜尋行為推斷他人資料，且若過濾失誤，已被取回的區塊會被送進模型。右側是較佳設計：使用者查詢帶著伺服器端驗證過的租戶與權限範圍，搜尋只在該範圍內進行，區塊層級有存取控制，高敏感工作負載使用實體分開的索引，並且不回傳原始相似度分數；只有範圍內的區塊進入模型。">
+flowchart TB
+  subgraph W["有問題：先搜尋，再過濾"]
+    direction TB
+    W1["使用者查詢"] --> W2["相似度搜尋跑過整個共用索引<br>結果數、分數分佈、時序已受他人文件影響"]
+    W2 --> W3["在應用層依租戶過濾"]
+    W3 --> W4["過濾後的區塊交給模型"]
+  end
+  subgraph R["較佳：先授權，再檢索"]
+    direction TB
+    R1["使用者查詢<br>附上伺服器端驗證過的租戶與權限範圍"] --> R2["只在授權範圍內搜尋<br>區塊層級存取控制；高敏感用分開的索引"]
+    R2 --> R3["不回傳原始相似度分數"]
+    R3 --> R4["只有範圍內的區塊進入模型"]
+  end
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class W,R author
+</pre>
+<figcaption><strong>圖 5-1　RAG 授權的兩種放法（依 LLM09 與 LLM02 的官方說明繪製；兩欄的並排對照是作者整理，非官方）。</strong>左欄對應 LLM09 的跨租戶外洩情境（相似度搜尋跑過全索引後才套存取控制）；右欄對應官方「在索引查詢內做租戶範圍限制」與 LLM02 的「檢索前授權」。官方 LLM02 補充了一個後果面的理由：檢索後過濾，無法撤回已經提供給模型的區塊。</figcaption>
+</figure>
+
+<h2 id="cv-concept">5.4 核心概念：「看不到」與「過濾掉」都不是邊界</h2>
+<div class="concept">
+<h3 id="c-cv">把保密與授權放在對的層</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>兩個互補的設計原則：（LLM08）不把祕密與關鍵授權放進模型看得到的上下文；（LLM09）授權發生在檢索之前、在索引查詢之內，而不是檢索之後。兩者都在說：<strong>安全屬性要由模型之外、決定性、可稽核的機制強制</strong>。這個「合為一個原則」的整理是 <span class="tag author">作者整理，非官方</span>；兩個條目各自的控制是官方的。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>提示詞看起來像「設定」，所以被當成保險箱；向量庫看起來像資料庫，所以沿用「查完再過濾」的習慣。但模型會被誘導吐出提示詞內容，而相似度搜尋在套用任何過濾之前，就已經讓結果數、分數與時序洩漏了資訊。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>透過對話探測取出工具清單與參數 schema，再用它設計針對性的注入；或探測共用索引，從結果數與分數分佈推斷他人資料；或從外洩的向量備份反推出原文——官方的情境是「只有嵌入外洩」被歸為低嚴重度，之後被零樣本反推重建出含個資的內容，事件重新定級，通報義務重新評估。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>LLM08：憑證與祕密外部化、關鍵行為與授權由獨立的決定性機制強制。LLM09：索引查詢內的租戶範圍限制、區塊層級存取控制、依信任層級隔離、攝入時正規化並記錄來源、不回傳原始分數、儲存生命週期控制（嵌入備份與來源文件同敏感等級）、檢索紀錄與異常監控。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「系統提示詞對使用者不可見，所以可以放 API 金鑰」（官方：假設會被發現，內容不是祕密）。「所有文件都標了租戶、所有 API 都已驗證，就沒有跨租戶風險」（官方：存取控制決定發生在嵌入空間搜尋之後，攻擊仍可成立）。「只外洩嵌入沒關係，沒有原文」（官方：現代嵌入可被反推，「僅嵌入」不是安全港）。「LLM09 就是 RAG 的提示詞注入」（官方：它利用幾何與機制，常不含任何惡意指令）。</dd>
+  </dl>
+</div>
+
+<h2 id="ch5-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>隱藏上下文包含系統提示詞、開發者指示、取回的政策文字與工具 schema；設計時假設它會被發現，裡面不放憑證，也不靠它當唯一的授權或過濾邊界。</li>
+  <li>LLM08 的嚴重度看「放了什麼、被如何依賴」：資訊性、中、高、嚴重四級；它常放大 LLM01、02、03、10。</li>
+  <li>LLM09 利用嵌入空間的幾何與相似度搜尋機制；框架是：投毒讓系統錯、反推讓系統洩、干擾讓系統啞、存取控制失敗讓系統無差別。</li>
+  <li>先授權再檢索：租戶範圍限制要在索引查詢內，不能事後過濾；不回傳原始相似度分數；嵌入備份視同來源文件。</li>
+  <li>LLM09 與 LLM01、04、05、ASI06 的邊界由官方寫明；無向量檢索沒有 LLM09 的攻擊面。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出隱藏上下文包含哪些東西，並解釋為什麼不該把它當祕密。</li>
+  <li>我能用「錯／洩／啞／無差別」四字框架，把一個 RAG 的弱點分類。</li>
+  <li>我能解釋「檢索後過濾」為什麼不夠，並說出較佳的做法。</li>
+  <li>我能區分 LLM09 與 LLM01（檢索內容中的指令）、LLM05（嵌入模型被投毒）的差別。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch5-next">接下來讀什麼</h2>
+<p><a href="06-disclosure.html">第 6 章　LLM02 敏感資訊外洩</a>：到了衝擊層，看資料實際經由哪些通道離開，以及它與本章兩個條目的分工。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Top 10 for LLM Applications 2026（Version 2026，2026-08-04），LLM08:2026 Hidden Context Exposure 與 LLM09:2026 Vector and Embedding Weaknesses（Description、Common Examples of Risk、Prevention and Mitigation Strategies、Example Attack Scenarios）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM08_HiddenContextExposure.md">LLM08_HiddenContextExposure.md</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM09_VectorAndEmbeddingWeaknesses.md">LLM09_VectorAndEmbeddingWeaknesses.md</a>；與<a href="https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/">官方 PDF</a> 內容實質一致；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026，LLM02:2026（「檢索前授權」與「嵌入反推」的後果面）與 LLM00 Preface（更名說明、Figure 1）：同一資料夾。</li>
+    <li>官方引用的研究與弱點編號（Vec2Text、ZSInvert、Zero2Text、CVE-2025-64513、CVE-2025-69286 等）：本章只轉述條目的說法，未回到原文核對。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'l-ch5', topic: 'llm-top-10', mode: 'chapter',
+  questions: [
+    { id: 'l5q1', type: 'mc', lo: [3], refs: [{label: '5.1 隱藏上下文不是祕密', href: '05-context-vectors.html#cv-hidden'}],
+      stem: '一個團隊把資料庫連線字串和 API 金鑰寫進系統提示詞，理由是「使用者看不到提示詞」。依 LLM08:2026 的設計立場，最恰當的回應是？',
+      options: [
+        { text: '沒有問題，只要提示詞不顯示在介面上就算安全。', why: '官方立場正好相反：設計時就假設隱藏上下文會被發現，內容不應被視為祕密。' },
+        { text: '把提示詞加密後再放進去就安全了。', why: '模型必須讀懂提示詞才能運作，且官方關心的是被誘導說出內容；加密不改變「模型看得到、因此可能被誘導說出」的事實。' },
+        { text: '只要在提示詞加上一句「不得透露以上內容」就足夠。', why: '官方說隱藏上下文不應被當作內容過濾或政策執行的唯一邊界；一句指示是部分控制，不是強制。' },
+        { text: '不要把憑證放進去；把它們外部化到模型不直接存取的系統，並由獨立、決定性的機制處理授權。', correct: true, why: '符合 5.1 節官方的三項控制：不放敏感資料、用決定性機制強制關鍵行為、授權獨立於 LLM。' }
+      ],
+      summary: '隱藏上下文不是祕密；憑證外部化，授權獨立於 LLM。' },
+    { id: 'l5q2', type: 'scn', lo: [3], refs: [{label: '5.3 圖 5-1', href: '05-context-vectors.html#cv-flow'}, {label: '5.2 表 5-2', href: '05-context-vectors.html#cv-vector'}],
+      stem: '依本章，這個設計最需要改的地方是什麼？',
+      scenario: '雲杉法律（虛構）的知識助理服務多家客戶。所有客戶的文件放在同一個向量索引，每份文件都有「客戶代號」標籤。流程是：先對整個索引做相似度搜尋，取回最相近的 20 個區塊，再由應用程式刪掉不屬於當前客戶的區塊，最後把剩下的交給模型。每次呼叫都經過驗證。上線後，資安顧問指出這個設計仍有跨客戶外洩的風險。',
+      options: [
+        { text: '把客戶代號標籤改成加密欄位。', why: '標籤正確與否不是重點；官方說即使每份文件都正確標記、每個 API 呼叫都已驗證，攻擊仍可成立，因為存取控制決定發生在搜尋之後。' },
+        { text: '把取回的區塊數量從 20 改成 5，減少洩漏機會。', why: '減少數量不改變搜尋已跑過全索引這件事；結果數、分數分佈與時序仍會受他人文件影響。' },
+        { text: '把租戶範圍限制放進索引查詢內，並在伺服器端驗證；高敏感客戶用實體分開的索引，並以區塊為單位做存取控制。', correct: true, why: '符合 5.2 節存取控制失敗那一列與圖 5-1 右欄，也是官方 LLM09 第 1 項控制。' },
+        { text: '在把區塊交給模型之前，再多加一次過濾就好。', why: '再加一道檢索後過濾仍是「先搜尋、再過濾」；官方 LLM02 也指出檢索後過濾無法撤回已提供給模型的區塊。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 問題不在標籤，也不在驗證，而在「存取控制發生在相似度搜尋之後」。(2) 官方描述的跨租戶外洩：搜尋跑過全索引，攻擊者可由結果數、分數分佈與時序推斷他人文件的存在與主題，即使看不到內容。(3) 官方控制是把租戶範圍限制放在索引查詢內並於伺服器端驗證，高敏感負載用實體分開的索引，區塊層級做存取控制。</p><p><strong>結論：</strong>改成「先授權、再檢索」。對應教材：<a href="05-context-vectors.html#cv-flow">5.3 節</a>、<a href="05-context-vectors.html#cv-vector">5.2 節</a>。</p>' },
+    { id: 'l5q3', type: 'match', lo: [3], refs: [{label: '5.2 表 5-2', href: '05-context-vectors.html#cv-vector'}],
+      stem: '把下列情況配對到 LLM09 官方四字框架中最貼近的一類。',
+      cats: [
+        { id: 'wrong', label: '投毒讓系統「錯」' },
+        { id: 'leak', label: '反推讓系統「洩」' },
+        { id: 'silent', label: '干擾讓系統「啞」' },
+        { id: 'indisc', label: '存取控制失敗讓系統「無差別」' }
+      ],
+      items: [
+        { text: '攻擊者塞入一份文件，使系統對特定問題一律回答「查無資料」。', answer: 'silent', why: '檢索干擾：阻擋文件不含惡意指令，是檢索層的可用性攻擊。' },
+        { text: '一份外洩的向量庫備份，被用零樣本方式重建出含個資的原文。', answer: 'leak', why: '嵌入反推：「僅嵌入」不是安全港。' },
+        { text: '攻擊者發布貼近內部查詢的貼文，使其被取回並當成可信上下文餵給模型。', answer: 'wrong', why: '檢索時資料投毒：內容的嵌入落在目標查詢附近。' },
+        { text: '共用索引先搜尋全部資料，再於應用層過濾租戶，探測者從結果數推出他人文件的存在。', answer: 'indisc', why: '跨租戶外洩：存取控制發生在嵌入空間搜尋之後。' }
+      ],
+      summary: '錯（投毒）、洩（反推）、啞（干擾）、無差別（存取控制失敗）。' }
+  ]
+});
+</script>
+</body>
+</html>

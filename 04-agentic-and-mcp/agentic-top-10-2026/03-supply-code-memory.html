@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章　供應鏈、程式碼與記憶（ASI04–ASI06）｜Top 10 for Agentic Applications 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="ASI04 Agentic Supply Chain Vulnerabilities、ASI05 Unexpected Code Execution、ASI06 Memory and Context Poisoning：agent 用的東西本身被動過手腳時怎麼辦，並用虛構情境走一遍攻擊鏈。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="agentic-top-10-2026" data-page="03-supply-code-memory.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 3 章　供應鏈、程式碼與記憶（ASI04–ASI06）</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-goal-tools-identity.html">第 2 章</a></li>
+</ul>
+<p class="lead">上一章談的是 agent 怎麼使用東西。這一章換個角度：agent 用的東西本身出了問題。它的工具、外掛、提示範本來自第三方（ASI04）；它產生並執行的程式碼逃出了預期（ASI05）；它的記憶和脈絡被人動過手腳（ASI06）。三者都有「在 agent 判斷之前就已經被污染」的共同點。</p>
+
+<h2 id="s-table">3.1 三條的重點比較</h2>
+<div class="table-wrap"><table>
+<caption>表 3-1　ASI04–ASI06 重點（依各條 Description 與緩解改寫；對照 T 編號為官方）</caption>
+<thead><tr><th scope="col">條目</th><th scope="col">被污染的是什麼</th><th scope="col">文件強調的特點</th><th scope="col">重點緩解（官方列舉的摘要）</th><th scope="col">對應 T&amp;M</th></tr></thead>
+<tbody>
+<tr><th scope="row">ASI04 Agentic Supply Chain Vulnerabilities</th><td>第三方模型與權重、工具、外掛、資料集、其他 agent、MCP／A2A 介面、登錄與更新通道</td><td>LLM03:2025 談靜態相依；agent 常在<strong>執行期</strong>動態載入工具與角色，形成「活的供應鏈」，可在 agent 之間連鎖</td><td>來源與 SBOM／AIBOM、相依守門（允許清單與版本固定、防抄寫相近名稱）、沙箱、提示與記憶納入版本控制與同儕審查、互相驗證與簽章、執行期持續驗證、內容雜湊固定與分階段發布、供應鏈緊急停用開關</td><td>T17；T2、T11、T12、T13、T16</td></tr>
+<tr><th scope="row">ASI05 Unexpected Code Execution (RCE)</th><td>agent 產生並執行的程式碼（含 vibe coding 工具）、反序列化物件、記憶中的 eval</td><td>程式碼是<strong>即時產生</strong>的，可繞過傳統控制；與 ASI02 的差別：ASI05 的結果是主機或容器被入侵、持久化、沙箱逃逸，需要主機與執行期專屬的緩解</td><td>輸入驗證與輸出編碼；禁止直通生產系統；<strong>正式環境禁用 eval</strong>；不以 root 執行並在受限容器中跑；程式碼產生與執行之間加驗證關卡；提權執行需人核准</td><td>T11</td></tr>
+<tr><th scope="row">ASI06 Memory &amp; Context Poisoning</th><td>對話歷史、記憶工具、摘要、嵌入與 RAG 儲存</td><td>排除一次性輸入提示（那歸 LLM01）；重點是<strong>持久污染</strong>，會跨 session 影響；與 ASI01 的區別：ASI06 是儲存內容的污染，ASI08 描述污染發生<em>之後</em>的退化</td><td>寫入前內容驗證；記憶分段；來源與保留限制；<strong>禁止把 agent 自己的輸出自動寫回受信任記憶</strong>（避免自我強化的「啟動毒化」）；快照與回復；以信任度與租戶加權檢索</td><td>T1；T4、T6、T12（附錄 A 的名稱與 T&amp;M 1.1 不同，見<a href="references.html#ref-conflict">參考資料頁</a>）</td></tr>
+</tbody></table></div>
+
+<p>三條共同的防線有兩個：<strong>在進入 agent 之前驗證（簽章、允許清單、寫入檢查）</strong>，以及<strong>在執行之後隔離（沙箱、快照、緊急停用）</strong>。</p>
+
+<h2 id="s-concept">3.2 核心概念：為什麼「活的供應鏈」跟傳統不同</h2>
+<div class="concept">
+<h3 id="c-live">活的供應鏈 (Live Supply Chain)</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>agent 在<strong>執行期</strong>動態載入外部工具、提示範本、agent 描述 (agent card) 與外掛，而不是在部署前就固定好。這些元件的信任是在執行當下才決定的。</dd>
+  <dt data-n="2">為什麼和傳統不同</dt>
+  <dd>傳統軟體供應鏈靠清單與簽章在建置時管，LLM03:2025 談的也以靜態相依為主。agent 的元件會在執行時被選擇、組合、委派，而且 agent 本身是長壽、有狀態的實體，單一元件被污染就能引發升權、行為漂移或跨 agent 的系統性誤用。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>文件列的路徑：遠端載入的提示範本含隱藏指示；工具描述或 MCP／agent card 的中繼資料夾帶隱藏指示，被當作可信的引導；名稱相近的惡意工具冒充正牌工具；第三方 agent 或 MCP／登錄伺服器本身被入侵；被污染的知識外掛使 agent 逐漸偏誤。文件引用的公開事件包括 Amazon Q 外掛被植入破壞性提示並隨 v1.84.0 發布，以及在 npm 上被通報的冒充 postmark 的惡意 MCP 伺服器。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>表 3-1 列了重點。若只能記一件事：<strong>可以被執行期載入的東西，都要有來源證明、固定版本，並能被一鍵停用</strong>。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「已經做了 SBOM，所以供應鏈沒問題。」文件在附錄 B 說得很清楚：CycloneDX 與 AIBOM 回答「我的 AI 系統裡有哪些元件與工具」；Agentic Top 10 與 AIVSS 回答「這些元件與自主 agent 可能怎麼行為、互動或失效」。清單是起點，不是結論。</dd>
+</dl>
+</div>
+
+<h2 id="s-scenario">3.3 情境範例 A：自動修復 agent 的一次更新</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：北辰軟體的建置助理</h3>
+<p><span class="tag fiction">虛構</span> 北辰軟體是虛構的公司。團隊用一個「建置修復 agent」自動處理 CI 失敗：它讀失敗日誌、查內部知識庫、必要時安裝缺少的套件、重新產生鎖定檔後重跑建置，並把成功的修法記到長期記憶，之後遇到類似錯誤直接套用。架構與文件 ASI05 情境「鎖定檔毒化」及 ASI06 情境同型；以下為虛構，細節停在概念層級。</p>
+<p class="arch"><strong>架構：</strong>CI 日誌（不可信）→ agent →｛套件安裝、鎖定檔重新產生、建置、長期記憶寫入｝。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>某個函式庫發出一個看似正常的小版本更新，裡面藏了惡意程式。agent 在修復建置時，依未固定版本的相依規格重新產生鎖定檔，拉到了這個版本；惡意程式在安裝或匯入時執行，並在 CI 環境中取得機密。同時，agent 把「這次的修法」記進長期記憶，之後遇到類似錯誤，會再度採用同一個版本。</li>
+  <li><strong>哪一環出問題：</strong>(a) 動態拉取未固定版本的相依，是活的供應鏈（ASI04）；(b) 安裝與匯入時執行了不明程式碼（ASI05）；(c) 把未驗證的成功修法寫進受信任記憶，使污染持續（ASI06）。三者串成一條攻擊鏈。</li>
+  <li><strong>對應條目：</strong>Agentic Top 10：ASI04、ASI05、ASI06（以及事後擴散時的 ASI08）；T&amp;M：T17、T11、T1。LLM Top 10 2026：<a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-supply">LLM04:2026</a> Supply Chain（2025 版是 LLM03）、<a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-output">LLM10:2026</a> Improper Output Handling（2025 版 LLM05）、<a href="../../02-llm-applications/llm-top-10/03-supply-chain-poisoning.html#sc-poison">LLM05:2026</a> Data and Model Poisoning。</li>
+  <li><strong>該採什麼控制：</strong>
+    <ul>
+      <li>ASI04：相依允許清單與版本固定，用雜湊與提交編號鎖定；未簽章或未驗證的套件自動拒絕；分階段發布與雜湊漂移時自動回復；備妥緊急停用開關；</li>
+      <li>ASI05：agent 在受限容器中跑、不以 root 執行、限制對外連線；把「產生」與「執行」分開並加驗證關卡；禁止在正式環境使用 eval；</li>
+      <li>ASI06：禁止 agent 自己的輸出自動寫回受信任記憶；寫入前驗證並附來源；保留快照可回復；未驗證的記憶設有效期；</li>
+      <li>共通：對 agent 執行環境採零信任，假設 LLM 或 agentic 元件會被利用（文件在 ASI04、ASI08 都有這項）。</li>
+    </ul>
+  </li>
+  <li><strong>學到什麼：</strong>這三條不是三個獨立事件，而是同一次事件的三個階段。若只擋最後一段（例如只掃描惡意程式），記憶裡的壞修法下次還會重演；若只清掉記憶，沒固定版本的相依還是會被拉到新的惡意版本。防線要串起來，且每一環都假設前一環會失守。</li>
+</ol>
+</div>
+
+<h2 id="s-flow">3.4 攻擊鏈的視覺化</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="情境 A 的攻擊鏈：上游函式庫被植入惡意版本；agent 重新產生鎖定檔時拉到該版本，這是 ASI04；安裝或匯入時惡意程式執行，這是 ASI05；agent 把這次修法寫進長期記憶，這是 ASI06；之後遇到類似錯誤又再度採用，形成持續。圖中標出可切斷鏈的控制點：版本固定與簽章、沙箱與禁止 eval、記憶寫入驗證。">
+flowchart LR
+  U["上游函式庫<br>被植入惡意版本"] -->|"ASI04"| P["agent 重新產生<br>鎖定檔並安裝"]
+  P -->|"ASI05"| E["安裝或匯入時<br>執行惡意程式"]
+  E --> S["取得 CI 環境機密"]
+  P -->|"ASI06"| M["把這次修法寫進<br>長期記憶"]
+  M -->|"下次遇到類似錯誤"| P
+  C1["切斷點 1<br>版本固定、簽章、允許清單"] -.-> P
+  C2["切斷點 2<br>沙箱、禁止 eval、最小權限"] -.-> E
+  C3["切斷點 3<br>記憶寫入驗證、不自動回寫"] -.-> M
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class C1,C2,C3 author
+</pre>
+<figcaption><strong>圖 3-1　情境 A 的攻擊鏈與切斷點。</strong>鏈上的 ASI 標註依文件各條的說明；三個「切斷點」框與位置是<strong>作者整理，非官方</strong>，內容取自各條官方緩解。重點是：在每個環節都假設前一環已失守。</figcaption>
+</figure>
+
+<h2 id="ch3-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>ASI04 的核心是「活的供應鏈」：執行期動態載入的元件，需要來源證明、版本固定、緊急停用。</li>
+  <li>ASI05 的結果是主機或容器被入侵，需要主機與執行期專屬的緩解（沙箱、不以 root、禁用 eval、產生與執行分離）。</li>
+  <li>ASI06 是對持久記憶的污染；避免 agent 自己的輸出自動回寫到受信任記憶。</li>
+  <li>三條常串成一條攻擊鏈；每一環都假設前一環失守。</li>
+  <li>SBOM 只回答「有哪些元件」，不回答「這些元件可能怎麼失效」。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能解釋「活的供應鏈」與傳統供應鏈的差別。</li>
+  <li>我能把一個修復 agent 的事故拆成 ASI04、ASI05、ASI06 三個階段並指出切斷點。</li>
+  <li>我知道 SBOM 是起點而不是結論。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch3-next">接下來讀什麼</h2>
+<p><a href="04-comm-cascade-human-rogue.html">第 4 章　通訊、連鎖、信任與流氓 Agent（ASI07–ASI10）</a>：從單一 agent 走到多 agent 與人類，並看十項如何對照到其他 OWASP 文件。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>OWASP Top 10 for Agentic Applications for 2026</em>, Version 2026, December 2025：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a>；2026-10-26 讀取；CC BY-SA 4.0。引用段落：ASI04、ASI05、ASI06 各條；Appendix B。</li>
+    <li>OWASP Top 10 for LLM Applications 2026 清單（Version 2026，2026-08-04）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">GitHub 2026/README.md</a>；僅用於情境中的 2026 版編號。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Top 10 for Agentic Applications 2026、Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'asi-ch3', topic: 'agentic-top-10-2026', mode: 'chapter',
+  questions: [
+    { id: 's3q1', type: 'mc', lo: [3], refs: [{label: '3.2 活的供應鏈', href: '03-supply-code-memory.html#c-live'}],
+      stem: '依本章，ASI04 與 LLM03:2025 Supply Chain 最主要的差別是？',
+      options: [
+        { text: 'ASI04 只談模型權重，LLM03 只談外掛。', why: '兩者涵蓋範圍都較廣；差別不在談什麼元件。' },
+        { text: 'LLM03:2025 著重靜態相依；ASI04 面對 agent 在執行期動態載入工具與角色，形成可跨 agent 連鎖的「活的供應鏈」。', correct: true, why: '3.2 節：文件明說 LLM03 的焦點是靜態相依，agent 把風險從清單推到執行期。' },
+        { text: 'ASI04 只適用於開源套件。', why: '文件也涵蓋商用工具、MCP／A2A 介面與登錄。' },
+        { text: '兩者沒有差別，只是編號不同。', why: '文件特別說明了動態組合的差異。' }
+      ],
+      summary: '靜態相依 vs. 執行期動態載入。' },
+    { id: 's3q2', type: 'mc', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-supply-code-memory.html#s-table'}],
+      stem: '一個 agent 會把成功解決問題的做法寫進長期記憶，下次遇到類似問題直接套用。依 ASI06 的緩解，下列哪一項最直接針對這個設計的風險？',
+      options: [
+        { text: '把記憶改成只放在模型參數裡。', why: '文件談的是儲存與檢索的記憶；這樣做不是文件的建議，也無法驗證。' },
+        { text: '禁止 agent 自己產生的輸出自動寫回受信任記憶，並在寫入前驗證與附來源。', correct: true, why: '文件列為緩解：避免自我強化的污染（啟動毒化）。' },
+        { text: '關閉所有日誌以減少被污染的資料。', why: '日誌是偵測依據；關閉只會讓事故更難追查。' },
+        { text: '只要把記憶加密就能防污染。', why: '加密保護儲存，不保證寫入的內容是對的；文件把加密列為基礎保護，不是針對污染的措施。' }
+      ],
+      summary: '不讓 agent 自己的輸出自動回寫到受信任記憶。' },
+    { id: 's3q3', type: 'match', lo: [3], refs: [{label: '3.1 表 3-1', href: '03-supply-code-memory.html#s-table'}],
+      stem: '把緩解措施配對到它最主要針對的條目。',
+      cats: [
+        { id: 'a04', label: 'ASI04 供應鏈' },
+        { id: 'a05', label: 'ASI05 程式碼執行' },
+        { id: 'a06', label: 'ASI06 記憶污染' }
+      ],
+      items: [
+        { text: '用雜湊與提交編號固定提示、工具與設定，雜湊漂移時自動回復', answer: 'a04', why: '文件的「Pinning」措施，屬供應鏈。' },
+        { text: '在正式環境禁用 eval，並把程式碼產生與執行分開、加驗證關卡', answer: 'a05', why: '文件列於 ASI05 的預防措施。' },
+        { text: '對共用記憶使用每租戶的命名空間與信任分數，並讓未驗證的記憶過期', answer: 'a06', why: '文件列於 ASI06 的緩解。' },
+        { text: '備妥緊急停用開關，在發現入侵時立即停用特定工具、提示或 agent 連線', answer: 'a04', why: '文件的「供應鏈緊急停用開關」。' }
+      ],
+      summary: '措施各有主要對象，但常需疊加。' },
+    { id: 's3q4', type: 'scn', lo: [3], refs: [{label: '3.3 情境範例 A', href: '03-supply-code-memory.html#s-scenario'}, {label: '3.4 圖 3-1', href: '03-supply-code-memory.html#s-flow'}],
+      stem: '依本章，這個處置為什麼不夠？',
+      scenario: '東嶼科技（虛構）的修復 agent 因拉到惡意版本的套件而洩漏了 CI 機密。事後團隊做了兩件事：(1) 把該套件版本加入拒絕清單；(2) 刪除 agent 的長期記憶。一週後 agent 又因為另一個被竄改的套件出現同樣的行為。',
+      options: [
+        { text: '拒絕清單只擋已知版本，沒有做版本固定與來源驗證；清記憶只處理了其中一環，沒有切斷動態拉取與執行階段的環節。', correct: true, why: '3.3、3.4 節：攻擊鏈有三環；每一環都要有控制。' },
+        { text: '拒絕清單就夠了，清記憶是多餘的。', why: '記憶可能保存壞修法，會使污染重演。' },
+        { text: '問題在 CI 系統本身，與 agent 無關。', why: '事故的觸發點是 agent 動態拉取未固定版本的相依。' },
+        { text: '應該完全停用 agent 的自動修復能力，不需要其他控制。', why: '這是 Least Agency 的一種選項，但題目問的是為何先前的處置不夠；文件的緩解是多層，而不是只剩一個選項。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 動態拉取未固定版本的相依是 ASI04，拒絕清單只擋已知問題，擋不住下一個被竄改的版本。(2) 惡意程式在安裝時執行屬 ASI05，需要沙箱與最小權限。(3) 壞修法寫進記憶屬 ASI06，需要驗證與回復。</p><p><strong>結論：</strong>應補版本固定與簽章驗證、受限容器、記憶寫入把關。對應教材：<a href="03-supply-code-memory.html#s-scenario">3.3 節</a>、<a href="03-supply-code-memory.html#s-flow">3.4 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

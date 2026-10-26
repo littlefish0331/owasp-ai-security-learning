@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章　全貌與定位｜AI 成熟度評估（AIMA）｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AIMA 是什麼、誰發布、給誰用、版本與日期、與 OWASP SAMM 的關係、專案頁寫五個領域而模型是八個的出入，以及授權。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="ai-maturity-assessment" data-page="01-position.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 1 章　全貌與定位</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 5 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO1</li>
+  <li>前置：<a href="../governance-checklist-and-coe/index.html">治理檢核表與卓越中心</a>（建議先讀）</li>
+</ul>
+<p class="lead">董事會問：「我們的 AI 安全，到底算做得好還是不好？」前面的工具能告訴你要想什麼、先處理什麼，但沒有一個給你一把尺。AIMA 想補的就是這把尺。這一章先看它是什麼、跟誰有血緣，以及一個提醒你要自己核對的出入。</p>
+
+<h2 id="ps-onepage">1.1 一頁式全貌</h2>
+<div class="table-wrap"><table>
+<caption>表 1-1　OWASP AI Maturity Assessment (AIMA) 一頁式全貌（核對日 2026-10-26）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">名稱</th><td>OWASP AI Maturity Assessment (AIMA)</td></tr>
+<tr><th scope="row">形式</th><td>一份文件（V1 PDF，76 頁）加一個 Excel 評估工具包；原始內容以 Markdown 放在 GitHub 儲存庫</td></tr>
+<tr><th scope="row">版本與日期</th><td>PDF 封面「Version V1.0 — August 11, 2025」；Excel 工具包 v1.0.1（網頁標示）；儲存庫最近推送 2026-03-09</td></tr>
+<tr><th scope="row">專案層級</th><td>OWASP Incubator 專案（owasp.org 專案頁）</td></tr>
+<tr><th scope="row">負責人</th><td>Matteo Meucci、Philippe Schrettenbrunner（專案共同負責人；前言署名）</td></tr>
+<tr><th scope="row">給誰用</th><td>前言列出：CISO、AI／ML 工程師、產品負責人、稽核人員與政策制定者</td></tr>
+<tr><th scope="row">要解決什麼</th><td>把「負責任、安全的 AI」的高階原則，轉成每個級別都連到具體活動、成品與指標的日常工程決策，讓改善是漸進的，而不是破壞式的轉型（前言）</td></tr>
+<tr><th scope="row">授權</th><td>CC BY-SA 4.0（儲存庫 LICENSE.md）；GitHub 自動偵測為 NOASSERTION</td></tr>
+</tbody></table></div>
+
+<h2 id="ps-samm">1.2 它的血緣：OWASP SAMM</h2>
+<p>AIMA 自己說得很清楚：它「改編 OWASP SAMM 的基礎概念，以適應 AI 生命週期工程的現實」。SAMM（Software Assurance Maturity Model）是 OWASP 在 2008 年起提供的軟體保證成熟度模型，前言描述它「幫助無數組織把安全嵌入開發流程」。如果你用過 SAMM，AIMA 的版面你會很熟：<strong>業務功能 → 實務 → 兩個流 → 三個成熟度級別</strong>。</p>
+<div class="table-wrap"><table>
+<caption>表 1-2　AIMA 沿用 SAMM 的結構（AIMA 前言與模型章節，改寫）</caption>
+<thead><tr><th scope="col">層</th><th scope="col">AIMA 的對應</th><th scope="col">數量</th></tr></thead>
+<tbody>
+<tr><th scope="row">業務功能（領域）</th><td>Responsible AI、Governance、Data Management、Privacy、Design、Implementation、Verification、Operations</td><td>8</td></tr>
+<tr><th scope="row">實務 (Practice)</th><td>每個領域 3 個，如 Governance 的 Strategy &amp; Metrics、Policy &amp; Compliance、Education &amp; Guidance</td><td>8 × 3＝24</td></tr>
+<tr><th scope="row">流 (Stream)</th><td>每個實務分兩個互補的流：A 與 B（模型章節寫 Create &amp; Promote 與 Measure &amp; Improve；Governance 工作表的流名則依實務而異，見第 3 章）</td><td>每實務 2</td></tr>
+<tr><th scope="row">成熟度級別</th><td>每個實務 3 個級別（Level 1–3），評估可記為 0、1、2、3 或帶「+」</td><td>3</td></tr>
+</tbody></table></div>
+<p>它與 SAMM 不同的地方，是領域換成 AI 特有的關切：負責任 AI 原則、資料管理、隱私，以及針對 AI 的威脅評估、模型與資料的供應鏈驗證。簡介章節給的理由是：傳統成熟度模型（如 CMMI、SAMM）不是為 AI 的特性設計的：<strong>非決定性的行為、不透明的決策邏輯、以資料為中心的弱點（對抗攻擊與資料投毒利用訓練管線）、以及會隨時間演變的風險面</strong>。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="AIMA 的層次結構：八個領域各有三個實務，共二十四個；每個實務分流 A 與流 B 兩條，各有三個成熟度級別。例如 Governance 領域有 Strategy and Metrics、Policy and Compliance、Education and Guidance 三個實務。">
+flowchart TD
+  M["AIMA V1.0"] --> D["8 個領域"]
+  D --> P["每領域 3 個實務<br>共 24 個"]
+  P --> S["每實務 2 個流<br>A 與 B"]
+  S --> L["每流 3 個成熟度級別<br>Level 1 – 2 – 3"]
+  D -.-> G["例：Governance"]
+  G -.-> G1["Strategy and Metrics"]
+  G -.-> G2["Policy and Compliance"]
+  G -.-> G3["Education and Guidance"]
+</pre>
+<figcaption><strong>圖 1-1　AIMA 的層次結構（AIMA 模型與工作表章節，重新繪製）。</strong>領域與實務的名稱取自 PDF 目錄；「每流 3 個級別」依 Governance 工作表的版面推得（每個流有 Level 1–3 三列），其他七張工作表本教材沒有逐一確認。</figcaption>
+</figure>
+
+<h2 id="ps-diff">1.3 一個要自己核對的出入：五個領域，還是八個？</h2>
+<p>owasp.org 專案頁的簡介（儲存庫 <code>index.md</code>）寫：「模型涵蓋<strong>五個核心領域</strong>：策略、設計、實作、營運與治理」（Strategy, Design, Implementation, Operations, and Governance）。但同一個專案的 PDF 目錄與原始檔的模型章節，寫的是<strong>八個領域</strong>：Responsible AI、Governance、Data Management、Privacy、Design、Implementation、Verification、Operations。兩者並不一致：</p>
+<ul>
+  <li>專案頁沒有出現 Responsible AI、Data Management、Privacy、Verification，卻出現 PDF 沒有的「Strategy」（PDF 的 Strategy 是 Governance 領域內的一個實務：Strategy &amp; Metrics）。</li>
+  <li>PDF 前言明說「Version 1.0 引入八個評估領域」。</li>
+</ul>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：哪一個是官方現行的說法</p>
+  <p>專案頁看起來是較早期的簡介，沒有隨 V1 更新；PDF（2025-08-11）、原始檔與 Excel 工具包都用八個領域。依「以最新者為準」，教材採用<b>八個領域</b>，但<strong>無法確認專案頁簡介的撰寫日期</strong>，所以只標示為內部不一致，不推測原因。你在引用時請寫「V1.0 的八個領域」。</p>
+</div>
+
+<h2 id="ps-misc">1.4 常見誤解</h2>
+<div class="concept">
+<h3 id="c-misc">三個容易混淆的地方</h3>
+<dl>
+  <dt data-n="1">誤解</dt>
+  <dd class="misc">「AIMA 是 AI Exchange 的一部分。」不是。AIMA 的簡介把 AI Exchange、LLM Top 10、ML Security Top 10 列為「姊妹專案」，與 AIMA 並列，各自獨立。</dd>
+  <dt data-n="2">誤解</dt>
+  <dd class="misc">「AIMA 是評估某一個 AI 系統的安全。」它評估的是<strong>組織</strong>在 AI 治理與保證上的實務成熟度（第 3 章說明範圍可以是整個組織，也可以是一個事業單位或專案）。</dd>
+  <dt data-n="3">誤解</dt>
+  <dd class="misc">「成熟度越高越好，要全部做到 Level 3。」AIMA 的設計是「漸進改善」，不要求一次到位；也沒有說每個實務都必須到 3。</dd>
+</dl>
+</div>
+
+<h2 id="ch1-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>AIMA V1.0（2025-08-11，76 頁）加 Excel 工具包 v1.0.1，是 Incubator 專案；仿 OWASP SAMM。</li>
+  <li>結構：8 個領域 × 3 個實務＝24 個；每個實務兩個流；三個成熟度級別。</li>
+  <li>簡介說傳統成熟度模型不適用 AI 的四個原因：非決定性、不透明決策、資料中心的弱點、會演變的風險面。</li>
+  <li>專案頁簡介寫五個領域，PDF 與原始檔是八個；教材採八個並註明出入。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出 AIMA 的結構（領域、實務、流、級別）與各層的數量。</li>
+  <li>我知道它與 SAMM 的關係。</li>
+  <li>我知道引用時要寫「V1.0 的八個領域」，並知道專案頁的出入。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO1。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch1-next">接下來讀什麼</h2>
+<p><a href="02-domains.html">第 2 章　八個領域與二十四個實務</a>：逐一看八個領域各自在問什麼。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Maturity Assessment V1（PDF，Version V1.0 — August 11, 2025，76 頁）：Preface、Introduction、The AIMA Model；<a href="https://raw.githubusercontent.com/OWASP/www-project-ai-maturity-assessment/main/releases/V1/OWASP-AIMA_V1.pdf">releases/V1/OWASP-AIMA_V1.pdf</a>；2026-10-26 讀取。</li>
+    <li>OWASP AI Maturity Assessment 專案頁（Incubator Project、Project Leaders、Excel Toolkit v1.0.1）：<a href="https://owasp.org/www-project-ai-maturity-assessment/">owasp.org/www-project-ai-maturity-assessment/</a>；儲存庫 <code>index.md</code>、<code>LICENSE.md</code>：<a href="https://github.com/OWASP/www-project-ai-maturity-assessment">github.com/OWASP/www-project-ai-maturity-assessment</a>；CC BY-SA 4.0；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AIMA — CC BY-SA 4.0（儲存庫 LICENSE.md；GitHub 偵測值為 NOASSERTION）。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'am-ch1', topic: 'ai-maturity-assessment', mode: 'chapter',
+  questions: [
+    { id: 'am1q1', type: 'mc', lo: [1], refs: [{label: '1.2 表 1-2', href: '01-position.html#ps-samm'}],
+      stem: '下列哪一項最準確地描述 AIMA 與 OWASP SAMM 的關係？',
+      options: [
+        { text: 'AIMA 取代 SAMM，用於所有軟體。', why: 'AIMA 是針對 AI 的改編，沒有取代 SAMM。' },
+        { text: 'AIMA 改編 SAMM 的結構（業務功能、實務、流、三個級別），並換成 AI 特有的領域與關切。', correct: true, why: '1.2 節。' },
+        { text: 'AIMA 與 SAMM 完全無關。', why: '前言明說 AIMA 改編 SAMM 的基礎概念。' },
+        { text: 'AIMA 是 SAMM 的第三版。', why: '教材沒有任何這樣的說法。' }
+      ],
+      summary: 'AIMA = AI 版的 SAMM 式成熟度模型。' },
+    { id: 'am1q2', type: 'match', lo: [1], refs: [{label: '1.2 表 1-2', href: '01-position.html#ps-samm'}],
+      stem: '把下列層次配對到 AIMA V1.0 的數量。',
+      cats: [
+        { id: 'n3', label: '3' },
+        { id: 'n8', label: '8' },
+        { id: 'n24', label: '24' }
+      ],
+      items: [
+        { text: '領域（業務功能）的數量', answer: 'n8', why: '八個領域。' },
+        { text: '每個領域的實務數量', answer: 'n3', why: '每領域三個實務。' },
+        { text: '全部實務的總數', answer: 'n24', why: '8 × 3＝24。' },
+        { text: '每個實務的成熟度級別數', answer: 'n3', why: 'Level 1 到 Level 3。' }
+      ],
+      summary: '8 × 3＝24；三個級別。' },
+    { id: 'am1q3', type: 'scn', lo: [1], refs: [{label: '1.3 領域數的出入', href: '01-position.html#ps-diff'}, {label: '1.1 表 1-1', href: '01-position.html#ps-onepage'}],
+      stem: '依本章，這份報告對 AIMA 的描述有哪些問題？',
+      scenario: '潮音科技（虛構）的簡報寫：「依 OWASP 專案頁，AIMA 涵蓋策略、設計、實作、營運與治理五個領域，是 AI Exchange 的一部分，用來評估我們新推出的某一個聊天機器人是否安全。」審查人員打開了 V1 PDF。',
+      options: [
+        { text: '沒有問題，專案頁就是官方說法。', why: '專案頁與 PDF 的領域數不一致，且 AIMA 不是 AI Exchange 的一部分。' },
+        { text: '至少三處：V1.0 是八個領域，專案頁的五個領域是較早期的簡介，與 PDF 不一致；AIMA 是獨立專案，並非 AI Exchange 的一部分；它評估的是組織在 AI 治理與保證上的實務成熟度，不是單一聊天機器人的安全。', correct: true, why: '對應 1.3、1.4 節。' },
+        { text: '只有領域數需要改成八個。', why: '另外兩處也不準確。' },
+        { text: '應該把「AIMA」改成「SAMM」。', why: '兩者是不同的模型。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) PDF 前言明說 Version 1.0 有八個評估領域；專案頁簡介寫五個核心領域，且列出的名稱與 PDF 不同。(2) AIMA 簡介把 AI Exchange 等列為姊妹專案，不是上下層。(3) 簡介與評估方法都是在評估組織的實務。</p><p><strong>結論：</strong>改寫領域數，更正與 AI Exchange 的關係，並說明評估對象是組織。對應教材：<a href="01-position.html#ps-diff">1.3 節</a>、<a href="01-position.html#c-misc">1.4 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

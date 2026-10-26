@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentic 安全與治理現況｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="State of Agentic AI Security and Governance 2.01 主題首頁：學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="agentic-security-and-governance" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>Agentic 安全與治理現況</h1>
+<ul class="meta-row">
+  <li>05 治理與風險｜主題 3</li>
+  <li>預估學習時間：約 60–70 分鐘（5 章閱讀約 38 分鐘；章末檢核與總測驗約 25 分鐘）</li>
+  <li>採用來源：genai.owasp.org 資源頁與官方 PDF（State of Agentic AI Security and Governance 2.01，2026 年 6 月，139 頁），2026-10-26 讀取</li>
+</ul>
+<p class="lead">前兩個主題談的是「怎麼開始管」和「先管什麼」。這個主題換成一個更具體的問題：<strong>當組織裡開始有會自己行動的 agent，治理要多大？</strong>OWASP Agentic Security Initiative 的這份報告，把一年來的事件、威脅、法規與成熟度整理成一份給 CISO 與主管層讀的現況報告。它最有用的兩個貢獻：一個說明「安全與安全性在部署層無法分開」的論證，一個把「你部署的是哪一種 agent」與「你的治理有多成熟」放在同一張矩陣上的模型。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>定位：</strong>說明這份報告是什麼、版本（2.01）與日期、v1.0 到 v2 的變化，以及它不是什麼（不是法律意見、不是實作手冊）。<br><small>對應：<a href="01-position-and-findings.html">第 1 章</a>、<a href="06-regulation-and-integration.html">第 6 章</a></small></li>
+  <li id="lo2"><strong>分類與威脅：</strong>用三個獨立維度（類型、實作、組合）加上自主程度分類 agent，並說明為什麼「提示詞注入」與「供應鏈」是 2025–2026 最主要的兩條路徑。<br><small>對應：<a href="02-taxonomy-and-threats.html">第 2 章</a></small></li>
+  <li id="lo3"><strong>安全與安全性：</strong>區分 AI Security 與 AI Safety，並說明報告為什麼主張它們在部署層必須一起治理。<br><small>對應：<a href="03-safety-security.html">第 3 章</a></small></li>
+  <li id="lo4"><strong>身分與協定：</strong>區分非人類身分 (NHI) 與 Agent 身分，說明三類協定的風險，以及對供應鏈提出的要求。<br><small>對應：<a href="04-protocols-identity.html">第 4 章</a></small></li>
+  <li id="lo5"><strong>成熟度與法規：</strong>用「採用層級 × 治理成熟度」矩陣判斷一個部署是否治理足夠，並說明報告對法規的取態與其限制。<br><small>對應：<a href="05-maturity-model.html">第 5 章</a>、<a href="06-regulation-and-integration.html">第 6 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>建議先讀 <a href="../governance-checklist-and-coe/index.html">治理檢核表與卓越中心</a>：本報告的成熟度模型，是接在「組織要有人負責」之後的下一步。</li>
+  <li>建議先讀 <a href="../../01-overview/ai-exchange/05-agentic-genai.html">AI Exchange 第 5 章（GenAI 與 Agentic AI）</a>：致命三要素與 Rule of Two 在那裡已經介紹過，本報告直接引用。</li>
+  <li>本主題多次用到 ASI01–ASI10。它們是 Top 10 for Agentic Applications for 2026 的條目；完整的逐條講解見〈<a href="../../04-agentic-and-mcp/agentic-top-10-2026/index.html">Top 10 for Agentic Applications 2026</a>〉，這裡只在需要時說明名稱。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="01-position-and-findings.html">第 1 章　全貌與定位：三個主要發現</a></span><span class="p-state" data-file="01-position-and-findings.html"></span><span class="p-desc">報告是什麼、2.01 版與日期、v1.0 到 v2 的變化、執行摘要的三個發現、資料與限制。表 3 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="02-taxonomy-and-threats.html">第 2 章　Agent 分類與 2025–2026 威脅</a></span><span class="p-state" data-file="02-taxonomy-and-threats.html"></span><span class="p-desc">三個維度加自主程度；提示詞注入與供應鏈兩條主路徑；事件追蹤表。表 3 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-safety-security.html">第 3 章　AI Safety 與 AI Security</a></span><span class="p-state" data-file="03-safety-security.html"></span><span class="p-desc">兩個類別的定義、為什麼在 agent 身上收斂、對組織分工的含義。情境 A。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="04-protocols-identity.html">第 4 章　協定、Agent 身分與供應鏈</a></span><span class="p-state" data-file="04-protocols-identity.html"></span><span class="p-desc">三類協定的風險、NHI 與 Agent 身分的差異、AI SBOM 到執行期來源證明。表 3 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="05-maturity-model.html">第 5 章　成熟度模型：採用層級 × 治理等級</a></span><span class="p-state" data-file="05-maturity-model.html"></span><span class="p-desc">AT0–AT8 與治理等級 0–4 的矩陣、哪些格子治理不足、使用流程。情境 B。表 2 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="06-regulation-and-integration.html">第 6 章　法規與跨文件整合</a></span><span class="p-state" data-file="06-regulation-and-integration.html"></span><span class="p-desc">法規地圖的讀法、執行期治理的論點、與其他文件的對應、全主題重點。表 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（14 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO5，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">核對清單、版本與日期對照、報告內部的不一致、授權、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>報告的立場：威脅已經真實（有事故、CVE 與供應商公告），而且<strong>在部署層，安全與安全性無法分開治理</strong>。</li>
+  <li>它的工具：<strong>採用層級 AT0–AT8</strong> 描述你部署了什麼，<strong>治理等級 0–4</strong> 描述你管得多成熟；兩者交叉看哪些格子治理不足。</li>
+  <li>它的限制：報告自己聲明<strong>不是法律意見</strong>；許多數字（事故、採用率、法規日期）來自作者群在 2026 年 4 月前後的整理，教材只轉述、不查證。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的類比、歸類或流程。</li>
+  <li>情境 A、B 都是 <span class="tag fiction">虛構</span> 的公司與系統，不含可直接使用的攻擊手法。報告中的真實事件（含 CVE 編號）本教材只轉述其<strong>失敗模式</strong>，並標明來源是這份報告。</li>
+  <li>這份報告有 139 頁，其中法規附錄就佔了 38 頁。<strong>本教材是選讀、不是逐頁摘要</strong>：本教材讀了正文所有章節、附錄 3，以及附錄 1 與 2 的代表段落，沒有逐條讀完 42 項法規。範圍限制集中列在 <a href="references.html">參考資料頁</a>。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；無法使用時，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>圖表以本地 Mermaid 繪製；若圖沒有顯示，每張圖下方都有文字說明。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：State of Agentic AI Security and Governance 2.01、genai.owasp.org 網站 — CC BY-SA 4.0。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

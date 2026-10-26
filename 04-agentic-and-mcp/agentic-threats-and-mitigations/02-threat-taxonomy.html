@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　威脅分類與 Navigator｜Agentic 威脅與緩解｜OWASP AI 資安學習教材</title>
+<meta name="description" content="T1–T17 十七項 agentic 威脅依六個問題分組的 Navigator、每項威脅與 LLM Top 10 2025 的關係，以及對照 2026 版編號時要注意的地方。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="agentic-threats-and-mitigations" data-page="02-threat-taxonomy.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　威脅分類與 Navigator</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 7 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position.html">第 1 章</a></li>
+</ul>
+<p class="lead">文件把 agentic 威脅編成 T1 到 T17，並設計一個「用六個問題反查威脅」的 Navigator。本章不逐條背，而是教你用問題找威脅：先問系統有哪些特徵，再看哪幾項威脅會被點亮；並看清楚每項威脅跟 LLM Top 10 的關係，以及編號在 2025 與 2026 之間不能直接套用。</p>
+
+<h2 id="tax-list">2.1 十七項威脅一覽</h2>
+<p>文件的「詳細威脅模型」表為每項威脅給了編號 (TID)、名稱、描述與緩解。下表依 Navigator 的六個問題分組，並標出文件<strong>明文寫出</strong>的 LLM Top 10 關聯（皆為 <strong>2025 版</strong>編號）。</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　T1–T17 依 Navigator 六個問題分組（威脅名稱與編號為官方；LLM 關聯為文件明文，2025 版編號）</caption>
+<thead><tr><th scope="col">Navigator 問題</th><th scope="col">威脅（TID 名稱）</th><th scope="col">文件明文寫的 LLM Top 10 關聯</th></tr></thead>
+<tbody>
+<tr><th scope="row">1 agent 是否自己決定達成目標的步驟？<br>（代理與推理）</th><td>T6 Intent Breaking &amp; Goal Manipulation<br>T7 Misaligned &amp; Deceptive Behaviors<br>T8 Repudiation &amp; Untraceability</td><td>T6：LLM01:2025 Prompt Injection（延伸）</td></tr>
+<tr><th scope="row">2 是否依賴儲存的記憶做決策？<br>（記憶）</th><td>T1 Memory Poisoning<br>T5 Cascading Hallucination Attacks</td><td>T1：LLM04:2025、LLM08:2025；T5：LLM09:2025 Misinformation</td></tr>
+<tr><th scope="row">3 是否用工具、系統指令或外部整合執行動作？<br>（工具、執行與供應鏈）</th><td>T2 Tool Misuse<br>T3 Privilege Compromise<br>T4 Resource Overload<br>T11 Unexpected RCE and Code Attacks<br>T16 Insecure Inter-Agent Protocol Abuse<br>T17 Supply Chain Compromise</td><td>T2、T3：LLM06:2025 Excessive Agency（部分涵蓋）；T4：LLM10:2025 Unbounded Consumption；T11：LLM01:2025、LLM05:2025；T17：LLM03:2025 Supply Chain</td></tr>
+<tr><th scope="row">4 是否依賴認證來驗證使用者、工具或服務？<br>（身分與認證）</th><td>T9 Identity Spoofing &amp; Impersonation / Agent Identity Compromise</td><td>（文件在該段未列 LLM 條目）</td></tr>
+<tr><th scope="row">5 是否需要人類參與？<br>（人類）</th><td>T10 Overwhelming Human in the Loop<br>T15 Human Manipulation</td><td>（文件在該段未列 LLM 條目）</td></tr>
+<tr><th scope="row">6 是否依賴多個互動的 agent？<br>（多 agent）</th><td>T12 Agent Communication Poisoning<br>T13 Rogue Agents in Multi-Agent Systems<br>T14 Human Attacks on Multi-Agent Systems</td><td>T12：LLM04:2025、LLM08:2025（超越其靜態資料投毒）；T13：LLM06:2025</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">文件內部的小不一致（已記錄，不影響使用）</p>
+  <ul>
+    <li><strong>「五個」與「六個」：</strong>Navigator 的決策路徑實際是 Step 1–6；而「緩解策略」章開頭寫「五個 playbook」，實際列出六個（見第 3 章）。Playbook 6 的標頭寫對應「Step 5: Multi-Agent System Threats」，但 Navigator 裡多 agent 是 Step 6（Step 5 是人類參與）。本教材一律依 Navigator 的六個問題與表中實際內容。</li>
+    <li><strong>名稱的小差異：</strong>T9 在詳細表中名稱最長（含 Agent Identity Compromise），Navigator 段落只寫 Identity Spoofing and Impersonation。Agentic Top 10 的附錄 A 在 ASI06 一列把 T4 寫成 Memory Overload、T6 寫成 Broken Goals、T12 寫成 Shared Memory Poisoning，與 T&amp;M 1.1 的 Resource Overload、Intent Breaking &amp; Goal Manipulation、Agent Communication Poisoning 不同；本教材以 T&amp;M 1.1 的名稱為準（第 5 章會再提醒）。</li>
+  </ul>
+</div>
+
+<h2 id="tax-compare">2.2 這些威脅跟 LLM Top 10 是什麼關係</h2>
+<p>文件一再用同一個句型描述關係：<strong>agent 把 LLM 層的既有風險延伸、放大，而不是另起爐灶</strong>。幾個最能看出差別的例子：</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　Agentic 威脅如何延伸既有 LLM 風險（依文件各威脅的說明改寫）</caption>
+<thead><tr><th scope="col">Agentic 威脅</th><th scope="col">對應的 LLM 風險（2025 版）</th><th scope="col">文件說的「多出來」的部分</th></tr></thead>
+<tbody>
+<tr><th scope="row">T1 Memory Poisoning</th><td>LLM04:2025 Data and Model Poisoning；LLM08:2025 Vector and Embedding Weaknesses</td><td>不只是靜態資料被投毒，而是<strong>即時</strong>污染 agent 的<strong>持久記憶</strong>；也包含共用記憶讓一位使用者影響其他使用者</td></tr>
+<tr><th scope="row">T5 Cascading Hallucination</th><td>LLM09:2025 Misinformation</td><td>幻覺經由自我反思、記憶或多 agent 溝通被<strong>強化與放大</strong>，進而影響工具呼叫</td></tr>
+<tr><th scope="row">T2 Tool Misuse</th><td>LLM06:2025 Excessive Agency（部分）；LLM03:2025 Supply Chain；LLM08:2025</td><td>agent 有記憶、可委派給其他 agent，且工具可串接；「在被授予的權限內」做出被操縱的事</td></tr>
+<tr><th scope="row">T12 Agent Communication Poisoning</th><td>LLM04:2025、LLM08:2025</td><td>目標是<strong>暫時、動態</strong>的資料（agent 間的訊息），不是靜態資料集</td></tr>
+<tr><th scope="row">T13 Rogue Agents</th><td>LLM06:2025 Excessive Agency</td><td>對抗式 agent 可長期嵌在工作流程中而不被發現</td></tr>
+</tbody></table></div>
+
+<div class="callout warn">
+  <p class="callout-title">編號陷阱：文件的 LLM 編號是 2025 版</p>
+  <p>這份文件引用的是 <strong>LLM Top 10 2025</strong> 的編號，例如它寫 Excessive Agency 是 LLM06:2025、Unbounded Consumption 是 LLM10:2025、Vector and Embedding Weaknesses 是 LLM08:2025。<strong>LLM Top 10 2026（2026-08-04）<a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">重新編號</a></strong>：Excessive Agency 變成 <a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a>、Unbounded Consumption 是 <a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-consume">LLM06:2026</a>、Vector and Embedding Weaknesses 是 <a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-vector">LLM09:2026</a>；輸出處理那一條則從 LLM05:2025 Improper Output Handling 變成 <a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-output">LLM10:2026</a> Improper Output Handling（T&amp;M 1.1 在 T11 段落把 LLM05:2025 寫成 "Insecure Output Handling"，與 2025 版官方名稱略有出入）。引用時一律寫成 <code>LLMnn:年份</code>，不要把 2025 的號碼套到 2026。</p>
+</div>
+
+<h2 id="tax-nav">2.3 用 Navigator 反查威脅</h2>
+<p>Navigator 的設計思路是：不要從 17 項清單從頭讀，而是先回答六個關於你系統的問題，哪個答「是」，就去看該組的威脅。文件特別提醒：單一 agent 層級的威脅（記憶污染、工具濫用、權限妥協）常是更大系統性風險的基礎；在多 agent 環境，它們會經由信任、相依與連鎖失效擴大。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="Navigator 決策流程：依序問六個問題。是否自行決定步驟，是則看 T6、T7、T8；是否依賴記憶，是則看 T1、T5；是否使用工具，是則看 T2、T3、T4、T11、T16、T17；是否依賴認證，是則看 T9；是否需要人類參與，是則看 T10、T15；是否有多個互動 agent，是則看 T12、T13、T14。每個問題都是獨立檢查，答案可以多個為是。">
+flowchart TD
+  S["我的 agent 系統"] --> Q1{"1 自行決定步驟？"}
+  S --> Q2{"2 依賴儲存的記憶？"}
+  S --> Q3{"3 使用工具或外部整合？"}
+  S --> Q4{"4 依賴認證驗證身分？"}
+  S --> Q5{"5 需要人類參與？"}
+  S --> Q6{"6 多個 agent 互動？"}
+  Q1 -->|"是"| T1["T6 T7 T8"]
+  Q2 -->|"是"| T2["T1 T5"]
+  Q3 -->|"是"| T3["T2 T3 T4 T11 T16 T17"]
+  Q4 -->|"是"| T4["T9"]
+  Q5 -->|"是"| T5["T10 T15"]
+  Q6 -->|"是"| T6["T12 T13 T14"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S author
+</pre>
+<figcaption><strong>圖 2-1　Navigator 的六個問題與其威脅群（依官方 Navigator 重新繪製，並非官方原圖）。</strong>群組內容為官方；「六個問題各自獨立、可以多個為是」的畫法是<strong>作者整理，非官方</strong>。實務上多數 agent 會同時為是好幾個。</figcaption>
+</figure>
+<p>官方另提供一張單頁的 <em>Agentic Threats Navigator</em> 速查圖（資源頁 2025-03-06），把同樣的分類畫成六個面向：代理與推理、記憶與脈絡、工具與執行、身分與認證、人類參與、多 agent。它的六個面向與本章的六個問題一一對應，但只列了 15 項威脅（沒有 T16、T17），是較早的版本；引用請以 T&amp;M 1.1 為準。</p>
+
+<h2 id="tax-trap">2.4 常見誤解</h2>
+<ul>
+  <li><strong>「T 編號是優先順序。」</strong>不是。它只是識別碼 (TID)；文件沒有說 T1 比 T17 更嚴重。要排序，用 AIVSS（見〈<a href="../../06-assessment-and-verification/aivss/index.html">AIVSS</a>〉）或你自己的風險分析。</li>
+  <li><strong>「這 17 項是 Agentic Top 10。」</strong>不是。Agentic Top 10 是另一份文件，用 ASI01–ASI10 編號；第 5 章的對照表會把兩者接起來。Agentic Top 10 的附錄反過來指出 T1–T17 是「被 ASI 條目引用的細粒度攻擊路徑」。</li>
+  <li><strong>「工具濫用等於提示詞注入。」</strong>文件把提示詞注入視為<strong>常見的入口</strong>，而 T2 的重點是「在被授予的權限內」被誘導做出非預期操作；即使入口被擋，工具權限過寬依然是問題。</li>
+</ul>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>T1–T17 是識別碼，不是優先順序；Navigator 用六個問題反查：代理與推理、記憶、工具與執行、身分、人類、多 agent。</li>
+  <li>agentic 威脅多半是「延伸、放大」LLM 層既有風險：持久記憶、連鎖幻覺、工具串接、動態資料投毒。</li>
+  <li>文件引用的 LLM Top 10 編號是 <strong>2025 版</strong>；2026 版重新編號，引用要帶年份。</li>
+  <li>文件有幾處內部不一致（playbook 數量、Step 編號），本教材依實際內容為準。</li>
+</ul></div>
+<ul class="checklist">
+  <li>給我一個 agent 系統的特徵，我能用 Navigator 的問題找出該優先看的威脅群。</li>
+  <li>我能解釋 T1 與 LLM04:2025 的差別，以及 T5 為何不等於一般幻覺。</li>
+  <li>我知道文件中的 LLM 編號是 2025 版，並不會把它直接套到 2026 版。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-playbooks.html">第 3 章　緩解策略：六個 Playbooks</a>：看每組威脅對應哪些預防、反應與偵測措施，並用一個虛構情境走一遍。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project, <em>Agentic AI – Threats and Mitigations</em>, Version 1.1, December 2025：<a href="https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/">資源頁</a>；2026-10-26 讀取；CC BY-SA 4.0。引用段落：Detailed Threat Model、Agentic Threats Taxonomy Navigator。</li>
+    <li>OWASP Gen AI Security Project – Agentic Threats Navigator（資源頁 2025-03-06；PDF 1 頁）：<a href="https://genai.owasp.org/resource/owasp-gen-ai-security-project-agentic-threats-navigator/">資源頁</a>；2026-10-26 讀取。</li>
+    <li>OWASP Top 10 for Agentic Applications for 2026, Appendix A：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">資源頁</a>；引用其對 T 編號的描述。</li>
+    <li>OWASP Top 10 for LLM Applications 2026（Version 2026，2026-08-04）清單：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">GitHub 2026/README.md</a>；僅用於比對 2026 版編號。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Agentic AI – Threats and Mitigations、Agentic Threats Navigator、Top 10 for Agentic Applications 2026、Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'atm-ch2', topic: 'agentic-threats-and-mitigations', mode: 'chapter',
+  questions: [
+    { id: 'a2q1', type: 'mc', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-threat-taxonomy.html#tax-list'}, {label: '2.3 Navigator', href: '02-threat-taxonomy.html#tax-nav'}],
+      stem: '你的 agent 會讀取一個共用的長期知識庫來做決策，並且可以呼叫外部 API 與寄信。依 Navigator，至少應先檢視哪幾組威脅？',
+      options: [
+        { text: '只看 T6、T7、T8，因為 agent 會自己做決策。', why: '這只涵蓋問題 1；本系統還依賴記憶（問題 2）並使用工具（問題 3）。' },
+        { text: '記憶群（T1、T5）與工具群（T2、T3、T4、T11、T16、T17）。', correct: true, why: '依賴儲存的記憶 → 問題 2；使用工具與外部整合 → 問題 3。六個問題各自獨立，可以多個為是。' },
+        { text: '只看 T12、T13、T14，因為知識庫是共用的。', why: '那是多 agent 群；本情境沒有說有多個互動的 agent。共用記憶的風險屬 T1。' },
+        { text: '只看 T9，因為牽涉外部 API 要認證。', why: 'T9 屬問題 4（依賴認證）；但工具使用與記憶才是這個描述的主要特徵。' }
+      ],
+      summary: 'Navigator 六個問題各自獨立；多個為是就看多個群。' },
+    { id: 'a2q2', type: 'match', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-threat-taxonomy.html#tax-list'}],
+      stem: '把下列威脅配對到它在 Navigator 中所屬的問題群。',
+      cats: [
+        { id: 'reason', label: '代理與推理' },
+        { id: 'memory', label: '記憶' },
+        { id: 'tools', label: '工具、執行與供應鏈' },
+        { id: 'human', label: '人類參與' },
+        { id: 'mas', label: '多 agent' }
+      ],
+      items: [
+        { text: 'T8 Repudiation &amp; Untraceability', answer: 'reason', why: '官方放在問題 1（代理與推理）。' },
+        { text: 'T5 Cascading Hallucination Attacks', answer: 'memory', why: '官方放在問題 2（記憶）。' },
+        { text: 'T17 Supply Chain Compromise', answer: 'tools', why: '官方放在問題 3（工具、執行與供應鏈）。' },
+        { text: 'T10 Overwhelming Human in the Loop', answer: 'human', why: '官方放在問題 5（人類）。' },
+        { text: 'T13 Rogue Agents in Multi-Agent Systems', answer: 'mas', why: '官方放在問題 6（多 agent）。' }
+      ],
+      summary: 'Navigator 依「系統有什麼特徵」分群，而不是依攻擊手法。' },
+    { id: 'a2q3', type: 'mc', lo: [2], refs: [{label: '2.2 編號陷阱', href: '02-threat-taxonomy.html#tax-compare'}],
+      stem: '文件說 Tool Misuse「部分涵蓋於 LLM06:2025 Excessive Agency」。你要把這個關聯寫進一份引用 LLM Top 10 2026 的內部規範。最恰當的寫法是？',
+      options: [
+        { text: '「Tool Misuse 對應 LLM06」，沿用文件寫法就好。', why: '在 2026 版 LLM06 是 Unbounded Consumption，會變成錯誤的對照。' },
+        { text: '「Tool Misuse 對應 LLM03:2026 Excessive Agency（文件原寫 LLM06:2025）」，並標明年份。', correct: true, why: '2026 版 Excessive Agency 是 LLM03:2026；同時註明來源文件用的是 2025 編號，才可核對。' },
+        { text: '「Tool Misuse 已被 LLM Top 10 完整涵蓋，不必另列」。', why: '文件說的是「部分涵蓋」，agent 的記憶、委派、串接是額外的部分。' },
+        { text: '省略編號，只寫「LLM Top 10」。', why: '沒有指到具體條目與年份，讀者無法核對。' }
+      ],
+      summary: '引用編號一律帶年份；2025 與 2026 不同。' },
+    { id: 'a2q4', type: 'scn', lo: [2], refs: [{label: '2.2 表 2-2', href: '02-threat-taxonomy.html#tax-compare'}, {label: '2.4 常見誤解', href: '02-threat-taxonomy.html#tax-trap'}],
+      stem: '依本章，這位同事把哪兩個概念搞混了？',
+      scenario: '雲岫保險（虛構）的資安同事在內部簡報寫：「我們的理賠 agent 有長期記憶，所以只要依 LLM Top 10 的資料投毒條目做好訓練資料審查，T1 Memory Poisoning 就算防住了。另外，T1 是 17 項裡的第一項，代表它最嚴重，先做。」',
+      options: [
+        { text: '混淆了「靜態資料集投毒」與「即時污染 agent 持久記憶」，也把 TID 誤當成嚴重度排序。', correct: true, why: '文件說 T1 超出靜態資料投毒，是即時污染持久記憶（含共用記憶）；T 編號只是識別碼。' },
+        { text: '沒有搞混，T1 確實就是訓練資料投毒的另一個名字。', why: '文件明說 T1 延伸到即時污染持久記憶，且與 LLM04:2025、LLM08:2025 都有關。' },
+        { text: '只搞混了嚴重度，資料投毒的部分是正確的。', why: '資料投毒的部分也不完整：記憶是執行期會被寫入的，訓練資料審查擋不住。' },
+        { text: '把 T1 與 Agentic Top 10 的 ASI01 搞混了。', why: '簡報沒有提到 ASI01；而且錯誤出在對 T1 本身與編號意義的理解。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 文件指出 Memory Poisoning 超越 LLM04:2025 的靜態資料投毒，是即時污染持久記憶，包含共用記憶讓一位使用者影響其他人。(2) 訓練資料審查發生在執行之前，對執行期寫入記憶的內容沒有作用。(3) TID 只是識別碼，文件沒有給嚴重度排序。</p><p><strong>結論：</strong>需要針對記憶的寫入驗證、來源標記與隔離（第 3 章 Playbook 2）；排序要用你自己的風險分析。對應教材：<a href="02-threat-taxonomy.html#tax-compare">2.2 節</a>、<a href="02-threat-taxonomy.html#tax-trap">2.4 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

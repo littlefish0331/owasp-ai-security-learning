@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　LLM03 過度授權與 LLM10 不當輸出處理｜LLM Top 10 2026｜OWASP AI 資安學習教材</title>
+<meta name="description" content="LLM03:2026 過度授權與 LLM10:2026 不當輸出處理：模型被騙或出錯時，它能做什麼、它的輸出會到哪裡去；三個成因、七種出口，以及與 LLM01、LLM07 的邊界。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="02-llm-applications" data-topic="llm-top-10" data-page="04-agency-output.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　LLM03 過度授權與 LLM10 不當輸出處理</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 10 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO3</li>
+  <li>前置：<a href="02-prompt-injection.html">第 2 章</a>；<a href="../../primer-security-for-developers.html#p-lp">前置觀念：最小權限與爆炸半徑</a></li>
+</ul>
+<p class="lead">第 2 章結論是：注入攔不乾淨，所以要限縮後果。這一章就是「限縮後果」的兩個主角，位於三層地圖的放大器層。LLM03 管模型被騙或出錯時<strong>它能做什麼</strong>，LLM10 管它的輸出<strong>會到哪裡去</strong>。兩者都不問「模型為什麼出錯」。</p>
+
+<h2 id="ag-agency">4.1 LLM03：Agency 是被授予的行動能力</h2>
+<p>LLM03:2026 過度授權 (Excessive Agency) 的 agency，指的是開發者賦予 LLM 系統的行動能力：透過工具（不同廠商稱為 extensions、plugins 或 skills）呼叫函式、介面到其他系統，並且常常由 LLM 依輸入或前一次輸出動態選擇該呼叫哪個工具。官方對這個弱點的定義很特別：它讓有破壞力的動作，能夠回應「非預期、含糊或被操縱的 LLM 輸出」而被執行，<strong>不論是什麼原因讓 LLM 出錯</strong>。</p>
+<p>所以官方把「觸發因素」和「根本成因」分開寫：</p>
+<ul>
+  <li><span class="tag official">官方</span> <strong>觸發因素 (triggers)：</strong>提示詞寫得不好或模型表現差造成的幻覺／虛構；直接或間接的提示詞注入（來自惡意使用者、先前被攻陷的工具，或多 agent 系統中被攻陷的同伴 agent）。</li>
+  <li><span class="tag official">官方</span> <strong>根本成因 (root causes)：</strong>以下一項或多項——過度功能 (excessive functionality)、過度權限 (excessive permissions)、過度自主 (excessive autonomy)。</li>
+</ul>
+<p>這個區分決定了修補方向：你管不住觸發因素（模型什麼時候幻覺、攻擊者什麼時候出現），但成因是你自己設計出來的。官方還特別註明：輸入與輸出的清理<strong>不是</strong> Excessive Agency 的根本控制，那些分別歸 LLM01（輸入）與 LLM10（輸出）。在 agentic 系統中，LLM03 可表現為 ASI02 工具誤用與利用 (Tool Misuse &amp; Exploitation)、ASI03 身分與權限濫用 (Identity &amp; Privilege Abuse)、ASI08 連鎖失效 (Cascading Failures)。</p>
+<div class="table-wrap"><table>
+<caption>表 4-1　Excessive Agency 的三個成因、官方範例與對應控制</caption>
+<thead><tr><th scope="col">成因</th><th scope="col">官方範例（節錄）</th><th scope="col">官方控制（編號為官方清單順序）</th></tr></thead>
+<tbody>
+<tr><th scope="row">過度功能</th><td>要讀文件的 agent，所選的第三方工具卻也能修改與刪除；開發期試用後被淘汰的工具仍留在 agent 手上；開放式工具（例如只該跑一個 shell 指令，卻擋不住其他指令）</td><td>#1 最少工具；#2 最少工具功能（讀信的工具就不該含寄信、刪信）；#3 避免開放式工具，改用粒度細的工具，並對輸入參數定義嚴格 schema、使用前驗證</td></tr>
+<tr><th scope="row">過度權限</th><td>只該讀資料的工具，用同時有 UPDATE、INSERT、DELETE 的身分連資料庫；替個別使用者操作的工具，卻用能碰所有人檔案的通用高權限帳號</td><td>#4 最少工具權限（在資料庫以該身分的權限強制）；#5 以使用者的身分執行（例如要求使用者以 OAuth、最小範圍授權；多 agent 轉手時仍保留原使用者的授權範圍）</td></tr>
+<tr><th scope="row">過度自主</th><td>刪除使用者文件的工具，不經任何確認就執行；高衝擊動作沒有獨立驗證與核准</td><td>#6 要求使用者核准高衝擊動作；#7 完全仲裁 (Complete Mediation)：授權寫在邏輯裡，不靠 LLM 決定動作是否被允許，所有對下游的請求都要經過政策檢查</td></tr>
+</tbody></table></div>
+<p>官方另外說：#8 監控工具使用與 #9 速率限制（並設熔斷器 (circuit breaker)，超過門檻時中止、限流或升級給人看）<strong>無法預防</strong> Excessive Agency，只能<strong>限制傷害</strong>——這和第 2 章「降低成功率」與「限縮後果」的區分是同一種思路。#7 還提到分級執行 (graduated enforcement)：稽核、警告、封鎖、升級，低後果或可復原的動作可以自動放行，高後果或不可逆的動作送人工審核。官方舉例：客服機器人可自動處理「退款成店內點數」（可回復），但對外匯款這種不可逆動作要送人工核准。</p>
+
+<h2 id="ag-output">4.2 LLM10：把模型當成任何其他使用者</h2>
+<p>LLM10:2026 不當輸出處理 (Improper Output Handling) 專指：模型產出的內容在交給下游元件前，驗證、清理與處理不足。官方給的理由很短：LLM 生成的內容可以被提示輸入所控制，所以這種行為「類似給了使用者對額外功能的間接存取」。後果取決於出口：瀏覽器端可能是 XSS 與 CSRF，後端可能是 SSRF、權限提升或遠端程式碼執行。對開發者來說，這是最熟悉的一類漏洞，只是輸入來源換成了模型。官方的第一條控制也是這個意思：<strong>對模型採零信任，把它當成任何其他使用者，對它送往後端函式的回應做適當驗證</strong>。</p>
+<p>2026 版的「新增」值得注意：官方說 Improper Output Handling 的範圍現在涵蓋「助理大量產生的不安全程式碼」（條目的情境 #6：自動編譯並部署 LLM 產生的程式碼、沒有人工審查或安全測試，因為輸出被信任並執行，不安全的程式碼進了生產環境）。這個條目從第 5 名降到第 10 名，是 2026 版降最多的一項；官方在前言只寫了名次變動，沒有逐條說明原因，本教材不替它推測。</p>
+<div class="table-wrap"><table>
+<caption>表 4-2　模型輸出的七種出口與對應處理（官方範例與官方控制；分組方式為作者整理）</caption>
+<thead><tr><th scope="col">出口</th><th scope="col">沒處理時的後果（官方範例）</th><th scope="col">官方控制</th></tr></thead>
+<tbody>
+<tr><th scope="row">瀏覽器：JavaScript 或 Markdown</th><td>被瀏覽器直譯，造成 XSS</td><td>依使用位置做輸出編碼（HTML 內容用 HTML 編碼、瀏覽器腳本用 JavaScript 編碼）；嚴格的內容安全政策 (Content Security Policy, CSP)</td></tr>
+<tr><th scope="row">資料庫</th><td>LLM 產生的 SQL 未經參數化就執行，造成 SQL 注入</td><td>凡涉及模型輸出的資料庫操作，一律用參數化查詢或預備陳述式</td></tr>
+<tr><th scope="row">shell 與 exec、eval 類函式</th><td>模型輸出直接進入 shell 或類似函式，造成遠端程式碼執行</td><td>把模型當一般使用者，送往後端函式前先驗證；依 OWASP ASVS 做輸入驗證與清理</td></tr>
+<tr><th scope="row">檔案路徑</th><td>用模型輸出組路徑而未清理，造成路徑遍歷</td><td>同上：驗證與清理</td></tr>
+<tr><th scope="row">電子郵件範本</th><td>模型輸出未經跳脫就放進範本，可能造成釣魚（官方情境另提到收件端的 XSS）</td><td>依使用位置做輸出編碼</td></tr>
+<tr><th scope="row">終端機、日誌檢視器、IDE 面板</th><td>ANSI 跳脫序列造成視覺偽裝、剪貼簿劫持（官方舉 OSC 52），或觸發終端機模擬器已知漏洞</td><td>在寫入前清除控制字元（ANSI、BEL、OSC、退格、歸位字元）與其他不可印位元組；必須保留時改用可見方式編碼</td></tr>
+<tr><th scope="row">用戶端渲染器：聊天介面、IDE、郵件客戶端、行動 App</th><td>自動載入 Markdown 圖片、連結預覽、iframe，讓能控制部分上下文的攻擊者，透過圖片網址的主機名稱或查詢字串帶走對話資料</td><td>預設關閉這類自動渲染；必須渲染時，限定明確的來源允許清單，或經伺服器端抓取器並剝除帶資料的查詢參數</td></tr>
+</tbody></table></div>
+<p>最後一列值得停下來想：它的出口不是任何「後端」，而是<strong>使用者看到的畫面本身</strong>。這是第 2 章攻擊鏈的步驟 4b，也是 LLM01 描述「圖片網址外洩」時指到 LLM10 的原因。</p>
+
+<h2 id="ag-flow">4.3 兩個閘門</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="模型輸出的兩條路徑。路徑 A 是工具呼叫：先經過獨立的政策決策點，在執行前驗證授權與參數；再判斷是否高衝擊或不可逆，是的話要人工核准；通過後才到工具，工具本身具備最少功能、最少權限，並以使用者身分執行；然後才到下游系統。路徑 B 是交給下游元件或渲染：依出口做編碼、參數化、清除控制字元，並預設不自動載入外部資源，然後才到瀏覽器、資料庫、shell、終端機或聊天介面。監控工具使用與速率限制加熔斷器是第三類控制，不阻止動作，只限制傷害，作用在工具與下游系統。路徑 A 對應 LLM03，路徑 B 對應 LLM10。">
+flowchart TB
+  O["模型輸出<br>可能被騙，也可能只是出錯"] --> A["路徑 A：工具呼叫（LLM03）"]
+  O --> B["路徑 B：交給下游或渲染（LLM10）"]
+  A --> G1["獨立的政策決策點<br>執行前驗證授權與參數"]
+  G1 --> Q{"高衝擊或不可逆？"}
+  Q -->|"是"| H["人工核准"]
+  Q -->|"否"| T["工具<br>最少功能、最少權限<br>以使用者身分"]
+  H --> T
+  T --> D["下游系統"]
+  B --> G2["依出口處理<br>編碼、參數化、清除控制字元<br>預設不自動載入外部資源"]
+  G2 --> S["瀏覽器、資料庫、shell<br>終端機、聊天介面"]
+  M["監控、速率限制、熔斷器<br>不阻止動作，只限制傷害"] -.-> T
+  M -.-> D
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class G1,Q,G2,M author
+</pre>
+<figcaption><strong>圖 4-1　模型輸出的兩個閘門（作者整理，非官方）。</strong>各個控制（政策決策點、人工核准、最少功能與權限、編碼與參數化、清除控制字元、監控與熔斷器）都是官方條目列出的；<strong>把它們排成兩條路徑的方式是作者整理</strong>（虛線方框是作者加的結構）。看圖的要點：路徑 A 管「能做什麼」，路徑 B 管「送到哪裡」；兩條路徑都不依賴「模型為什麼出錯」。</figcaption>
+</figure>
+
+<h2 id="ag-concept">4.4 核心概念：把模型當成不受信任的使用者</h2>
+<div class="concept">
+<h3 id="c-ag">LLM03 與 LLM10 的共同底線</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>兩個條目共用同一個設計立場：模型的輸出不是可信的內部訊號，而是需要被約束與驗證的輸入。LLM03 約束它的<strong>行動能力</strong>（功能、權限、自主）；LLM10 約束它的<strong>輸出出口</strong>（編碼、參數化、清除、不自動載入）。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>開發時為了方便，給了寬鬆的工具、通用的高權限帳號、不經確認的自動執行；或者把模型輸出當成「自家系統產生的東西」直接傳下去。這些選擇在模型表現正常時看不出問題，等到模型被騙或出錯，後果才一次出現。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>攻擊者不需要直接碰後端：只要影響模型的輸出（透過注入或讓它幻覺），就能借用它被授予的能力或它輸出所到達的出口。官方的例子是間接注入讓郵件助理掃描收件匣並轉寄，原因是同一個工具本來就帶寄信功能；以及模型輸出的圖片網址把對話內容帶出介面。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>LLM03：最少工具、最少功能、避免開放式工具、最少權限、以使用者身分執行、高衝擊動作人工核准、完全仲裁；再用監控與熔斷器限傷。LLM10：零信任、輸出編碼、參數化查詢、CSP、清除控制字元、不自動載入外部資源；以及監控輸出。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「Excessive Agency 就是權限給太大」（官方：成因有功能、權限、自主三項，只收權限仍會被功能與自主漏掉）。「要靠過濾輸入與輸出來防 Excessive Agency」（官方：輸入輸出清理不是它的根本控制）。「模型輸出是自家程式產生的，所以可信」（LLM10 第一條就是把它當一般使用者）。「LLM10 就是 LLM07」（LLM10 管不安全的使用，LLM07 管內容不對）。</dd>
+</dl>
+</div>
+<p>最後用一張表分清四個常被混用的條目。這些邊界都是官方在各條目開頭寫明的：</p>
+<div class="table-wrap"><table>
+<caption>表 4-3　LLM01、LLM03、LLM10、LLM07 的邊界（官方條目的說明）</caption>
+<thead><tr><th scope="col">條目</th><th scope="col">它問的問題</th><th scope="col">官方明說的邊界</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM01 提示詞注入</th><td>輸入怎麼改變了模型行為</td><td>只管輸入邊界本身；模型輸出的清理與驗證歸 LLM10</td></tr>
+<tr><th scope="row">LLM03 過度授權</th><td>模型被騙或出錯時，它能做什麼</td><td>輸入與輸出的清理不是它的根本控制（分別歸 LLM01、LLM10）</td></tr>
+<tr><th scope="row">LLM10 不當輸出處理</th><td>模型輸出到達的下游怎麼處理</td><td>內容錯誤或誤導歸 LLM07；輸入的驗證歸 LLM01</td></tr>
+<tr><th scope="row">LLM07 錯誤資訊</th><td>輸出本身對不對</td><td>不安全的產生程式碼之執行與處理歸 LLM10；幻覺套件名稱作為供應鏈載體歸 LLM04</td></tr>
+</tbody></table></div>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>Excessive Agency 的觸發因素（幻覺、注入）管不住，根本成因（過度功能、過度權限、過度自主）是你自己設計的，所以三項都要收。</li>
+  <li>控制分兩類：預防（#1–#7：最少工具、功能、權限、以使用者身分、人工核准、完全仲裁）與限傷（#8 監控、#9 速率限制與熔斷器）。</li>
+  <li>LLM10 的核心是零信任：把模型當一般使用者，依出口做編碼、參數化與清除控制字元；用戶端渲染器的自動載入也是出口。</li>
+  <li>LLM03 管「能做什麼」，LLM10 管「送到哪裡」，LLM01 管「輸入怎麼進來」，LLM07 管「內容對不對」。</li>
+  <li>2026 版 LLM03 升到第 3、LLM10 從第 5 降到第 10；官方只寫了名次，沒有逐條說明原因。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出 Excessive Agency 的三個根本成因，並區分它們和「觸發因素」。</li>
+  <li>給我一個工具設計，我能指出它是過度功能、過度權限，還是過度自主。</li>
+  <li>我能說出模型輸出的至少五種出口，以及各自的處理方式。</li>
+  <li>我能用一句話分清 LLM01、LLM03、LLM10、LLM07。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p><a href="05-context-vectors.html">第 5 章　LLM08 隱藏上下文暴露與 LLM09 向量與嵌入弱點</a>：放大器層的另外兩項——攻擊者怎麼利用「模型看得到、使用者看不到」的東西，以及相似度搜尋這一層本身的弱點。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Top 10 for LLM Applications 2026（Version 2026，2026-08-04），LLM03:2026 Excessive Agency 與 LLM10:2026 Improper Output Handling（Description、Common Examples of Risk、Prevention and Mitigation Strategies、Example Attack Scenarios）：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM03_ExcessiveAgency.md">LLM03_ExcessiveAgency.md</a>、<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM10_ImproperOutputHandling.md">LLM10_ImproperOutputHandling.md</a>；與<a href="https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/">官方 PDF</a> 內容實質一致；2026-10-26 讀取；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026，LLM00 Preface（What's New：名次變動）與 LLM01、LLM07 條目開頭的邊界說明：<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/tree/main/2026/final">GitHub 2026/final</a>。</li>
+    <li>本章「開發者熟悉的漏洞」之說法（XSS、SQL 注入、路徑遍歷）取自 LLM10 條目本身的範例；OWASP ASVS 與 Content Security Policy 只引用條目對它們的提及，未回到原文核對。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'l-ch4', topic: 'llm-top-10', mode: 'chapter',
+  questions: [
+    { id: 'l4q1', type: 'mc', lo: [3], refs: [{label: '4.1 觸發因素與根本成因', href: '04-agency-output.html#ag-agency'}],
+      stem: '依官方對 LLM03:2026 Excessive Agency 的說法，下列哪一項是「根本成因」，而不是「觸發因素」？',
+      options: [
+        { text: '攻擊者透過間接提示詞注入影響了模型。', why: '這是觸發因素：官方把直接與間接注入列為會讓模型出錯的原因之一，而不是成因。' },
+        { text: '模型因為提示詞寫得不好而產生了幻覺。', why: '這也是觸發因素：官方列了「幻覺／虛構」，同樣屬於讓模型出錯的原因。' },
+        { text: '工具擁有的權限超過任務所需，例如只該讀資料的工具用能寫入和刪除的身分連線。', correct: true, why: '符合 4.1 節：官方的根本成因是過度功能、過度權限、過度自主；這是過度權限。' },
+        { text: '多 agent 系統中，同伴 agent 被攻陷。', why: '官方把它列為觸發因素（被攻陷的 peer agent），不是設計上的成因。' }
+      ],
+      summary: '觸發因素（幻覺、注入）管不住；根本成因（功能、權限、自主）是你設計的。' },
+    { id: 'l4q2', type: 'scn', lo: [3], refs: [{label: '4.2 七種出口與表 4-2', href: '04-agency-output.html#ag-output'}, {label: '4.3 圖 4-1', href: '04-agency-output.html#ag-flow'}],
+      stem: '依本章，最先該補哪一項控制？',
+      scenario: '海風電商（虛構）的客服聊天視窗，會把助理回覆的 Markdown 直接渲染給客戶。有位客戶把一段來自第三方網站的商品評論貼進對話，請助理摘要。事後資安團隊檢查日誌，發現助理的回覆含一張圖片，圖片網址是外部網域，查詢字串裡帶著這段對話的內容；客戶端一打開視窗，圖片就被自動載入了。團隊沒有找到任何超出權限的工具呼叫。',
+      options: [
+        { text: '在系統提示詞加上「不要輸出圖片」。', why: '這是 LLM01 的第 1 項（部分控制）：模型輸出是否含圖片取決於它被誘導的結果，攻擊者推得出提示詞就能繞過。這次的缺口在用戶端自動載入。' },
+        { text: '預設關閉聊天介面對 Markdown 圖片與連結預覽的自動載入；必須渲染時，只允許明確來源，或經伺服器端抓取器並剝除帶資料的查詢參數。', correct: true, why: '符合 LLM10 的最後一項控制與 4.2 節表 4-2 的最後一列：這次的出口是用戶端渲染器，不是後端。' },
+        { text: '限制每位使用者每天的請求數量。', why: '那是 LLM06 的速率限制，處理的是可用性與成本，不會阻止這次資料經圖片網址外帶。' },
+        { text: '把工具的資料庫權限改成唯讀。', why: '日誌顯示沒有超出權限的工具呼叫，這次的問題不在工具權限（LLM03），而在輸出到達的出口（LLM10）。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 日誌沒有越權的工具呼叫，所以不是 LLM03 的問題。(2) 資料是被「渲染後自動載入的圖片網址」帶出去的：輸出的出口是用戶端渲染器，這對應 LLM10 條目列出的情況（用戶端渲染器自動取得模型輸出中引用的外部資源）。(3) 官方對這個出口的控制是預設關閉自動渲染、必要時限定來源允許清單或經伺服器端抓取器並剝除帶資料的查詢參數。系統提示詞是部分控制，速率限制處理的是別的風險。</p><p><strong>結論：</strong>先收緊用戶端渲染器；提示詞注入的上游防禦仍要做，但不能取代出口控制。對應教材：<a href="04-agency-output.html#ag-output">4.2 節</a>、<a href="04-agency-output.html#ag-flow">4.3 節</a>。</p>' },
+    { id: 'l4q3', type: 'match', lo: [3], refs: [{label: '4.1 表 4-1', href: '04-agency-output.html#ag-agency'}],
+      stem: '把下列改善措施配對到它主要處理的根本成因。',
+      cats: [
+        { id: 'func', label: '過度功能' },
+        { id: 'perm', label: '過度權限' },
+        { id: 'auto', label: '過度自主' }
+      ],
+      items: [
+        { text: '把只負責讀資料庫的工具所用的身分，改成只有 SELECT 權限。', answer: 'perm', why: '官方：最少工具權限，在資料庫以該身分的權限強制。' },
+        { text: '把摘要郵件的工具換成只含「讀信」的版本，不再附帶寄信與刪信。', answer: 'func', why: '官方：最少工具功能，讀信的工具不該含其他功能。' },
+        { text: '刪除使用者文件前，必須由使用者在介面上確認。', answer: 'auto', why: '官方：高衝擊動作要求使用者核准。' },
+        { text: '用只能寫入特定檔案的工具，取代能執行任意 shell 指令的工具。', answer: 'func', why: '官方：避免開放式工具，改用粒度細的工具。' },
+        { text: '讓工具以 OAuth 最小範圍代表當前使用者連到文件庫，不用通用高權限帳號。', answer: 'perm', why: '官方：以使用者的身分執行，並使用最少必要的範圍。' }
+      ],
+      summary: '功能（有什麼能力）、權限（能碰到什麼）、自主（誰決定要不要做）要分開收。' },
+    { id: 'l4q4', type: 'mc', lo: [3], refs: [{label: '4.4 核心概念', href: '04-agency-output.html#ag-concept'}, {label: '4.2 零信任', href: '04-agency-output.html#ag-output'}],
+      stem: '一個資料分析助理讓使用者用自然語言問問題，模型產生 SQL 後直接送到資料庫執行。依 LLM10 的做法，下列哪一項最符合「把模型當成一般使用者」？',
+      options: [
+        { text: '模型是自家系統的元件，產生的 SQL 可以信任，直接執行即可。', why: '這正是 LLM10 要糾正的假設：模型輸出可被提示輸入所影響。' },
+        { text: '再請另一個 LLM 檢查這段 SQL 看起來安不安全，通過就執行。', why: '第 2 章 LLM01 第 2 項已說明：驗證要在可信的應用程式碼中做結構驗證，而不是再叫一次 LLM。' },
+        { text: '在系統提示詞要求「只能產生查詢，不要產生刪除」，就不用額外處理。', why: '系統提示詞只是部分控制，模型輸出仍可能被誘導；而且這種寫法沒有任何程式碼層的強制。' },
+        { text: '凡涉及模型輸出的資料庫操作，一律使用參數化查詢或預備陳述式；並用最少權限的資料庫身分，即使輸出被操縱，也無法超出該身分的權限。', correct: true, why: '符合 LLM10 的參數化查詢控制，並連結 LLM03 的最少權限；兩道閘門疊加。' }
+      ],
+      summary: '對模型輸出零信任：依出口處理（參數化、編碼）+ 最少權限限縮後果。' }
+  ]
+});
+</script>
+</body>
+</html>

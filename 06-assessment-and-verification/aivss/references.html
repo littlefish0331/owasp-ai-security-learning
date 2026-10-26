@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜AIVSS｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AIVSS 主題的來源核對清單：採用的版本與日期、與調查筆記的差異、三套說法的衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="aivss" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 4.12 節與第 8 節第 7 項）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以本教材回到一手來源重新核對。本主題的核對特別重要：AIVSS 目前並存<strong>三套說法</strong>，筆記把它們寫成「版本標示分屬規格、網頁計算器與 Python 腳本」，實際讀完後發現它們的<strong>算法本身就不同</strong>，不只是版本號不同。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。本主題中，「最新的發布規格」與「最新的計算器」是兩個不同的東西，所以本教材<strong>兩者都教但分開標示，並不宣稱任何一套是正式現行</strong>。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">甲：OWASP AIVSS 儲存庫 README（通用框架）</th><td>main 分支；最近提交 2026-10-22（GitHub API）；無 release；README 自身無版本號，章節 15 記錄 Python 計算器 V1–V4</td><td>GitHub 儲存庫 <code>OWASP/www-project-artificial-intelligence-vulnerability-scoring-system</code></td><td>GitHub 偵測 NOASSERTION；<code>LICENSE.md</code> 內容只有「TODO: Please update this file…」，<strong>未能確認</strong></td></tr>
+<tr><th scope="row">乙：AIVSS Scoring System For OWASP Agentic AI Core Security Risks v0.8</th><td>v0.8；PDF 98 頁；<strong>發布日未能確認</strong>（封面無日期；PDF 中繼資料未採用，見下）。官網公告 2026-02-27 提到 AIUC-1 crosswalk「與 v0.8 同時發布」，所以大約在 2026 年 2 月前後，這是作者的推測</td><td>aivss.owasp.org 的 Publications 區（標示 Latest）；PDF 本體</td><td>網站頁尾 CC BY-SA 4.0（除非另有說明）；PDF 內文<strong>沒有授權文字</strong></td></tr>
+<tr><th scope="row">AIVSS v0.5（初版）</th><td>官網列為 Archived，只用於版本說明</td><td>aivss.owasp.org</td><td>同上</td></tr>
+<tr><th scope="row">丙：AIVSS 1.0 reference calculator（網頁）</th><td>標示「Live」；頁面自稱 OWASP AIVSS 1.0 · Reference Calculator；沒有日期</td><td><a href="https://aivss.owasp.org/calculator/">aivss.owasp.org/calculator/</a></td><td>網站頁尾 CC BY-SA 4.0（除非另有說明）</td></tr>
+<tr><th scope="row">丙的原始碼：AIVSS 1.0 候選儲存庫</th><td>README 標 AIVSS 1.0（Status: v1）；參考計算器 <code>aivss-calc</code> 1.2.0；擴充規格 <code>first_validation_status: not-submitted</code></td><td>GitHub <code>kenhuangus/aivss-v1-candidate</code>（個人帳號）；<code>ai_metrics.py</code>、<code>lookup.py</code> 為本教材引用的原始碼</td><td>README：Apache-2.0</td></tr>
+<tr><th scope="row">GenAI Red Teaming Manual Version 1.0</th><td>2026-10（PDF 封面「October 2026」；資源頁 2026-10-20）；僅引用第 3.3.3 節的一句話</td><td>genai.owasp.org 資源頁與 PDF</td><td>CC BY-SA 4.0（PDF 封面）</td></tr>
+<tr><th scope="row">OWASP AI Testing Guide</th><td>v1，owasp.org 專案頁寫 2025-11-26；僅引用 README 列出 AIVSS 為相關資源</td><td>GitHub <code>OWASP/www-project-ai-testing-guide</code></td><td>CC BY-SA 4.0（儲存庫 LICENSE.md 內文）；GitHub 偵測 NOASSERTION</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>沿用專案已放置的副本（12.2.0）</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">版本標示的性質</th><td>「這些版本標示分屬規格、網頁計算器與 Python 腳本，彼此關係需分開看」</td><td>實測發現三者<strong>算法不同</strong>，不只是版本號不同：甲是 AI 特有指標連乘，乙是十因子放大，丙是類別指標查表</td><td>第 1 章表 1-1 分三欄；不把它們合成一套</td></tr>
+<tr><th scope="row">「AIVSS 1.0 calculator」</th><td>網頁計算器標示 1.0</td><td>計算器背後是 1.0 規格（CVSS v4.0 擴充＋查表）；其原始碼在<strong>個人帳號</strong>儲存庫；README 與頁面都寫「OWASP does not endorse AIVSS v1」，Table 6 與 Effect Class 自述未驗證</td><td>第 3 章當作「官方網站展示的方向」教，標明自述限制，不稱現行標準</td></tr>
+<tr><th scope="row">Python 計算器</th><td>V1／V2 棄用、V3 完整符合規格、V4 建議；V4 有 7 個產業 profile、9 個 AI 特有指標共 39 題</td><td>屬實，見 README 第 15 節。但 V4 對 AA、LL、GV、CS 的名稱與子類別與 README 前半規格不同（見 R-3）</td><td>教材只提到版本史，不教 V4 的細節</td></tr>
+<tr><th scope="row">專案層級</th><td>`index.md` front matter 為 `level: 2`；owasp.org 專案頁 404</td><td>屬實：front matter 確為 <code>level: 2</code>；owasp.org 專案頁仍 404</td><td>未能確認層級標籤，不引用（見第 4 節）</td></tr>
+<tr><th scope="row">AIVSS 的負責人</th><td>Ken Huang 等五位</td><td>官網列 Current Leaders 為 Ken Huang、Michael Bargury、Vineeth Sai Narajala、Bhavya Gupta、Tim Marple；owasp.org 專案頁（404）無法對照</td><td>教材不列名單</td></tr>
+<tr><th scope="row">AIUC-1 crosswalk</th><td>2026-02-27 公告</td><td>屬實（官網公告區與儲存庫 <code>aiuc-aivss-crosswalk.md</code>）</td><td>僅用於推測 v0.8 的大約日期，不教其內容</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">哪一套是現行 AIVSS</th><td>官網同時提供：v0.8 PDF（標示 Latest）、1.0 網頁計算器（標示 Live）；儲存庫 README 又是第三種算法。官網沒有說明三者的取代關係</td><td><strong>未能確認</strong>。依「最新者為準」：最新的發布規格＝v0.8；最新的計算器與推送＝1.0（儲存庫 2026-10-22）。教材兩者都教並標明，不宣稱現行</td></tr>
+<tr><th scope="row">v0.8 的發布日</th><td>PDF 封面無日期；官網公告 2026-02-27 提到與 AIUC-1 crosswalk 同時發布；PDF 檔案中繼資料可能是後續重新輸出</td><td><strong>未能確認</strong>；只寫「約 2026 年 2 月前後（作者推測）」</td></tr>
+<tr><th scope="row">AI 特有指標的定義</th><td>README 前半（3.2 節）：AA ＝ Adversarial Attack Surface、LL ＝ Lifecycle Vulnerabilities、GV ＝ Governance and Validation、CS ＝ CSA LLM Taxonomy；README 後半（V4 計算器表）：AA ＝ Agentic Autonomy、LL ＝ LLM-specific risks、GV ＝ Governance &amp; Visibility、CS ＝ Contextual Sensitivity</td><td><strong>未能確認</strong>哪個為現行定義；教材不逐項講這九個縮寫</td></tr>
+<tr><th scope="row">README 範例分數</th><td>示範程式註解：AI 特有指標得分 0.095、最終分數 0.323（Low）</td><td>本教材用 README 給的數值與公式重算，得到 AI 特有指標約 0.056、最終約 0.226（見本頁第 6 節）。原因未能確認；教材只把它當作「觀察」，不當作範例</td></tr>
+<tr><th scope="row">公告標題的日期</th><td>官網公告區有一則標題「OWASP AIVSS Project December 2026 Update &amp; Important Deadlines」，而讀取日是 2026-10-26</td><td><strong>未能確認</strong>（可能是筆誤或預告）；教材不引用其內容</td></tr>
+<tr><th scope="row">計分尺度</th><td>v0.8 在 3.2 節說明分數為順序尺度；README 甲的框架則直接把分數加權相加並以 0–10 區間分級</td><td>教材採 v0.8 的官方提醒作為解讀原則，並明講甲的做法未說明此點</td></tr>
+<tr><th scope="row">授權</th><td>網站頁尾 CC BY-SA 4.0（除非另有說明）；v0.8 PDF 內文無授權文字；主儲存庫 LICENSE.md 只有 TODO；1.0 候選儲存庫 Apache-2.0；AI Testing Guide LICENSE.md 內文寫 CC BY-SA 4.0</td><td>各頁頁尾分別標示；v0.8 與甲<strong>授權未能確認</strong>，教材只做短引用與重述</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>哪一套 AIVSS 是現行有效：</strong>見 R-3。</li>
+  <li><strong>v0.8 的發布日：</strong>見 R-3。</li>
+  <li><strong>README 前半與 V4 計算器對 AA／LL／GV／CS 的定義不一致：</strong>見 R-3。</li>
+  <li><strong>README 範例分數對不上：</strong>本教材重算的結果與註解不同，原因不明（可能是示意簡化或筆誤）。</li>
+  <li><strong>公告標題的「December 2026」：</strong>見 R-3。</li>
+  <li><strong>OWASP AIVSS 專案頁（owasp.org）：</strong><code>/www-project-artificial-intelligence-vulnerability-scoring-system/</code> 回傳 404，專案層級標籤（Incubator／Lab 等）未能確認；<code>index.md</code> front matter 寫 <code>level: 2</code>，但數字與標籤的對應規則未說明。</li>
+  <li><strong>主儲存庫與 v0.8 PDF 的授權：</strong>見 R-3。</li>
+  <li><strong>1.0 Effect Class 規則的規格文字：</strong>本教材讀的是參考計算器原始碼（<code>ai_metrics.py</code> 的判定函式註解標示對應規格 5.6 節），<strong>沒有讀到 1.0 規格正文</strong>；教材對規則的敘述以原始碼為準，標為作者整理。</li>
+  <li><strong>1.0 的 Lookup Table U（Agentic Uplift）與補救時間線：</strong>只讀了 U 表的存在與「ES 只進 U」的描述，沒有教它們的數值；補救時間線（SSVC／BOD 26-04）自述「實驗性、未校準」，教材不教。</li>
+  <li><strong>v0.8 的十項 OWASP Agentic AI 核心風險內文與計分範例：</strong>本教材讀了結構、風險放大矩陣、算式與實施指引，未逐項閱讀 Part 1 的十項風險與 3.6 節的十個計分範例。</li>
+  <li><strong>AIVSS 與 Agentic Top 10 2026 的完整對照：</strong>只讀了附錄 B 的對照表概念，未逐條核對。</li>
+  <li><strong>評分者一致性：</strong>沒有找到任何驗證資料（見第 2 章未能確認說明）。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<h3>AIVSS</h3>
+<ul>
+  <li>官網：<a href="https://aivss.owasp.org/">https://aivss.owasp.org/</a>；計算器：<a href="https://aivss.owasp.org/calculator/">https://aivss.owasp.org/calculator/</a></li>
+  <li>v0.8 規格 PDF：位於官網 <code>assets/publications/</code> 下，檔名「AIVSS Scoring System For OWASP Agentic AI Core Security Risks v0.8.pdf」（98 頁）；由官網首頁連結。</li>
+  <li>OWASP 儲存庫：<a href="https://github.com/OWASP/www-project-artificial-intelligence-vulnerability-scoring-system">github.com/OWASP/www-project-artificial-intelligence-vulnerability-scoring-system</a>（<code>README.md</code>、<code>index.md</code>、<code>tab_announcements.md</code>、<code>LICENSE.md</code>）</li>
+  <li>1.0 候選儲存庫：<a href="https://github.com/kenhuangus/aivss-v1-candidate">github.com/kenhuangus/aivss-v1-candidate</a>（<code>README.md</code>、<code>aivss_calc/ai_metrics.py</code>、<code>aivss_calc/lookup.py</code>、<code>aivss-extension.json</code>）</li>
+</ul>
+<h3>相鄰文件（僅用於對照）</h3>
+<ul>
+  <li>GenAI Red Teaming Manual Version 1.0：<a href="https://genai.owasp.org/resource/genai-red-teaming-manual-version-1-0/">genai.owasp.org/resource/genai-red-teaming-manual-version-1-0/</a>（第 3.3.3 節）</li>
+  <li>OWASP AI Testing Guide：<a href="https://github.com/OWASP/www-project-ai-testing-guide">github.com/OWASP/www-project-ai-testing-guide</a>（README）</li>
+  <li>OWASP Top 10 for Agentic Applications for 2026：<a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/</a>（僅用於說明 v0.8 附錄 B 的對照對象）</li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論與計算（非官方）</h2>
+<ul>
+  <li>圖 1-1（該讀哪一份）整張圖與其辨識規則。</li>
+  <li>第 1 章 1.1 節把 SQL 注入與 agent 後果的比較，以及 1.4 節對 README 範例的兩個觀察（連乘壓低分數、重算結果不同）。</li>
+  <li>第 2 章 2.3 節「寫在文件裡的防護不算強緩解，被測試過才算」的詮釋。</li>
+  <li>第 3 章情境 A 的基礎分（6.0）、兩個部署的因子評分、兩個補救方案的數值，以及情境 B 的六個分數；全部為作者假設與計算，已標「作者計算，非官方範例」。</li>
+  <li>第 3 章 1.0 Effect Class 規則的白話整理（來源為參考計算器原始碼）。</li>
+  <li>第 3 章「找出（紅隊）→ 檢查（驗證標準）→ 排序（評分）」的串接流程。</li>
+  <li>所有 Mermaid 圖是依文字重新繪製，不是官方原圖。</li>
+</ul>
+<p><strong>驗算方式：</strong>以 Python 實作規格公式（AARS ＝ (10 − CVSS_Base) × (Factor_Sum/10) × ThM；AIVSS ＝ RoundHalfUp((CVSS_Base + AARS) × Mitigation_Factor, 1)），代入教材列出的輸入；1.0 查表則依 <code>lookup.py</code> 的 Table 6 與 <code>ai_metrics.py</code> 的判定順序實作。情境 A：Factor_Sum 2.0 → 6.8、6.5 → 8.5、4.5 → 7.7；基礎分 3.0 且 Factor_Sum 6.5 → 7.4；緩解 0.83 → 7.1。情境 B：平均 5.18。README 重算：AI 特有指標 0.056、最終 0.226。</p>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>aivss.owasp.org 網站：CC BY-SA 4.0（除非另有說明）。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>v0.8 PDF 內文：沒有授權文字，只做短引用與重述。</li>
+  <li>OWASP AIVSS 儲存庫：LICENSE.md 內容只有「TODO」，授權<strong>未能確認</strong>；只做短引用與重述。</li>
+  <li>AIVSS 1.0 候選儲存庫：Apache-2.0（README）；教材只引用指標名稱、表格值與判定規則的概念，並以自己的話重述。</li>
+  <li>GenAI Red Teaming Manual、OWASP AI Testing Guide：CC BY-SA 4.0。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：aivss.owasp.org 網站、GenAI Red Teaming Manual、AI Testing Guide — CC BY-SA 4.0；AIVSS 1.0 候選儲存庫 — Apache-2.0；v0.8 PDF 與 OWASP AIVSS 儲存庫的授權未能確認；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

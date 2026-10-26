@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章　生成端、失效安全與整合｜RAG 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="RAG 生成端的控制：上下文視窗、輸出驗證、工具呼叫授權、來源歸屬、可觀測性與 CI 測試，以及失效即拒絕；並整合到 LLM09:2026、AISVS 與 AI Exchange。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="rag-security" data-page="04-generate-and-integrate.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 4 章　生成端、失效安全與整合</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO4</li>
+  <li>前置：<a href="03-read-side.html">第 3 章</a>；<a href="../../primer-security-for-developers.html#p-did">縱深防禦與失效安全 (Fail Securely)</a></li>
+</ul>
+<p class="lead">內容已經通過寫入端與讀取端，進到提示詞了。最後一段要處理的是：<strong>模型怎麼用這些內容、它的輸出會去哪裡、以及任何一站壞掉時系統怎麼辦</strong>。這一章把 Cheat Sheet 的 Section 3、5、9、10、12、14 串起來，最後把整個主題接回 LLM09:2026、AISVS 與 AI Exchange。</p>
+
+<h2 id="gi-context">4.1 上下文視窗與輸出驗證</h2>
+<p><strong>上下文視窗 (Context Window)：</strong>Cheat Sheet Section 3 列出的風險是：取回的文件含有看起來像系統指令的文字；多個本身無害的區塊合起來構成對抗性提示；一份很長的文件把系統提示擠出模型的有效注意力範圍。它建議：</p>
+<ul>
+  <li>用分隔符號標示「以下是不可信的檢索內容，只當資料」，並在檢索內容<strong>之後</strong>再次強調原本的系統指令（位置要逐模型測試，因為不同模型的注意力模式不同）；</li>
+  <li>限制區塊數量與總大小；Cheat Sheet 建議的預設是 3–5 個區塊、總計 2,000–4,000 個 token（它自稱是合理預設，不是標準）；</li>
+  <li>取回的區塊先掃描明顯的指令樣式；</li>
+  <li>明確的原則：<strong>檢索內容是資料，不是命令</strong>。<span class="tag official">官方</span></li>
+</ul>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：分隔符號只是降低機率，邊界在別處</p>
+  <p>同一系列的 Prompt Injection Cheat Sheet（2026-10 修訂版）明確寫道，文字標籤與提示措辭不是強制邊界，輸入篩選也不是安全邊界。這與 RAG Cheat Sheet Section 3 的建議並不衝突，但要讀得精確：<strong>分隔符號與掃描是降低機率的措施；真正的邊界是 Section 4（存取控制）、Section 9（輸出驗證）與 Section 10（工具授權）這類在模型之外、由執行層強制的控制。</strong>這是作者的讀法，兩份 Cheat Sheet 並沒有互相引用。詳細討論見<a href="../prompt-injection/02-fragile-layers.html">提示詞注入主題的第 2 章</a>。</p>
+</div>
+<p><strong>輸出驗證 (Output Validation)：</strong>Section 9 稱它是「最後一道防線」：驗證所有模型輸出再交給使用者或下游；用政策過濾器遮蔽個資與憑證；工具呼叫用允許清單與結構化輸出（如 JSON schema）驗證；依提問者的存取層級遮蔽欄位。要避免的是：<strong>直接執行模型輸出、信任模型去落實政策（模型產生文字，不執行政策），以及因為取回的內容安全就假設產出也安全</strong>。<span class="tag official">官方</span></p>
+
+<h2 id="gi-tools-fail">4.2 工具呼叫與失效即拒絕</h2>
+<p>RAG 很少獨立存在：取回的內容影響模型的決定，模型的決定觸發工具，工具執行不可逆的動作。Cheat Sheet Section 10 說，這是「理論風險變成實際傷害」的地方。它的控制有五項：</p>
+<ol>
+  <li>高風險動作（付款、刪除資料、對外 API 呼叫）要使用者明確確認；</li>
+  <li>工具層的授權檢查要<strong>獨立於模型的決定</strong>：「模型決定呼叫工具」不等於「使用者有權使用該工具」；</li>
+  <li>每個情境維護工具允許清單（客服 RAG 不該有付款工具）；</li>
+  <li>完整記錄：哪個查詢觸發哪次檢索、哪次檢索影響哪個輸出、哪個輸出觸發哪次工具呼叫；</li>
+  <li>熔斷器 (circuit breaker)：發現異常（工具呼叫量突增、呼叫從未用過的端點）就中止執行。<span class="tag official">官方</span></li>
+</ol>
+<p>要避免的是：檢索內容未經驗證就影響工具執行、任意串接工具，以及假設「檢索被授權」就代表「後續的工具呼叫也被授權」。這與<a href="../../01-overview/ai-exchange/04-seven-layers.html#sl-concept">最小模型權限</a>、<a href="../prompt-injection/03-architectural-defense.html">提示詞注入的架構式防禦</a>是同一種思路（作者整理，非官方）。</p>
+<p><strong>失效即拒絕 (Fail-Closed)：</strong>Section 14 的規則一句話就說完：<strong>管線任何元件失敗時，系統要拒絕請求，而不是退回到可能不安全的行為。</strong>它還有一個容易被忽略的觀點：失敗本身是資安事件，不是效能問題；攻擊者可能刻意製造失敗，迫使模型靠記憶回答。</p>
+<div class="table-wrap"><table>
+<caption>表 4-1　失效即拒絕的五個例子（Cheat Sheet Section 14；「錯誤的退回做法」一欄是作者把「不要做」反寫成具體情況，整理為作者編排）</caption>
+<thead><tr><th scope="col">失敗的環節</th><th scope="col">錯誤的退回做法</th><th scope="col">Cheat Sheet 的正確做法</th></tr></thead>
+<tbody>
+<tr><th scope="row">檢索失敗</th><td>改用模型自身的記憶回答，等於繞過所有 RAG 控制</td><td>不要只靠模型記憶回答；回傳錯誤，說明知識庫目前不可用</td></tr>
+<tr><th scope="row">存取控制檢查失敗</th><td>回傳「過濾後的子集」，把失敗當成乾淨結果</td><td>什麼都不回傳；失敗可能是系統錯誤，不是乾淨的結果</td></tr>
+<tr><th scope="row">無法產生來源歸屬</th><td>沒有出處也照常回答</td><td>封鎖該回應；在受管制環境，沒有出處的回應就是合規違規</td></tr>
+<tr><th scope="row">文件雜湊驗證失敗</th><td>仍然使用該文件</td><td>把文件排除出檢索並發出警示；不符代表攝入後被改動</td></tr>
+<tr><th scope="row">快取查詢失敗</th><td>退回提供過期或可能已受污染的快取</td><td>重新產生新的回應，不用過期快取當後備</td></tr>
+</tbody></table></div>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="失效即拒絕的決策流程：每個檢查（檢索、存取控制、文件雜湊、來源歸屬、快取）通過才進入下一步；任何一個失敗都走到拒絕並回報哪個階段失敗，同時記錄為資安事件，重複失敗則警示。">
+flowchart TD
+  S["請求"] --> R{"檢索成功？"}
+  R -->|否| F["拒絕<br>說明哪個階段失敗"]
+  R -->|是| A{"存取控制檢查通過？"}
+  A -->|否| F
+  A -->|是| H{"文件雜湊驗證通過？"}
+  H -->|否| EX["排除該文件並警示"]
+  EX --> F
+  H -->|是| P{"能產生來源歸屬？"}
+  P -->|否| F
+  P -->|是| C{"快取查詢正常或新鮮？"}
+  C -->|否| N["重新產生，不用過期快取"]
+  C -->|是| OK["繼續生成並驗證輸出"]
+  N --> OK
+  F --> LOG["記為資安事件<br>重複失敗發出警示"]
+</pre>
+<figcaption><strong>圖 4-1　失效即拒絕的決策流程（作者整理，非官方）。</strong>五個檢查對應表 4-1 的五個例子；串接成一張流程圖是作者整理。重點是所有「否」的出口都是拒絕或重新產生，沒有任何一條路是「放寬後繼續」。</figcaption>
+</figure>
+
+<h2 id="gi-observe">4.3 來源歸屬、可觀測性與最低 CI 測試</h2>
+<p><strong>來源歸屬 (Source Attribution)：</strong>Section 5 要求每個回應附上用了哪些文件與區塊、出處資料與文件雜湊，歸屬資料要簽章，並提供驗證端點。沒有出處，就無法事後偵測投毒文件是否影響了答案。<span class="tag official">官方</span></p>
+<p><strong>可觀測性：</strong>Section 12 要求不要把 RAG 當黑盒：用關聯 ID、文件 ID、授權決策、模型版本與工具呼叫結果追蹤每個請求。2026-10-04 的修訂加上：<strong>預設不要記錄原始查詢、被取回的內容、模型輸入輸出與工具參數</strong>，因為可能含機密或個資；調查需要時只留必要的、已遮蔽的欄位，放在受限的證據儲存區。<span class="tag official">官方</span> 也要事先演練 RAG 專屬的事件應變：隔離被投毒的文件、使受影響的快取失效、找出收到受污染回應的使用者。</p>
+<p>Cheat Sheet 同時要求把紅隊演練案例放進 CI/CD，並列出每次部署的最低測試：</p>
+<div class="table-wrap"><table>
+<caption>表 4-2　Cheat Sheet Section 12 的八項最低 CI 測試案例（官方列出八項，說明為本教材改寫；「對應環節」為作者整理，非官方）</caption>
+<thead><tr><th scope="col">測試問什麼</th><th scope="col">對應環節 <br>（作者整理）</th><th scope="col">看哪一章</th></tr></thead>
+<tbody>
+<tr><th scope="row">已知被投毒的文件會不會被取回？</th><td>寫入端、檢索</td><td>第 2 章</td></tr>
+<tr><th scope="row">取回的內容會不會覆蓋系統提示？</th><td>生成端</td><td>4.1 節</td></tr>
+<tr><th scope="row">租戶 A 的查詢會不會取回租戶 B 的區塊？</th><td>讀取端</td><td>第 3 章</td></tr>
+<tr><th scope="row">權限被撤銷的使用者還能取回受限文件嗎？</th><td>讀取端</td><td>第 3 章</td></tr>
+<tr><th scope="row">使用者 A 會不會收到屬於使用者 B 範圍的快取回應？</th><td>讀取端</td><td>第 3 章</td></tr>
+<tr><th scope="row">RAG 的輸出會不會觸發使用者無權使用的工具？</th><td>生成端、下游</td><td>4.2 節</td></tr>
+<tr><th scope="row">來源歸屬資料能不能在產生後被改動？</th><td>輸出</td><td>本節</td></tr>
+<tr><th scope="row">來源文件刪除後，其區塊是否一併被移除？</th><td>讀取端</td><td>第 3 章</td></tr>
+</tbody></table></div>
+<p>這八項測試涵蓋了前三章的主要邊界，可以當作整個主題的驗收清單：能對每一項寫出自動化測試，才算真的做到。（以上「驗收清單」的說法是作者整理。）</p>
+
+<h2 id="gi-scenario">4.4 情境範例 D：檢索失敗時的客服 agent</h2>
+<div class="scenario">
+<h3 id="scn-d">情境 D（虛構）：晴川家電的客服助理</h3>
+<p><span class="tag fiction">虛構</span> 晴川家電是虛構的公司。他們的客服助理以 RAG 檢索保固與退換貨政策，並能呼叫「建立退款」工具。為了「別讓顧客看到錯誤訊息」，工程師設計：若向量資料庫檢索逾時，就讓模型「憑記憶」回答，並照常使用所有工具。</p>
+<p class="arch"><strong>架構：</strong>顧客訊息 → 檢索（逾時時略過）→ LLM → 工具層（建立退款、查訂單）→ 客服介面。工具層信任模型送出的參數，沒有再確認使用者身分與權限。</p>
+<ol class="steps">
+  <li><strong>發生了什麼：</strong>某段時間檢索端因容量事件頻繁逾時。逾時的對話中，助理沒有政策可依據，卻憑記憶回答，並在顧客多輪催促下建立了超出政策的退款。稽核發現：退款工具沒有獨立檢查呼叫者的權限，也沒有警示指出檢索失敗率升高。</li>
+  <li><strong>哪一環出問題：</strong>(1) 檢索失敗時退回「只靠模型記憶回答」；(2) 工具授權依賴模型的決定，而不是由執行層獨立檢查；(3) 高風險動作沒有要求使用者確認；(4) 沒有熔斷器，也沒有把重複失敗視為資安事件。</li>
+  <li><strong>對應條目：</strong>Cheat Sheet Section 14（失效即拒絕）、Section 10（工具呼叫）、Section 9（輸出驗證）、Section 12（監控）；LLM Top 10 2026 的 <a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a> Excessive Agency（模型輸出到達特權動作的後果）。</li>
+  <li><strong>該採什麼控制：</strong>
+    <ul>
+      <li>檢索失敗時回傳錯誤，不回退到模型記憶；重複失敗發出警示（見 Section 14）；</li>
+      <li>退款工具在執行層獨立檢查呼叫者的權限與參數，並以允許清單限制客服情境可用的工具（見 Section 10）；</li>
+      <li>高風險動作要求明確確認，工具回傳值依 schema 驗證（見 Section 9、10）；</li>
+      <li>對工具呼叫量與金額加熔斷器，並保留「哪個查詢觸發哪次工具呼叫」的追蹤（見 Section 10、12）。</li>
+    </ul>
+  </li>
+</ol>
+<p>注意 Cheat Sheet 的一個提醒：攻擊者可能「刻意製造檢索失敗」來迫使模型憑記憶回答。因此這個情境不需要任何高明的注入手法，只需要失敗時的不安全預設。</p>
+</div>
+
+<h2 id="gi-integrate">4.5 整合：這個主題如何接回其他文件</h2>
+<ul>
+  <li><strong>LLM Top 10 2026：</strong>經檢索的指令注入屬 LLM01:2026；LLM01:2026 自己說，模型輸出送到下游前的清理與驗證屬 <a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-output">LLM10:2026</a> Improper Output Handling，輸出到達特權動作的後果屬 LLM03:2026 Excessive Agency。<span class="tag official">官方</span> 本章的 Section 9 與 LLM10:2026 相鄰，Section 10 與 LLM03:2026 相鄰（作者整理）。</li>
+  <li><strong>AISVS：</strong>Cheat Sheet 指向 AISVS C08 作為驗證層；Top 10 2026 的附錄把 LLM09:2026 對應到 C5 與 C8（主要）、C1、C7、C12（支持）。最新穩定版是 1.01，Cheat Sheet 與附錄的連結指向 1.0。<span class="tag official">官方</span></li>
+  <li><strong>AI Exchange：</strong>第 6 章的五階段與威脅表是威脅建模的入口，Cheat Sheet 的 14 個 Section 是實作展開。AI Exchange 是否把 RAG 風險對照到 LLM09:2026 未能確認，本教材不宣稱有或沒有。</li>
+</ul>
+
+<h2 id="ch4-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>分隔符號與掃描降低機率；真正的邊界是存取控制、輸出驗證與工具層授權（作者整理的讀法）。</li>
+  <li>輸出是不可信的，直到驗證：用允許清單與 schema 驗證動作，不讓模型落實政策。</li>
+  <li>工具授權獨立於模型的決定；高風險動作要確認；有允許清單、追蹤與熔斷器。</li>
+  <li>失效即拒絕：檢索、權限、雜湊、歸屬、快取任一失敗都不退回不安全行為；失敗是資安事件。</li>
+  <li>可觀測性預設不記錄原始內容；八項最低 CI 測試可當整個主題的驗收清單。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出檢索失敗時為什麼不能退回模型記憶。</li>
+  <li>我能說明為什麼「模型決定呼叫工具」不等於「使用者有權使用該工具」。</li>
+  <li>我能對八項最低 CI 測試各說出它檢查的是管線的哪一段。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO4。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch4-next">接下來讀什麼</h2>
+<p>先做<a href="quiz.html">總測驗</a>檢查四個學習目標的掌握度。之後可以接著讀 <a href="../prompt-injection/index.html">提示詞注入防護</a>（RAG 是提示詞注入的主要傳遞管道之一），或到 <a href="../hands-on-labs/index.html">動手練習</a> 看練習專案怎麼對應這些風險。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP Cheat Sheet Series，RAG Security Cheat Sheet：Section 3、5、9、10、12、14（頁面無版本與日期；GitHub 歷史：2026-05-06 建立，2026-10-04 最後修改，其中 #2543 為日誌內容的修訂）；<a href="https://cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html</a>；CC BY-SA 4.0。</li>
+    <li>OWASP Cheat Sheet Series，LLM Prompt Injection Prevention Cheat Sheet（頁面無版本與日期；GitHub 歷史：2025-05-26 建立，2026-10-22 最後修改）；<a href="https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html">cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html</a>；CC BY-SA 4.0。</li>
+    <li>OWASP Top 10 for LLM Applications 2026：LLM09:2026 與 LLM01:2026（Version 2026，發布日採 2026-08-04），以及 AISVS 對應附錄；<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/tree/main/2026/final">GenAI-LLM-Top10 2026/final</a>；CC BY-SA 4.0。</li>
+    <li>OWASP AI Exchange，RAG systems overview（2026-10-25 快照）；<a href="https://owaspai.org/go/ragoverview">owaspai.org/go/ragoverview</a>；CC0 1.0。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP Cheat Sheet Series 與 OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch4', topic: 'rag-security', mode: 'chapter',
+  questions: [
+    { id: 'c4q1', type: 'mc', lo: [4], refs: [{label: '4.2 失效即拒絕', href: '04-generate-and-integrate.html#gi-tools-fail'}],
+      stem: '為了「不讓顧客看到錯誤」，團隊設計：向量庫檢索逾時時，讓模型憑記憶回答。依 Cheat Sheet Section 14，這個設計的問題是什麼？',
+      options: [
+        { text: '沒有問題，因為使用者體驗比安全更重要。', why: 'Cheat Sheet 的立場相反：資安情境中，檢索失敗就是資安事件，不是效能問題。' },
+        { text: '它退回到繞過所有 RAG 控制的行為；應回傳錯誤、說明知識庫不可用，並對重複失敗警示。', correct: true, why: '官方明列：檢索失敗時不要只靠模型記憶回答；攻擊者可能刻意製造失敗來迫使這種回退。' },
+        { text: '只要在模型的回答前加上「以下為推測」就足夠。', why: '免責字句不恢復被繞過的控制（存取範圍、出處、驗證），使用者也可能忽略。' },
+        { text: '問題只在回答速度，改用更快的模型即可。', why: '問題不是速度，而是失敗時的預設行為。' }
+      ],
+      summary: '失敗時的預設行為，就是攻擊者想觸發的路徑。' },
+    { id: 'c4q2', type: 'scn', lo: [4], refs: [{label: '4.2 工具呼叫', href: '04-generate-and-integrate.html#gi-tools-fail'}, {label: '4.4 情境 D', href: '04-generate-and-integrate.html#gi-scenario'}],
+      stem: '依本章，最該補上的控制是哪一項？',
+      scenario: '朝陽銀行（虛構）的 RAG 助理能查帳務政策，也能呼叫「調整手續費」工具。工具實作為：只要模型送來合法格式的參數就執行，因為團隊認為「模型已經會判斷這位顧客是否有資格」。稽核發現有一則取回文件中的措辭，使模型替沒有資格的顧客調整了手續費。',
+      options: [
+        { text: '在 system prompt 加強「只對有資格的顧客調整手續費」。', why: '這仍是把授權交給模型的指令；Cheat Sheet 說模型產生文字，不執行政策。' },
+        { text: '工具層獨立檢查呼叫者的權限與參數，不依賴模型的決定；高風險動作要確認，並加上允許清單與熔斷器。', correct: true, why: '官方：「模型決定呼叫」不等於「使用者有權使用」；授權檢查要獨立於模型的決定。' },
+        { text: '改成讓模型呼叫工具兩次，比對結果是否一致。', why: '兩次呼叫仍是同一個不可信的判斷來源，不構成授權。' },
+        { text: '把取回文件的字數上限調低。', why: '區塊大小是上下文視窗的控制，與工具授權無關。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 問題不在取回的文件，而在工具把模型的決定當成授權。(2) Cheat Sheet Section 10 要求工具層的授權檢查獨立於模型的決定，並且不讓檢索內容未經中間驗證就影響工具執行。(3) 高風險動作（調整手續費）還需要使用者確認，工具允許清單與熔斷器則限縮後果。</p><p><strong>結論：</strong>在執行層做獨立授權與參數驗證，加上確認、允許清單與熔斷器。對應教材：<a href="04-generate-and-integrate.html#gi-tools-fail">4.2 節</a>。</p>' },
+    { id: 'c4q3', type: 'match', lo: [4], refs: [{label: '4.2 表 4-1', href: '04-generate-and-integrate.html#gi-tools-fail'}],
+      stem: '依表 4-1，把下列失敗情況配對到 Cheat Sheet 建議的處理方式。',
+      cats: [
+        { id: 'error', label: '回傳錯誤，說明知識庫不可用' },
+        { id: 'nothing', label: '什麼都不回傳' },
+        { id: 'exclude', label: '把該文件排除出檢索並警示' },
+        { id: 'fresh', label: '重新產生，不用過期快取' }
+      ],
+      items: [
+        { text: '向量庫檢索逾時', answer: 'error', why: '不回退到模型記憶，回傳錯誤並說明。' },
+        { text: '存取控制檢查本身發生錯誤', answer: 'nothing', why: '失敗可能是系統錯誤，不是乾淨結果；不要回傳「過濾後的子集」。' },
+        { text: '某份文件的雜湊與簽章過的基準不符', answer: 'exclude', why: '不符代表攝入後被改動。' },
+        { text: '快取查詢失敗', answer: 'fresh', why: '不把過期或可能受污染的快取當後備。' }
+      ],
+      summary: '每一個失敗都有「不放寬」的出口。' },
+    { id: 'c4q4', type: 'mc', lo: [4], refs: [{label: '4.5 整合', href: '04-generate-and-integrate.html#gi-integrate'}],
+      stem: '某團隊想為自己的 RAG 驗收邊界控制。下列哪一個最符合 Cheat Sheet Section 12 的做法？',
+      options: [
+        { text: '只用人工在上線前測一次，之後靠使用者回報問題。', why: 'Cheat Sheet 要求把測試放進 CI/CD，每次部署都跑最低測試案例。' },
+        { text: '把跨租戶取回、權限撤銷、快取洩漏、工具授權、刪除連鎖等測試做成每次部署都執行的自動化案例。', correct: true, why: '八項最低測試涵蓋前三章的主要邊界。' },
+        { text: '只測模型有沒有拒絕危險問題。', why: '八項測試多數針對管線的資料與授權邊界，而非單純測模型拒絕行為。' },
+        { text: '全面記錄所有查詢與取回內容，以便日後逐筆檢視。', why: '官方 2026-10-04 的修訂要求預設不記錄原始內容；應記錄關聯 ID、文件 ID、授權決策等。' }
+      ],
+      summary: '把邊界寫成每次部署都會跑的自動化測試。' }
+  ]
+});
+</script>
+</body>
+</html>

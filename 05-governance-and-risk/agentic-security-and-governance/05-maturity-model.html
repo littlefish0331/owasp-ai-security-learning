@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 章　成熟度模型：採用層級 × 治理等級｜Agentic 安全與治理現況｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Enterprise Adoption Maturity Model：採用層級 AT0–AT8 與治理成熟度 0–4 的矩陣怎麼用、哪些格子治理不足，以及一個虛構的董事會情境。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="agentic-security-and-governance" data-page="05-maturity-model.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 5 章　成熟度模型：採用層級 × 治理等級</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO5</li>
+  <li>前置：<a href="04-protocols-identity.html">第 4 章</a></li>
+</ul>
+<p class="lead">前四章給了你分類、威脅、論證與控制的零件。報告的最後貢獻，是把它們組成一張可以自評的矩陣：<strong>你部署的是什麼（採用層級）</strong>對上<strong>你管得多成熟（治理等級）</strong>。這一章教你怎麼用它，並用一個董事會情境練習一次。</p>
+
+<h2 id="mm-model">5.1 兩個維度：採用層級與治理成熟度</h2>
+<div class="concept">
+<h3 id="c-matrix">Enterprise Adoption Maturity Model</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>一個二維的自評與路線規劃工具。維度一是<strong>採用層級 (Adoption Tier)，AT0–AT8</strong>：回答「我們部署了什麼」，依信任邊界與自主特性分九級。維度二是<strong>治理成熟度 (Governance Maturity)，等級 0–4</strong>：回答「我們治理它的組織能力有多成熟」，衡量政策、監督、監控與當責結構。</dd>
+  <dt data-n="2">為什麼這樣設計</dt>
+  <dd>報告的論點是：同樣的治理等級，面對不同的部署，充分程度完全不同。第 2 級的組織只部署 Microsoft 365 Copilot 這類供應商內建助理，風險面窄；若同樣的組織部署連到外部 MCP 工具的自主 agent，就不夠。所以不能只問「我們成熟度多高」，要問「相對於我們跑的最進階的東西夠不夠」。</dd>
+  <dt data-n="3">怎麼使用（步驟 0 到 4）</dt>
+  <dd><strong>步驟 0：</strong>先評估你的 AT0（影子 AI）暴露；預設它存在，用網路監控、資料外洩防護 (DLP) 與員工調查去發現。<strong>步驟 1：</strong>用模型評估你的治理等級（0–4）。<strong>步驟 2：</strong>把每個已部署的 agent 歸入 AT0–AT8（多數組織同時跨好幾層）。<strong>步驟 3：</strong>對每個 agent 查矩陣；在粗體格子，就有兩條路：提高治理成熟度，或降低採用層級。<strong>步驟 4：</strong>依最高層級的主導 ASI 風險類別排控制優先序。</dd>
+  <dt data-n="4">怎麼防止誤用</dt>
+  <dd>報告明說：矩陣的格子標籤是「建議的姿態」，<strong>不是具約束力的合規判定</strong>，要當作治理投資或降低層級的指引，不是通過／不通過的關卡。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「我們治理等級 3，所以所有部署都沒問題。」不對。等級 3 對 AT8（跨組織聯邦）只是「最低可行」前的一格，仍是 INSUFFICIENT；要到等級 4 才是最低可行。</dd>
+</dl>
+</div>
+
+<div class="table-wrap"><table>
+<caption>表 5-1　採用層級 AT0–AT8（報告表格，改寫）</caption>
+<thead><tr><th scope="col">層級</th><th scope="col">名稱</th><th scope="col">核心特徵</th><th scope="col">報告的例子（2026 年的快照）</th></tr></thead>
+<tbody>
+<tr><th scope="row">AT0</th><td>影子 AI <br>(Shadow AI)</td><td>組織不知道也未核准；使用者自行採用</td><td>個人 AI 帳號處理公司資料、瀏覽器 AI 擴充、未核准外掛、工作裝置上的本機 LLM</td></tr>
+<tr><th scope="row">AT1</th><td>供應商內建助理</td><td>完全由供應商控制；你只消費</td><td>Microsoft 365 Copilot、GitHub Copilot</td></tr>
+<tr><th scope="row">AT2</th><td>平台整合</td><td>AI 原生平台加你的資料；不能執行任意程式碼</td><td>Custom GPTs（企業版）、Amazon Q Business</td></tr>
+<tr><th scope="row">AT3</th><td>公民開發者 agent</td><td>低／無程式碼平台；使用者設定流程與提示詞；在組織真實資料上採取動作</td><td>Power Automate + AI Builder、Copilot Studio</td></tr>
+<tr><th scope="row">AT4</th><td>程式碼執行 agent</td><td>產生並以本機／雲端權限執行程式碼</td><td>Open Interpreter、Claude Code 類工具</td></tr>
+<tr><th scope="row">AT5</th><td>自建 agent</td><td>你自己建置；掌控身分、工具與邊界</td><td>LangChain／LangGraph 自訂 agent、自行託管推論堆疊</td></tr>
+<tr><th scope="row">AT6</th><td>對外延伸 agent</td><td>跨信任邊界連接外部工具與服務</td><td>連接 MCP 伺服器的 agent、呼叫第三方 API</td></tr>
+<tr><th scope="row">AT7</th><td>多 agent 編排</td><td>組織內多個 agent 協調</td><td>多 agent 團隊或圖</td></tr>
+<tr><th scope="row">AT8</th><td>聯邦／跨邊界</td><td>agent 跨組織邊界運作</td><td>跨組織供應鏈 agent、多租戶 agent 市集</td></tr>
+</tbody></table></div>
+<p>治理成熟度的五個等級，報告用「主要企業行動」描述：等級 0「未察覺且臨時」（發現影子 agentic 部署、取得主管認知與暫時負責人）；等級 1「無護欄的實驗」（正式化試行審查、訂初步自主限制、建立集中登錄庫）；等級 2「政策定義、人在迴路」（發布正式政策、為高影響決策設人工流程、指定當責主管、部署 AI-SBOM）；等級 3「整合、持續監督」（即時監控與異常偵測、停止開關、以機器可讀的政策強制治理、專責的 AI 資安營運）；等級 4「自適應、自我調節」（自我調整的政策引擎、密碼學 agent 身分、可稽核的合規儀表板、自動化稽核證據）。</p>
+
+<h2 id="mm-matrix">5.2 讀矩陣：哪些格子治理不足</h2>
+<p>報告的矩陣把採用層級放在列、治理等級放在欄。下表是作者把它濃縮成「每個層級在各治理等級下的姿態」；格子文字是報告的原標籤（意譯）：</p>
+<div class="table-wrap"><table>
+<caption>表 5-2　成熟度 × 採用層級的姿態（報告矩陣，濃縮意譯）</caption>
+<thead><tr><th scope="col">採用層級</th><th scope="col">等級 0–1</th><th scope="col">等級 2</th><th scope="col">等級 3</th><th scope="col">等級 4</th></tr></thead>
+<tbody>
+<tr><th scope="row">AT0 影子 AI</th><td>CRITICAL：依定義不受管，先做發現與盤點</td><td>CRITICAL：政策管不到看不見的東西</td><td>可管理，前提是持續監控包含影子 AI 偵測</td><td>可管理：遙測驅動的發現應自動浮現影子使用</td></tr>
+<tr><th scope="row">AT1–AT2 供應商／平台</th><td>可接受，前提是檢視過供應商 SLA；監看影子 AI</td><td>足夠：平台設定稽核與限縮權限即可</td><td>治理良好</td><td>治理良好</td></tr>
+<tr><th scope="row">AT3–AT5 公民開發者／程式碼執行／自建</th><td>HIGH EXPOSURE：流程在無安全審查下動用組織資料；無沙箱的程式碼執行造成 ASI05 重大風險</td><td>可行，需公民開發者核准流程、沙箱政策、程式碼審查與升級路徑；程式碼執行的人工在迴路是必要</td><td>足夠：持續監控、停止開關、以程式碼治理</td><td>治理良好</td></tr>
+<tr><th scope="row">AT6–AT7 對外延伸／多 agent</th><td>CRITICAL GAP：完整 ASI 攻擊面卻沒有供應鏈驗證或 agent 認證</td><td>INSUFFICIENT：定期稽核跟不上外部工具變動與供應鏈風險</td><td>最低可行：需供應鏈驗證、MCP 認證、agent 對 agent 認證</td><td>足夠：自動調整的護欄與供應鏈驗證</td></tr>
+<tr><th scope="row">AT8 聯邦</th><td>DO NOT DEPLOY：聯邦信任需至少等級 3</td><td>INSUFFICIENT：跨組織信任需要持續監督，而非定期審查</td><td>INSUFFICIENT：需要自適應治理與密碼學身分</td><td>最低可行：需要相互證明、跨組織 SLA、聯邦治理</td></tr>
+</tbody></table></div>
+<div class="callout official">
+  <p class="callout-title">哪些格子是「治理不足」</p>
+  <p>報告說：粗體格子代表治理對該採用層級而言不足，這些組織「應提高治理成熟度，或降低部署複雜度」。作者把 PDF 第 57–58 頁轉成圖片，逐格確認粗體的是：<strong>AT0 的等級 0–1 與等級 2；AT3–AT5 的等級 0–1；AT6–AT7 的等級 0–1 與等級 2；AT8 的等級 0–1、等級 2 與等級 3</strong>。表 5-2 的 CRITICAL、HIGH EXPOSURE、INSUFFICIENT、DO NOT DEPLOY 等詞是報告格子裡的原文。表中把等級 0 與 1 併成一欄，是報告矩陣本身的欄位設計。</p>
+</div>
+<div class="callout official unsure">
+  <p class="callout-title">觀察到的不一致：AT8 在等級 0–1 的說明與矩陣欄位</p>
+  <p>AT8 等級 0–1 的格子寫「聯邦信任需要至少等級 3」，但同一列的等級 3 格子又寫 INSUFFICIENT，要到等級 4 才是「最低可行」。所以「至少等級 3」與「等級 3 仍不足」並存。本教材不推測哪個是作者的原意，兩者都如實列出；使用時以你的情境與官方 PDF 為準。</p>
+</div>
+<figure class="diagram">
+<pre class="mermaid" data-alt="使用矩陣的流程：步驟零先發現影子 AI；步驟一評估治理等級；步驟二把每個 agent 歸入 AT0 到 AT8；步驟三查矩陣，若在不足的格子就二選一：提高治理成熟度，或降低採用層級；AT0 只有一個選項：消除，移入受管層級或封鎖；步驟四依最高層級的主導 ASI 風險排控制優先序。">
+flowchart TD
+  S0["步驟 0：發現影子 AI<br>網路監控、DLP、員工調查"] --> S1["步驟 1：評估治理等級 0–4"]
+  S1 --> S2["步驟 2：每個 agent 歸入 AT0–AT8"]
+  S2 --> S3{"步驟 3：查矩陣<br>在不足的格子嗎？"}
+  S3 -->|"否"| S4["步驟 4：依最高層級的<br>主導 ASI 風險排控制"]
+  S3 -->|"是，AT1–AT8"| C["二選一：提高治理成熟度<br>或降低採用層級"]
+  S3 -->|"是，AT0"| E["只有一條：消除<br>移入受管層級或封鎖"]
+  C --> S4
+  E --> S4
+</pre>
+<figcaption><strong>圖 5-1　成熟度模型的使用流程（報告 How to use the Maturity Model，重新繪製）。</strong>步驟與選項取自報告；報告說「AT0 需要主動消除而非治理」。</figcaption>
+</figure>
+<p>報告的步驟 4 還給了一個優先序提示，出自 Appendix 3：較低層級（AT1–AT4）的重點是 ASI01（目標劫持）、ASI05（意外程式碼執行）、ASI06（記憶與脈絡污染）；較高層級（AT6 以上）要處理完整 ASI01–ASI10，特別是 ASI04（供應鏈）、ASI07（不安全的 agent 間通訊）、ASI08（連鎖失效）。ASI 條目的完整講解見〈<a href="../../04-agentic-and-mcp/agentic-top-10-2026/index.html">Top 10 for Agentic Applications 2026</a>〉。</p>
+
+<h2 id="mm-scenario">5.3 情境範例 B：給董事會的「部署許可」表</h2>
+<div class="scenario">
+<h3 id="scn-b">情境 B（虛構）：鷹山保險的 agent 盤點</h3>
+<p><span class="tag fiction">虛構</span> 鷹山保險是虛構的公司。董事會問：「公司今年要不要讓理賠部門使用能呼叫外部徵信 API 的 agent？」資安長用報告的矩陣整理現況：員工私下使用的 AI 工具（AT0）、全公司 Microsoft 365 Copilot（AT1）、業務部自建的 Power Automate 流程（AT3）、研發部自建的程式碼 agent（AT5）。要新增的理賠 agent 連到外部徵信 API，屬 AT6。公司的治理經評估為等級 2。</p>
+<ol class="steps">
+  <li><strong>步驟 0：</strong>先盤點 AT0。網路監控發現理賠人員把個案摘要貼進個人 AI 帳號。這是現在就要處理的暴露，不是新專案的前提，但它是「所有後續步驟的基礎」。</li>
+  <li><strong>步驟 1–2：</strong>治理等級 2；agent 分布於 AT0、1、3、5，新增者為 AT6。</li>
+  <li><strong>步驟 3：</strong>查矩陣：AT6 在等級 2 的標籤是 INSUFFICIENT（定期稽核跟不上外部工具變動）；AT3 在等級 2 可行，但需核准流程與沙箱政策；AT0 需要主動消除。</li>
+  <li><strong>決策：</strong>兩條路：把治理推到等級 3（供應鏈驗證、MCP 認證、即時監控、停止開關）後再上 AT6；或先把理賠 agent 降為 AT2（平台整合，不連外部 API），等治理成熟後再升級。董事會選擇後者，並訂出提升到等級 3 的時程。</li>
+  <li><strong>步驟 4：</strong>控制重點依層級：AT6 要處理供應鏈、agent 認證與連鎖失效；現有 AT3 流程先建清冊與核准流程。</li>
+  <li><strong>這個情境的提醒：</strong>矩陣的標籤是「建議姿態」，不是合規判定。董事會的決定是風險判斷，不是矩陣替他們做的。合規面（理賠資料、自動化決策）仍需法務判斷。</li>
+</ol>
+</div>
+
+<h2 id="ch5-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>兩個維度：採用層級 AT0–AT8（部署了什麼）、治理成熟度 0–4（管得多成熟）；要問「相對於最進階的部署夠不夠」。</li>
+  <li>使用順序：步驟 0 發現影子 AI → 評估等級 → 歸類每個 agent → 查矩陣 → 依主導 ASI 風險排控制。</li>
+  <li>在不足的格子：提高治理成熟度，或降低採用層級；AT0 只有消除。</li>
+  <li>矩陣標籤是建議姿態，不是合規判定；粗體格子已對照圖片確認。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出 AT0、AT3、AT6、AT8 各是什麼。</li>
+  <li>給我一個部署與治理等級，我能用矩陣判斷是否足夠，並說出下一步的選項。</li>
+  <li>我知道 AT0 為什麼與其他層級的處理方式不同。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch5-next">接下來讀什麼</h2>
+<p><a href="06-regulation-and-integration.html">第 6 章　法規與跨文件整合</a>：看報告怎麼談法規、怎麼讀那張 42 項的地圖，並與其他 OWASP 文件整合。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，State of Agentic AI Security and Governance 2.01（PDF，June 2026）：Enterprise Adoption Maturity Model、Agentic AI Governance Maturity Model、Maturity Level × Adoption Tier（PDF 第 53–61 頁）、Appendix 3；CC BY-SA 4.0；<a href="https://genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/">genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/</a>；2026-10-26 讀取；矩陣另以頁面轉圖核對。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：State of Agentic AI Security and Governance 2.01 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ag-ch5', topic: 'agentic-security-and-governance', mode: 'chapter',
+  questions: [
+    { id: 'ag5q1', type: 'mc', lo: [5], refs: [{label: '5.1 概念', href: '05-maturity-model.html#c-matrix'}],
+      stem: '依報告，Enterprise Adoption Maturity Model 的兩個維度分別在問什麼？',
+      options: [
+        { text: '採用層級問「我們管得多成熟」；治理等級問「我們部署了什麼」。', why: '剛好顛倒。' },
+        { text: '採用層級問「我們部署了什麼」；治理等級問「我們治理它的組織能力有多成熟」。', correct: true, why: '這是報告的兩個維度。' },
+        { text: '兩個維度都在問模型的準確度。', why: '與準確度無關。' },
+        { text: '採用層級衡量員工人數；治理等級衡量營收。', why: '與組織規模或營收無關。' }
+      ],
+      summary: '採用層級：部署了什麼；治理等級：管得多成熟。' },
+    { id: 'ag5q2', type: 'match', lo: [5], refs: [{label: '5.2 表 5-2', href: '05-maturity-model.html#mm-matrix'}],
+      stem: '把下列處境配對到矩陣上報告給的處理方向。',
+      cats: [
+        { id: 'elim', label: '主動消除（移入受管層級或封鎖）' },
+        { id: 'raise', label: '提高治理成熟度，或降低採用層級' },
+        { id: 'ok', label: '在此治理等級下足夠或可接受' }
+      ],
+      items: [
+        { text: '員工用個人 AI 帳號處理公司資料（AT0）', answer: 'elim', why: '報告：AT0 需要主動消除而非治理。' },
+        { text: '連外部 MCP 伺服器的 agent（AT6），組織治理只有等級 2', answer: 'raise', why: 'AT6 在等級 2 為 INSUFFICIENT，粗體格子要二選一。' },
+        { text: '全公司 Microsoft 365 Copilot（AT1），治理等級 2，平台設定已稽核', answer: 'ok', why: 'AT1–AT2 在等級 2 為足夠。' }
+      ],
+      summary: '粗體格子：提高成熟度或降低層級；AT0 只有消除。' },
+    { id: 'ag5q3', type: 'scn', lo: [5], refs: [{label: '5.1 概念', href: '05-maturity-model.html#c-matrix'}, {label: '5.3 情境 B', href: '05-maturity-model.html#mm-scenario'}],
+      stem: '依本章，這位董事的結論有什麼問題？',
+      scenario: '溪口銀行（虛構）的董事看了簡報後說：「我們的治理等級是 3，所以任何 agent 部署都可以放心做；而且矩陣顯示『不足』的格子，法規也會直接判我們違規。」資安長覺得兩句話都有問題。',
+      options: [
+        { text: '沒有問題，等級 3 已經很高。', why: '報告顯示 AT8 在等級 3 仍是 INSUFFICIENT。' },
+        { text: '兩處不對：充分程度取決於採用層級，等級 3 對 AT8 仍不足；矩陣標籤是建議姿態，不是具約束力的合規判定。', correct: true, why: '5.1、5.2 節。' },
+        { text: '只有第二句不對。', why: '第一句也不對：成熟度必須和採用層級一起看。' },
+        { text: '只有第一句不對。', why: '第二句也不對：報告明說標籤不是法律或合規判定。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 模型的核心是二維：同樣的治理等級面對不同層級，充分程度不同；AT8 在等級 3 為 INSUFFICIENT，要等級 4 才是最低可行。(2) 報告說格子標籤「是建議的姿態，不是具約束力的合規判定」，要當作治理投資或降低層級的指引。</p><p><strong>結論：</strong>先看「相對於最進階的部署夠不夠」，並別把矩陣當成合規結論。對應教材：<a href="05-maturity-model.html#mm-matrix">5.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

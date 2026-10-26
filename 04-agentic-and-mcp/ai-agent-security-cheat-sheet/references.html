@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜AI Agent Security Cheat Sheet｜OWASP AI 資安學習教材</title>
+<meta name="description" content="AI Agent Security Cheat Sheet 與 Verifying Third-Party Agent Execution Evidence Cheat Sheet 主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="ai-agent-security-cheat-sheet" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 6.3 節與第 8 節）</li>
+</ul>
+<p class="lead">這個主題的兩份來源都是 OWASP Cheat Sheet Series 的速查表，<strong>沒有版本號、也沒有發布日</strong>。所以本教材用「讀取日 2026-10-26」加「GitHub 首次提交日與最近修改日」標示，並請讀者把它們當作會再變動的文件。本頁列出：採用的版本與日期、與筆記不同之處、衝突與取捨，以及未能確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">AI Agent Security Cheat Sheet</th><td><strong>無版本號</strong>；GitHub 提交紀錄：首次 2025-12-17（標題 New Cheat sheet: AI_Agent_Security_Cheat_Sheet.md）、最近修改 <strong>2026-10-04</strong>，共 13 次提交；原始檔與官方網頁內容比對相同</td><td><a href="https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html">官方網頁</a>；GitHub <code>cheatsheets/AI_Agent_Security_Cheat_Sheet.md</code></td><td>站台頁尾與儲存庫 LICENSE.md：CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Verifying Third-Party Agent Execution Evidence Cheat Sheet</th><td><strong>無版本號</strong>；首次 2026-10-02（標題 Add Verifying Third-Party Agent Execution Evidence Cheat Sheet）、最近修改 <strong>2026-10-03</strong>（參考資料審查），共 2 次提交</td><td><a href="https://cheatsheetseries.owasp.org/cheatsheets/Verifying_Third_Party_Agent_Execution_Evidence_Cheat_Sheet.html">官方網頁</a>；GitHub <code>cheatsheets/Verifying_Third_Party_Agent_Execution_Evidence_Cheat_Sheet.md</code></td><td>同上：CC BY-SA 4.0</td></tr>
+<tr><th scope="row">Cheat Sheet Series 儲存庫</th><td>讀取時最新提交 2026-10-26</td><td><a href="https://github.com/OWASP/CheatSheetSeries">github.com/OWASP/CheatSheetSeries</a></td><td>LICENSE.md 為 CC BY-SA 4.0 完整條文；README 的授權徽章同為 CC BY-SA 4.0</td></tr>
+<tr><th scope="row">本站相鄰主題（引用其 ASI 名稱與 MCP 治理流程）</th><td>見各主題參考資料頁</td><td><a href="../agentic-top-10-2026/references.html">Agentic Top 10 2026</a>、<a href="../mcp-security/references.html">MCP 安全</a></td><td>各主題頁尾所列</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>12.2.0（沿用既有副本）</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+<p><strong>AI Agent Security 的提交脈絡（供判斷內容新舊）：</strong>2025-12-17 建立；2026-03-15 加入 AI 主控台惡意設定（讀過差異）；2026-03-16 提交標題為「Update AI_Agent_Security_Cheat_Sheet.md」（只讀標題）；2026-04-16 提交標題為「specify MCP syntax in relevant code snippets」（只讀標題）；2026-05-05 提交標題為「Remove duplicate AI agent risk entry」（只讀標題）；2026-05-15 加入高衝擊動作與決策和批准操縱兩項風險、High-Impact Action Integrity Controls 與第 9 節對抗式驗證（讀過差異）；2026-06-27 補示範碼的匯入（只讀標題）；2026-09-30 修正行動分級（讀過部分差異）；2026-10-02 加入對 Verifying 的指向（讀過差異）；2026-10-03 全儲存庫參考資料審查（只讀標題）；2026-10-04 替換不安全的批准與訊息重放示範、修正監控時間窗、要求批准原子消耗與共用重放狀態（讀過差異）。標「只讀標題」的幾筆，內容細節沒有逐筆確認。</p>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處（已更正或補充）</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">AI Agent Security 的內容</th><td>「9 大主題含 Tool Security &amp; Least Privilege、Memory &amp; Context Security、Multi-Agent Security 等」（無日期或版本）</td><td>九節屬實；另有 Key Risks 13 項、Do's and Don'ts；文件在 2026-05-15 後加了高衝擊動作的完整性控制與第 9 節對抗式驗證</td><td>第 1–3 章逐節整理；筆記未讀的部分本次補讀</td></tr>
+<tr><th scope="row">Verifying Third-Party Agent Execution Evidence</th><td>「僅確認標題存在於索引，未讀內容」</td><td>本次補讀全文：三種結論、六個問題、四個工作範例、Do's and Don'ts</td><td>第 4 章</td></tr>
+<tr><th scope="row">另外四份 AI 速查表</th><td>Secure AI Model Ops、Secure Coding with AI、AI-Powered Advertising Systems Security、AML Sanctions AI Agent Payments 只確認標題</td><td>本次確認它們的檔案存在於儲存庫的 <code>cheatsheets/</code> 資料夾；<strong>沒有讀內容</strong></td><td>第 5 章只說明未涵蓋</td></tr>
+<tr><th scope="row">版本與日期</th><td>「各頁無日期／版本」</td><td>屬實；GitHub 提交紀錄可補出首次與最近修改日</td><td>以讀取日加提交日標示</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">官方網頁 vs 原始檔</th><td>2026-10-26 讀取：官方網頁的標題結構（九節、13 項風險；六個問題、三個結論標籤、四列範例）與原始檔一致</td><td>無衝突。原始檔以 GitHub 最新提交（2026-10-26）下載版比對，兩份內容相同</td></tr>
+<tr><th scope="row">條目編號的年份</th><td>AI Agent Security 的 References 列 LLM06:2025 Excessive Agency（2025 版編號）</td><td>依原文寫並標年份；2026 版的對應是 LLM03:2026（見 <a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 第 8 章</a>）</td></tr>
+<tr><th scope="row">示範程式碼 vs 文字規則</th><td>2026-10-04 的提交移除了不安全的批准與訊息重放示範，改成文字規則；其他節仍保留 Python 示範</td><td>本教材不貼程式碼；以現行文字規則為準，示範只描述其「危險 vs 安全」的差別</td></tr>
+<tr><th scope="row">授權</th><td>站台頁尾：CC BY-SA 4.0；儲存庫 LICENSE.md：CC BY-SA 4.0</td><td>一致，標 CC BY-SA 4.0</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li><strong>兩份 Cheat Sheet 日後的修訂：</strong>它們在最近一個月內仍有修改（AI Agent Security 2026-10-04、Verifying 2026-10-03）；2026-10-26 之後是否又變動，未能確認。發佈前建議重查提交紀錄。</li>
+  <li><strong>Key Risks 與九節的逐項對應：</strong>文件沒有說明哪項風險由哪一節處理；教材的對應是作者整理（見第 6 節）。「AI 主控台惡意設定」與「供應鏈攻擊」在九節中沒有專節，是教材讀文件的結果，不是文件自己的陳述。</li>
+  <li><strong>Key Risks 與 Agentic Top 10 ASI 的官方對照：</strong>兩份 Cheat Sheet 都沒有 ASI 編號，OWASP 另外有沒有發布對照，未能確認；教材一律標為作者整理。</li>
+  <li><strong>Verifying 引用的規格本身：</strong>SLSA Verifying Artifacts（v1.2）、RFC 9334、RFC 9162，以及 AI Agent Security 引用的 RFC 9421、RFC 9449，本教材沒有讀規格本身，只轉述 Cheat Sheet 對它們的說法。</li>
+  <li><strong>被引用的 Transaction Authorization Cheat Sheet、Logging Cheat Sheet 的內容：</strong>確認它們存在於儲存庫，但沒有讀內容。</li>
+  <li><strong>九份 AI 相關速查表的清單：</strong>以儲存庫 <code>cheatsheets/</code> 資料夾的檔名核對。官方站台的索引頁 Index.html 在作者試讀時回 404，沒有看到網站目錄的對照；是否有其他 AI 相關速查表（名稱不含 AI、Agent、LLM 等關鍵字者）未能確認。</li>
+  <li><strong>示範程式碼的實際可執行性：</strong>教材不貼也沒有執行任何示範；官方 2026-06-27 的提交標題指出示範曾缺少匯入與未定義的參照，本教材不評估其餘示範是否可直接執行。</li>
+  <li><strong>文件作者／維護者：</strong>提交紀錄有不同作者，教材不列名單。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<ul>
+  <li>AI Agent Security Cheat Sheet：<a href="https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html</a></li>
+  <li>Verifying Third-Party Agent Execution Evidence Cheat Sheet：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Verifying_Third_Party_Agent_Execution_Evidence_Cheat_Sheet.html">cheatsheetseries.owasp.org/cheatsheets/Verifying_Third_Party_Agent_Execution_Evidence_Cheat_Sheet.html</a></li>
+  <li>OWASP Cheat Sheet Series 儲存庫（提交紀錄、<code>cheatsheets/</code> 檔案清單、LICENSE.md、README）：<a href="https://github.com/OWASP/CheatSheetSeries">github.com/OWASP/CheatSheetSeries</a></li>
+  <li>Verifying 的 References（僅轉述 Cheat Sheet 的說法）：<a href="https://slsa.dev/spec/v1.2/verifying-artifacts">SLSA: Verifying Artifacts</a>、<a href="https://datatracker.ietf.org/doc/html/rfc9334">RFC 9334</a>、<a href="https://datatracker.ietf.org/doc/html/rfc9162">RFC 9162</a></li>
+  <li>AI Agent Security 的 References：<a href="https://genai.owasp.org/llmrisk/llm062025-excessive-agency/">LLM06:2025 Excessive Agency</a>、<a href="https://doi.org/10.6028/NIST.AI.100-1">NIST AI RMF 1.0</a></li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 1 章表 1-2：04 階段各主題與兩份 Cheat Sheet 的分工；表 1-3 第三欄：13 項風險對應的相關節與相近 ASI／LLM／T 條目（含「近似 ASI09 但不完全相同」的判斷）；兩個觀察（至少兩項風險在九節無專節、比 ASI 多出營運面風險）。</li>
+  <li>第 1 章 1.4 節與圖 1-1：把九節分成「限制」與「看見」兩群，並說明兩群互相檢驗；官方把九節平列、沒有分群。</li>
+  <li>第 2 章圖 2-1：把工具登記、行動者權限、批准綁定與原子消耗串成一條放行檢查流程；每個檢查點取自文字規則，串成順序是作者整理。第 2 章的「樣式比對只是最後一道淺層過濾」提醒。</li>
+  <li>第 3 章表 3-2 第三欄：濫用案例矩陣每列驗證的限制；圖 3-1 的發佈閘門串接；3.4 節四種「限制／測試／紀錄」組合的歸納；表 3-1 對輸出驗證與樣式比對的提醒。</li>
+  <li>第 4 章圖 4-1：以「一個屬性」為單位的分類流程。官方的三個結論標籤與其定義不是作者整理。</li>
+  <li>第 5 章表 5-1 中「與 RAG Security 的語意相鄰」；圖 5-1 的選文件流程；情境 A 與表 5-2（青禾物流與遠航雲為虛構，六個問題的套用與分類為依第 4 章規則的作者推演）；5.4 節的「三個問句」歸納。</li>
+  <li>暫譯詞彙：獨立可重驗、供應者主張、無資訊、濫用案例矩陣、發佈閘門、驗證證據、升級驗證、挑戰值、透明日誌等（見詞彙表的「暫譯」標示）。</li>
+  <li>所有 Mermaid 圖皆為作者重新繪製，不是官方圖。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>OWASP Cheat Sheet Series：站台頁尾標示 Creative Commons Attribution-ShareAlike 4.0 International（CC BY-SA 4.0）；儲存庫 LICENSE.md 為 CC BY-SA 4.0 條文，README 授權徽章同。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>Top 10 for Agentic Applications 2026：CC BY-SA 4.0（見該主題參考資料頁）。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：OWASP Cheat Sheet Series（AI Agent Security、Verifying Third-Party Agent Execution Evidence）— CC BY-SA 4.0（站台頁尾與儲存庫 LICENSE.md）；Top 10 for Agentic Applications 2026 — CC BY-SA 4.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

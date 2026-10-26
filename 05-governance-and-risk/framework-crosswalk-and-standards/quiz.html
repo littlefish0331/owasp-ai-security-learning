@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總測驗｜框架對照與標準｜OWASP AI 資安學習教材</title>
+<meta name="description" content="框架對照與標準主題總測驗：14 題，涵蓋五個學習目標，結束時顯示各目標掌握度並連回對應章節。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="framework-crosswalk-and-standards" data-page="quiz.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>總測驗：框架對照與標準</h1>
+<ul class="meta-row">
+  <li>14 題（選擇題 5、情境判斷題 5、配對題 4）</li>
+  <li>預估時間：約 20 分鐘</li>
+  <li>涵蓋學習目標 LO1–LO5</li>
+</ul>
+<p class="lead">情境都是<strong>虛構</strong>的公司與系統。題目只考教材教過的內容，答案與解析都能回到章節找到依據。建議先讀完第 1–4 章再作答。</p>
+
+<div class="callout official">
+  <p class="callout-title">怎麼作答</p>
+  <ul>
+    <li><strong>選擇題與情境判斷題：</strong>點選一個選項，立即顯示對錯與每個選項為什麼對或不對；情境題還會附上含推理過程的參考答案。</li>
+    <li><strong>配對題：</strong>用下拉選單為每一項選類別，全部選完按「提交配對」，逐項顯示對錯與解析。</li>
+    <li><strong>成績</strong>以每題「第一次作答」計；配對題需全部配對正確才算答對。作答完畢按最下方按鈕查看成績與各學習目標掌握度。</li>
+    <li>進度存在瀏覽器 localStorage；無法使用時只在本次瀏覽期間保留，不影響作答。</li>
+  </ul>
+</div>
+
+<h2 id="los">學習目標</h2>
+<ol class="objectives">
+  <li><strong>定位：</strong>說明 Crosswalk 是什麼、來源清單與版本，並辨認各處數字的出入。</li>
+  <li><strong>結構與用法：</strong>說明對照的單位、分層與範圍，並用它回答「這個風險對應哪些控制」。</li>
+  <li><strong>編號遷移：</strong>把 LLM Top 10 2025 的編號正確對到 2026，並解釋為什麼不能逐一取代。</li>
+  <li><strong>標準關係：</strong>說明 AI Exchange 與各標準的關係，以及它自己宣稱的範圍。</li>
+  <li><strong>證據強度：</strong>判斷一份對照在多大程度上可以當作合規證據，並知道它的限制。</li>
+</ol>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">測驗題目</h2>
+  <div id="quiz-root"></div>
+</section>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>題目依據各章教材；各章的官方來源請見該章「本章來源」與<a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>題目引用的來源授權（以來源頁面標示為準）：Crosswalk 儲存庫 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+(function () {
+  function R(file, anchor, label) { return {label: label, href: file + '#' + anchor}; }
+  var C1 = function (a, l) { return R('01-crosswalk-position.html', a, '第 1 章 ' + l); };
+  var C2 = function (a, l) { return R('02-crosswalk-use.html', a, '第 2 章 ' + l); };
+  var C3 = function (a, l) { return R('03-standards.html', a, '第 3 章 ' + l); };
+  var C4 = function (a, l) { return R('04-integration.html', a, '第 4 章 ' + l); };
+
+  var questions = [
+
+  /* ================= LO1 定位 ================= */
+  { id: 'q01', type: 'mc', lo: [1], refs: [C1('cw-onepage', '1.1'), C1('c-misc', '1.4')],
+    stem: '有人說：「我們把系統的風險都放進 OWASP Crosswalk 了，所以已經通過 EU AI Act 的符合性評估。」依本教材，下列哪一個回應最適當？',
+    options: [
+      { text: '正確，Crosswalk 就是符合性評估工具。', why: 'Crosswalk 是風險到框架控制的對照，不是稽核結果或認證。' },
+      { text: '不對，因為 Crosswalk 沒有 EU AI Act 的對照。', why: 'EU AI Act 是它的框架之一，只是對照不等於評估。' },
+      { text: '正確，只要所有框架都有勾就算合規。', why: '勾表示有控制涉及該風險，不表示你已做到。' },
+      { text: '不對，Crosswalk 只回答「哪個框架控制涵蓋哪個 OWASP 風險」，用來找缺口，不是符合性評估或認證。', correct: true, why: '1.1 與 1.4 節。' }
+    ],
+    summary: 'Crosswalk：翻譯表，不是認證。' },
+
+  { id: 'q02', type: 'match', lo: [1], refs: [C1('cw-frameworks', '1.3 表 1-3')],
+    stem: '把下列框架數字配對到它的算法或來源。',
+    cats: [
+      { id: 'n21', label: '21' },
+      { id: 'n25', label: '25' },
+      { id: 'n26', label: '26' },
+      { id: 'n27', label: '27' }
+    ],
+    items: [
+      { text: '資源頁（2026-09-01）的說法，早於儲存庫後續的新增', answer: 'n25', why: '變更記錄的 Unreleased 區把 AISVS 加入，25→26。' },
+      { text: 'stats.json 計的「已對映」框架數', answer: 'n26', why: 'mapped=26。' },
+      { text: 'README 覆蓋矩陣的列數', answer: 'n21', why: '矩陣只列三份主要清單皆完整對映的框架。' },
+      { text: 'stats.json 的框架登錄庫（含未對映的 NIST AI 600-1）', answer: 'n27', why: 'registries=27。' }
+    ],
+    summary: '同一個專案，四個數字各有出處；引用要寫版本與日期。' },
+
+  { id: 'q03', type: 'scn', lo: [1], refs: [C1('cw-frameworks', '1.3'), C1('cw-inputs', '1.2')],
+    stem: '依本教材，這份引用有什麼問題？',
+    scenario: '松濤金融（虛構）的政策文件寫：「OWASP Crosswalk 對映 41 項弱點至 20 個框架（引自其 RATIONALE.md）。」審查人員打開 README 與 stats.json，發現寫的是另外的數字。',
+    options: [
+      { text: '沒有問題，RATIONALE.md 是儲存庫的一部分。', why: '同一儲存庫不同文件的數字不一致，應以機器產生的 stats.json 與較新的 README 為準。' },
+      { text: '數字過時：README、stats.json 與變更記錄是 51 個條目、26 個已對映框架（儲存庫 4.0.0）；RATIONALE.md 沒隨資料更新。引用應寫明版本與日期。', correct: true, why: '1.3 節的數字出入。' },
+      { text: '應該改成 25 個框架，因為那是官方資源頁的說法。', why: '25 是較早的資源頁說法；教材採較新的 26。' },
+      { text: '應該刪掉所有數字。', why: '數字可以引用，只要寫明來源與版本。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) RATIONALE.md 開頭寫 41 個弱點與 20 個框架，並有「Why 20 frameworks」一節；(2) README、stats.json（腳本產生）與 CHANGELOG 是 51 個條目與 26 個框架；(3) 依「以最新者為準」且 stats.json 是機器產生，採 51 與 26。</p><p><strong>結論：</strong>更新數字並寫明「儲存庫 4.0.0」。對應教材：<a href="01-crosswalk-position.html#cw-frameworks">1.3 節</a>。</p>' },
+
+  /* ================= LO2 結構與用法 ================= */
+  { id: 'q04', type: 'mc', lo: [2], refs: [C2('us-unit', '2.1 表 2-1')],
+    stem: '一個團隊這個 sprint 只能做三件事。依 Crosswalk 的標籤，他們應該優先看哪一類的控制？',
+    options: [
+      { text: 'Foundational：每個部署都需要的基線，Sprint 0–1 立即做。', correct: true, why: '分層 Foundational 的定義。' },
+      { text: 'Advanced：高成熟度環境才需要。', why: 'Advanced 是第 3 季起，不是立即要做的。' },
+      { text: 'Buy：由供應商提供的控制。', why: 'Buy 是範圍（誰做），不是優先順序。' },
+      { text: 'Hardening：第 1–2 季的縱深防禦。', why: 'Hardening 排在 Foundational 之後。' }
+    ],
+    summary: '分層排先後：Foundational → Hardening → Advanced。' },
+
+  { id: 'q05', type: 'scn', lo: [2], refs: [C2('us-unit', '2.1'), C2('us-iso', '2.3')],
+    stem: '依本章，這位合規專員在使用 Crosswalk 時最需要注意什麼？',
+    scenario: '沙洲航運（虛構）的合規專員把 Crosswalk 的 LLM01 對 ISO/IEC 42001 的四個控制直接貼進稽核回覆，並寫「分層為 Foundational，範圍為 Build，所以是框架對我們的要求」。她沒有開 ISO 原文，因為 AI Exchange 對同一個控制的編號標示與 Crosswalk 不同，她覺得「差不多」。',
+    options: [
+      { text: '沒有問題，兩份都是 OWASP 官方資料，差不多就可以。', why: '兩份 OWASP 文件對同一個編號的標示不同，必須回到標準原文才能判斷。' },
+      { text: '兩個問題：分層與範圍是 Crosswalk 作者群的判斷，不是框架對你的要求；控制編號有出入時必須回 ISO 原文確認。', correct: true, why: '2.1 節說分層與範圍不是框架屬性；2.3 節的編號出入。' },
+      { text: '只有分層寫錯了，應該改成 Advanced。', why: '問題不在選哪一層，而在這些標籤的性質與編號沒有驗證。' },
+      { text: '應該不引用 Crosswalk，因為它的編號都是錯的。', why: '教材沒有判斷哪一邊錯，只說必須回原文確認。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) RATIONALE.md：分層依實作複雜度、相依與常見程度，範圍表示誰來做，都是 Crosswalk 作者群的判斷，不是 ISO 42001 的屬性。(2) Crosswalk 把 A.6.2.6 標為 AI 系統測試，AI Exchange 在監控控制頁寫 B.6.2.6 討論運作與監控；教材無法判斷哪個與 ISO 原文一致。</p><p><strong>結論：</strong>改寫標籤的性質，並回到標準原文確認編號與內容。對應教材：<a href="02-crosswalk-use.html#us-unit">2.1 節</a>、<a href="02-crosswalk-use.html#us-iso">2.3 節</a>。</p>' },
+
+  { id: 'q06', type: 'match', lo: [2], refs: [C2('us-unit', '2.1 表 2-1')],
+    stem: '把下列問題配對到最適合回答它的 Crosswalk 標籤。',
+    cats: [
+      { id: 'tier', label: '分層（Foundational／Hardening／Advanced）' },
+      { id: 'scope', label: '範圍（Buy／Build／Both）' },
+      { id: 'xref', label: '交叉引用（同風險在另兩份清單）' }
+    ],
+    items: [
+      { text: '這個控制該向供應商採購，還是內部自己做？', answer: 'scope', why: '範圍回答誰來做。' },
+      { text: '這個 sprint 先做哪些控制？', answer: 'tier', why: '分層回答先後。' },
+      { text: '提示詞注入在 agent 與資料安全上各是哪一個條目？', answer: 'xref', why: '交叉引用把同一風險連到另兩份清單。' }
+    ],
+    summary: '分層：先後；範圍：誰做；交叉引用：同風險的其他面向。' },
+
+  /* ================= LO3 編號遷移 ================= */
+  { id: 'q07', type: 'mc', lo: [3], refs: [C2('c-migration', '2.2')],
+    stem: 'LLM Top 10 從 2025 到 2026，下列哪一項描述最準確？',
+    options: [
+      { text: '所有編號都往前移了一位。', why: '有升有降，且彼此形成排列。' },
+      { text: '只有名稱改了，編號全部保留。', why: '八個編號換了。' },
+      { text: '十個條目中有八個換了編號，變動形成排列，其中有條目同時改名；因此不能依序尋找取代。', correct: true, why: 'MIGRATION.md 的說法。' },
+      { text: '條目從十個減少為八個。', why: '仍是十個條目。' }
+    ],
+    summary: '編號重排不是順延。' },
+
+  { id: 'q08', type: 'match', lo: [3], refs: [C2('us-migration', '2.2 表 2-2')],
+    stem: '把下列 2025 版條目配對到它在 2026 版的編號。',
+    cats: [
+      { id: 'a04', label: 'LLM04:2026' },
+      { id: 'a05', label: 'LLM05:2026' },
+      { id: 'a07', label: 'LLM07:2026' },
+      { id: 'a09', label: 'LLM09:2026' }
+    ],
+    items: [
+      { text: 'LLM03:2025 Supply Chain Vulnerabilities', answer: 'a04', why: '下降 1 名，簡化為 Supply Chain。' },
+      { text: 'LLM04:2025 Data and Model Poisoning', answer: 'a05', why: '下降 1 名。' },
+      { text: 'LLM09:2025 Misinformation', answer: 'a07', why: '上升 2 名。' },
+      { text: 'LLM08:2025 Vector and Embedding Weaknesses', answer: 'a09', why: '下降 1 名。' }
+    ],
+    summary: '引用編號務必帶年份。' },
+
+  { id: 'q09', type: 'scn', lo: [3], refs: [C2('c-migration', '2.2'), C2('us-scenario', '2.4 情境 A')],
+    stem: '依本章，下列哪一個遷移做法是正確的？',
+    scenario: '青山工業（虛構）的風險登記冊共有 120 筆 LLM 紀錄，用 2025 編號。團隊有四個提案：甲，從 LLM01 到 LLM10 依序做字串取代；乙，保留舊編號、只在文件註明「採 2025」；丙，用條目名稱建立一張 2025→2026 對照表，一次完成替換，並同步更新 CI 評測設定與儀表板的 source_list；丁，只替換前五個編號。',
+    options: [
+      { text: '甲：依序取代。', why: '編號形成排列，依序取代會讓紀錄被連續改多次。' },
+      { text: '乙：保留舊編號。', why: '與 Crosswalk 2026 對照檔不符，查詢與評測設定會對不上；且有條目連名稱也變了。' },
+      { text: '丙：名稱對照表加一次完成，並同步更新周邊設定。', correct: true, why: 'MIGRATION.md 的建議做法。' },
+      { text: '丁：只替換前五個。', why: '未處理的紀錄仍是舊編號，造成混用。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) 8 個換號形成一個五環與一個三環，依序取代會連鎖；(2) 保留舊編號與 Crosswalk 2026 不符；(3) 只換一部分會混用；(4) MIGRATION.md 的建議是一次替換或依名稱對映，並同步更新評測設定與 source_list。</p><p><strong>結論：</strong>丙。對應教材：<a href="02-crosswalk-use.html#c-migration">2.2 節</a>。</p>' },
+
+  /* ================= LO4 標準關係 ================= */
+  { id: 'q10', type: 'mc', lo: [4], refs: [C3('st-claims', '3.1 表 3-1')],
+    stem: '關於 AI Exchange 對 ISO/IEC 42001 的描述，下列哪一項最符合本章？',
+    options: [
+      { text: 'AI Exchange 是 42001 的作者，所以 42001 是 OWASP 標準。', why: '42001 由標準組織發布；AI Exchange 沒有這樣宣稱。' },
+      { text: '42001 取代了所有 AI 安全控制。', why: 'AI Exchange 的評論正好相反。' },
+      { text: '42001 只適用於歐盟。', why: '本章沒有這樣的說法。' },
+      { text: 'AI Exchange 評論 42001 是延伸風險管理系統、聚焦治理，不談模型訓練、資料血緣等生命週期流程；這些由 ISO/IEC 5338 補上。', correct: true, why: '表 3-1 的說法。' }
+    ],
+    summary: '42001：治理；5338：工程生命週期。' },
+
+  { id: 'q11', type: 'scn', lo: [4], refs: [C3('st-claims', '3.1'), C3('st-misc', '3.4')],
+    stem: '依本章，這份簡報對標準的說法哪裡需要修正？',
+    scenario: '鯤島資訊（虛構）的簡報寫：「OWASP AI Exchange 為 ISO/IEC 27090 貢獻了 70 頁，並已經由 ISO 官方證實；prEN 18282 已經發布，可直接作為 EU AI Act 的符合推定依據。」',
+    options: [
+      { text: '沒有問題。', why: '「貢獻頁數」是自述，教材未查證；18282 在 AI Exchange 的說法是草案。' },
+      { text: '兩處：貢獻頁數是 AI Exchange 的自述，教材沒有向 ISO 查證，不能說「已證實」；prEN 18282 是草案，AI Exchange 寫預計 2027 年初發布，且能否推定符合還取決於是否刊登於歐盟公報。', correct: true, why: '3.1 節。' },
+      { text: '只有 70 頁要改成 71 頁。', why: '教材無從得知實際頁數。' },
+      { text: '應該把「27090」換成「27091」。', why: '兩者是不同標準，27090 是 AI 資安、27091 是 AI 隱私。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) AI Exchange 的 About 與合規控制頁是自述，教材沒有向 ISO 或 CEN/CENELEC 查證。(2) 合規控制頁寫 prEN 18282「撰寫當下（2026 年 10 月）準備進入最終內部審查，預計 2027 年初發布；之後取決於是否在官方公報刊登才可用於符合推定」。</p><p><strong>結論：</strong>改寫為「AI Exchange 稱……」，並把 18282 標為草案。對應教材：<a href="03-standards.html#st-claims">3.1 節</a>。</p>' },
+
+  { id: 'q12', type: 'mc', lo: [4], refs: [C3('st-claims', '3.1 表 3-1')],
+    stem: 'OpenCRE 在 AI Exchange 的說法裡扮演什麼角色？',
+    options: [
+      { text: '它是連結各標準共同需求的目錄；AI Exchange 用它插入正確的參照，並說這讓 Exchange 成為標準全景的樞紐。', correct: true, why: '表 3-1。' },
+      { text: '它是 ISO 發布的標準。', why: 'OpenCRE 在 OWASP Integration Standards 專案下，不是 ISO 標準。' },
+      { text: '它是 AI Exchange 的授權條款。', why: '授權是 CC0 1.0，與 OpenCRE 無關。' },
+      { text: '它是 Crosswalk 的別名。', why: '兩者是不同的專案。' }
+    ],
+    summary: 'OpenCRE：連結各標準的共同需求目錄。' },
+
+  /* ================= LO5 證據強度 ================= */
+  { id: 'q13', type: 'scn', lo: [5], refs: [C3('c-evidence', '3.2'), C3('st-flow', '3.3 圖 3-1')],
+    stem: '依本章，這位稽核準備者最應該先做哪一件事？',
+    scenario: '瀚海電子（虛構）的稽核回覆草稿寫：「Crosswalk 把 LLM05 對映到 CoSAI 的三個控制，所以我們的資料投毒防護已符合 CoSAI。」資安主管查了 stats.json，發現 CoSAI 是僅有草稿列的框架。',
+    options: [
+      { text: '保留原文，因為已有對映。', why: 'CoSAI 的對映是草稿，不應當成定稿。' },
+      { text: '移除這項對映的引用或標為草稿；改回到框架原文，並以自己系統的實際證據（政策、測試、紀錄）說明防護，而非引用對照。', correct: true, why: '3.2 節的證據強度與圖 3-1 的路徑。' },
+      { text: '把 CoSAI 換成任何一個非草稿的框架。', why: '換成別的框架不處理「對照不等於證據」的問題。' },
+      { text: '把「符合」改成「完全符合」。', why: '用詞更強並不增加證據。' }
+    ],
+    answer: '<p><strong>推理：</strong>(1) stats.json：CoSAI 與 EU AI Act Code of Practice 僅有草稿列（共 286 列）。(2) 即使對映是定稿，它也只是「相關」，不是你的系統達標。(3) 稽核最終看的是你的政策、測試與紀錄。</p><p><strong>結論：</strong>移除或標草稿，改以框架原文與實際證據回覆。對應教材：<a href="03-standards.html#c-evidence">3.2 節</a>。</p>' },
+
+  { id: 'q14', type: 'match', lo: [5], refs: [C3('c-evidence', '3.2'), C4('c-limits', '4.3')],
+    stem: '把下列說法配對到它在「證據強度」中的位置。',
+    cats: [
+      { id: 'l1', label: '作者判斷的對照（最弱）' },
+      { id: 'l3', label: '社群的共識自述' },
+      { id: 'l4', label: '標準本身（最強）' }
+    ],
+    items: [
+      { text: 'Crosswalk 認為某個框架控制與某風險「有可辯護的關聯」', answer: 'l1', why: 'RATIONALE.md 的過程：人的判斷，有審查流程。' },
+      { text: 'AI Exchange 稱自己代表 AI 安全與隱私的共識', answer: 'l3', why: '這是它的自我描述。' },
+      { text: 'ISO 或 CEN/CENELEC 發布的正式文本', answer: 'l4', why: '稽核員最終對照的依據。' }
+    ],
+    summary: '對照是找路的工具，不能取代標準原文。' }
+
+  ];
+
+  OwaspQuiz.mount('#quiz-root', {
+    id: 'final', topic: 'framework-crosswalk-and-standards', mode: 'final',
+    los: [
+      { n: 1, text: '定位：說明 Crosswalk 是什麼、來源清單與版本，並辨認各處數字的出入。' },
+      { n: 2, text: '結構與用法：說明對照的單位、分層與範圍，並用它回答「這個風險對應哪些控制」。' },
+      { n: 3, text: '編號遷移：把 LLM Top 10 2025 的編號正確對到 2026，並解釋為什麼不能逐一取代。' },
+      { n: 4, text: '標準關係：說明 AI Exchange 與各標準的關係，以及它自己宣稱的範圍。' },
+      { n: 5, text: '證據強度：判斷一份對照在多大程度上可以當作合規證據，並知道它的限制。' }
+    ],
+    questions: questions
+  });
+})();
+</script>
+</body>
+</html>

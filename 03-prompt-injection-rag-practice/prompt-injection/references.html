@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考資料與來源核對｜提示詞注入防護｜OWASP AI 資安學習教材</title>
+<meta name="description" content="提示詞注入防護主題的來源核對清單：採用的版本與日期、與調查筆記的差異、衝突與取捨、授權，以及未能確認的項目。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="03-prompt-injection-rag-practice" data-topic="prompt-injection" data-page="references.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article class="wide">
+
+<h1>參考資料與來源核對</h1>
+<ul class="meta-row">
+  <li>核對日：2026-10-26</li>
+  <li>起點：作者自備的研究筆記（未公開；調查日 2026-10-26，第 2.1 節、第 6.3 節與第 8 節）</li>
+</ul>
+<p class="lead">調查筆記是經摘要工具讀取，數字與引文可能有誤，所以本教材回到一手來源重新核對。本頁列出：每個項目採用的版本與日期、與筆記不同之處、衝突時的取捨，以及本教材無法確認的項目。</p>
+
+<div class="callout official">
+  <p class="callout-title">取捨規則</p>
+  <p>版本或日期衝突時，一律以最新者為準，不論來源是 GitHub、網站還是 PDF。無法判斷何者較新時，標示「未能確認」，不自行擇一。舊版資訊只出現在版本演進與本頁。</p>
+</div>
+
+<h2 id="ref-adopted">1. 採用的版本與日期</h2>
+<div class="table-wrap"><table>
+<caption>表 R-1　採用的來源與版本（2026-10-26 實際讀取）</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">採用的版本／日期</th><th scope="col">依據</th><th scope="col">授權（來源頁面標示）</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM Prompt Injection Prevention Cheat Sheet</th><td>頁面無版本與日期。以 GitHub 提交紀錄標示狀態：2025-05-26 建立（#1678）；讀取時共 19 筆提交，最新 2026-10-22（#2845）</td><td><a href="https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html">網站頁面</a>；<a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.md">GitHub 原始檔</a>。已比對網站頁面與 GitHub 原始檔，讀取當日網站已含 2026-10 的修訂文字（例如輸入篩選限制、冒煙測試、CaMeL 警語）</td><td>CC BY-SA 4.0（網站頁尾標示）</td></tr>
+<tr><th scope="row">LLM01:2026 Prompt Injection</th><td>OWASP Top 10 for LLM Applications 2026，Version 2026；採發布日 2026-08-04；該檔最新提交 2026-07-17</td><td><a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM01_PromptInjection.md">GitHub 原始檔</a>（2026/final）</td><td>CC BY-SA 4.0（README 標示）</td></tr>
+<tr><th scope="row">LLM Top 10 2026 附錄：AISVS 對應</th><td>對應 LLM Top 10 2026 到 <strong>AISVS 1.0</strong></td><td><a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLMZZ_Appendix_AISVS_Mapping.md">LLMZZ_Appendix_AISVS_Mapping.md</a></td><td>CC BY-SA 4.0</td></tr>
+<tr><th scope="row">AISVS</th><td>README 標示最新穩定版 <strong>1.01</strong>；1.02 為唯一開發版</td><td><a href="https://github.com/OWASP/AISVS">github.com/OWASP/AISVS</a>（README）</td><td>以來源頁面標示為準（本教材只引用章節名稱與附錄的對應，未使用其條文）</td></tr>
+<tr><th scope="row">OWASP AI Exchange（七層防線、LEAST MODEL PRIVILEGE、OVERSIGHT）</th><td>無版本號；沿用 AI Exchange 主題的 2026-10-25 快照</td><td><a href="https://owaspai.org/go/promptinjection">owaspai.org/go/promptinjection</a></td><td>CC0 1.0</td></tr>
+<tr><th scope="row">Mermaid（本地副本）</th><td>沿用專案已放置的副本</td><td><code>assets/vendor/mermaid.min.js</code></td><td>MIT</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-diff">2. 與調查筆記不同之處</h2>
+<div class="table-wrap"><table>
+<caption>表 R-2　筆記說法與一手來源的差異</caption>
+<thead><tr><th scope="col">項目</th><th scope="col">筆記的說法</th><th scope="col">一手來源的結果</th><th scope="col">教材的處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">Cheat Sheet 的結構</th><td>13 種攻擊類型、5 項主要防禦</td><td>屬實。另外還有補充防禦、護欄模型（含 CaMeL 與雙 LLM）、安全實作管線、框架實作、冒煙測試與回報、清單</td><td>第 1–4 章依此展開</td></tr>
+<tr><th scope="row">Cheat Sheet 的版本與日期</th><td>「各頁無日期與版本標示」</td><td>屬實，但 GitHub 提交紀錄可補充狀態：2025-05-26 建立，最新 2026-10-22，且 2026-10-02 至 2026-10-04 有一批限定語型的修訂</td><td>第 2 章圖 2-1；標示「只讀到最新 10 筆提交標題」</td></tr>
+<tr><th scope="row">Cheat Sheet 內容更新</th><td>（筆記讀取的是較早內容）</td><td>目前版本對輸入篩選、結構化提示、CaMeL、冒煙測試等都加上了限定語，語氣較筆記所述更保守</td><td>教材以目前版本為準；筆記的摘要不作依據</td></tr>
+<tr><th scope="row">LLM01 的版本</th><td>筆記表格列的是 2026 版 LLM01</td><td>屬實，但 <code>genai.owasp.org/llmrisk/llm01-prompt-injection/</code> 網頁目前仍是 LLM01:2025，而 Cheat Sheet 引用的正是這個網址</td><td>教材採 2026 版；見 R-3 與 U-PI1</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-conflict">3. 衝突與取捨</h2>
+<div class="table-wrap"><table>
+<caption>表 R-3　來源間的衝突與本教材的取捨</caption>
+<thead><tr><th scope="col">議題</th><th scope="col">各來源說法</th><th scope="col">取捨</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM01 是 2025 還是 2026</th><td>GitHub 2026/final：LLM01:2026（Version 2026）；genai.owasp.org 的 llmrisk 頁面：LLM01:2025；Cheat Sheet 的連結指向後者</td><td>採 2026 版（較新）。兩版的細節差異本教材沒有逐項比對，所以緩解項一律以 2026 版編號引用</td></tr>
+<tr><th scope="row">LLM Top 10 2026 的發布日</th><td>資源頁 2026-08-03；GitHub、PDF 封面 2026-08-04（沿用 AI Exchange 主題 U-C8）</td><td>採較新的 08-04</td></tr>
+<tr><th scope="row">AISVS 1.0 還是 1.01</th><td>LLM Top 10 2026 附錄對應 1.0；AISVS README 最新穩定版 1.01（沿用 AI Exchange 主題 U-C9）</td><td>採較新者 1.01 作為 AISVS 本身的版本，但章節對應引用附錄，並註明附錄對應的是 1.0；本教材沒有比對兩版的章節差異</td></tr>
+<tr><th scope="row">授權</th><td>Cheat Sheet 網站頁尾 CC BY-SA 4.0；LLM Top 10 2026 README CC BY-SA 4.0</td><td>各頁頁尾以來源標示為準；本主題未使用 NC 授權的來源</td></tr>
+</tbody></table></div>
+
+<h2 id="ref-unsure">4. 未能確認的項目</h2>
+<ol>
+  <li id="u-pi1"><strong>LLM01:2025 與 LLM01:2026 的內容差異：</strong>網頁仍顯示 2025 版，本教材未逐項比對兩者，所以不能說 Cheat Sheet 的引用在 2026 版是否仍準確。</li>
+  <li id="u-pi2"><strong>Cheat Sheet 更早 9 筆提交：</strong>讀取時共 19 筆提交，GitHub API 在第二次請求時被限流，只讀到最新 10 筆的標題；更早的 9 筆（2025-05-26 之後至 2026-10-02 之前）未讀。圖 2-1 因此不是完整歷史。</li>
+  <li id="u-pi3"><strong>各筆修訂的細節：</strong>圖 2-1 依提交標題繪製，本教材沒有逐筆讀取 diff，所以不知道每筆修訂改了哪些句子；只能說「目前版本的文字帶有這些限定語」。</li>
+  <li id="u-pi4"><strong>第三方研究結果：</strong>Best-of-N（89%／78%，Hughes 等）、適應性攻擊（多數防禦超過 90%，Nasr 等）、五份投毒文件約 90%（W. Zou 等）、「fun-tuning」65%→82%（Labunets 等）都是 OWASP 文件轉述；本教材沒有讀原始論文。教材只在第 4 章引用前兩項，並標明「依 OWASP 文件轉述」。</li>
+  <li id="u-pi5"><strong>LLM01:2026 的事件引用：</strong>情境 9 所引的公開事件（Invariant Labs、General Analysis、postmark-mcp 等）是官方引用的第三方報告，本教材沒有獨立查證，教材第 3 章只轉述結構，不加細節。</li>
+  <li id="u-pi6"><strong>AISVS 1.01 與附錄對應的 1.0 之間的差異：</strong>未比對。</li>
+  <li id="u-pi7"><strong>Cheat Sheet 的 StruQ、Dual-LLM、CaMeL 引用文獻：</strong>只讀了 Cheat Sheet 的描述，未讀原論文。</li>
+</ol>
+
+<h2 id="ref-list">5. 本主題引用的一手來源</h2>
+<h3>OWASP Cheat Sheet Series</h3>
+<ul>
+  <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html">LLM Prompt Injection Prevention Cheat Sheet</a>；<a href="https://github.com/OWASP/CheatSheetSeries/commits/master/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.md">提交紀錄</a></li>
+</ul>
+<h3>OWASP Top 10 for LLM Applications 2026（GitHub 2026/final）</h3>
+<ul>
+  <li><a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM01_PromptInjection.md">LLM01_PromptInjection.md</a>；<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLMZZ_Appendix_AISVS_Mapping.md">LLMZZ_Appendix_AISVS_Mapping.md</a></li>
+</ul>
+<h3>相鄰文件（對照）</h3>
+<ul>
+  <li>OWASP AISVS：<a href="https://github.com/OWASP/AISVS">github.com/OWASP/AISVS</a></li>
+  <li>OWASP AI Exchange：<a href="https://owaspai.org/go/promptinjection">Prompt injection</a>、<a href="https://owaspai.org/go/leastmodelprivilege">LEAST MODEL PRIVILEGE</a>、<a href="https://owaspai.org/go/oversight">OVERSIGHT</a></li>
+  <li>genai.owasp.org 的 LLM01 網頁（目前為 2025 版內容）：<a href="https://genai.owasp.org/llmrisk/llm01-prompt-injection/">…/llmrisk/llm01-prompt-injection/</a></li>
+</ul>
+
+<h2 id="ref-own">6. 本教材自己的推論（非官方）</h2>
+<ul>
+  <li>第 1 章表 1-2：把 Cheat Sheet 的 13 種攻擊歸到三軸的對應，與「有些不在三軸上（目標、手法、外洩通道）」的判斷。</li>
+  <li>第 1 章圖 1-1：低權限管道、高權限執行的攻擊鏈圖形（依 LLM01:2026 常見範例 3 與情境 9 重新繪製）。</li>
+  <li>第 2 章圖 2-1：Cheat Sheet 修訂時間線，以及「方向是把強制放到工具邊界」的趨勢判讀。</li>
+  <li>第 3 章表 3-1 的「性質」與「最接近的七層」欄；表 3-2 的「例子」欄；圖 3-1 的決策流程與各分支底下的控制。</li>
+  <li>第 4 章表 4-2 的「AI Exchange 七層」欄；圖 4-1 的五步驟流程。</li>
+  <li>各章的暫譯：輸入篩選、結構化提示、護欄模型、人在迴路、冒煙測試、適應性攻擊者、雙 LLM 模式、上下文池化、工具邊界。</li>
+</ul>
+
+<h2 id="ref-license">7. 授權摘要與再利用</h2>
+<ul>
+  <li>OWASP Cheat Sheet Series、OWASP Top 10 for LLM Applications 2026：CC BY-SA 4.0。本教材以自己的話整理，短引用均標示來源；若你要再散布本教材，請依 CC BY-SA 的相同方式分享條款自行判斷。</li>
+  <li>OWASP AISVS：以來源頁面標示為準；本教材僅引用章節名稱與附錄的對應。</li>
+  <li>OWASP AI Exchange：CC0 1.0（僅用於對照）。</li>
+  <li>Mermaid：MIT。</li>
+  <li>本主題<strong>未使用 NC（非商業）授權的來源</strong>。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁整合自上列各一手來源及作者自備的研究筆記（未公開；僅作起點，未修改）。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>授權（以來源頁面標示為準）：OWASP Cheat Sheet Series、OWASP Top 10 for LLM Applications 2026 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0；Mermaid — MIT。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>

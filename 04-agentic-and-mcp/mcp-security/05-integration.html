@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 章　跨文件整合與收尾｜MCP 安全｜OWASP AI 資安學習教材</title>
+<meta name="description" content="MCP 安全文件之間、與 Agentic 系列和 LLM Top 10 的關係；MCP Top 10 的兩個社群建議控制；選哪份文件、先做什麼的決策流程；以及全階段 04 的收尾。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="04-agentic-and-mcp" data-topic="mcp-security" data-page="05-integration.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 5 章　跨文件整合與收尾</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 5 分鐘（不含章末檢核；另有 3 題章末檢核）</li>
+  <li>對應學習目標：LO5</li>
+  <li>前置：<a href="04-third-party-user.html">第 4 章</a></li>
+</ul>
+<p class="lead">MCP 的材料讀到這裡，有四份文件、一張 Top 10、兩個社群建議控制，還要接回 Agentic 系列。本章做兩件事：一是說清楚<strong>先看哪一份</strong>，二是把 MCP 放回 04 階段的整體脈絡，讓你看到「威脅 → 清單 → 實作 → 協定」這條線。</p>
+
+<h2 id="n-which">5.1 先看哪一份：決策流程</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="選 MCP 文件的決策流程：先問你是開發 MCP 伺服器還是使用別人的。開發的人走 Secure MCP Server Development 指南與它的最低標準檢查表；使用的人走第三方 MCP 使用 Cheat Sheet 與其治理工作流；兩者都要用 MCP Security Cheat Sheet 補最新實務；要和團隊建立共同風險語言時用 MCP Top 10，但要標明 Beta；要對照 agent 層級風險時回到 Agentic Top 10。">
+flowchart TD
+  S["我碰到 MCP"] --> Q{"開發伺服器，<br>還是使用別人的？"}
+  Q -->|"開發"| D["Secure MCP Server<br>Development 指南<br>八類控制加最低標準"]
+  Q -->|"使用"| U["第三方 MCP 使用 Cheat Sheet<br>登錄加五步驟治理"]
+  D --> C["再用 MCP Security Cheat Sheet<br>補最新實務"]
+  U --> C
+  C --> T["需要共同語言：<br>MCP Top 10（標 Beta）"]
+  T --> A["對照 agent 層風險：<br>Agentic Top 10、T&amp;M"]
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class S,Q,C,T,A author
+</pre>
+<figcaption><strong>圖 5-1　選 MCP 文件的決策流程。</strong>各文件的定位與對象是官方描述；把它們串成「先分角色、再補實務、再對照風險」的順序是<strong>作者整理，非官方</strong>。</figcaption>
+</figure>
+
+<h2 id="n-rc">5.2 MCP Top 10 的兩個社群建議控制</h2>
+<p>MCP Top 10 的倉庫另有一個 <code>recommended-controls</code> 資料夾，目前有兩份，都是社群貢獻的<strong>可選控制</strong>，各自對照到 MCP Top 10 的多個條目。本教材<strong>不背書</strong>，只說明它們是什麼：</p>
+<div class="table-wrap"><table>
+<caption>表 5-1　MCP Top 10 的兩個社群建議控制（倉庫 2025/recommended-controls；2026-10-26 讀取）</caption>
+<thead><tr><th scope="col">名稱</th><th scope="col">加入日期</th><th scope="col">是什麼（改寫）</th><th scope="col">自述涵蓋的條目</th><th scope="col">要注意的</th></tr></thead>
+<tbody>
+<tr><th scope="row">Client-Side Tool Risk Gating</th><td>2026-07-11</td><td>主機端的控制模式：在模型看到或呼叫工具<em>之前</em>，由 MCP 主機評估每個工具；包含<strong>有序風險評分</strong>、<strong>硬性暴露上限</strong>（超過上限的工具不給模型）、<strong>定義指紋固定</strong>（首次見到時記錄雜湊，之後被悄悄重新定義就進入封鎖並重新審查）、以及<strong>人在迴路的逐次呼叫閘門</strong>。不需要上游伺服器配合</td><td>MCP02、MCP03、MCP06、MCP08、MCP09、MCP10</td><td>文件自述：對 MCP06 只做爆炸半徑限縮，<strong>不偵測注入本身</strong>；有一個開源參考實作</td></tr>
+<tr><th scope="row">MCPS（MCP Secure）</th><td>2026-03-13</td><td>包在既有 JSON-RPC 訊息外的密碼學安全層（類比 TLS 包 HTTP）：提供 agent 身分、訊息完整性、工具真實性與重放保護</td><td>自述涵蓋 10 項中的 8 項（MCP01–04、06–09）</td><td>倉庫文件自述；Cheat Sheet 說明相關的 MCPS Internet-Draft 是「個人提交的進行中工作，<strong>不是已採納的 MCP 標準</strong>」，並警告別把選配簽章說成一般 MCP 部署的必要條件</td></tr>
+</tbody></table></div>
+<p>這兩個控制屬於 MCP Top 10 專案內的<strong>建議</strong>，狀態、成熟度與有效性<strong>本教材沒有獨立查證</strong>；它們也不等於 MCP 規格本身的要求。把它們當作「如果你的威脅模型需要，可以評估」的選項。</p>
+
+<h2 id="n-link">5.3 與 Agentic 系列、LLM Top 10 的關係</h2>
+<div class="table-wrap"><table>
+<caption>表 5-2　MCP 安全文件與相鄰文件（只列官方有寫的；作者整理另標示）</caption>
+<thead><tr><th scope="col">相鄰文件</th><th scope="col">關係</th><th scope="col">依據</th></tr></thead>
+<tbody>
+<tr><th scope="row">Agentic Threats and Mitigations 1.1</th><td>T16 Insecure Inter-Agent Protocol Abuse 明寫 MCP 與 A2A 的協定濫用；Playbook 3 提醒經由 MCP、A2A 呼叫的工具可能繞過 UI、同意流程與人類監督</td><td><a href="../agentic-threats-and-mitigations/03-playbooks.html">T&amp;M 本教材第 3 章</a></td></tr>
+<tr><th scope="row">Top 10 for Agentic Applications 2026</th><td>ASI04 明列 MCP／A2A 介面與登錄、工具描述注入、冒充套件的惡意 MCP 伺服器；ASI02 把「竄改 MCP 工具介面」歸入工具濫用；ASI07 提到 MCP 描述投毒與 A2A 註冊偽造</td><td><a href="../agentic-top-10-2026/02-goal-tools-identity.html">Agentic Top 10 本教材第 2、3、4 章</a></td></tr>
+<tr><th scope="row">MAS Threat Modeling Guide</th><td>三個案例之一是用 MAESTRO 對 Anthropic 的 MCP 協定建模</td><td><a href="../agentic-threats-and-mitigations/04-multi-agent-integration.html">T&amp;M 本教材第 4 章</a></td></tr>
+<tr><th scope="row">Securing Agentic Applications Guide</th><td>第 9 節把 MCP 當作「能力邊界」的 JSON-RPC 包裝；3.1.7 提到可用 MCP 代理插入護欄</td><td><a href="../securing-agentic-applications/04-supply-assurance-hardening.html">保護 Agentic 應用第 4 章</a></td></tr>
+<tr><th scope="row">LLM Top 10 2026</th><td>MCP 伺服器的輸入輸出處理、機密洩漏、過度授權，在 LLM 層的對應是 LLM01、LLM02、LLM03、LLM04、LLM10 等（<strong>作者整理，非官方</strong>）</td><td><a href="../agentic-top-10-2026/05-integration.html">Agentic Top 10 本教材第 5 章</a>的編號換算</td></tr>
+<tr><th scope="row">AISVS</th><td>調查筆記說 AISVS 有 "Model Context Protocol (MCP) Security" 一章</td><td>筆記（本教材<strong>未核對</strong>）；AISVS 於 06 階段另有主題</td></tr>
+</tbody></table></div>
+
+<h2 id="n-stage">5.4 04 階段回顧：四個主題怎麼接起來</h2>
+<figure class="diagram">
+<pre class="mermaid" data-alt="04 階段四個主題的關係：Agentic 威脅與緩解提供威脅分類與 Playbook；Top 10 for Agentic Applications 把它濃縮成十項；保護 Agentic 應用指南把緩解落實到架構與開發流程；MCP 安全處理 agent 與工具之間的協定本身。前三者是對 agent 本體，第四個是對 agent 的外部連接。">
+flowchart LR
+  A["Agentic 威脅與緩解<br>T1 到 T17、Playbooks"] --> B["Top 10 for Agentic<br>ASI01 到 ASI10"]
+  A --> C["保護 Agentic 應用<br>KC1 到 KC6、生命週期"]
+  B --> D["MCP 安全<br>協定與生態系"]
+  C --> D
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class A,B,C,D author
+</pre>
+<figcaption><strong>圖 5-2　04 階段四個主題的關係。</strong>箭頭表示建議的閱讀順序，是<strong>作者整理，非官方</strong>。前三者談 agent 本身；MCP 談 agent 與工具、資料之間的連接。</figcaption>
+</figure>
+
+<h2 id="ch5-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>先分角色：開發 MCP 伺服器看開發指南；使用別人的看第三方使用 Cheat Sheet；兩者都用 MCP Security Cheat Sheet 補最新實務。</li>
+  <li>MCP Top 10 仍是 Beta，只當作共同風險語言；它的兩個建議控制是社群可選，狀態本教材沒有獨立查證。</li>
+  <li>MCP 風險在 Agentic 系列中有明文落點：T16、Playbook 3、ASI02／04／07。</li>
+  <li>04 階段的脈絡：威脅分類 → Top 10 → 實作指南 → MCP 協定。</li>
+</ul></div>
+<ul class="checklist">
+  <li>給我一個 MCP 情境，我能說出該先看哪一份文件，以及它的成熟度要怎麼引用。</li>
+  <li>我能說出 MCP 風險在 Agentic 系列的明文落點，並分辨哪些是官方、哪些是作者的整理。</li>
+  <li>我知道建議控制不是 MCP 規格的要求，也沒被本教材背書。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（3 題）</h2>
+  <p>對應學習目標 LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch5-next">接下來讀什麼</h2>
+<p>本主題的 <a href="quiz.html">總測驗（16 題）</a>。圖 5-2 是 04 階段前四個主題的關係；階段的第五個主題是 <a href="../ai-agent-security-cheat-sheet/index.html">AI Agent Security Cheat Sheet</a>，把九節實務與第三方執行證據的驗證補在實作層。接著可以進入治理與風險（05）：<a href="../../index.html">回到首頁看學習地圖</a>。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP MCP Top 10 倉庫 <code>2025/recommended-controls/</code>（<code>Client-Side-Tool-Risk-Gating.md</code>、<code>MCPS-Cryptographic-Security-Layer.md</code>）：<a href="https://github.com/OWASP/www-project-mcp-top-10">GitHub</a>；2026-10-26 讀取。<span class="tag nc">NC</span> 授權文字自相矛盾，保守視為非商業；僅概述其機制。</li>
+    <li>OWASP Cheat Sheet Series, <em>MCP Security Cheat Sheet</em>（第 7 項 Optional Message-Level Integrity）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/MCP_Security_Cheat_Sheet.html">cheatsheetseries.owasp.org</a>；2026-10-26 讀取。</li>
+    <li>OWASP GenAI Security Project 其他文件（T&amp;M 1.1、Top 10 for Agentic Applications 2026、MAS Threat Modeling Guide v1.0、Securing Agentic Applications Guide 1.0）：見各自的 <a href="references.html">參考資料頁</a>與本階段前三個主題。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：MCP Security Cheat Sheet — Cheat Sheet Series 網站標示；Agentic 系列相關文件 — CC BY-SA 4.0。<span class="tag nc">NC</span> 本頁概述 OWASP MCP Top 10 倉庫的兩個建議控制；該專案授權文字自相矛盾（LICENSE.md 為 CC BY-SA 4.0；README 與 index.md 為 CC BY-NC-SA 4.0），保守視為非商業。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'mcp-ch5', topic: 'mcp-security', mode: 'chapter',
+  questions: [
+    { id: 'm5q1', type: 'mc', lo: [5], refs: [{label: '5.2 表 5-1', href: '05-integration.html#n-rc'}],
+      stem: '同事說：「MCPS 是 MCP 的標準安全層，所有 MCP 部署都應該要求每個 JSON-RPC 訊息簽章。」依本章，最恰當的回應是？',
+      options: [
+        { text: '正確，MCP 規格要求簽章。', why: 'Cheat Sheet 指出核心 MCP 傳輸規格並不要求每個 JSON-RPC 訊息都簽章。' },
+        { text: '不準確：MCPS 是社群提交的個人工作，不是已採納的 MCP 標準；選配簽章只在威脅模型需要 TLS 終止後的完整性時評估，不應說成一般部署的必要條件。', correct: true, why: '5.2 節引用 Cheat Sheet 第 7 項。' },
+        { text: '錯誤，簽章對 MCP 完全沒有用。', why: '它在特定威脅模型下有用，只是不是必要。' },
+        { text: '應該改用 TLS 取代簽章。', why: 'TLS 與簽章保護的威脅不同。' }
+      ],
+      summary: '選配的完整性層不等於標準要求。' },
+    { id: 'm5q2', type: 'match', lo: [5], refs: [{label: '5.3 表 5-2', href: '05-integration.html#n-link'}],
+      stem: '把 MCP 相關的說法配對到 Agentic 系列中官方明寫的落點。',
+      cats: [
+        { id: 't16', label: 'T&M：T16 Insecure Inter-Agent Protocol Abuse' },
+        { id: 'asi04', label: 'Agentic Top 10：ASI04 供應鏈' },
+        { id: 'asi02', label: 'Agentic Top 10：ASI02 工具濫用' },
+        { id: 'mas', label: 'MAS 威脅建模指南' }
+      ],
+      items: [
+        { text: '攻擊 MCP 或 A2A 等協定的同意繞過或脈絡劫持', answer: 't16', why: 'T16 明寫 MCP 與 A2A。' },
+        { text: '被通報的冒充套件的惡意 MCP 伺服器，以及工具描述／agent 卡片中的隱藏指示', answer: 'asi04', why: 'ASI04 的弱點與情境。' },
+        { text: '竄改 MCP 工具描述、結構或路由資訊，使 agent 依假的能力呼叫工具', answer: 'asi02', why: 'ASI02 情境 1：工具介面被竄改歸 ASI02。' },
+        { text: '用 MAESTRO 七層對 Anthropic 的 MCP 協定做威脅建模', answer: 'mas', why: 'MAS 指南的三個案例之一。' }
+      ],
+      summary: 'MCP 風險在 Agentic 系列有明文落點。' },
+    { id: 'm5q3', type: 'scn', lo: [5], refs: [{label: '5.1 圖 5-1', href: '05-integration.html#n-which'}, {label: '5.2 表 5-1', href: '05-integration.html#n-rc'}],
+      stem: '依本章，團隊的文件選擇與引用方式有哪兩處需要修正？',
+      scenario: '北辰電商（虛構）要導入第三方 MCP 伺服器給客服團隊。技術主管規劃：「依 Secure MCP Server Development 指南的最低標準逐項檢查這個第三方伺服器；並在規範裡寫『依 OWASP MCP Top 10 的建議控制 MCPS 要求所有訊息簽章』。」',
+      options: [
+        { text: '兩處都正確。', why: '第一處角色不符，第二處把社群建議控制寫成要求。' },
+        { text: '(1) 該指南是給「開發」MCP 伺服器的人；使用第三方伺服器應看第三方使用 Cheat Sheet 與其治理流程。(2) MCPS 是 Top 10 倉庫中的社群建議控制，不是規格要求，也不是已採納標準，不應寫成強制要求。', correct: true, why: '5.1 與 5.2 節。' },
+        { text: '只有第二處需要修正。', why: '第一處也有問題：角色不對。' },
+        { text: '應該全部改引用 LLM Top 10。', why: 'LLM Top 10 不處理 MCP 專屬的治理與協定問題。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 開發指南的對象是 MCP 伺服器開發團隊，第三方使用指南明說自己不是給開發者的，兩者是互補視角。(2) MCPS 是倉庫中社群提交的建議控制，Cheat Sheet 說相關 Internet-Draft 不是已採納標準，且不應說成一般部署的必要條件。</p><p><strong>結論：</strong>改用第三方使用 Cheat Sheet 與五步驟治理；MCPS 改寫為「如威脅模型需要可評估的選項」。對應教材：<a href="05-integration.html#n-which">5.1 節</a>、<a href="05-integration.html#n-rc">5.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

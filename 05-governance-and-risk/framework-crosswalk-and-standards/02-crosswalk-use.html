@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　怎麼用 Crosswalk：對照單位與編號遷移｜框架對照與標準｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Crosswalk 一條對照長什麼樣子、分層與範圍標籤、LLM Top 10 2025 到 2026 的編號遷移為什麼不能依序取代，以及兩份 OWASP 文件對同一個 ISO 控制編號的標示差異。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="framework-crosswalk-and-standards" data-page="02-crosswalk-use.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　怎麼用 Crosswalk：對照單位與編號遷移</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2、LO3</li>
+  <li>前置：<a href="01-crosswalk-position.html">第 1 章</a></li>
+</ul>
+<p class="lead">拿到一堆對照檔之後，怎麼找到你要的那一條？這一章先拆開一條對照的結構，再處理一個實務上很容易出事的問題：你公司的風險登記冊還用 LLM Top 10 2025 的編號，而 Crosswalk 已經改成 2026。</p>
+
+<h2 id="us-unit">2.1 一條對照長什麼樣子</h2>
+<p>RATIONALE.md 把對照的單位寫得很清楚：<strong>一個 OWASP 風險條目，對映到某個框架的一個或多個控制</strong>。每一筆包含「控制編號、控制名稱、分層、範圍、備註」。以 LLM01 Prompt Injection 對 ISO/IEC 42001 為例，儲存庫的檔案列出四個控制（A.6.2.3 AI 系統安全、A.6.2.6 AI 系統測試、A.6.2.8 AI 系統監控、第 6.1 條風險評估），並為每個控制寫一句「怎麼適用」。</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　一條對照的欄位（RATIONALE.md 第 4.1、4.2 節，改寫）</caption>
+<thead><tr><th scope="col">欄位</th><th scope="col">意思</th><th scope="col">取值</th></tr></thead>
+<tbody>
+<tr><th scope="row">嚴重度 <br>(Severity)</th><td>該風險條目的嚴重度；基準取自 OWASP 清單定義或用 AIVSS 方法評估</td><td>如 Critical、High、Medium</td></tr>
+<tr><th scope="row">分層 <br>(Tier)</th><td>實作的優先順序</td><td><strong>Foundational</strong>（基線，Sprint 0–1 立即）、<strong>Hardening</strong>（縱深防禦，第 1–2 季）、<strong>Advanced</strong>（高成熟度環境，第 3 季起）</td></tr>
+<tr><th scope="row">範圍 <br>(Scope)</th><td>誰來做</td><td><strong>Buy</strong>（供應商／平台能力）、<strong>Build</strong>（內部工程）、<strong>Both</strong>（兩者都要）</td></tr>
+<tr><th scope="row">事件與工具</th><td>若有，連結真實事件與工具</td><td>事件 147 起；工具 70 餘項（README）</td></tr>
+<tr><th scope="row">交叉引用</th><td>同一風險在另外兩份清單的對應條目</td><td>如 LLM01 ↔ ASI01 ↔ DSGAI01</td></tr>
+</tbody></table></div>
+<p>這個設計的好處是回答實務問題：「這個 sprint 只能做三件事，哪三件？」答案是挑 Foundational；「這個控制要買還是自己做？」看 Scope。這兩個標籤是 Crosswalk 作者群的判斷（RATIONALE.md：分層依「實作複雜度、與其他控制的相依、成本、以及在正式環境中通常已存在的程度」），<strong>不是框架本身的屬性</strong>。</p>
+<p>找一條對照有兩條路。第一條用 <code>CROSSREF.md</code> 的總索引：一個 LLM 弱點 → 它在 Agentic 清單的放大版 → 它在資料安全清單的面向 → 主要框架。第二條直接開對應的對照檔（例如 <code>llm-top10/LLM_ISO42001.md</code>）。</p>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：把對照當成「檢查清單的來源」而不是「答案」</p>
+  <p>作者建議的用法：把你要滿足的框架控制（稽核員會問的）當出發點，用對照找出「OWASP 認為哪些風險與這個控制相關」，再回到 OWASP 風險條目讀細節。反過來也成立。這個用法是教材的整理，不是官方的使用步驟（官方 README 提供的是「分數你的覆蓋度」「讀對照檔」「跑工具」三種用法）。</p>
+</div>
+
+<h2 id="us-migration">2.2 編號遷移：10 個條目，8 個換號，絕對不能依序取代</h2>
+<div class="concept">
+<h3 id="c-migration">LLM Top 10 2025 → 2026 的陷阱</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>Crosswalk 4.0.0（2026-08-28）把所有 LLM 對照從 LLM Top 10 2025 改為 <strong>2026</strong>。MIGRATION.md 的說法：每個條目的主題都保留了，但<strong>十個中有八個換了編號，兩個改了名稱與範圍</strong>。LLM Top 10 本身的版本演進見〈<a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">版本演進</a>〉。</dd>
+  <dt data-n="2">為什麼是陷阱</dt>
+  <dd>換號不是整體加一或減一，而是一次<strong>排列</strong> (permutation)：MIGRATION.md 明說「其中五個變動屬於排列，所以依 ID 順序做天真的尋找取代會把資料毀掉」。作者把它的對映表跑了一遍：八個換號的條目形成兩個環，一個五環（LLM03→04→05→10→06→03）與一個三環（LLM07→08→09→07）。依 ID 從 LLM01 到 LLM10 順序做字串取代，原本是 LLM03 的紀錄會被連續取代到 LLM04、LLM05，最後落在 LLM06，與正確的 LLM04 不同。用作者的模擬，八筆換號紀錄中有五筆會被改錯。</dd>
+  <dt data-n="3">怎麼做對</dt>
+  <dd>MIGRATION.md 給的方法是兩選一：<strong>一次完成所有替換</strong>（同時處理），或<strong>依條目名稱對映</strong>。名稱對映最安全：先用名稱找到 2025 與 2026 的同一個風險，再換編號。</dd>
+  <dt data-n="4">要同時更新什麼</dt>
+  <dd>MIGRATION.md 列了四件事：風險登記冊與發現紀錄、CI 評測設定（garak 的設定檔已改為 2026 編號）、儀表板與查詢（<code>source_list</code> 欄位改為 <code>LLM-Top10-2026</code>，舊的過濾條件會回傳空集合）、以及範圍界線（2026 清單說得更清楚：模型是應用程式中的元件時歸它管；當模型成為有工具與跨對話記憶的「行動者」時，要搭配 Agentic Top 10）。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「編號變了但名稱沒變，所以我只要查名稱就好，不用管編號。」名稱本身也有變：2025 的 System Prompt Leakage 變成 2026 的 Hidden Context Exposure（範圍擴大），Insecure Output Handling 變成 Improper Output Handling，Supply Chain Vulnerabilities 簡化為 Supply Chain。</dd>
+</dl>
+</div>
+<div class="table-wrap"><table>
+<caption>表 2-2　LLM Top 10 的 2025 → 2026 對映（MIGRATION.md 的 Entry map，教材重排為以 2025 編號排序）</caption>
+<thead><tr><th scope="col">2025 編號與名稱</th><th scope="col">2026 編號與名稱</th><th scope="col">變動</th></tr></thead>
+<tbody>
+<tr><th scope="row">LLM01 Prompt Injection</th><td>LLM01 Prompt Injection</td><td>不變（新增跨模態攻擊）</td></tr>
+<tr><th scope="row">LLM02 Sensitive Information Disclosure</th><td>LLM02 Sensitive Information Disclosure</td><td>不變</td></tr>
+<tr><th scope="row">LLM03 Supply Chain Vulnerabilities</th><td>LLM04 Supply Chain</td><td>下降 1 名，改名（新增工件來源證明）</td></tr>
+<tr><th scope="row">LLM04 Data and Model Poisoning</th><td>LLM05 Data and Model Poisoning</td><td>下降 1 名（新增微調顛覆）</td></tr>
+<tr><th scope="row">LLM05 Insecure Output Handling</th><td>LLM10 Improper Output Handling</td><td>下降 5 名，改名（新增程式碼產生）</td></tr>
+<tr><th scope="row">LLM06 Excessive Agency</th><td>LLM03 Excessive Agency</td><td>上升 3 名</td></tr>
+<tr><th scope="row">LLM07 System Prompt Leakage</th><td>LLM08 Hidden Context Exposure</td><td>下降 1 名，重新界定範圍</td></tr>
+<tr><th scope="row">LLM08 Vector and Embedding Weaknesses</th><td>LLM09 Vector and Embedding Weaknesses</td><td>下降 1 名</td></tr>
+<tr><th scope="row">LLM09 Misinformation</th><td>LLM07 Misinformation</td><td>上升 2 名</td></tr>
+<tr><th scope="row">LLM10 Unbounded Consumption</th><td>LLM06 Unbounded Consumption</td><td>上升 4 名</td></tr>
+</tbody></table></div>
+<p>這張表與你在 <a href="../../01-overview/genai-security-project/05-integration.html#int-evolution">GenAI Security Project 第 5 章</a> 看到的五列對照一致（Excessive Agency、Unbounded Consumption、Hidden Context Exposure、Improper Output Handling、Supply Chain），這裡補齊了十個。完整的版本演進（2023 → 2025 → 2026）屬後續 LLM Top 10 主題。</p>
+<div class="callout official">
+  <p class="callout-title">嚴重度也被重新調整，但依據是什麼</p>
+  <p>MIGRATION.md 與 RATIONALE.md 說三個條目的嚴重度在遷移時提高：Excessive Agency（2026 的 LLM03）由 High 升為 Critical、Unbounded Consumption（LLM06）由 Medium 升為 High、Misinformation（LLM07）由 Medium 升為 High；其餘七個維持不變。依據是 2026 清單的排名變動與專案領導者的前言（例如 Misinformation 的社群投票與事件資料差距最大）。<strong>這些嚴重度是 Crosswalk 作者群的評級，不是 LLM Top 10 清單本身的欄位</strong>；RATIONALE.md 的規則是「改嚴重度必須引用 AIVSS、CVSS 或 OWASP 來源清單的定義」。</p>
+</div>
+
+<h2 id="us-iso">2.3 一個值得留意的小事：兩份 OWASP 文件對同一個 ISO 控制編號的標示不同</h2>
+<p>本教材在核對時發現：Crosswalk 的 LLM × ISO/IEC 42001 檔案把 <code>A.6.2.6</code> 標為「AI 系統測試」、<code>A.6.2.8</code> 標為「AI 系統監控」；而 AI Exchange 在 <code>MONITOR USE</code> 控制頁寫的是「ISO/IEC 42001 <code>B.6.2.6</code> 討論 AI 系統的運作與監控」。兩者談同一個編號區段（6.2.6），但<strong>附錄字母（A 與 B）與標籤不同</strong>。</p>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：哪一個標示與 ISO 原文一致</p>
+  <p>ISO/IEC 42001 的內文需付費取得，本教材沒有取得，所以<strong>無法判斷是哪一邊標錯，或是兩者指的是附錄 A（控制目標）與附錄 B（實作指引）的對應關係</strong>。這個差異只是提醒你：在把 OWASP 對照引用到稽核文件時，<strong>控制編號必須回到標準原文核對</strong>。教材不使用任何 ISO 控制編號作為事實，只用來說明這個現象。</p>
+</div>
+
+<h2 id="us-scenario">2.4 情境範例 A：一份用舊編號的風險登記冊</h2>
+<div class="scenario">
+<h3 id="scn-a">情境 A（虛構）：北辰藥局的 LLM 風險登記冊</h3>
+<p><span class="tag fiction">虛構</span> 北辰藥局是虛構的公司。2025 年初，他們依 LLM Top 10 2025 建了風險登記冊，並用編號串到合規系統（LLM06 對應「客服 agent 的退款權限」，LLM10 對應「流量暴增造成的成本風險」）。2026 年底，合規人員要引用 Crosswalk 4.0.0 來準備稽核，把 LLM 條目連結全部指向新的對照檔。他的同事用「全部取代」功能，依序把 LLM03 改成 LLM04、LLM04 改成 LLM05，以此類推。</p>
+<ol class="steps">
+  <li><strong>先看出問題：</strong>依序取代會連鎖。原本標 LLM03 的那筆（其實是 2025 的 Supply Chain），被改成 LLM04，下一輪又被改成 LLM05，再一路被改下去，最後落在 LLM06（資源耗盡），主題完全錯了。</li>
+  <li><strong>改用名稱對映：</strong>表 2-2 是對照表。「客服 agent 的退款權限」在 2025 是 LLM06 Excessive Agency，在 2026 是 LLM03 Excessive Agency；「流量暴增的成本風險」在 2025 是 LLM10 Unbounded Consumption，在 2026 是 LLM06。</li>
+  <li><strong>一次完成：</strong>用一份對照表一次處理所有記錄，而不是分批取代。還要順便更新 CI 評測設定與儀表板過濾條件（<code>source_list</code>）。</li>
+  <li><strong>檢查嚴重度：</strong>Excessive Agency 在 Crosswalk 由 High 變成 Critical，這會影響風險登記冊的優先序；要在登記冊註明這是 Crosswalk 作者群的評級。</li>
+  <li><strong>這個情境的提醒：</strong>真正的問題不是工具，而是<strong>引用沒帶年份</strong>。GenAI Security Project 主題就提醒過：寫 <code><a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a></code>，不要寫 <code>LLM03</code>。</li>
+</ol>
+</div>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>對照單位：一個風險條目對映一個框架的一或多個控制；欄位含嚴重度、分層（Foundational／Hardening／Advanced）、範圍（Buy／Build／Both）、事件、工具與交叉引用。</li>
+  <li>分層與範圍是 Crosswalk 作者群的判斷，不是框架屬性。</li>
+  <li>LLM Top 10 2025 → 2026：10 個條目，8 個換號（形成一個五環與一個三環的排列），其中 2 個同時改名與範圍；不能依序尋找取代；用名稱對映或一次完成。</li>
+  <li>三個條目的嚴重度被提高（Excessive Agency 升 Critical、Unbounded Consumption 與 Misinformation 升 High），這是 Crosswalk 的評級。</li>
+  <li>兩份 OWASP 文件對同一個 ISO 控制編號的標示不一，須回到標準原文核對。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出一條對照有哪些欄位，並知道分層與範圍是誰的判斷。</li>
+  <li>我能解釋為什麼 LLM 編號遷移不能依序取代，並知道兩種正確做法。</li>
+  <li>給我一個 2025 編號，我能查出它在 2026 的編號。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2、LO3。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-standards.html">第 3 章　AI Exchange 與各標準的關係</a>：從另一個方向看——不是把 OWASP 風險對到標準，而是 AI Exchange 說它如何參與標準制定。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>GenAI-Security-Project/crosswalk 儲存庫：MIGRATION.md（版本標示 2026-Q3）、RATIONALE.md 第 4 節、CROSSREF.md、<code>llm-top10/LLM_ISO42001.md</code>；CC BY-SA 4.0；<a href="https://github.com/GenAI-Security-Project/crosswalk">github.com/GenAI-Security-Project/crosswalk</a>；2026-10-26 讀取。</li>
+    <li>OWASP AI Exchange（2026-10-25 PDF 快照），<code>MONITOR USE</code> 控制頁；CC0 1.0；<a href="https://owaspai.org/OWASP-AI-Exchange.pdf">owaspai.org/OWASP-AI-Exchange.pdf</a>；2026-10-26 讀取。ISO/IEC 42001 內文本教材沒有取得。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Crosswalk 儲存庫 — CC BY-SA 4.0；OWASP AI Exchange — CC0 1.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'cw-ch2', topic: 'framework-crosswalk-and-standards', mode: 'chapter',
+  questions: [
+    { id: 'cw2q1', type: 'match', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-crosswalk-use.html#us-unit'}],
+      stem: '把下列標籤配對到它在 Crosswalk 中的意義。',
+      cats: [
+        { id: 'tier', label: '分層 (Tier)' },
+        { id: 'scope', label: '範圍 (Scope)' }
+      ],
+      items: [
+        { text: 'Foundational：每個部署都需要的基線，立即做', answer: 'tier', why: '分層回答「先做哪些」。' },
+        { text: 'Buy：由供應商或平台提供的能力', answer: 'scope', why: '範圍回答「誰來做」。' },
+        { text: 'Advanced：高成熟度環境才需要', answer: 'tier', why: '分層的第三級。' },
+        { text: 'Both：供應商能力與內部實作都要', answer: 'scope', why: '範圍的第三種。' }
+      ],
+      summary: '分層：先後順序；範圍：誰來做。兩者都是 Crosswalk 作者群的判斷。' },
+    { id: 'cw2q2', type: 'mc', lo: [3], refs: [{label: '2.2 概念', href: '02-crosswalk-use.html#c-migration'}],
+      stem: '為什麼 MIGRATION.md 警告：把風險登記冊中的 LLM 編號依 ID 順序逐一尋找取代，會破壞資料？',
+      options: [
+        { text: '因為 2026 版把所有編號都往前移一位。', why: '不是整體平移；有升有降，且有五個條目互相交換。' },
+        { text: '因為編號變動形成排列，依序取代會讓同一筆紀錄被連續改好幾次。', correct: true, why: '這是 MIGRATION.md 的說法（變動屬排列）；教材另以模擬驗證：依序取代會改錯其中五筆。' },
+        { text: '因為 2026 版刪除了一半的條目。', why: '條目仍是十個，沒有刪除。' },
+        { text: '因為尋找取代工具無法處理數字。', why: '問題在編號對映的結構，與工具無關。' }
+      ],
+      summary: '8 個換號形成排列：用名稱對映或一次完成。' },
+    { id: 'cw2q3', type: 'match', lo: [3], refs: [{label: '2.2 表 2-2', href: '02-crosswalk-use.html#us-migration'}],
+      stem: '把下列 2025 版的條目配對到它在 2026 版的編號。',
+      cats: [
+        { id: 'a03', label: 'LLM03:2026' },
+        { id: 'a06', label: 'LLM06:2026' },
+        { id: 'a08', label: 'LLM08:2026' },
+        { id: 'a10', label: 'LLM10:2026' }
+      ],
+      items: [
+        { text: 'LLM06:2025 Excessive Agency', answer: 'a03', why: '上升 3 名到第 3。' },
+        { text: 'LLM10:2025 Unbounded Consumption', answer: 'a06', why: '上升 4 名到第 6。' },
+        { text: 'LLM07:2025 System Prompt Leakage', answer: 'a08', why: '重新界定範圍，改名 Hidden Context Exposure。' },
+        { text: 'LLM05:2025 Insecure Output Handling', answer: 'a10', why: '下降 5 名並改名 Improper Output Handling。' }
+      ],
+      summary: '引用編號務必帶年份。' },
+    { id: 'cw2q4', type: 'scn', lo: [3], refs: [{label: '2.2 概念', href: '02-crosswalk-use.html#c-migration'}, {label: '2.4 情境 A', href: '02-crosswalk-use.html#us-scenario'}],
+      stem: '依本章，這個團隊該怎麼處理遷移？',
+      scenario: '松岡能源（虛構）的資安團隊要把 300 筆風險紀錄從 LLM Top 10 2025 編號改成 2026。實習生提議：「寫一個腳本，從 LLM01 到 LLM10 依序做字串取代。」另一位同事說：「不用改，名稱沒變，編號只是代號。」',
+      options: [
+        { text: '採用實習生的做法，依序取代即可。', why: '會讓同一筆紀錄被連續取代，結果錯誤。' },
+        { text: '採用同事的做法，保留舊編號。', why: '舊編號與 2026 對照檔不符，查詢會失效；且有 2 個條目連名稱都變了。' },
+        { text: '用名稱對映，或寫一份 2025→2026 對照表一次完成所有替換；同時更新評測設定與儀表板的 source_list 過濾條件，並讓新紀錄的編號一律帶年份。', correct: true, why: '對應 MIGRATION.md 的建議與表 2-2。' },
+        { text: '等 OWASP 發布自動轉換工具再處理。', why: 'MIGRATION.md 已經提供對映表；不需要等待。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 依序取代會因為編號形成排列（一個五環與一個三環）而重複替換。(2) 編號已與 Crosswalk 2026 對照檔綁定，保留舊編號會讓查詢與評測設定對不上。(3) 有些條目名稱也改了（System Prompt Leakage → Hidden Context Exposure）。(4) MIGRATION.md 給的是一次替換或依名稱對映，並列出要同步更新的地方。</p><p><strong>結論：</strong>名稱對映加一次完成，並同步更新周邊設定。對應教材：<a href="02-crosswalk-use.html#c-migration">2.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

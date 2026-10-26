@@ -1,0 +1,47 @@
+# OWASP AI 資安學習教材 — .gitignore
+# 原則：只忽略「產物」與「個人本機設定」。教材來源檔（HTML/CSS/JS/MD）與離線必需的
+# assets/vendor/mermaid.min.js 一律進版控（專案規格要求雙擊 file:// 即可使用）。
+
+# --- Playwright MCP 執行產物（快照 .yml、console 記錄 .log、截圖）---
+.playwright-mcp/
+
+# --- 驗證時隨手產生的截圖（Playwright 工具預設存在專案根目錄）---
+/shot-*.png
+/example-*.png
+/page-*.png
+/page-*.jpeg
+/console-*.log
+
+# --- Claude Code 個人本機設定（含個人的權限允許清單；.mcp.json 則進版控）---
+# 只忽略「個人本機」檔；若日後在 .claude/ 放團隊共用的設定（如 settings.json），不會被誤忽略。
+.claude/settings.local.json
+
+# --- 本機下載的官方原始資料（來源核對用）---
+# 查證時請下載到專案之外（系統暫存資料夾）。萬一放進專案，這些不該進版控：
+# 官方 PDF 與網頁快照有各自授權，且體積大、可由 URL 重新取得。
+/_src/
+/_download*/
+/*.pdf
+
+# --- Python / Node 執行 tools/ 腳本時產生的快取（不是原始碼）---
+__pycache__/
+*.pyc
+node_modules/
+
+# --- 暫存與編輯器 ---
+*.tmp
+*.bak
+*.swp
+*~
+.vscode/
+.idea/
+
+# --- 作業系統 ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- 私有工作檔（不公開；備份在專案外）---
+/owasp-ai-resources.md
+/learning-material-prompt.md
+/uncertainties-and-inferences.md

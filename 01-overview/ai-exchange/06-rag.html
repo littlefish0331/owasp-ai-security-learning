@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 6 章　RAG 系統｜OWASP AI Exchange｜OWASP AI 資安學習教材</title>
+<meta name="description" content="RAG 的五個階段與信任邊界、RAG 集中與新增的威脅、八個專屬的威脅建模問題，以及失效安全與來源追溯。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="01-overview" data-topic="ai-exchange" data-page="06-rag.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 6 章　RAG 系統</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 9 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO5</li>
+  <li>前置：<a href="05-agentic-genai.html">第 5 章</a>（致命三要素 (Lethal Trifecta)）；<a href="../../primer-security-for-developers.html#p-surface">信任邊界 (Trust Boundary)</a></li>
+</ul>
+<p class="lead">你已經很熟悉 RAG 怎麼運作，所以這一章不講原理。要看的是：RAG 在資安上<strong>多出了哪些攻擊面 (Attack Surface)</strong>，以及官方給了哪些「上線前該問的問題」。</p>
+
+<div class="callout official">
+  <p class="callout-title">官方的定位：RAG 不是另一個威脅領域</p>
+  <p>AI Exchange 說得很明確：RAG 沒有獨立的威脅圖景，適用同一套資產與影響模型；週期表已列出各威脅的控制，<strong>不需要專屬的 RAG 控制類別</strong>。這一節只標出 RAG 在哪裡集中既有威脅，以及哪裡帶來了單純聊天機器人沒有的攻擊面。</p>
+</div>
+
+<h2 id="rag-stages">6.1 五個階段，各有一道信任邊界</h2>
+<p>官方把典型的 RAG 管線分成五個階段，並指出每個階段都有各自的信任邊界。</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="RAG 五階段：攝入、索引、檢索、增補、生成。外部來源文件在攝入階段進入；向量庫在索引階段被寫入；檢索階段的結果與使用者問題一起在增補階段組成提示詞；生成階段產生輸出並可能觸發動作。">
+flowchart LR
+  SRC["來源文件<br>檔案、wiki、工單、網頁、郵件"] --> ING["1 攝入<br>Ingestion"]
+  ING --> IDX["2 索引<br>切塊、嵌入、寫入向量庫"]
+  IDX --> RET["3 檢索<br>依查詢取回最相近的片段"]
+  Q["使用者問題"] --> RET
+  RET --> AUG["4 增補<br>把片段放進提示詞"]
+  AUG --> GEN["5 生成<br>模型產生輸出"]
+  GEN --> OUT["輸出：顯示或觸發動作"]
+  classDef edge stroke-width:3px
+  class ING,IDX,RET,AUG,GEN edge
+</pre>
+<figcaption><strong>圖 6-1　RAG 的五個階段。</strong>階段名稱與順序取自官方。每一個階段框都是一道要檢查的信任邊界：誰能把內容放進來源？誰能寫入索引？檢索是否遵守原始權限？片段進入提示詞前有沒有標示它是不可信資料？生成結果是否被直接渲染或執行？（問題改寫自官方的威脅建模 (Threat Modeling) 問題。）</figcaption>
+</figure>
+<p>為什麼 RAG 讓情況不一樣？官方給了三個原因：</p>
+<ol>
+  <li><strong>存取控制與檢索範圍經常脫節。</strong>向量資料庫很少強制執行與原始系統相同的逐文件權限，形成「混淆代理人 (Confused Deputy)」：模型（以及使用者）可能取回他本來沒有權限看的片段。</li>
+  <li><strong>語料本身成為一項資產</strong>，有自己的 CIA 需求：通常比訓練資料更大、更少人審過、更新更頻繁，且由不同信任等級的多位貢獻者組成。</li>
+  <li><strong>檢索是第二個、而且幾乎看不見的輸入通道。</strong>使用者只看到自己的問題；模型還看到檢索器選出的一切。任何能進入索引的內容，都是潛在攻擊面，不論目前這位使用者能否直接觸及它。</li>
+</ol>
+
+<h2 id="rag-threats">6.2 RAG 集中與新增的威脅，以及上線前要問的問題</h2>
+<p>官方列出 RAG 的威脅，並把「威脅建模問題」寫成「如果答案讓你不安，就考慮這個威脅」的形式（延伸第 7 章的決策樹）。下表把兩者合併：左欄是威脅，右欄是對應的上線前提問。</p>
+<div class="table-wrap"><table>
+<caption>表 6-1　RAG 的威脅與威脅建模問題（官方內容整理，用語縮寫）</caption>
+<thead><tr><th scope="col">RAG 中的威脅</th><th scope="col">一句話說明</th><th scope="col">上線前要問</th></tr></thead>
+<tbody>
+<tr><th scope="row">間接提示詞注入<br>（經檢索）</th><td>攻擊者把指令放進之後會被攝入、檢索進別人提示詞的文件；只要內容能進語料就能到達。官方稱它是最具後果的 RAG 專屬情形</td><td>系統是否把檢索資料插入模型輸入？</td></tr>
+<tr><th scope="row">檢索語料投毒</th><td>有寫入權的人插入或編輯文件，偏移被當成「事實」呈現的內容；是對語料的持續性完整性攻擊</td><td>除了受信任的工程師，還有誰能新增、編輯或影響進入語料的文件（共享磁碟、工單、爬蟲、使用者上傳）？</td></tr>
+<tr><th scope="row">增補資料遭竄改<br>（含向量索引遭竄改）</th><td>操縱切塊、嵌入或中繼資料（如偽造來源或時間戳）；索引是獨立於語料的資產，能直接寫索引的人不必動任何來源文件</td><td>除了攝入管線，是否還有其他東西對向量索引有寫入權？</td></tr>
+<tr><th scope="row">元件失效時的不安全回退</th><td>檢索、權限檢查或雜湊驗證失敗時，系統退回「只靠模型記憶」、不過濾或用過期快取，上游控制被悄悄繞過；攻擊者可刻意觸發失敗</td><td>這些檢查失敗時，系統怎麼處理？</td></tr>
+<tr><th scope="row">輸出中的揭露</th><td>檢索越過授權邊界：跨租戶外洩、取回使用者無權限的文件，或用查詢枚舉語料內容</td><td>檢索範圍是否逐使用者、逐 session 與來源文件的存取控制一致？</td></tr>
+<tr><th scope="row">嵌入反推、刪除未連鎖</th><td>能讀向量庫的人嘗試重建原文（不必碰模型 API）；來源文件刪除或撤銷權限，但片段、嵌入與快取沒有跟著清除</td><td>來源文件被刪除或降權時，是否傳遞到片段、嵌入與快取回應？</td></tr>
+<tr><th scope="row">輸出含傳統注入</th><td>檢索內容帶有腳本或惡意連結，被回聲到輸出並在下游渲染（XSS、Markdown 外洩連結等）</td><td>檢索內容是否能到達渲染環境或下游動作？</td></tr>
+<tr><th scope="row">供應鏈與可追溯</th><td>語料、嵌入模型或向量庫由第三方提供；若回應沒有出處，事後無法偵測投毒或過期</td><td>這些是否由第三方提供？回應是否帶可驗證的來源歸屬（片段、文件、雜湊）？</td></tr>
+<tr><th scope="row">AI 資源耗盡</th><td>攝入時過大或刻意製作的文件，或迫使昂貴檢索與重排序的查詢</td><td>（官方的建模問題未單列）</td></tr>
+</tbody></table></div>
+
+<div class="callout official">
+  <p class="callout-title">RAG 常是致命三要素的「Data」那一腳</p>
+  <p>RAG 通常提供三要素中的 Data（經由檢索片段做間接注入）；語料或同一個檢索器能碰到的其他文件是 Access；輸出中的可點擊連結或 agent 動作則是 Send。官方特別說，RAG <strong>不必是 agentic 才會中招</strong>：對敏感語料的讀取，加上使用者可觀察到的輸出通道（如被渲染的連結），就已足夠。</p>
+</div>
+
+<h2 id="rag-controls">6.3 控制：沒有專屬類別，但有幾個重點</h2>
+<ul>
+  <li>把 <code class="ctl">AUGMENTATION DATA CONFIDENTIALITY</code> / <code class="ctl">AUGMENTATION DATA INTEGRITY</code> 與 <code class="ctl">INPUT SEGREGATION</code> 專門用在檢索通道；語料要以和訓練資料同樣的嚴謹度對待：有存取控制、有版本、可追溯；並在管線<strong>每個階段採 fail-closed（失效即拒絕）預設</strong>，而不只是在模型邊界。</li>
+  <li>使用第三方或外部託管的嵌入模型、向量庫服務、攝入連接器時，供應鏈管理要額外留意。官方指出：因為已儲存的向量可以反推原文，向量庫備份要與來源文件同一敏感等級；把嵌入送到第三方嵌入服務，等於轉移底層資料。</li>
+  <li><code class="ctl">MONITOR USE</code>：如果 RAG 回應沒有可驗證的出處（哪些片段、來自哪些文件、雜湊值為何），事後就無法偵測被投毒或過期文件是否影響了答案，這會讓原本可偵測的資料投毒事件變成不可偵測。</li>
+</ul>
+
+<h2 id="rag-concept">6.4 核心概念：存取控制繼承 (Access Control vs. Retrieval Scope)</h2>
+<div class="concept">
+<h3 id="c-acl">檢索範圍與原始存取控制脫節</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>來源系統（例如文件管理系統）有「誰能看哪份文件」的規則；但把文件切塊、嵌入、放進向量庫之後，這些規則常常沒有跟著走，檢索時只看「相似度」。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>向量庫的設計目標是找最相近的片段，不是做逐文件授權；而且 RAG 的價值來自於「把大量文件都放進去」。官方在輸入資料外洩的說明裡明講：應該把使用者的存取權套用到檢索，例如 X 部門的使用者提問時，不該取回 X 部門沒有權限的內容。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>使用者不需要任何特殊技巧，只要問到與受限文件相關的主題；若系統取回並放進提示詞，模型就可能在回答中引用。多租戶時，也可能從結果數量、分數分布等側面推測其他租戶文件的存在。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>檢索階段要用<strong>提問者</strong>的權限過濾；權限檢查失敗時採失效即拒絕，而不是退回不過濾；來源文件刪除或降權時，連鎖清除其片段、嵌入與快取。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「模型不會把它不該說的話說出來。」官方的 GenAI 一節說得很直接：對模型來說，所有資料都是「可及」的，system prompt、對齊或輸出過濾的防護通常不是滴水不漏。</dd>
+</dl>
+</div>
+
+<h2 id="rag-scenario">6.5 情境範例 C：保險公司的客服 RAG</h2>
+<div class="scenario">
+<h3 id="scn-c">情境 C（虛構）：星橋保險的理賠客服助理</h3>
+<p><span class="tag fiction">虛構</span> 星橋保險是虛構的公司。他們為客服人員建了一個 RAG 助理：知識庫由理賠手冊、內部 wiki、過去的客服工單與合作醫療院所提供的資料組成，員工以自然語言提問，助理回答並附上來源。向量庫使用外部託管服務，攝入管線每晚自動同步 wiki 與工單系統。</p>
+<p class="arch"><strong>架構：</strong>來源（手冊、wiki、工單、院所資料）→ 夜間攝入 → 外部託管向量庫 → 檢索 → 託管 LLM → 客服人員介面（會渲染 Markdown 連結）。</p>
+<ol class="steps">
+  <li><strong>發生了什麼（兩件獨立的事）：</strong>(1) 某位客服人員查詢一般理賠流程時，答案中引用了「僅限理賠審查部」才能看的內部審查標準，因為檢索時沒有帶入提問者的權限；(2) 稍早，某份合作院所資料夾中的文件被插入隱藏指示，內容會誘使助理在答案裡附上一個含查詢內容的外部連結（概念層級，不描述具體手法）。</li>
+  <li><strong>哪一環出問題：</strong>(1) 檢索階段：檢索範圍和來源存取控制脫節；(2) 攝入階段：來源有第三方可編輯，沒有當成不可信輸入；且輸出會被渲染成可點擊連結。</li>
+  <li><strong>對應條目：</strong>(1) AI Exchange：Disclosure in output／授權不一致造成的增補資料 (augmentation data) 外洩；LLM Top 10 2026 的 LLM02 Sensitive Information Disclosure 一類；(2) AI Exchange：Indirect prompt injection 與 Output contains conventional injection（經由連結）；LLM Top 10 2026 的 LLM01 與 LLM10。</li>
+  <li><strong>該採什麼控制：</strong>
+    <ul>
+      <li>以提問者的權限過濾檢索結果，失敗即拒絕（<code class="ctl">AUGMENTATION DATA CONFIDENTIALITY</code>、<code class="ctl">LEAST MODEL PRIVILEGE</code>）；</li>
+      <li>將第三方可編輯的文件視為不可信：<code class="ctl">INPUT SEGREGATION</code> 加上 <code class="ctl">PROMPT INJECTION I/O HANDLING</code>，並限制輸出中可渲染的連結（<code class="ctl">ENCODE MODEL OUTPUT</code>）；</li>
+      <li>回應附上片段與文件的出處與雜湊，供事後追查（<code class="ctl">MONITOR USE</code>）；</li>
+      <li>外部託管向量庫與嵌入服務：供應鏈管理，並將向量庫備份視為與來源同一敏感等級。</li>
+    </ul>
+  </li>
+</ol>
+</div>
+
+<h2 id="ch6-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>RAG 不是獨立威脅領域，但它新增了「檢索」這條看不見的輸入通道，以及「語料／索引」這兩項資產。</li>
+  <li>五個階段（攝入、索引、檢索、增補、生成）各有信任邊界。</li>
+  <li>最常被忽略的：檢索範圍和原始存取控制脫節、失效時回退成不過濾、刪除沒有連鎖、回應沒有出處。</li>
+  <li>RAG 常是致命三要素的 Data；不必 agentic 也可能外洩。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能對自己的 RAG 管線逐階段指出信任邊界。</li>
+  <li>我能說出至少三個官方 RAG 威脅建模問題，並說明答案讓人不安時該考慮什麼威脅。</li>
+  <li>我知道「失效時回退成不過濾」為什麼是漏洞。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO5。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch6-next">接下來讀什麼</h2>
+<p><a href="07-risk-analysis.html">第 7 章　風險分析</a>：把前面所有威脅整理成決策樹，找出「對我的系統真正相關」的那一小份，並學會處理責任歸屬。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP AI Exchange，0. AI Security Overview：RAG systems overview（五階段、威脅清單、威脅建模問題、控制重點）；<a href="https://owaspai.org/go/ragoverview">owaspai.org/go/ragoverview</a>；2026-10-25 快照；CC0 1.0。</li>
+    <li>OWASP AI Exchange：Input data leak（含 RAG 與使用者權限）— <a href="https://owaspai.org/go/inputdataleak">owaspai.org/go/inputdataleak</a>；<a href="https://owaspai.org/go/augmentationdataconfidentiality">AUGMENTATION DATA CONFIDENTIALITY</a>、<a href="https://owaspai.org/go/augmentationdataintegrity">AUGMENTATION DATA INTEGRITY</a>、<a href="https://owaspai.org/go/inputsegregation">INPUT SEGREGATION</a>。</li>
+    <li>OWASP AI Exchange：How about Generative AI?（<a href="https://owaspai.org/go/genai">owaspai.org/go/genai</a>）。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：OWASP AI Exchange（owaspai.org）— CC0 1.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'ch6', topic: 'ai-exchange', mode: 'chapter',
+  questions: [
+    { id: 'c6q1', type: 'mc', lo: [5], refs: [{label: '6.1 五個階段', href: '06-rag.html#rag-stages'}],
+      stem: '官方說 RAG 的檢索是「第二個、幾乎看不見的輸入通道」。這句話的意思最接近下列哪一項？',
+      options: [
+        { text: '檢索通道只傳遞向量，不含文字，因此不會有提示詞注入。', why: '向量只是索引表示；被取回並放進提示詞的是片段文字，間接提示詞注入正是經由這個通道發生。' },
+        { text: '檢索通道一定是加密的，所以攻擊者看不見。', why: '「看不見」是指使用者與維運者容易忽略這條輸入路徑，與加密無關。' },
+        { text: '使用者的問題之外，模型還會看到檢索器選出的內容；任何能進入索引的內容，都是潛在攻擊面。', correct: true, why: '使用者只看到自己的問題，模型卻同時看到檢索出的片段；因此「誰能寫進語料」成為安全問題。' },
+        { text: '只有管理員能存取檢索通道，所以不需要驗證內容。', why: '攻擊面來自誰能影響進入語料的內容，不是誰能操作檢索器；共享磁碟、工單、爬蟲、使用者上傳都可能成為來源。' }
+      ],
+      summary: '檢索是看不見的輸入通道：要檢查的不是誰在提問，而是誰能把內容放進索引。' },
+    { id: 'c6q2', type: 'mc', lo: [5], refs: [{label: '6.2 表 6-1', href: '06-rag.html#rag-threats'}],
+      stem: '一個 RAG 系統的授權服務暫時故障。為了「不影響使用」，工程師讓系統在權限檢查失敗時直接回傳所有檢索結果。依官方說法，這個設計的問題是什麼？',
+      options: [
+        { text: '只要在輸出前再過濾一次敏感字詞就足夠。', why: '輸出過濾是額外一層，不是理由去放棄檢索層的授權；而且敏感內容並不總是能靠關鍵字辨認。' },
+        { text: '這是不安全回退：檢索範圍的控制被繞過，應改為失效即拒絕。', correct: true, why: '官方列為 RAG 威脅之一，並在控制重點中要求每個階段採 fail-closed 預設。' },
+        { text: '沒有問題，因為只是暫時的。', why: '攻擊者可以刻意觸發失敗；官方明確警告不安全回退會讓上游控制被悄悄繞過。' },
+        { text: '問題只在效能，改用快取就能解決。', why: '官方同時列出「回傳過期快取」也屬同一類問題，快取不是解法。' }
+      ],
+      summary: '失效時的預設行為，就是攻擊者會想觸發的路徑。' },
+    { id: 'c6q3', type: 'match', lo: [5], refs: [{label: '6.2 表 6-1', href: '06-rag.html#rag-threats'}],
+      stem: '把下列 RAG 事件配對到最貼切的威脅類型（依表 6-1）。',
+      cats: [
+        { id: 'inj', label: '經檢索的間接提示詞注入' },
+        { id: 'poison', label: '檢索語料投毒' },
+        { id: 'idx', label: '向量索引遭竄改' },
+        { id: 'del', label: '刪除未連鎖傳遞' },
+        { id: 'inv', label: '嵌入反推' }
+      ],
+      items: [
+        { text: '具有寫入權的攻擊者改寫了幾份公司政策文件，使助理把錯誤條款當成事實呈現', answer: 'poison', why: '對來源有寫入權的人編輯文件，以偏移被檢索並當事實呈現的內容，是語料投毒。' },
+        { text: '向量資料庫預設對內網全開，有人直接寫入向量，而來源文件都沒被改動', answer: 'idx', why: '索引是獨立於語料的資產；直接寫索引不必動來源文件。' },
+        { text: '員工離職後其文件已從來源系統刪除，但助理仍能回答其中內容', answer: 'del', why: '刪除沒有連鎖到片段、嵌入與快取回應，資料仍可由檢索器取得。' },
+        { text: '一份外部上傳的文件含有給「助理」的隱藏指示，被取回後影響了另一位使用者的答案', answer: 'inj', why: '攻擊者只要讓內容進語料，就能經由檢索到達別人的提示詞。' },
+        { text: '有人取得向量庫的讀取權限，嘗試從儲存的向量重建原始文字', answer: 'inv', why: '不需碰模型 API，只讀向量就能嘗試重建，向量庫本身成為機密性目標。' }
+      ],
+      summary: '判斷關鍵：攻擊者動的是「來源、索引、查詢路徑、刪除流程」中的哪一環。' },
+    { id: 'c6q4', type: 'scn', lo: [5], refs: [{label: '6.4 存取控制與檢索範圍', href: '06-rag.html#rag-concept'}, {label: '6.2 輸出中的揭露', href: '06-rag.html#rag-threats'}],
+      stem: '依官方說法，這家公司最先該補的是哪一項控制？',
+      scenario: '松石顧問（虛構）有多個客戶專案，每個專案的文件只有專案成員能看。他們建立了一個內部 RAG 助理，把所有專案文件放進同一個向量庫，並在 system prompt 寫了「只回答使用者所屬專案的內容」。一位新進顧問提問時，回答中出現了另一個客戶專案的報價細節。',
+      options: [
+        { text: '在檢索階段以提問者的專案權限過濾可取回的片段，權限檢查失敗時採失效即拒絕。', correct: true, why: '根因是檢索範圍和原始存取控制脫節（混淆代理人）。官方要求在檢索階段套用使用者的存取權，並採 fail-closed。' },
+        { text: '換成更大的語言模型，期待它更能遵守指令。', why: '模型再強也無法替代檢索層的授權；官方說所有資料對模型都是「可及」的。' },
+        { text: '把向量庫的相似度門檻調高，讓不相關的文件取不回來。', why: '相似度門檻是相關性調整，不是授權機制；其他專案的相關內容仍可能被取回。' },
+        { text: '在 system prompt 再加一條「不得洩漏其他專案的內容」。', why: '這仍是用指令當授權邊界。官方指出模型的防護並不滴水不漏，授權要在模型之外強制。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 問題是一位有授權的使用者，取回了他無權看的片段：這不是模型被騙，而是檢索結果本來就越過了授權邊界。(2) 官方在 RAG 概觀指出，向量庫很少強制與來源相同的逐文件權限，形成混淆代理人。(3) 因此控制要放在檢索階段，用「提問者」的權限過濾，而不是靠 system prompt 要求模型自行判斷。</p><p><strong>結論：</strong>先在檢索階段實作逐使用者／專案的權限過濾，並採失效即拒絕；之後再加輸出端的敏感資料處理與來源追溯。對應教材：<a href="06-rag.html#rag-concept">6.4 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　階段 1–4：規劃到利用｜GenAI 紅隊演練｜OWASP AI 資安學習教材</title>
+<meta name="description" content="GenAI Red Teaming Manual 八階段方法的前半：規劃與範圍、偵察、攻擊面對應、利用與衝擊；環境（沙箱、預備、正式）的限制，以及用信任邊界與資料流圖把 LLM Top 10 2026 與 Agentic Top 10 疊成威脅假設。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="genai-red-teaming" data-page="02-phases-1-4.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　階段 1–4：規劃到利用</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 10 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position.html">第 1 章</a>；<a href="../../primer-security-for-developers.html#p-surface">攻擊面與信任邊界</a>（可略讀）</li>
+</ul>
+<p class="lead">Manual 把一次演練切成八個階段。本章走完前四個：先談好能測什麼、怎麼測（階段 1），再摸清楚對象（階段 2），畫出它的攻擊面（階段 3），最後才真正動手利用（階段 4）。你會發現「動手」排在第四步；前面三步決定了後面的測試安不安全、有沒有意義。</p>
+
+<h2 id="ph-overview">2.1 八階段總覽</h2>
+<div class="table-wrap"><table>
+<caption>表 2-1　Manual 的八個階段（階段名稱依 PDF 目錄；目的為官方 Main Objective 改寫）</caption>
+<thead><tr><th scope="col">階段</th><th scope="col">目的（改寫）</th><th scope="col">主要產出</th></tr></thead>
+<tbody>
+<tr><th scope="row">1 規劃與範圍 <br>(Planning &amp; Scoping)</th><td>定義目標、範圍、團隊、交戰規則、環境與證據處理，對齊治理與法規</td><td>共識的目標、存取權、測試準則</td></tr>
+<tr><th scope="row">2 偵察與指紋辨識 <br>(Reconnaissance &amp; Fingerprinting)</th><td>蒐集目標的設計、行為與防禦資訊，建立行為基準</td><td>AI 物料清單 (AI-BOM)、端點清單</td></tr>
+<tr><th scope="row">3 攻擊面對應 <br>(Surface Mapping)</th><td>畫出可被觸及的入口、信任邊界與控制點，排出階段 4 的優先順序</td><td>攻擊面矩陣、威脅登記冊、測試判準</td></tr>
+<tr><th scope="row">4 利用與衝擊 <br>(Exploitation &amp; Impact)</th><td>主動利用已找到的弱點，示範真實衝擊</td><td>各測試領域的結果與證據</td></tr>
+<tr><th scope="row">5 持久化與升級 <br>(Persistence &amp; Escalation)</th><td>檢查入侵能否撐過重置、權限能否升級</td><td>持久化與升級測試證據</td></tr>
+<tr><th scope="row">6 後利用 <br>(Post-Exploitation)</th><td>評估後果：有效權限、影響範圍、嚴重度，建議遏制措施</td><td>衝擊評估、嚴重度評分</td></tr>
+<tr><th scope="row">7 評估與報告 <br>(Evaluation &amp; Reporting)</th><td>整理成可行動的情報：測試判準、可重現性、涵蓋追蹤、指標</td><td>給管理、工程與合規的報告</td></tr>
+<tr><th scope="row">8 事後與修補 <br>(Post-Engagement &amp; Remediation)</th><td>關閉缺口、以回歸測試驗證修補、把發現轉成偵測與流程</td><td>紅藍成對產出</td></tr>
+</tbody></table></div>
+<p>官方資源頁的摘要把八階段寫成 planning、reconnaissance、attack surface mapping、exploitation、persistence、impact assessment、reporting、remediation，與 PDF 目錄用字不同（例如摘要沒有「後利用」）。逐項對應是 <span class="tag author">作者整理，非官方</span>，本教材一律用 PDF 目錄的名稱。</p>
+
+<figure class="diagram">
+<pre class="mermaid" data-alt="八階段流程圖：1 規劃與範圍、2 偵察與指紋辨識、3 攻擊面對應、4 利用與衝擊屬於本章；5 持久化與升級、6 後利用、7 評估與報告、8 事後與修補屬於第 3 章。階段 8 的回歸測試與偵測規則回饋到階段 1 的下一輪規劃。">
+flowchart LR
+  P1["1 規劃與範圍"] --> P2["2 偵察與指紋辨識"] --> P3["3 攻擊面對應"] --> P4["4 利用與衝擊"]
+  P4 --> P5["5 持久化與升級"] --> P6["6 後利用"] --> P7["7 評估與報告"] --> P8["8 事後與修補"]
+  P8 -.->|"回歸測試與新偵測規則"| P1
+  classDef here fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px
+  classDef author stroke-dasharray: 6 4,stroke-width:2px
+  class P1,P2,P3,P4 here
+  class P8 author
+</pre>
+<figcaption><strong>圖 2-1　Manual 八階段（藍底為本章涵蓋的階段 1–4，其餘見<a href="03-phases-5-8.html">第 3 章</a>）。</strong>八階段順序依 PDF 目錄；階段 8 回到階段 1 的虛線迴圈是 <span class="tag author">作者整理，非官方</span>，依據是 Manual 說階段 8 的目的包含把成功的紅隊提示詞自動化進 CI/CD，並讓後續演練引用持續監控準則。</figcaption>
+</figure>
+
+<h2 id="ph-p1">2.2 階段 1：先談好「能測什麼、怎麼測」</h2>
+<p>階段 1 的重點不是技術，是邊界與責任。Manual 要求在動手前就釐清：</p>
+<ul>
+  <li><strong>團隊與利害關係人：</strong>誰需要知道、何時知道；團隊要有機器學習工程師、資料科學家與倫理或政策專家，因為 GenAI 的風險不全是技術的。</li>
+  <li><strong>範圍與交戰規則 (Rules of Engagement)：</strong>哪些應用、模型、agent 執行環境、API 在範圍內；哪些明確排除（如第三方模型供應商的基礎設施）。要約定專用測試帳號、合成測試資料、token 與算力預算、服務中斷的停止條件，以及證據處理程序。</li>
+  <li><strong>記錄與監測：</strong>每個測試留下輸入與檢索上下文、輸出、工具呼叫與參數、授權決策、下游影響與資源用量；攻擊資料<strong>不應自動進入訓練管線</strong>。</li>
+  <li><strong>框架與法規：</strong>Manual 列出可用的分類與標準（如 LLM Top 10 2026、Agentic Top 10、MITRE ATLAS、NIST AI RMF、EU AI Act、ISO/IEC 42001、AIUC-1、GenAI Security Industry Framework Crosswalk），並強調<strong>風險分類不是合規標準</strong>：要把法規義務轉成可執行的測試，而不是引用框架名稱就當作已合規。</li>
+</ul>
+
+<h3 id="ph-env">環境：沙箱、預備、正式</h3>
+<div class="table-wrap"><table>
+<caption>表 2-2　三種測試環境（Manual 1.6 節，改寫）</caption>
+<thead><tr><th scope="col">環境</th><th scope="col">是什麼</th><th scope="col">要注意</th></tr></thead>
+<tbody>
+<tr><th scope="row">沙箱 <br>(Sandbox)</th><td>隔離對抗式活動，避免營運中斷、限縮爆炸半徑 (Blast Radius)；可以是專用實例（隔離帳號＋合成資料）或模擬環境</td><td>agent 平台要<strong>切斷正式的業務工具</strong>（真實郵件、工單、CRM），換成模擬服務與假帳號；RAG 用非正式索引與合成資料；邊緣裝置與企業內網及 OT／ICS 分段</td></tr>
+<tr><th scope="row">預備環境 <br>(Staging)</th><td>高擬真的正式環境複本：相同模型版本、提示詞、護欄與整合工具</td><td>與正式後端嚴格分離、用合成或匿名資料；稽核是否共用向量資料庫、即時通訊管道、正式 API 金鑰或速率配額，否則測試流量會漏進真實業務</td></tr>
+<tr><th scope="row">正式環境 <br>(Production)</th><td>最能反映真實態勢，也能驗證遙測與偵測回應</td><td>風險最高，需預先核准四項限制：<strong>(1) 非破壞、非持久</strong>；<strong>(2) 專用且有標記的測試帳號</strong>，讓 SOC 區分測試與真實攻擊；<strong>(3) 保守的速率、token 與併發上限</strong>；<strong>(4) 中止條件與回復</strong></td></tr>
+</tbody></table></div>
+<p>為了讓自動化探測不被邊界防禦擋掉，演練常會申請速率或 WAF 的放行。Manual 要求這類措施<strong>限定範圍、限時、並記錄在結果裡</strong>；要下結論說「已部署的控制有效」前，還要在沒有放行的條件下再測一次。</p>
+
+<h2 id="ph-p2">2.3 階段 2：偵察，包含供應鏈</h2>
+<p>偵察要搞清楚 AI 的用途、邊界與存取方式，從行為線索推測模型與設定，並<strong>建立行為基準</strong>，讓後面階段能判斷「這是異常」。來源包括公開文件與模型卡 (Model Card)。Manual 提醒：模型自己說的話，<strong>不能</strong>證明它的權重被洩漏。</p>
+<p>供應鏈偵察 (Supply Chain Reconnaissance) 是盤點第三方模型、資料集與軟體相依，建 AI 物料清單 (AI-BOM)，並把清單宣告的版本與雜湊對照實際部署。Manual 的兩個警告：許多 AI 編排框架的安全問題被廠商歸為「預期行為」之類而沒有 CVE，所以紅隊不能只靠軟體組成分析 (SCA) 掃描器；檢視序列化的模型檔只做靜態檢查並放在隔離環境，<strong>絕不為了檢查而執行不受信任的模型檔</strong>。</p>
+
+<h2 id="ph-p3">2.4 階段 3：攻擊面對應</h2>
+<div class="concept">
+<h3 id="c-boundary">信任邊界與資料流圖：把「誰能改寫誰」畫出來</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>Manual 要求建立一張端到端的資料流圖，顯示指令、資料、身分、權限、狀態、輸出、遙測與部署製品如何在系統裡流動。每條流要記錄來源、目的、主體、信任等級、資料分類、是否持久、執行能力、控制、對外連線與資源預算。要標出所有「跨越擁有者、身分、權限等級、資料分類、執行域或儲存環境」的轉換，也就是信任邊界 (Trust Boundary)。</dd>
+  <dt data-n="2">為什麼要這樣做</dt>
+  <dd>AI 系統的入口遠多於聊天框：上傳檔案、檢索內容、工具回應、其他 agent 的訊息、持久記憶都會影響模型；出口也不只是答案，還有工具參數、網路請求、產生的程式碼或 SQL、遙測。Manual 的核心要求：<strong>可執行的安全邊界必須存在於模型無法繞過或改寫的服務裡</strong>，並註明每條邊界的控制是「模型之外強制」還是「由模型自己判斷」。</dd>
+  <dt data-n="3">怎麼用（概念層級）</dt>
+  <dd>先畫圖，標出三處：不可信內容與系統提示詞合流的位置、輸出進入有特權接收端的位置、單一請求可觸發高成本擴散的位置；再疊上威脅分類，變成可測的假設。這和傳統威脅建模同一方法，只是多了上下文組裝、隱藏上下文、記憶與向量庫這些新元件。沒做到時，常見後果是只測聊天介面而漏掉工具、記憶與檢索的邊界。</dd>
+  <dt data-n="4">常見誤解</dt>
+  <dd class="misc">「提示詞裡寫了不准做，就是有控制。」Manual 的白箱檢查項目明列：隱藏上下文裡不應該有祕密或唯一的安全控制。能強制執行的控制要在模型之外。</dd>
+</dl>
+</div>
+
+<h3 id="ph-overlay">疊上威脅：LLM Top 10 2026 與 Agentic Top 10 2026</h3>
+<p>Manual 3.3 節建議用 OWASP 2026 的兩份清單當互補鏡片：LLM 清單涵蓋模型與應用風險；Agentic 清單強調模型成為行動者之後的自主性、工具、記憶、委派與擴散。Manual 的攻擊面對照表（自己標示為「示意」，完整表在原文第 47–48 頁）把元件對到兩邊的標籤，例如：</p>
+<div class="table-wrap"><table>
+<caption>表 2-3　攻擊面到威脅標籤的對照（Manual 表 2 的節錄與改寫）</caption>
+<thead><tr><th scope="col">攻擊面</th><th scope="col">Agentic 2026 標籤（例）</th><th scope="col">LLM 2026 標籤（例）</th></tr></thead>
+<tbody>
+<tr><th scope="row">代理人／規劃器／訊息匯流排</th><td>ASI01 Goal Hijack、ASI02 Tool Misuse、ASI08 Cascading Failures</td><td><a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-agency">LLM03:2026</a> Excessive Agency、<a href="../../02-llm-applications/llm-top-10/07-consumption-misinformation.html#cm-consume">LLM06:2026</a> Unbounded Consumption</td></tr>
+<tr><th scope="row">資料、RAG、向量與嵌入</th><td>ASI04 Agentic Supply Chain、ASI06 Memory &amp; Context Poisoning</td><td><a href="../../02-llm-applications/llm-top-10/02-prompt-injection.html#pi-what">LLM01:2026</a> Prompt Injection、<a href="../../02-llm-applications/llm-top-10/05-context-vectors.html#cv-vector">LLM09:2026</a> Vector and Embedding Weaknesses</td></tr>
+<tr><th scope="row">輸出接收端與人工審核</th><td>ASI05 Unexpected Code Execution、ASI09 Human-Agent Trust Exploitation</td><td><a href="../../02-llm-applications/llm-top-10/04-agency-output.html#ag-output">LLM10:2026</a> Improper Output Handling</td></tr>
+</tbody></table></div>
+<div class="callout warn">
+  <p class="callout-title">版本規則：LLM 編號一定帶年份</p>
+  <p>Manual 自己定了規則：每個標籤都要寫年份（例如 LLM03:2026、ASI06:2026），<strong>不要沿用 2025 的編號</strong>，因為 Agentic Top 10 的附錄對照的是 2025 版 LLM 分類；需要 2026 版 LLM 與 ASI 的關係時，應使用 2026 版 LLM 文件自己的對照。這和 GenAI Security Project 主題整理過的編號變動一致（2025 的 LLM06 是 Excessive Agency，2026 的 LLM03 才是；完整換算見 <a href="../../02-llm-applications/llm-top-10/08-evolution.html#ev-numbers">LLM Top 10 第 8 章</a>）。</p>
+</div>
+<p>排優先順序時，Manual 的原則是看<strong>本地風險</strong>而不是只看 OWASP 編號：業務與安全衝擊、可利用性、有效權限、持久化、跨工作階段或租戶的範圍、擴散、可偵測性、回復難度等。若組織另外使用弱點評分系統（如 AIVSS），分數要和 OWASP 分類標籤<strong>分開記錄</strong>。AIVSS 見本階段另一個主題 <a href="../aivss/index.html">AIVSS</a>。</p>
+
+<h2 id="ph-p4">2.5 階段 4：利用與衝擊</h2>
+<p>到這一步才真正「打」。Manual 的目標包括：繞過護欄、用提示詞注入與上下文操控改變模型行為、利用資料管線與 RAG、示範經由工具的權限提升、擷取記憶中的敏感資訊、造成未授權動作，以及用無上限推論耗盡預算 (Denial of Wallet)。技術分成七節：直接 AI 弱點、AI 通路弱點（RAG、直接與間接提示詞注入、工具鏈、跨租戶）、多模態、agentic（MCP、技能、子 agent、記憶）、經濟與資源耗盡、護欄與分類器規避。</p>
+<div class="callout author">
+  <p class="callout-title">本教材在這裡停下來</p>
+  <p>Manual 對各技術寫得很細，含可直接複製的提示詞與利用方式。依本教材規則，這裡只講概念層級，<strong>不提供攻擊內容</strong>；本教材也沒有逐項讀完階段 4 的技術細節與配套的 GenAI Red Team Lab（見<a href="references.html">參考資料頁</a>）。要實際執行，請依 Manual 原文，並先完成階段 1 的授權與環境要求。</p>
+</div>
+<p>值得學的一個設計：Manual 在測試案例裡反覆區分「<strong>模型拒絕</strong>」與「<strong>執行環境拒絕</strong>」。模型今天拒絕、換版本後可能就順從；執行環境層級的拒絕才可測試且穩定。第 3 章的測試判準會用到這個區分。</p>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>八階段：規劃與範圍、偵察與指紋辨識、攻擊面對應、利用與衝擊（本章）；其餘四個在第 3 章。</li>
+  <li>階段 1 先定範圍、交戰規則、環境與證據處理；風險分類不是合規標準。</li>
+  <li>正式環境測試需要四項限制：非破壞非持久、有標記的測試帳號、速率與 token 上限、中止與回復條件。</li>
+  <li>偵察含供應鏈盤點（AI-BOM），不能只靠 SCA 掃描器；永遠不為了檢查而執行不受信任的模型檔。</li>
+  <li>可執行的邊界要在模型無法繞過或改寫的服務裡；LLM 與 ASI 標籤帶年份。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能依序說出八個階段，並指出哪四個在本章。</li>
+  <li>我能說出三種環境各自最重要的限制。</li>
+  <li>我能解釋為什麼「模型拒絕」不等於「控制有效」。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-phases-5-8.html">第 3 章　階段 5–8：持久化到修補</a>：入侵得手之後怎麼評估後果、怎麼寫出可重現又不會誤判的報告，以及紅藍如何把發現轉成防禦。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>GenAI Red Teaming Manual，Version 1.0，資源頁 2026-10-20（PDF 144 頁）：<a href="https://genai.owasp.org/resource/genai-red-teaming-manual-version-1-0/">資源頁</a>；目錄、Phase 1（1.1–1.6，含 Artifacts &amp; Evidence）、Phase 2（含 2.2 Supply Chain Reconnaissance）、Phase 3（3.2 Trust Boundaries &amp; Data-Flow Mapping、3.3 Threat Modeling、Table 2）、Phase 4 概要與測試領域；CC BY-SA 4.0。Phase 4 各技術小節未逐項閱讀。</li>
+    <li>OWASP Top 10 for LLM Applications 2026（Version 2026）與 OWASP Top 10 for Agentic Applications 2026：僅引用 Manual 表 2 所列的條目名稱與編號；<a href="https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md">LLM Top 10 2026 README</a>；CC BY-SA 4.0。</li>
+    <li>AI Red Teaming Initiative 頁（確認 Manual 為該 Initiative 的產出）：<a href="https://genai.owasp.org/initiatives/ai-red-teaming-initiative/">genai.owasp.org/initiatives/ai-red-teaming-initiative/</a>；2026-10-26 讀取。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：GenAI Red Teaming Manual（PDF 封面）、OWASP Top 10 for LLM Applications 2026、Top 10 for Agentic Applications 2026、genai.owasp.org 網站 — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'rt-ch2', topic: 'genai-red-teaming', mode: 'chapter',
+  questions: [
+    { id: 'r2q1', type: 'match', lo: [2], refs: [{label: '2.1 表 2-1', href: '02-phases-1-4.html#ph-overview'}],
+      stem: '把下列活動配對到 Manual 最主要的階段。',
+      cats: [
+        { id: 'p1', label: '階段 1　規劃與範圍' },
+        { id: 'p2', label: '階段 2　偵察與指紋辨識' },
+        { id: 'p3', label: '階段 3　攻擊面對應' },
+        { id: 'p4', label: '階段 4　利用與衝擊' }
+      ],
+      items: [
+        { text: '與利害關係人議定哪些系統在範圍內、停止條件與證據處理方式', answer: 'p1', why: '階段 1 的重點是範圍、交戰規則、環境與證據處理。' },
+        { text: '盤點第三方模型與相依套件，建立 AI-BOM 並對照實際部署', answer: 'p2', why: '供應鏈偵察屬階段 2。' },
+        { text: '畫出資料流圖，標出信任邊界，排出階段 4 的測試優先順序', answer: 'p3', why: '階段 3 的目的就是對應攻擊面並排優先順序。' },
+        { text: '實際嘗試繞過護欄、以提示詞注入改變模型行為，示範衝擊', answer: 'p4', why: '主動利用已找到的弱點屬階段 4。' }
+      ],
+      summary: '前三個階段是規劃、偵察與攻擊面對應，第四個才是動手利用。' },
+    { id: 'r2q2', type: 'mc', lo: [2], refs: [{label: '2.2 環境', href: '02-phases-1-4.html#ph-env'}],
+      stem: '依 Manual，要在正式環境做紅隊演練，下列哪一項不是它要求的限制？',
+      options: [
+        { text: '使用專用且有標記的測試帳號，讓 SOC 能區分測試與真實攻擊。', why: '這是正式環境的四項限制之一。' },
+        { text: '設定保守的速率、token 與併發上限，避免資源耗盡。', why: '這是正式環境的四項限制之一。' },
+        { text: '攻擊必須非破壞、非持久，不污染共用的向量索引或跨租戶的 agent 記憶。', why: '這是正式環境的四項限制之一。' },
+        { text: '為了讓結果最真實，應使用客戶的真實紀錄與正式 API 金鑰。', correct: true, why: '相反：Manual 要求用合成、匿名或去識別的資料，並稽核是否共用金鑰、向量庫等有狀態相依，避免測試流量漏進真實業務。' }
+      ],
+      summary: '正式環境：非破壞非持久、標記帳號、速率上限、中止與回復；不用真實客戶紀錄。' },
+    { id: 'r2q3', type: 'mc', lo: [2], refs: [{label: '2.4 信任邊界與資料流圖', href: '02-phases-1-4.html#c-boundary'}],
+      stem: '一位開發者說：「我們已在系統提示詞裡寫了『不得讀取其他租戶資料』，所以租戶隔離有控制。」依本章，最合理的看法是？',
+      options: [
+        { text: '足夠了，只要提示詞寫得夠清楚，模型就會遵守。', why: 'Manual 的要求正好相反：可執行的邊界要在模型無法繞過或改寫的服務裡。' },
+        { text: '那是模型層的期望，不是可強制執行的邊界；紅隊要檢查租戶隔離是否由模型之外的服務（例如檢索層的存取控制、租戶分區）強制。', correct: true, why: '符合 2.4 節的核心概念與白箱檢查的方向。' },
+        { text: '只要把提示詞放進隱藏上下文，攻擊者就看不到，也就改不了。', why: 'Manual 的白箱檢查明列：隱藏上下文不應放祕密或唯一的安全控制；隱藏上下文本身也是被探測的對象。' },
+        { text: '只要模型版本固定，行為就不會變，所以不用另外檢查。', why: '模型版本會固定不代表輸出可預期；Manual 還提醒模型今天拒絕、換版本後可能順從。' }
+      ],
+      summary: '模型被告知不要做，不等於有控制；邊界要在模型之外強制。' },
+    { id: 'r2q4', type: 'scn', lo: [2], refs: [{label: '2.2 階段 1', href: '02-phases-1-4.html#ph-p1'}, {label: '2.2 環境', href: '02-phases-1-4.html#ph-env'}],
+      stem: '依本章，這個演練計畫在階段 1 漏了哪些該先約定的事？',
+      scenario: '銀杏保險（虛構）要對客服 agent 做紅隊演練。計畫書只寫：「在正式環境對客服 agent 做提示詞測試，兩週後交報告。」agent 能呼叫真實的理賠工單系統與郵件。紅隊成員說：「我們會用自己的個人帳號測，比較方便。」資安長問：這樣可以嗎？',
+      options: [
+        { text: '可以，因為紅隊是授權的，不需要再約定細節。', why: '授權只是起點；階段 1 還要約定範圍、交戰規則、環境限制與證據處理。' },
+        { text: '不可以：缺少範圍與排除項目、專用且有標記的測試帳號、對真實工單與郵件的隔離或模擬、速率與 token 上限、中止條件與回復，以及證據處理方式。', correct: true, why: '對應 2.2 節：交戰規則、正式環境四項限制，以及 agent 平台沙箱要切斷正式業務工具。' },
+        { text: '只要改成黑箱測試就可以，環境不重要。', why: '黑箱／灰箱／白箱是存取等級；環境隔離與交戰規則是另一件事，不會因為選黑箱而消失。' },
+        { text: '只要事後把報告寫詳細就可以，事前約定可省略。', why: 'Manual 把這些放在規劃階段，因為事後無法補救已造成的服務中斷、污染正式資料或真實郵件。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) agent 會執行動作，不只是產生文字，所以測試環境必須切斷正式工具、換成模擬服務與假帳號（表 2-2）。(2) 若一定要在正式環境，需滿足四項限制：非破壞非持久、有標記的專用帳號、速率與 token 上限、中止與回復條件。(3) 個人帳號會讓 SOC 分不清是測試還是真實攻擊。(4) 證據的存放、傳遞與清理也應事先約定。</p><p><strong>結論：</strong>退回計畫，補上範圍、交戰規則、環境與證據處理後再開始。對應教材：<a href="02-phases-1-4.html#ph-p1">2.2 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

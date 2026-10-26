@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 章　檢核表的前半：威脅與導入策略｜治理檢核表與卓越中心｜OWASP AI 資安學習教材</title>
+<meta name="description" content="Governance Checklist 的前半部：五個威脅標籤、不使用 AI 的風險、影子 AI、六步導入策略與六種部署類型。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="05-governance-and-risk" data-topic="governance-checklist-and-coe" data-page="02-checklist-strategy.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>第 2 章　檢核表的前半：威脅與導入策略</h1>
+<ul class="meta-row">
+  <li>預估閱讀：約 8 分鐘（不含章末檢核；另有 4 題章末檢核）</li>
+  <li>對應學習目標：LO2</li>
+  <li>前置：<a href="01-position.html">第 1 章</a></li>
+</ul>
+<p class="lead">檢核表不是一開始就丟給你 13 個勾選區塊。它的前半是一段「先想清楚方向」的文字：威脅從哪裡來、要不要用、組織裡誰在偷偷用、你打算用哪一種方式導入。這一章走完這段，因為它決定了後面 13 個區塊要用多嚴格的標準去勾。</p>
+
+<h2 id="cs-threats">2.1 威脅不只來自攻擊者：五個標籤</h2>
+<p>Checklist 的「LLM Threat Categories」用一張圖（Figure 1.2「AI Threat Map」）把威脅分成五個標籤。官方文字沒有逐項展開這五個標籤，所以下表「內文中對應的描述」一欄，是作者把散在各節的說明配到標籤上的結果，<span class="tag author">作者整理，非官方</span>；標籤本身與各描述的措辭則取自官方。</p>
+<div class="table-wrap"><table>
+<caption>表 2-1　AI Threat Map 的五個標籤與內文說明（官方，改寫）</caption>
+<thead><tr><th scope="col">標籤（圖上原文）</th><th scope="col">內文中對應的描述</th><th scope="col">開發者類比</th></tr></thead>
+<tbody>
+<tr><th scope="row">Threats Using AI Models <br>（利用 AI 模型的威脅）</th><td>攻擊者用 LLM 與生成式 AI 精進舊手法：製作新惡意程式、量身打造的釣魚、逼真的深偽語音與影像、發展新的入侵能力</td><td>攻擊者的工具升級了，既有控制可能不再夠用</td></tr>
+<tr><th scope="row">Threats to AI Models <br>（針對 AI 模型的威脅）</th><td>針對 LLM 本身與其供應鏈的攻擊，如提示詞注入、敏感資訊外洩、流程操縱、模型投毒、供應鏈攻擊、模型竊取</td><td>你的 LLM 應用是新的攻擊面</td></tr>
+<tr><th scope="row">Threats From AI Models <br>（來自 AI 模型的威脅）</th><td>圖上有此標籤，內文沒有獨立說明；相近的描述是非決定性、語意搜尋與幻覺造成的可靠性問題</td><td>模型自己輸出錯誤內容的風險</td></tr>
+<tr><th scope="row">Threats from NOT Using AI Models <br>（不使用 AI 模型的威脅）</th><td>競爭劣勢、被客戶與夥伴視為落伍、無法擴大個人化溝通、創新停滯、營運低效、人為錯誤風險較高、人力配置低效</td><td>技術債的另一面：不做也有成本</td></tr>
+<tr><th scope="row">AI Legal &amp; Regulatory Threats <br>（法律與法規威脅）</th><td>見檢核表的 Legal 與 Regulatory 區塊（第 3 章）</td><td>合規義務與責任歸屬</td></tr>
+</tbody></table></div>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：「Threats From AI Models」沒有官方展開</p>
+  <p>圖上有「Threats From AI Models」這個標籤，但本教材在文字中找不到以這個名字展開的段落。表中「相近的描述」一欄是作者把文字中談到的非決定性與幻覺放在一起，<strong>官方並未把它們明確歸到這個標籤</strong>。這個對應屬 <span class="tag author">作者整理，非官方</span>。</p>
+</div>
+<p>文件還指出一個重要的區分：<strong>LLM 的獨特問題</strong>是控制平面與資料平面無法嚴格分開、輸出是非決定性的、使用語意搜尋而非關鍵字搜尋；而許多風險其實是熟悉的老問題，如軟體物料清單 (SBOM)、供應鏈、資料外洩防護 (DLP) 與授權存取。這和你在 <a href="../../primer-security-for-developers.html">資安前置觀念</a> 看到的「提示詞注入沒有等價於參數化查詢的根治法」是同一件事。</p>
+
+<h2 id="cs-notuse">2.2 兩個直接影響決策的觀點</h2>
+<div class="concept">
+<h3 id="c-notuse">「不使用」的風險與影子 AI</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>Checklist 提醒領導層：評估 AI 風險時，要把「不用」也放上天平；同時，最迫切的非攻擊者威脅是「影子 AI (Shadow AI)」：員工自行使用未經核准的線上 AI 工具、不安全的瀏覽器外掛，或透過更新才加入 LLM 功能的第三方應用，繞過一般的軟體核准流程。</dd>
+  <dt data-n="2">為什麼會發生</dt>
+  <dd>AI 工具取得門檻低，員工為了效率會自己找工具；而第三方軟體透過更新悄悄加入 LLM 功能，使原本核准過的軟體變成新風險來源。</dd>
+  <dt data-n="3">怎麼被利用（概念層級）</dt>
+  <dd>這不是攻擊者主動利用的弱點，而是組織自己製造的暴露：敏感資料被貼到不受管理的工具；組織不知道有哪些 AI 在處理哪些資料，因此事件發生時無法判斷影響範圍。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>文件在後面的區塊給出對應做法：建立 AI 資產清冊、AI 解決方案上線流程、可接受使用矩陣、更新第三方風險管理（第 3 章）；並用第一步「韌性優先策略」去掃描與監控環境中的非核准應用（本章 2.3 節）。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「禁止使用 AI 就沒有風險。」文件的立場正好相反：不用有競爭、營運與人為錯誤上的成本，而禁用往往只讓使用轉入影子 AI。</dd>
+</dl>
+</div>
+<div class="callout author">
+  <p class="callout-title">作者整理，非官方：禁用會催生影子 AI 嗎？</p>
+  <p>上面「禁用往往只讓使用轉入影子 AI」是作者的推論。文件有說影子 AI 是最迫切的非攻擊者威脅，也說「不使用」有成本，但<strong>沒有直接寫出禁用導致影子 AI 的因果</strong>。請把它當成一個值得驗證的假設，而不是官方結論。</p>
+</div>
+
+<h2 id="cs-steps">2.3 六步導入策略與六種部署類型</h2>
+<p>Checklist 的「Determining LLM Strategy」用兩張圖說明怎麼決定導入方式。第一張是官方的 Figure 2.1，內容是六個步驟：</p>
+<figure class="diagram">
+<pre class="mermaid" data-alt="六步導入策略：第一步韌性優先，包含對濫用案例做威脅建模、檢視內外部利用情境、掃描並監控環境中的非核准應用；第二步更新既有政策；第三步訓練與教育；第四步與領導層對齊策略並訂風險對策；第五步更新第三方風險管理；第六步選擇部署策略。">
+flowchart TD
+  S1["步驟 1：韌性優先策略<br>威脅建模濫用案例、掃描非核准應用"] --> S2["步驟 2：更新既有政策<br>合約、保密協議、治理與資安"]
+  S2 --> S3["步驟 3：訓練與教育<br>資安意識、開發、法務等訓練"]
+  S3 --> S4["步驟 4：與領導層對齊<br>訂出 LLM 策略與緩解/風險策略"]
+  S4 --> S5["步驟 5：更新第三方風險管理<br>供應商 AI 方案的問卷與審查"]
+  S5 --> S6["步驟 6：選擇部署策略<br>見下表六種類型"]
+</pre>
+<figcaption><strong>圖 2-1　六步導入策略（Checklist Figure 2.1，重新繪製）。</strong>步驟名稱與重點取自官方圖；流程箭頭表示圖上的編號順序，官方沒有說每一步完成才能開始下一步。</figcaption>
+</figure>
+<p>第二張是官方的 Figure 2.2，是第 6 步「選擇部署策略」的展開。內文說「五種模型類型」，但<strong>圖上畫的是 Type 1 到 Type 6 共六種</strong>，本教材以圖為準列出六種，並把這個不一致記錄下來：</p>
+<div class="table-wrap"><table>
+<caption>表 2-2　六種部署類型（Checklist Figure 2.2，官方，改寫）</caption>
+<thead><tr><th scope="col">類型</th><th scope="col">做法</th><th scope="col">圖上寫的風險處理與優點</th><th scope="col">圖上的例子</th></tr></thead>
+<tbody>
+<tr><th scope="row">1　Direct Access <br>（直接使用）</th><td>直接使用 LLM 的介面</td><td>以公司政策與員工訓練降低風險；優點是彈性、可快速實驗</td><td>Perplexity、ChatGPT</td></tr>
+<tr><th scope="row">2　Access Through Model API <br>（透過模型 API）</th><td>向供應商以 API 使用 LLM</td><td>同上；優點是可快速實驗並有一些集中控管</td><td>Claude、ChatGPT、Gemini</td></tr>
+<tr><th scope="row">3　Licensed Model <br>（授權模型）</th><td>在企業租戶中使用授權的 LLM</td><td>在自己的租戶中管理，並搭配政策與訓練；優點是更多控制並可與內部工具整合</td><td>Microsoft Enterprise CoPilot、Amazon CodeWhisperer</td></tr>
+<tr><th scope="row">4　Pre-Trained Model <br>（預訓練模型）</th><td>用通用基礎模型，再以企業資料微調</td><td>能見度提高、改善效能並減少幻覺</td><td>Qwen1.5、DBRX、Starling 7B</td></tr>
+<tr><th scope="row">5　Fine-Tune Proven Model <br>（微調已驗證的模型）</th><td>用已驗證的專用模型，再以自有資料進一步微調</td><td>能見度提高、效能提升並減少幻覺；優點是客製化超越預訓練</td><td>Google Med-Palm、Amazon Bedrock、Llama2</td></tr>
+<tr><th scope="row">6　Custom Models <br>（自訂模型）</th><td>為企業特定使用情境建置量身訂做的 AI/ML 模型架構</td><td>有完整的能見度與控制；優點是客製化最大，但需要大量投資</td><td>（圖上未列例子）</td></tr>
+</tbody></table></div>
+<p>表裡的產品與模型名稱是<strong>圖當時（2024 年）列出的例子</strong>，不代表現況，也不是推薦；請當成「這一類長什麼樣子」的說明。從上到下，越往下組織對模型的控制與能見度越高，但投入也越大，這就是內文所說的「便利與控制的取捨」。</p>
+<div class="callout official unsure">
+  <p class="callout-title">未能確認：「五種」還是「六種」</p>
+  <p>內文「Deployment Strategy」一節寫「understanding these five model types」，圖 2.2 畫的是 Type 1–6。本教材無法判斷是內文漏改還是圖多畫了一種。教材以圖為準列六種，並在登記簿記錄為文件內部不一致。</p>
+</div>
+
+<h2 id="cs-concept">2.4 核心概念：先定策略，再勾區塊</h2>
+<div class="concept">
+<h3 id="c-strategy">為什麼檢核表把「策略」放在清單前面</h3>
+<dl>
+  <dt data-n="1">是什麼</dt>
+  <dd>在進入 13 個檢核區塊之前，先決定組織打算用哪一種方式導入 LLM（六種部署類型），以及各步驟（韌性、政策、訓練、領導層、第三方）要先做到什麼程度。</dd>
+  <dt data-n="2">為什麼這樣設計</dt>
+  <dd>同樣一個區塊，在不同部署類型下嚴格程度不同。例如「訓練資料治理」對只是透過 API 使用供應商模型的組織，和對自訂模型的組織，意義差很多。</dd>
+  <dt data-n="3">怎麼使用（概念層級）</dt>
+  <dd>先確認自己落在哪一種部署類型；再用該類型決定哪些區塊要深做。這個「依類型調整深度」的做法是 <span class="tag author">作者整理，非官方</span>：官方只說便利與控制的取捨，沒有給出類型對區塊的對照表。</dd>
+  <dt data-n="4">怎麼防</dt>
+  <dd>防止「照單全收」或「全部略過」兩種極端：把檢核表當成依情境調整的清單。</dd>
+  <dt data-n="5">常見誤解</dt>
+  <dd class="misc">「部署類型越大越好。」不是。文件的說法是依用例敏感度、所需能力與資源來取得便利與控制的平衡。</dd>
+</dl>
+</div>
+
+<h2 id="ch2-key">本章重點與自我檢核</h2>
+<div class="keypoints"><ul>
+  <li>Threat Map 有五個標籤：利用 AI、針對 AI、來自 AI、不使用 AI、法律與法規；其中「來自 AI」沒有官方展開。</li>
+  <li>「不使用」也有成本；最迫切的非攻擊者威脅是影子 AI。</li>
+  <li>六步導入策略的第 1 步是韌性優先；第 6 步才是選擇部署策略。</li>
+  <li>圖 2.2 畫了六種部署類型，內文寫五種，兩者不一致；越往大型，控制越多、投入越大。</li>
+  <li>「依部署類型調整檢核深度」是作者整理，不是官方對照。</li>
+</ul></div>
+<ul class="checklist">
+  <li>我能說出 Threat Map 的五個標籤，並指出哪一個沒有官方展開。</li>
+  <li>我能解釋影子 AI 是什麼，以及為什麼它是組織自己製造的暴露。</li>
+  <li>我能依使用情境說出最可能適用的部署類型。</li>
+</ul>
+
+<section class="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">章末檢核（4 題）</h2>
+  <p>對應學習目標 LO2。</p>
+  <div id="quiz-root"></div>
+</section>
+
+<h2 id="ch2-next">接下來讀什麼</h2>
+<p><a href="03-checklist-areas.html">第 3 章　檢核表的 13 個區塊</a>：策略定了之後，逐區塊看要確認哪些事，並以一個虛構情境練習把問題歸到對的區塊。</p>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本章來源</h2>
+  <ul>
+    <li>OWASP GenAI Security Project，LLM Applications Cybersecurity and Governance Checklist v1.1 – English：Large Language Model Challenges、LLM Threat Categories（Figure 1.2）、Determining LLM Strategy（Figure 2.1）、Deployment Strategy（Figure 2.2）；資源頁日期 2024-05-07；CC BY-SA 4.0；<a href="https://genai.owasp.org/resource/llm-applications-cybersecurity-and-governance-checklist-english/">genai.owasp.org/resource/llm-applications-cybersecurity-and-governance-checklist-english/</a>；2026-10-26 讀取。圖內文字本教材另以 PDF 頁面轉圖逐一核對。</li>
+  </ul>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+<aside id="page-toc"></aside>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本頁所引用來源的授權（以來源頁面標示為準）：Governance Checklist — CC BY-SA 4.0。本頁未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/app.js"></script>
+<script>
+OwaspQuiz.mount('#quiz-root', {
+  id: 'gc-ch2', topic: 'governance-checklist-and-coe', mode: 'chapter',
+  questions: [
+    { id: 'gc2q1', type: 'mc', lo: [2], refs: [{label: '2.2 影子 AI', href: '02-checklist-strategy.html#cs-notuse'}],
+      stem: '依 Checklist，下列哪一項最符合「影子 AI (Shadow AI)」的描述？',
+      options: [
+        { text: '攻擊者利用提示詞注入，讓公司內部的 LLM 洩漏機密。', why: '這是針對 AI 模型的攻擊 (Threats to AI Models)，不是影子 AI。影子 AI 是組織內部未經核准的使用。' },
+        { text: '員工自行使用未經核准的線上 AI 工具或不安全外掛，繞過軟體核准流程。', correct: true, why: '這正是文件對影子 AI 的描述，並被列為許多組織最迫切的非攻擊者威脅。' },
+        { text: '公司刻意選擇不使用任何 AI。', why: '這是「不使用 AI 的威脅」所談的情境，不是影子 AI。' },
+        { text: '模型輸出了不正確的內容。', why: '這屬於模型可靠性問題（幻覺），和誰在使用哪個工具無關。' }
+      ],
+      summary: '影子 AI：未經核准的 AI 使用，繞過軟體核准流程。' },
+    { id: 'gc2q2', type: 'match', lo: [2], refs: [{label: '2.3 表 2-2', href: '02-checklist-strategy.html#cs-steps'}],
+      stem: '把下列情境配對到最符合的部署類型（Checklist Figure 2.2）。',
+      cats: [
+        { id: 't1', label: 'Type 1 直接使用' },
+        { id: 't2', label: 'Type 2 透過模型 API' },
+        { id: 't3', label: 'Type 3 授權模型' },
+        { id: 't6', label: 'Type 6 自訂模型' }
+      ],
+      items: [
+        { text: '員工直接在供應商的聊天介面上提問', answer: 't1', why: '直接使用 LLM 的介面；風險主要靠公司政策與員工訓練降低。' },
+        { text: '應用程式透過供應商提供的 API 呼叫模型', answer: 't2', why: '透過 API 使用，可提供一些集中控管。' },
+        { text: '在公司自己的企業租戶中使用授權的 LLM 並與內部工具整合', answer: 't3', why: '授權模型：在自己的租戶中管理，有更多控制與整合。' },
+        { text: '為特定業務情境從頭設計專屬的 AI/ML 模型架構', answer: 't6', why: '自訂模型：完整能見度與控制，但需要大量投資。' }
+      ],
+      summary: '越往 Type 6，控制與能見度越高，投入也越大。' },
+    { id: 'gc2q3', type: 'mc', lo: [2], refs: [{label: '2.3 圖 2-1', href: '02-checklist-strategy.html#cs-steps'}],
+      stem: '依 Checklist Figure 2.1，六步導入策略中，「選擇部署策略」是第幾步？',
+      options: [
+        { text: '第 1 步，因為先決定用哪種模型才能做其他事。', why: '圖上第 1 步是「韌性優先策略」：先做濫用案例的威脅建模並掃描非核准應用。' },
+        { text: '第 3 步，在訓練與教育之後。', why: '第 3 步是訓練與教育。' },
+        { text: '第 6 步，也是最後一步。', correct: true, why: '圖 2.1 的第 6 步是「Choose a deployment strategy」，在韌性、政策、訓練、領導層、第三方風險之後。' },
+        { text: '第 4 步，與領導層對齊時一併決定。', why: '第 4 步是與領導層對齊策略並訂出緩解/風險策略；部署策略是獨立的第 6 步。' }
+      ],
+      summary: '六步順序：韌性優先 → 政策 → 訓練 → 領導層 → 第三方風險 → 選部署策略。' },
+    { id: 'gc2q4', type: 'scn', lo: [2], refs: [{label: '2.2 影子 AI', href: '02-checklist-strategy.html#cs-notuse'}, {label: '2.4 策略', href: '02-checklist-strategy.html#c-strategy'}],
+      stem: '依本章，資安長的下一步最合理的是哪一個？',
+      scenario: '松濤零售（虛構）的管理層為了避免風險，發出全公司公告：「從即日起，嚴禁使用任何生成式 AI 工具。」兩個月後，資安團隊在網路流量中發現，行銷與客服人員仍在使用多款線上 AI 服務，並把客戶來信貼進去。資安長要向管理層報告，並想引用 OWASP 檢核表。',
+      options: [
+        { text: '加強公告措辭，並對違規者處分，問題就能解決。', why: '只加重禁令，沒有處理需求與可見度；文件的立場是「不使用」本身也有成本，且最迫切的非攻擊者威脅正是影子 AI。' },
+        { text: '改為完全開放，讓員工自由選擇工具，因為禁令無效。', why: '完全開放等於放棄資料分類與可接受使用的界線，與檢核表要求的政策、訓練與資產清冊相反。' },
+        { text: '把它視為影子 AI：先掃描並盤點實際在用的工具與資料，再建立可接受使用矩陣、上線流程與訓練，並評估是否提供經核准的部署類型。', correct: true, why: '對應 2.2 與 2.3 節：韌性優先（掃描非核准應用）、更新政策、訓練、選擇部署策略。' },
+        { text: '改引用 CoE Guide 的 12 個月計畫，因為這是組織問題。', why: 'CoE 是長期的組織結構；眼前的暴露要先用檢核表的盤點與政策處理。' }
+      ],
+      answer: '<p><strong>推理：</strong>(1) 禁令之後仍有人使用，且把客戶資料貼進未核准工具：這正是影子 AI。(2) 檢核表的第 1 步是韌性優先，要掃描並監控非核准的應用；接著更新政策、訓練、與領導層對齊、更新第三方風險管理。(3) 「不使用」本身有競爭與營運成本，因此長期解法是提供經核准、有控管的路徑（選擇適當的部署類型），而不是只靠禁令。</p><p><strong>結論：</strong>先盤點與可接受使用，再提供核准路徑。其中「禁令催生影子 AI」是作者推論，報告時不要寫成官方結論。對應教材：<a href="02-checklist-strategy.html#cs-notuse">2.2 節</a>、<a href="02-checklist-strategy.html#cs-steps">2.3 節</a>。</p>' }
+  ]
+});
+</script>
+</body>
+</html>

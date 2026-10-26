@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenAI 紅隊演練｜主題首頁｜OWASP AI 資安學習教材</title>
+<meta name="description" content="OWASP GenAI 紅隊演練主題首頁：Red Teaming Manual、Guide 與 Vendor Evaluation Criteria 的學習目標、前置知識、學習路徑與章節總覽。">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body data-root="../../" data-stage="06-assessment-and-verification" data-topic="genai-red-teaming" data-page="index.html">
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header id="site-header"></header>
+<div class="layout no-toc">
+<nav id="site-nav"></nav>
+<main id="main">
+<div id="breadcrumb"></div>
+<article>
+
+<h1>GenAI 紅隊演練</h1>
+<ul class="meta-row">
+  <li>06 評估與驗證｜主題 1</li>
+  <li>預估學習時間：約 70–80 分鐘（4 章閱讀約 36 分鐘；章末檢核與總測驗約 35–40 分鐘）</li>
+  <li>採用來源：genai.owasp.org 的三份 PDF 與資源頁，2026-10-26 讀取</li>
+</ul>
+<p class="lead">這個主題帶你認識 OWASP GenAI Security Project 的 AI Red Teaming Initiative 的產出：一份八階段的演練手冊、一份概念與藍圖指南，以及一份給採購者的廠商評估準則。學完後，你能判斷一份紅隊報告站不站得住腳，並分辨真正的對抗式測試與只會越獄的淺層服務。</p>
+
+<h2 id="lo">學習目標</h2>
+<p>學完這個主題，你應該能：</p>
+<ol class="objectives">
+  <li id="lo1"><strong>定位：</strong>說明 Manual、Guide、Vendor Evaluation Criteria 各回答什麼問題，寫出各自採用的版本與日期，並說明 AI 紅隊與傳統紅隊的差異。<br><small>對應：<a href="01-position.html">第 1 章</a></small></li>
+  <li id="lo2"><strong>八階段方法：</strong>依序說出八個階段與各階段的目的，並說明環境（沙箱、預備、正式）的限制與信任邊界的角色。<br><small>對應：<a href="02-phases-1-4.html">第 2 章</a>、<a href="03-phases-5-8.html">第 3 章</a></small></li>
+  <li id="lo3"><strong>評估與報告：</strong>運用測試判準、攻擊成功率與攻擊預算、影響範圍、可重現性與紅藍成對產出，判斷一份紅隊報告是否可靠。<br><small>對應：<a href="03-phases-5-8.html">第 3 章</a></small></li>
+  <li id="lo4"><strong>評估廠商與工具：</strong>依簡單與進階系統的差異，用綠旗與紅旗分辨真正的對抗式測試，並比較顧問與自動化工具。<br><small>對應：<a href="04-vendor-evaluation.html">第 4 章</a></small></li>
+</ol>
+
+<h2 id="prereq">前置知識</h2>
+<ul>
+  <li>建議先讀 <a href="../../01-overview/genai-security-project/index.html">GenAI Security Project 架構</a>主題，至少第 3 章（知道 AI Red Teaming 是八個 Initiatives 之一）。</li>
+  <li>資安概念若不熟，先讀 <a href="../../primer-security-for-developers.html">資安前置觀念（給開發者）</a>。本主題用到的主要是攻擊面與信任邊界、爆炸半徑、預防／偵測／回應類控制。</li>
+  <li>不需要有做過滲透測試或紅隊的經驗。</li>
+</ul>
+
+<h2 id="path">學習路徑</h2>
+<ol class="path">
+  <li><span class="p-title"><a href="01-position.html">第 1 章　三份文件與 AI 紅隊的定位</a></span><span class="p-state" data-file="01-position.html"></span><span class="p-desc">三份文件的版本日期、AI 紅隊與傳統紅隊的差異、黑灰白箱、何時該做。表 2 張、圖 1 張、題 3 題。</span></li>
+  <li><span class="p-title"><a href="02-phases-1-4.html">第 2 章　階段 1–4：規劃到利用</a></span><span class="p-state" data-file="02-phases-1-4.html"></span><span class="p-desc">八階段總覽、交戰規則與環境、供應鏈偵察、信任邊界與資料流圖、LLM 與 Agentic Top 10 2026 的疊加。表 3 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="03-phases-5-8.html">第 3 章　階段 5–8：持久化到修補</a></span><span class="p-state" data-file="03-phases-5-8.html"></span><span class="p-desc">持久化、影響範圍與嚴重度、測試判準與可重現性、ASR 與攻擊預算、紅藍成對產出。情境 A。表 3 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="04-vendor-evaluation.html">第 4 章　評估紅隊廠商與工具</a></span><span class="p-state" data-file="04-vendor-evaluation.html"></span><span class="p-desc">簡單與進階系統、十三個評估類別、顧問與工具比較、常見陷阱、跨文件整合。情境 B。表 2 張、圖 1 張、題 4 題。</span></li>
+  <li><span class="p-title"><a href="quiz.html">總測驗（14 題）</a></span><span class="p-state" data-file="quiz.html"></span><span class="p-desc">涵蓋 LO1–LO4，結束時顯示各學習目標的掌握度並連回章節。</span></li>
+  <li><span class="p-title"><a href="references.html">參考資料與來源核對</a></span><span class="p-state" data-file="references.html"></span><span class="p-desc">核對清單、版本與日期對照、授權、未能確認的項目。</span></li>
+</ol>
+
+<div id="topic-progress"></div>
+
+<h2 id="overview">本主題三個重點</h2>
+<div class="keypoints"><ul>
+  <li>AI 紅隊測的是<strong>系統會不會違反自己的限制</strong>；輸出具機率性，所以要用測試判準、攻擊成功率與攻擊預算，而不是一次通過就當穩健。</li>
+  <li>Manual 的八階段把「談好範圍與環境」放在「動手利用」之前；<strong>缺少紀錄不能記成通過</strong>，每個發現要產生紅藍成對產出。</li>
+  <li>採購紅隊服務時，<strong>只會越獄、宣稱完整涵蓋、沒有軌跡</strong>是紅旗；多代理系統上自動化工具的適配評級偏低。</li>
+</ul></div>
+
+<h2 id="notes">使用說明</h2>
+<ul>
+  <li>標示 <span class="tag official">官方</span> 的內容來自 OWASP 文件；標示 <span class="tag author">作者整理，非官方</span> 的是作者加的類比、歸類或流程。</li>
+  <li>兩個情境（A、B）都是 <span class="tag fiction">虛構</span> 的公司與系統。Manual 含大量攻擊細節，本教材只講到能理解風險與防禦的概念層級，<strong>不提供攻擊提示詞、利用腳本或繞過步驟</strong>。</li>
+  <li>本主題的 Manual 與 Guide 是長篇 PDF（144 頁與 77 頁）。本教材只讀了與教材相關的章節，其餘部分見<a href="references.html">參考資料頁</a>的「未能確認」與做法限制。</li>
+  <li>測驗進度存在你的瀏覽器 localStorage；無法使用時，進度只在本次瀏覽期間保留，閱讀與測驗不受影響。</li>
+  <li>圖表以本地 Mermaid 繪製；若圖沒有顯示，每張圖下方都有文字說明。</li>
+</ul>
+
+<section class="sources" aria-labelledby="src-h">
+  <h2 id="src-h">本頁來源</h2>
+  <p>本頁為導覽，內容來源請看各章「本章來源」與 <a href="references.html">參考資料頁</a>。</p>
+</section>
+
+</article>
+<div id="pager"></div>
+</main>
+</div>
+<footer class="site-footer"><div class="inner">
+  <p><strong>本教材為非官方學習整理，非 OWASP 發布，內容以官方文件為準。</strong></p>
+  <p>本主題的主要來源授權（以來源頁面標示為準）：GenAI Red Teaming Manual、GenAI Red Teaming Guide、Vendor Evaluation Criteria（各 PDF 封面）、genai.owasp.org 網站 — CC BY-SA 4.0；OWASP Top 10 for LLM Applications 2026、Top 10 for Agentic Applications 2026 僅用於編號對照 — CC BY-SA 4.0。本主題未使用 NC（非商業）授權的來源。</p>
+</div></footer>
+<script src="../../assets/sitemap.js"></script>
+<script src="../../assets/app.js"></script>
+</body>
+</html>
